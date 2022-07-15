@@ -441,6 +441,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4751645464639803239">Nieuw incognitotabblad</translation>
 <translation id="4775879719735953715">Standaardbrowser</translation>
 <translation id="4778644898150334464">Ander wachtwoord gebruiken</translation>
+<translation id="478808905805139173">Openen in incognitomodus?</translation>
 <translation id="4802417911091824046">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay.
 
 <ph name="BEGIN_LINK" />Reset de synchronisatie<ph name="END_LINK" /> als je deze instelling wilt wijzigen.</translation>
@@ -961,6 +962,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9055772144595778347">Kan niet inloggen</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9065203028668620118">Bewerken</translation>
+<translation id="9068336935206019333">Openen in Chrome-incognitomodus</translation>
 <translation id="9079935439869366234">Alles als ongelezen markeren</translation>
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
 <translation id="9083392325882095631">1 item</translation>

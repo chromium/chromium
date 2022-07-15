@@ -460,6 +460,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad wedi'i drefnu}zero{Mae # lawrlwythiad wedi'u trefnu}two{Mae # lawrlwythiad wedi'u trefnu}few{Mae # lawrlwythiad wedi'u trefnu}many{Mae # lawrlwythiad wedi'u trefnu}other{Mae # lawrlwythiad wedi'u trefnu}}</translation>
 <translation id="3474624961160222204">Parhau fel <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Gallwch ddewis eich peiriant chwilio</translation>
+<translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am gynnwys a awgrymir</translation>
 <translation id="3495219333887281978">Mae'r ddalen waelod mewngofnodi wedi'i hagor ar hanner uchder.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="47217992755561375">Gweld eich hoff wefannau</translation>
 <translation id="4732120983431207637">Dadweindiwr pentyrrau</translation>
 <translation id="4736934858538408121">Cerdyn rhithwir</translation>
+<translation id="473775607612524610">Diweddaru</translation>
 <translation id="4738836084190194332">Cysonwyd ddiwethaf: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Byddwch yn cael awgrymiadau gwell yn y bar cyfeiriadau</translation>
 <translation id="4742970037960872810">Tynnu'r amlygu</translation>

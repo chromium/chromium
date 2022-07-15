@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් කාලසටහන්ගත කරන ලදි}one{බාගැනීම් #ක් කාලසටහන්ගත කරන ලදි}other{බාගැනීම් #ක් කාලසටහන්ගත කරන ලදි}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ලෙස කරගෙන යන්න</translation>
 <translation id="3478363558367712427">ඔබට ඔබේ සෙවීම් එන්ජිම තෝරා ගත හැකිය</translation>
+<translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3493531032208478708">යෝජිත අන්තර්ගතය ගැන <ph name="BEGIN_LINK" />තවත් දැනගන්න<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">පිරීමේ පහළ පත්‍රය අර්ධ උසින් විවෘත විය.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">ඔබගේ ඉහළම අඩවි බලන්න</translation>
 <translation id="4732120983431207637">එතීම ලිහන්නා</translation>
 <translation id="4736934858538408121">අතථ්‍ය කාඩ්පත</translation>
+<translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4738836084190194332">අවසන් වරට සමමුහුර්ත කළේ: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">ලිපින තීරුව තුළ ඔබට වැඩිදියුණු කළ යෝජනා ලැබෙනු ඇත</translation>
 <translation id="4742970037960872810">උද්දීපනය ඉවත් කරන්න</translation>

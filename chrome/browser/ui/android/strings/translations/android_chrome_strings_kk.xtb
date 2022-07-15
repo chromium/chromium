@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 жүктеп алу жоспарланды.}other{# жүктеп алу жоспарланды.}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> болып жалғастыру</translation>
 <translation id="3478363558367712427">Іздеу жүйесін таңдай аласыз.</translation>
+<translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3493531032208478708">Ұсынылған мазмұн туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Акканунтқа кіру төменгі парақшасы жартылай ашылды.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="47217992755561375">Жиі пайдаланатын сайттарды көру</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуалдық карта</translation>
+<translation id="473775607612524610">Жаңарту</translation>
 <translation id="4738836084190194332">Соңғы синхрондалған уақыты: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="4742970037960872810">Ерекшелемеу</translation>

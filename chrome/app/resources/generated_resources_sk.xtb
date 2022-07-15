@@ -1270,6 +1270,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2180620921879609685">Blokovať obsah na akejkoľvek stránke</translation>
 <translation id="2182058453334755893">Skopírované do schránky</translation>
 <translation id="2184515124301515068">Povoľte Chromu vyberať, kedy môžu weby prehrať zvuk (odporúčané)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Stránka je zdieľaná z iného zariadenia</translation>
 <translation id="2187675480456493911">Synchronizované s ostatnými zariadeniami vo vašom účte. Nastavenia upravené ostatnými používateľmi nebudú synchronizované. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Chyba importovania certifikátu servera</translation>
@@ -3210,6 +3211,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="402211067068791756">Týmto vymažete <ph name="TOTAL_USAGE" /> dát uložených zobrazenými webmi</translation>
 <translation id="4022426551683927403">Prid&amp;ať do slovníka</translation>
 <translation id="4025039777635956441">Ignorovať vybraný web</translation>
+<translation id="4027958407426528157">Otvárajte weby v aplikáciách nainštalovaných v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Pridať metódy vstupu</translation>
 <translation id="4029556917477724407">Späť zo stránky <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
@@ -6563,6 +6565,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7377481913241237033">Pripojiť pomocou kódu</translation>
 <translation id="7378611153938412599">Slabé heslá sa dajú ľahko uhádnuť. Vždy sa snažte vytvárať silné heslá. <ph name="BEGIN_LINK" />Ďalšie tipy na zabezpečenie<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otvoriť Internetový obchod Chrome</translation>
+<translation id="737938816678769289">Ľahko sa pripojte a nastavte zariadenia s rýchlym párovaním v okolí</translation>
 <translation id="7380459290951585794">Telefón majte nablízku, odomknutý a so zapnutým rozhraním Bluetooth aj pripojením Wi‑Fi</translation>
 <translation id="7380622428988553498">Názov zariadenia obsahuje neplatné znaky</translation>
 <translation id="7380768571499464492">Tlačiareň <ph name="PRINTER_NAME" /> bola aktualizovaná</translation>

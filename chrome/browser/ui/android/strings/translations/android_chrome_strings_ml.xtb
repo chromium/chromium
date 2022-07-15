@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ആയി തുടരുക</translation>
 <translation id="3478363558367712427">നിങ്ങളുടെ തിരയല്‍ യന്ത്രം നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം</translation>
+<translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">സൈൻ ഇൻ ചെയ്യാനുള്ള ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">നിങ്ങളുടെ പ്രധാന സൈറ്റുകൾ കാണുക</translation>
 <translation id="4732120983431207637">സ്‌റ്റാക്ക് അൺവൈൻഡർ</translation>
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
+<translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4738836084190194332">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">വിലാസ ബാറിൽ നിങ്ങൾക്ക് മെച്ചപ്പെടുത്തിയ നിർദ്ദേശങ്ങൾ ലഭിക്കും</translation>
 <translation id="4742970037960872810">ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>

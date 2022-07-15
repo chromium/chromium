@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="2638942478653899953">Impossible d'accéder à Google Disque. Veuillez vous <ph name="BEGIN_LINK" />déconnecter<ph name="END_LINK" />, puis vous reconnecter.</translation>
 <translation id="2649120831653069427">Poisson-arc-en-ciel</translation>
+<translation id="2653059201992392941">Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="2663066752008346276">Birman/Myanmar avec clavier myansan</translation>
 <translation id="2664412712123763093">Lieu du fichier</translation>
 <translation id="2718540689505416944">Installer l'application avec Linux</translation>
@@ -341,7 +342,6 @@
 <translation id="3971140002794351170">Télécharger le profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (R.-U.)</translation>
 <translation id="3975895378829046965">Bangla (phonétique)</translation>
-<translation id="3991446849494482687">Cela désactivera également le paramètre de verrouillage SIM sur l'appareil.</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (É.-U.) avec clavier Workman</translation>
 <translation id="4040753847560036377">Clé personnelle de déblocage incorrecte</translation>
@@ -529,6 +529,7 @@
 <translation id="5489067830765222292">Letton</translation>
 <translation id="5489965683297092283">Le filtre <ph name="FILTER_NAME" /> est désactivé.</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
+<translation id="5500104704744051184">Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas entré la PUK.</translation>
 <translation id="5500122897333236901">Islandais</translation>
 <translation id="5508696409934741614">Points</translation>
 <translation id="5522908512596376669">La liste de fichiers utilise maintenant l'affichage en liste.</translation>
@@ -634,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
 <translation id="642282551015776456">Ce nom ne peut être utilisé comme nom de fichier ou de dossier</translation>
 <translation id="6423031066725912715">Vietnamien avec clavier TCVN</translation>
+<translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
 <translation id="6485131920355264772">Échec de récupération de l'information sur l'espace</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>
@@ -900,6 +902,7 @@
 <translation id="8579285237314169903">Synchronisation de <ph name="NUMBER_OF_FILES" /> éléments en cours...</translation>
 <translation id="8600173386174225982">La liste de fichiers utilise maintenant l'affichage en miniatures.</translation>
 <translation id="8601932370724196034">Fichier d'image Crostini</translation>
+<translation id="8608515571837163082">Un NIP incorrect a été entré trop de fois. Entrez la clé personnelle de déblocage (PUK) à huit chiffres fournie par le fournisseur de services.</translation>
 <translation id="8609695766746872526">Islandais</translation>
 <translation id="863903787380594467">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

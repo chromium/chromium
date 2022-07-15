@@ -1019,6 +1019,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1935303383381416800">Allowed to see your location</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
+<translation id="1938240902511979591">High-contrast mode, magnifier and display settings</translation>
 <translation id="1938320257168860255">Something went wrong. Make sure that your phone is close by, unlocked and Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940546824932169984">Connected devices</translation>
@@ -1441,6 +1442,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
+<translation id="2310923358723722542">Display and magnification</translation>
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
@@ -4177,6 +4179,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="496446150016900060">Sync Wi-Fi networks with your phone</translation>
 <translation id="4965808351167763748">Are you sure that you want to set up this device to run Hangouts Meet?</translation>
 <translation id="4966972803217407697">You're Incognito</translation>
+<translation id="4967227914555989138">Add a note</translation>
 <translation id="496742804571665842">Disable eSIM profiles</translation>
 <translation id="4971412780836297815">Open when done</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
@@ -4424,6 +4427,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5233231016133573565">Process ID</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5233736638227740678">&amp;Paste</translation>
+<translation id="5233794855520048159">Mono audio, sounds on startup and captions</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5235050375939235066">Uninstall app?</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
@@ -4528,6 +4532,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5333896723098573627">To remove apps, go to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
 <translation id="5334142896108694079">Script Cache</translation>
 <translation id="5336688142483283574">This page will also be removed from your history and <ph name="SEARCH_ENGINE" /> activity.</translation>
+<translation id="5336689872433667741">Cursor and touchpad</translation>
 <translation id="5337771866151525739">Installed by a third party.</translation>
 <translation id="5337926771328966926">Current device name is <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">You can browse privately using an Incognito window</translation>
@@ -4538,6 +4543,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5342091991439452114">PIN must be at least <ph name="MINIMUM" /> digits</translation>
 <translation id="5344036115151554031">Restoring Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
+<translation id="534449933710420173">Unnamed folder</translation>
 <translation id="5345916423802287046">Start app when you sign in</translation>
 <translation id="5350293332385664455">Turn off Google Assistant</translation>
 <translation id="535123479159372765">Text copied from other device</translation>
@@ -5161,6 +5167,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5959471481388474538">Network not available</translation>
 <translation id="595959584676692139">Reload page to use this extension</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> peak)</translation>
+<translation id="5963620791620013026">Sticky keys, on-screen keyboard, dictation, switch access and enhanced highlight</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
 <translation id="5965661248935608907">It also controls what page is shown when you click the Home button or search from the Omnibox.</translation>
 <translation id="5968022600320704045">No search results</translation>
@@ -5971,6 +5978,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6771503742377376720">Is a Certification Authority</translation>
 <translation id="6775163072363532304">Available devices will appear here.</translation>
+<translation id="677646486571529447">Add a note</translation>
 <translation id="6776729248872343918">Enable Fast Pair</translation>
 <translation id="6777817260680419853">Redirect blocked</translation>
 <translation id="6778737459546443941">Your parent hasn't approved it yet</translation>
@@ -6119,6 +6127,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6900654715912436255">Are you sure that you want to delete this search engine?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voice to preview</translation>
+<translation id="6902219595840841518">Automatic click, cursor size, cursor colour and highlight cursor</translation>
 <translation id="6902336033320348843">Section not supported: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Join device to domain</translation>
 <translation id="6903022061658753260">Your data will be synced across all Chrome browsers where you have turned on sync for this account. For Chrome OS sync options, go to <ph name="LINK_BEGIN" />Chrome OS settings<ph name="LINK_END" />.</translation>
@@ -6896,6 +6905,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7681095912841365527">Site can use Bluetooth</translation>
 <translation id="7681597159868843240">Sites usually use your device's motion sensors for features like virtual reality or fitness tracking</translation>
 <translation id="7683373461016844951">To continue, click OK, then click Add Person to create a new profile for your <ph name="DOMAIN" /> email address.</translation>
+<translation id="7683834360226457448">Low vision display tools</translation>
 <translation id="7684212569183643648">Installed by Your Administrator</translation>
 <translation id="7684559058815332124">Visit captive portal login page</translation>
 <translation id="7684718995427157417">To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>

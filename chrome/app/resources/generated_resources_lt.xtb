@@ -3228,6 +3228,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="402211067068791756">Bus išvalyta <ph name="TOTAL_USAGE" /> pateiktų svetainių saugomų duomenų</translation>
 <translation id="4022426551683927403">&amp;Pridėti į žodyną</translation>
 <translation id="4025039777635956441">Nutildyti pasirinktą svetainę</translation>
+<translation id="4027958407426528157">Atidarykite svetaines naudodami „<ph name="DEVICE_TYPE" />“ įdiegtas programas</translation>
 <translation id="4028467762035011525">Pridėti įvesties metodų</translation>
 <translation id="4029556917477724407">Grįžti iš puslapio „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4031179711345676612">Mikrofonas leidžiamas</translation>
@@ -6585,6 +6586,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>
 <translation id="7378611153938412599">Nesudėtingus slaptažodžius lengva atspėti. Įsitikinkite, kad kuriate sudėtingus slaptažodžius. <ph name="BEGIN_LINK" />Žr. daugiau saugos patarimų.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Atidarykite „Chrome“ internetinę parduotuvę</translation>
+<translation id="737938816678769289">Lengvai prijunkite ir nustatykite sparčiojo susiejimo įrenginius netoliese</translation>
 <translation id="7380459290951585794">Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys</translation>
 <translation id="7380622428988553498">Įrenginio pavadinime yra netinkamų simbolių</translation>
 <translation id="7380768571499464492">Atnaujintas „<ph name="PRINTER_NAME" />“</translation>

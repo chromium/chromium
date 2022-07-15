@@ -350,6 +350,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1340527397989195812">Fayllar tətbiqini istifadə etməklə medianı cihazdan yedəkləyin.</translation>
 <translation id="1343865611738742294">USB cihazlarına daxil olmaq üçün Linux tətbiqlərinə giriş icazəsi verin. Linux USB cihazı silindikdən sonra onu yadda saxlamayacaq.</translation>
 <translation id="1343920184519992513">Qaldığınız yerdən davam edin və xüsusi səhifələr dəstini açın</translation>
+<translation id="1344377983938103876"><ph name="URL" /> açılır...</translation>
 <translation id="134589511016534552">Media tabları Açıq Tablar bölməsində də göstərilir</translation>
 <translation id="1346630054604077329">Təsdiqləyin və yenidən başladın</translation>
 <translation id="1346748346194534595">Sağ</translation>
@@ -6951,6 +6952,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7753735457098489144">Yaddaşda kifayət qədər yer olmadığına görə quraşdırılmadı. Yer boşaltmaq üçün cihazın yaddaşındakı faylları silin.</translation>
 <translation id="7754347746598978109">Javascript'dən istifadə etməyə icazə verilmir</translation>
 <translation id="7754704193130578113">Endirmədən öncə faylın saxlanacağı yeri soruşun</translation>
+<translation id="7755134875397410803">Tapşırıqları tamamlamaqda sizə kömək etmək üçün Google Assistentdən istifadə etdiyiniz saytların URL və məzmunlarını, eləcə də Assistent vasitəsilə təqdim etdiyiniz məlumatları əldə edəcək. Bu məlumat Google Hesabınızda saxlanıla bilər. Assistenti Chrome ayarlarında deaktiv edə bilərsiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Valideyniniz kilidi aça bilər</translation>
 <translation id="7757592200364144203">Cihaz adını dəyişin</translation>
 <translation id="7757739382819740102">Yaxınlıqdakı kontaktlar sizinlə paylaşa bilər. Təsdiq tələb olunacaq.</translation>

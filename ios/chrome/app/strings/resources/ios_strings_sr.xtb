@@ -441,6 +441,7 @@
 <translation id="4751645464639803239">Нова картица без архивирањa</translation>
 <translation id="4775879719735953715">Подразумевани прегледач</translation>
 <translation id="4778644898150334464">Користите другу лозинку</translation>
+<translation id="478808905805139173">Желите да отворите у режиму без архивирања?</translation>
 <translation id="4802417911091824046">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а.
 
 Да бисте променили ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9055772144595778347">Пријављивање није успело</translation>
 <translation id="9057972802061533987">Праћење није успело. Дошло је до грешке.</translation>
 <translation id="9065203028668620118">Измени</translation>
+<translation id="9068336935206019333">Отвори у Chrome режиму без архивирања</translation>
 <translation id="9079935439869366234">Означи све као непрочитано</translation>
 <translation id="9081058212938299310">Желите ли да ажурирате лозинку за <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 ставка</translation>

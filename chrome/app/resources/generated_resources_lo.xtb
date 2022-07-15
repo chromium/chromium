@@ -1257,6 +1257,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">ເພີ່ມ Wi​-Fi...</translation>
 <translation id="2162155940152307086">ການຊິ້ງຂໍ້ມູນຈະເລີ່ມເມື່ອທ່ານອອກຈາກການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="2162705204091149050">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="2162926944953615670">ບໍ່ມີໂປຣໄຟລ໌ eSIM ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="2163470535490402084">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ ເພື່ອ​ລົງຊື່ເຂົ້າໃຊ້​ຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
@@ -2509,6 +2510,7 @@
 <translation id="3359256513598016054">ຂໍ້ຈໍາກັດນະໂຍບາຍໃບຢັ້ງຢືນ</translation>
 <translation id="3360297538363969800">ການພິມບໍ່ສໍາເລັດ. ກະລຸນາກວດເບິ່ງເຄື່ອງພິມຂອງທ່ານ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}other{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}}</translation>
+<translation id="3363202073972776113">ໂປຣໄຟລ໌ໃໝ່ນີ້ຈະໄດ້ຮັບການຈັດການໂດຍອົງການຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">ຈາກຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">ໃຊ້ Ctrl ຫຼື Alt</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
@@ -2543,6 +2545,7 @@
 <translation id="339722927132407568">ຄ້າງ</translation>
 <translation id="3399432415385675819">ການແຈ້ງເຕືອນຈະຖືກປິດ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ເຮີດຊ) - ອິນເຕີເລດ</translation>
+<translation id="3401484564516348917">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ, ຄ່າໃນທະບຽນ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}other{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}}</translation>
 <translation id="3402255108239926910">ເລືອກຮູບແທນຕົວ</translation>
 <translation id="3402585168444815892">ການລົງທະບຽນໃນໂໝດສາທິດ</translation>
@@ -2789,6 +2792,7 @@
 <translation id="3627879631695760395">ຕິດຕັ້ງ <ph name="APP" />...</translation>
 <translation id="3628275722731025472">ປິດ Bluetooth</translation>
 <translation id="3629631988386925734">ປ້ອນລະຫັດຜ່ານຂອງທ່ານເພື່ອເປີດນຳໃຊ້ Smart Lock. ຄັ້ງຕໍ່ໄປ, ໂທລະສັບຂອງທ່ານຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="3629664892718440872">ຈື່ການເລືອກນີ້ໄວ້</translation>
 <translation id="3630132874740063857">ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="3630995161997703415">ເພີ່ມເວັບໄຊນີ້ໃສ່ຖ້ານຂອງທ່ານເພື່ອໃຊ້ມັນໄດ້ທຸກເວລາ</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ການອະນຸຍາດໃຫ້ອຸປະກອນ ChromeOS ຂອງທ່ານສົ່ງລາຍງານອັດຕະໂນມັດຈະຊ່ວຍໃຫ້ພວກເຮົາຈັດລຳດັບຄວາມສຳຄັນໄດ້ວ່າຈະແກ້ໄຂ ແລະ ປັບປຸງຫຍັງໃນ ChromeOS. ລາຍງານເຫຼົ່ານີ້ສາມາດຮວມມີສິ່ງຕ່າງໆ ເຊັ່ນ: ChromeOS ຫຼົ້ມຕອນໃດ, ທ່ານໃຊ້ຄຸນສົມບັດໃດ ແລະ ປົກກະຕິທ່ານໃຊ້ໜ່ວຍຄວາມຈຳເທົ່າໃດ.<ph name="END_PARAGRAPH1" />
@@ -3278,6 +3282,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">ປະຕິເສດການຄວບຄຸມອຸປະກອນ MIDI ແບບເຕັມແລ້ວ</translation>
+<translation id="4087328411748538168">ສະແດງຢູ່ເບື້ອງຂວາ</translation>
 <translation id="4089235344645910861">ບັນທຶກການຕັ້ງຄ່າໄວ້ແລ້ວ. ເລີ່ມການຊິ້ງຂໍ້ມູນແລ້ວ.</translation>
 <translation id="4090103403438682346">ເປີດໃຊ້ງານການ​ເຂົ້າ​ຫາທີ່ກວດສອບແລ້ວ</translation>
 <translation id="4090947011087001172">ຣີເຊັດການອະນຸຍາດເວັບໄຊສຳລັບ <ph name="SITE" /> ບໍ?</translation>
@@ -3972,6 +3977,7 @@
 <translation id="4779766576531456629">ປ່ຽນຊື່ເຄືອຂ່າຍມືຖືຂອງ eSIM</translation>
 <translation id="4780321648949301421">ບັນທຶກໜ້າເປັນ...</translation>
 <translation id="4781443161433589743">ທ່ານກຳລັງໃຊ້ຄວາມປອດໄພຂັ້ນສູງສຸດຂອງ Chrome ຢູ່</translation>
+<translation id="4782861709165039462">ໄມໂຄຣໂຟນທັງໝົດຖືກປິດການນຳໃຊ້ໂດຍສະວິດຮາດແວຂອງອຸປະກອນ</translation>
 <translation id="4785719467058219317">ທ່ານກຳລັງໃຊ້ກະແຈຄວາມປອດໄພທີ່ບໍ່ໄດ້ລົງທະບຽນນຳເວັບໄຊນີ້</translation>
 <translation id="4785914069240823137">ຍົກເລີກການຕັດ</translation>
 <translation id="4788092183367008521">ກະລຸນາກວດເບິ່ງການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ ແລ້ວລອງອີກຄັ້ງ.</translation>
@@ -4737,6 +4743,7 @@
 <translation id="5548075230008247516">ບໍ່ເລືອກລາຍການທັງໝົດ ແລະ ອອກຈາກໂໝດການເລືອກແລ້ວ.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ແລະ ອີກ 1 ແຖບອື່ນ}other{"<ph name="TAB_TITLE" />" ແລະ ອີກ # ແຖບອື່ນ}}</translation>
 <translation id="5548606607480005320">ການກວດສອບຄວາມປອດໄພ</translation>
+<translation id="5548644592758170183">ສະແດງຢູ່ເບື້ອງຊ້າຍ</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">ແປ້ນພິມ ແລະ ການປ້ອນຂໍ້ຄວາມ</translation>
 <translation id="5553089923092577885">ການສ້າງແຜນທີ່ນະໂຍບາຍໃບຢັ້ງຢືນ</translation>
@@ -8218,6 +8225,7 @@
 <translation id="8980345560318123814">ລາຍງານຄຳຕິຊົມ</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - ຂັດຂ້ອງ</translation>
 <translation id="8981825781894055334">ເຈ້ຍເຫຼືອໜ້ອຍ</translation>
+<translation id="8983018820925880511">ໂປຣໄຟລ໌ໃໝ່ນີ້ຈະໄດ້ຮັບການຈັດການໂດຍ <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂ <ph name="FILENAME" /> ໄດ້</translation>
 <translation id="8984694057134206124">ທ່ານຈະເບິ່ງເຫັນຕໍ່ກັບທຸກຄົນເປັນເວລາ <ph name="MINUTES" /> ນາທີ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">ຍິນດີຕ້ອນຮັບສູ່ Steam ສຳລັບ Chromebook</translation>
@@ -8315,6 +8323,7 @@
 <translation id="9075413375877487220">ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ຮັບຄວາມເຊື່ອຖືຈາກ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ.</translation>
 <translation id="9076283476770535406">ມັນອາດຈະມີເນື້ອຫາສຳລັບຜູ້ໃຫຍ່</translation>
 <translation id="9076523132036239772">ຂໍອະໄພ, ບໍ່ສາມາດກວດສອບອີເມວ ຫຼືລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍກ່ອນ.</translation>
+<translation id="9076821103818989526">ແຖບດ້ານຂ້າງ</translation>
 <translation id="9076977315710973122">ການແບ່ງປັນ SMB</translation>
 <translation id="9078193189520575214">ກຳລັງນຳໃຊ້ການປ່ຽນແປງ...</translation>
 <translation id="9078316009970372699">ປິດການນຳໃຊ້ການປ່ອຍສັນຍານທັນທີ</translation>

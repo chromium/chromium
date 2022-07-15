@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
 <translation id="2163152940313951844">តួអក្សរ​មិនត្រឹមត្រូវ៖ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ភាសាព័រទុយហ្កាល់​ដែលប្រើ​ក្ដារចុច​កុំព្យូទ័រ​អាមេរិកអន្តរជាតិ</translation>
+<translation id="2193661397560634290">បានប្រើអស់ <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">ភាសាចិនសាមញ្ញ</translation>
 <translation id="22085916256174561">ភាសាកូរ៉េ</translation>
 <translation id="2208919847696382164">ដំឡើង​តាមរយៈ Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">ភាសាតួកគី​ដែលប្រើ​ក្ដារចុច F</translation>
 <translation id="2732839045120506979">ភាសាវៀតណាម VNI</translation>
 <translation id="2735623501230989521">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើឯកសារ​នៅក្នុងថត <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">អ្នកបានប្រើទំហំផ្ទុក Google Workspace បុគ្គលរបស់អ្នកអស់ហើយ។</translation>
 <translation id="2771816809568414714">ឈីស</translation>
 <translation id="2781645665747935084">ភាសាប៊ែលស៊ិក</translation>
 <translation id="2782104745158847185">មានបញ្ហាក្នុង​ការដំឡើង​កម្មវិធី Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">ប្រើ​ឈ្មោះ​ខ្លី​ជាងនេះ</translation>
 <translation id="2949781154072577687">កំពុងសម្អាត <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">ខ្ញែសមុទ្រ</translation>
+<translation id="2958458230122209142">ទំហំផ្ទុកជិតអស់ហើយ នៅសល់<ph name="REMAINING_PERCENTAGE" /> % នៃទំហំផ្ទុកបុគ្គល <ph name="TOTAL_SPACE" /> របស់អ្នក។</translation>
 <translation id="2977940621473452797">ឯកសារនេះ​ត្រូវបានរចនាឡើង​សម្រាប់កុំព្យូទ័រ​ដែលប្រើកម្មវិធី Macintosh។ វាមិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក​ដែលដំណើរការ ChromeOS ទេ។ សូមស្វែងរក​កម្មវិធីជំនួសដែលសមស្រប​នៅលើ Chrome Web Store។</translation>
 <translation id="2984337792991268709">ថ្ងៃនេះ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">កំពុងស្ដារធាតុ <ph name="COUNT" />...</translation>
@@ -342,7 +345,6 @@
 <translation id="3971140002794351170">ទាញយក​កម្រងព័ត៌មាន​ឧបករណ៍​ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ភាសា​អង់គ្លេស (ចក្រភព​អង់គ្លេស)</translation>
 <translation id="3975895378829046965">សូរសព្ទជា​ភាសា​បេងហ្គាល់</translation>
-<translation id="3991446849494482687">ការធ្វើ​បែប​នេះ​ក៏​នឹង​បិទ​ការកំណត់​ការចាក់សោ​ស៊ីម​នៅលើ​ឧបករណ៍​ផងដែរ។</translation>
 <translation id="4002066346123236978">ចំណងជើង</translation>
 <translation id="4017788180641807848">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុច Workman</translation>
 <translation id="4040753847560036377">PUK មិនត្រឹមត្រូវទេ</translation>
@@ -669,6 +671,7 @@
 <translation id="6823166707458800069">ឯកសារទាំងអស់​ដែលបានរក្សាទុក​នៅក្នុង​ថតនេះ​ត្រូវបានបម្រុងទុក​នៅលើអ៊ីនធឺណិត​ដោយស្វ័យប្រវត្តិ។</translation>
 <translation id="6825883775269213504">រុស្សី</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ដែលបានលុបចេញពីការជ្រើសរើស។</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> បាន​ប្រើប្រាស់​ទំហំ​ផ្ទុក Google Workspace របស់​ខ្លួន​អស់​ហើយ។</translation>
 <translation id="6856459657722366306">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="6861394552169064235">ភាសាពែក្ស</translation>
 <translation id="6862635236584086457">ឯកសារទាំងអស់ត្រូវបានរក្សាទុកនៅក្នុងថតឯកសារនេះត្រូវបានបម្រុងនៅលើអ៊ីនធឺណិតដោយស្វ័យប្រវត្តិ</translation>
@@ -700,6 +703,7 @@
 <translation id="6989942356279143254">ភាសា​ស៊ុយអែត</translation>
 <translation id="6990081529015358884">អ្នកអស់ចន្លោះផ្ទុកហើយ</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ឯកសារត្រូវបានជ្រើសរើស</translation>
+<translation id="7008426324576352165">ស្ថាប័នរបស់អ្នកតម្រូវ​ឱ្យ​មាន​ទំហំផ្ទុកបន្ថែម ដើម្បីបញ្ចប់ការបង្ហោះ។</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ការដំឡើងបានបរាជ័យ។</translation>
 <translation id="7031639531908619281">ភាសា​តួកគី</translation>
@@ -933,11 +937,13 @@
 <translation id="8919081441417203123">ភាសាដាណឺម៉ាក</translation>
 <translation id="8965697826696209160">គ្មានចន្លោះផ្ទុកគ្រប់គ្រាន់ទេ។</translation>
 <translation id="8997962250644902079">ភាសាចិន (អក្សរពេញ) ភីងអ៊ីង</translation>
+<translation id="8998871447376656508">មិនមានទំហំផ្ទុកទំនេរគ្រប់គ្រាន់នៅក្នុង Google ថាសរបស់អ្នក ដើម្បីបញ្ចប់ការបង្ហោះទេ។</translation>
 <translation id="9003940392834790328">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក, ព័ត៌មាន​លម្អិត</translation>
 <translation id="9017798300203431059">ស្រះជាភាសារុស្សី</translation>
 <translation id="9034924485347205037">ឯកសារ Linux</translation>
 <translation id="9035012421917565900">ធាតុ​ទាំងនេះ​មិនអាច​ផ្លាស់ទី​ទៅក្នុង '<ph name="DESTINATION_NAME" />' បានទេ ដូច្នេះ​អ្នកនឹង​មិនអាច​ត្រឡប់​សកម្មភាព​នេះវិញ​បានទេ។</translation>
 <translation id="9035689366572880647">បញ្ចូលកូដ PIN បច្ចុប្បន្ន</translation>
+<translation id="9037777873893411148">*ទំហំ​ផ្ទុក​ស្ថាប័ន​ពេញ​ហើយ</translation>
 <translation id="9038620279323455325">ឯកសារដែល​ដាក់ឈ្មោះ "<ph name="FILE_NAME" />" មានរួចហើយ។ សូមជ្រើសរើស​ឈ្មោះផ្សេង។</translation>
 <translation id="9046895021617826162">ការភ្ជាប់បានបរាជ័យ</translation>
 <translation id="9065512565307033593">ប្រសិនបើអ្នក​មិនអាចផ្ទៀងផ្ទាត់​បានទេ សិទ្ធិចូលប្រើ​បណ្ដាញ​របស់អ្នក​នឹងត្រូវបានបិទ។</translation>

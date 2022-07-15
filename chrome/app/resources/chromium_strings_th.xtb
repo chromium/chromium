@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="1315551408014407711">ตั้งค่าโปรไฟล์ Chromium ใหม่</translation>
+<translation id="1385859895174722837">Google Assistant ใน Chromium</translation>
 <translation id="1396446129537741364">Chromium กำลังพยายามแสดงรหัสผ่าน</translation>
 <translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
 <translation id="1524282610922162960">แชร์แท็บ Chromium</translation>
@@ -101,6 +102,7 @@
 <translation id="3474745554856756813">การดำเนินการนี้จะลบ <ph name="ITEMS_COUNT" /> รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chromium ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> จะสลับไปมาระหว่างโปรไฟล์ Chromium ได้</translation>
 <translation id="3509308970982693815">โปรดปิดหน้าต่าง Chromium ทั้งหมดแล้วลองอีกครั้ง</translation>
+<translation id="3518180795744733843">Google Assistant ใน Chromium ดำเนินการต่างๆ ในเว็บไซต์ให้คุณได้</translation>
 <translation id="3533435340678213462">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ หรือคุณจะนำความสนใจที่ไม่ต้องการให้ Chromium พิจารณาออกก็ได้</translation>
 <translation id="3567254597502212821">ประวัติการท่องเว็บ ซึ่งเป็นบันทึกรายการเว็บไซต์ที่คุณเข้าชมโดยใช้ Chromium ในอุปกรณ์นี้</translation>
 <translation id="3575459661164320785">มีซอฟต์แวร์อันตรายในคอมพิวเตอร์ของคุณ Chromium ช่วยนำซอฟต์แวร์ดังกล่าวออก คืนการตั้งค่า และปิดใช้ส่วนขยายให้คุณได้ เพื่อให้เบราว์เซอร์กลับมาทำงานเป็นปกติอีกครั้ง</translation>

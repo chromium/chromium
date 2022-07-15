@@ -3223,7 +3223,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="402211067068791756">Ovim će se obrisati <ph name="TOTAL_USAGE" /> podataka koje su pohranile prikazane web lokacije</translation>
 <translation id="4022426551683927403">&amp;Dodaj u rječnik</translation>
 <translation id="4025039777635956441">Isključi zvuk odabrane web lokacije</translation>
-<translation id="4027958407426528157">Otvaranje web-lokacija u aplikacijama instaliranima na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="4027958407426528157">Otvarajte web lokacije u aplikacijama instaliranim na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Dodajte načine unosa</translation>
 <translation id="4029556917477724407">Nazad sa stranice <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
@@ -6578,7 +6578,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="7378611153938412599">Slabe lozinke je lako pogoditi. Vodite računa da kreirate jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još sigurnosnih savjeta.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otvorite Chrome Web trgovinu</translation>
-<translation id="737938816678769289">Lako se povežite s uređajima za brzo uparivanje u blizini i postavite ih</translation>
+<translation id="737938816678769289">Jednostavno se povežite sa uređajima za Brzo uparivanje u blizini i postavite ih</translation>
 <translation id="7380459290951585794">Provjerite nalazi li se telefon u blizini, je li otključan i jesu li Bluetooth i WiFi uključeni</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>
 <translation id="7380768571499464492">Ažurirano <ph name="PRINTER_NAME" /></translation>

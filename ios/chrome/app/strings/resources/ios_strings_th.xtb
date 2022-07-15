@@ -441,6 +441,7 @@
 <translation id="4751645464639803239">แท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="4775879719735953715">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="4778644898150334464">ใช้รหัสผ่านอื่น</translation>
+<translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="4802417911091824046">การเข้ารหัสลับด้วยรหัสผ่านจะไม่รวมข้อมูลวิธีการชำระเงินและที่อยู่จาก Google Pay
 
 หากต้องการเปลี่ยนแปลงการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@
 <translation id="9055772144595778347">ไม่สามารถลงชื่อเข้า</translation>
 <translation id="9057972802061533987">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
+<translation id="9068336935206019333">เปิดในโหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="9079935439869366234">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
 <translation id="9083392325882095631">1 รายการ</translation>

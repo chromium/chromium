@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2163152940313951844">Netinkamas simbolis: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalų k. su JAV tarptautine AK klaviatūra</translation>
+<translation id="2193661397560634290">Išnaudota: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Supaprastinta kinų k.</translation>
 <translation id="22085916256174561">Korėjiečių k.</translation>
 <translation id="2208919847696382164">Diegimas naudojant „Linux“</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turkų k. su F klaviatūra</translation>
 <translation id="2732839045120506979">Vietnamiečių k. VNI</translation>
 <translation id="2735623501230989521">Suteikite „Parallels Desktop“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
+<translation id="2764206540577097904">Išnaudojote visą asmeninę „Google Workspace“ saugyklą.</translation>
 <translation id="2771816809568414714">Sūris</translation>
 <translation id="2781645665747935084">Belgų</translation>
 <translation id="2782104745158847185">Įdiegiant „Linux“ programą įvyko klaida</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Naudokite trumpesnį pavadinimą</translation>
 <translation id="2949781154072577687">Formatuojama: „<ph name="DRIVE_NAME" />“...</translation>
 <translation id="2951236788251446349">Medūza</translation>
+<translation id="2958458230122209142">Mažai vietos saugykloje: liko <ph name="REMAINING_PERCENTAGE" /> proc. individualios saugyklos vietos iš <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. Ieškokite tinkamos pakaitinės programos „Chrome“ internetinėje parduotuvėje.</translation>
 <translation id="2984337792991268709">Šiandien <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Atkuriama elementų: <ph name="COUNT" />...</translation>
@@ -342,7 +345,6 @@
 <translation id="3971140002794351170">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
 <translation id="3973925058222872294">Anglų k. (JK)</translation>
 <translation id="3975895378829046965">Bengalų k. fonetinė</translation>
-<translation id="3991446849494482687">Įrenginyje taip pat bus išjungtas SIM užrakto nustatymas.</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4017788180641807848">Anglų k. (JAV) su „Workman“ klaviatūra</translation>
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
@@ -670,6 +672,7 @@
 <translation id="6823166707458800069">Visų šiame aplanke saugomų failų kopija automatiškai kuriama internete.</translation>
 <translation id="6825883775269213504">Rusų</translation>
 <translation id="6847101934483209767">„<ph name="ENTRY_NAME" />“ pašalintas iš pasirinkimo srities.</translation>
+<translation id="6848194403851638089">„<ph name="ORGANIZATION_NAME" />“ išnaudojo visą „Google Workspace“ saugyklą.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="6861394552169064235">Persų k.</translation>
 <translation id="6862635236584086457">Visų šiame aplanke saugomų failų kopija automatiškai kuriama internete</translation>
@@ -701,6 +704,7 @@
 <translation id="6989942356279143254">Švedų k.</translation>
 <translation id="6990081529015358884">Nebėra laisvos vietos</translation>
 <translation id="6998711733709403587">Pasirinkta aplankų: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Norint užbaigti įkėlimą, organizacijai reikia daugiau saugyklos vietos.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Nepavyko įdiegti.</translation>
 <translation id="7031639531908619281">Turkų k.</translation>
@@ -934,11 +938,13 @@
 <translation id="8919081441417203123">Danų</translation>
 <translation id="8965697826696209160">Nepakanka vietos.</translation>
 <translation id="8997962250644902079">Kinų k. (tradicinė) „Pinyin“</translation>
+<translation id="8998871447376656508">„Google“ diske nepakanka laisvos vietos, kad būtų galima užbaigti įkėlimą.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="9017798300203431059">Fonetinė rusų</translation>
 <translation id="9034924485347205037">„Linux“ failai</translation>
 <translation id="9035012421917565900">Elementų negalima perkelti atgal į „<ph name="DESTINATION_NAME" />“, todėl negalėsite anuliuoti šio veiksmo.</translation>
 <translation id="9035689366572880647">Įveskite dabartinį PIN kodą</translation>
+<translation id="9037777873893411148">* Organizacijos saugykla pilna</translation>
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>

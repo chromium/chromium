@@ -1006,6 +1006,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1935303383381416800">Joylashuvingizni koʻrishga ruxsat berilgan</translation>
 <translation id="1936931585862840749">Chop etish uchun nusxalar sonini kiriting (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> protsessorli qurilmangizga <ph name="ARCHITECTURE_CONTAINER" /> turidagi zaxiraviy nusxasi tiklanmaydi. Arxivni boshqa turdagi protsessorli qurilmada tiklash yoki Fayllar ilovasi orqali tarkibidagi zaxiralangan fayllarini ochish mumkin.</translation>
+<translation id="1938240902511979591">Yuqori kontrastli rejim, lupa va ekran sozlamalari</translation>
 <translation id="1938320257168860255">Xatolik yuz berdi. Uning yaqin-atrofda, qulfdan chiqarilgan, Bluetooth va Wi-Fi yoqilganligiga ishonch hosil qiling.</translation>
 <translation id="1938351510777341717">Tashqi buyruq</translation>
 <translation id="1940546824932169984">Ulangan qurilmalar</translation>
@@ -1428,6 +1429,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Quyidagi tugmalar dastaklanmaydi: Tab, Shift, Control, Escape, Caps lock, Tovush balandligi</translation>
 <translation id="2309620859903500144">Bu sahifa uchun harakat yoki yorug‘lik sensorlaridan foydalanish taqiqlandi</translation>
+<translation id="2310923358723722542">Ekran va masshtab</translation>
 <translation id="2312219318583366810">Sahifa URL manzili</translation>
 <translation id="2314165183524574721">Ayni vaqtda hech kimga koʻrinmaslik sozlangan</translation>
 <translation id="2314774579020744484">Tarjima qilishda ishlatiladigan til</translation>
@@ -4164,6 +4166,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="496446150016900060">Wi-Fi tarmoqlarni telefon orqali sinxronlang</translation>
 <translation id="4965808351167763748">Hangouts Meet ishlashi uchun bu qurilmani sozlashni xohlaysizmi?</translation>
 <translation id="4966972803217407697">Siz inkognito rejimidasiz</translation>
+<translation id="4967227914555989138">Qayd kiritish</translation>
 <translation id="496742804571665842">eSIM profillarini faolsizlantirish</translation>
 <translation id="4971412780836297815">Tugaganidan keyin ochish</translation>
 <translation id="4971735654804503942">Zararli sayt, yuklanma va kengaytmalarga qarshi tez va mustahkam himoya. Oshkor etilgan parollar haqida ogohlantiradi. Brauzer maʼlumotlari Google serverlariga yuborilishini talab qiladi.</translation>
@@ -4411,6 +4414,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5233231016133573565">Jarayon ID raqami</translation>
 <translation id="5233638681132016545">Yangi varaq</translation>
 <translation id="5233736638227740678">&amp;Joylash</translation>
+<translation id="5233794855520048159">Mono audio, tizim ishga tushish tovushlari va taglavhalar</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5235050375939235066">Ilova o‘chirib tashlansinmi?</translation>
 <translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
@@ -4515,6 +4519,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5333896723098573627">Ilovalarni olib tashlash uchun Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Olib tashlash” yoki “Faolsizlantirish” parametrini bosing.</translation>
 <translation id="5334142896108694079">Skript keshi</translation>
 <translation id="5336688142483283574">Bu sahifa ham hisobingizdagi qidiruv va <ph name="SEARCH_ENGINE" /> tarixidan olib tashlanadi.</translation>
+<translation id="5336689872433667741">Kursor va sensorli panel</translation>
 <translation id="5337771866151525739">Mustaqil ta’minotchi tomonidan o‘rnatilgan.</translation>
 <translation id="5337926771328966926">Joriy qurilma nomi: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Inkognito oynada internetni yashirin kezishingiz mumkin</translation>
@@ -4525,6 +4530,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5342091991439452114">PIN kod kamida <ph name="MINIMUM" /> ta raqamdan iborat bo‘lishi lozim</translation>
 <translation id="5344036115151554031">Linux tiklanmoqda</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (oʻng)</translation>
+<translation id="534449933710420173">Nomsiz jild</translation>
 <translation id="5345916423802287046">Ilova tizim bilan birga ishga tushsin</translation>
 <translation id="5350293332385664455">Google Assistentni faolsizlantirish</translation>
 <translation id="535123479159372765">Matn boshqa qurilmadan nusxalangan</translation>
@@ -5148,6 +5154,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5959471481388474538">Tarmoq ish faoliyatida emas</translation>
 <translation id="595959584676692139">Bu kengaytmani ishlatish uchun sahifani qayta yuklang</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Yopishqoq tugmalar, ekran klaviaturasi, ovoz bilan yozish, switch access va yaxshilab belgilash</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Barchasini &amp;yangi oynada ochish}=1{&amp;Yangi oynada ochish}other{Barchasini ({COUNT}) &amp;yangi oynada ochish}}</translation>
 <translation id="5965661248935608907">Bundan tashqari kengaytma Bosh sahifa tugmasini bosganingizda yoki Omnibox orqali qidiruvda qaysi sahifa ko‘rsatilishini tayinlaydi.</translation>
 <translation id="5968022600320704045">Hech narsa topilmadi</translation>
@@ -5958,6 +5965,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6770602306803890733">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi</translation>
 <translation id="6771503742377376720">Bu sertifikatlashtirish markazi</translation>
 <translation id="6775163072363532304">Ulangan qurilmalar shu yerda chiqadi.</translation>
+<translation id="677646486571529447">Qayd kiritish</translation>
 <translation id="6776729248872343918">Tezkor ulanish funksiyasini yoqish</translation>
 <translation id="6777817260680419853">Yo‘naltirish bloklandi</translation>
 <translation id="6778737459546443941">Ota-onangiz tomonidan hali tasdiqlanmagan</translation>
@@ -6106,6 +6114,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6900654715912436255">Bu qidiruv tizimi aniq oʻchirilsinmi?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Ovoz namunasi</translation>
+<translation id="6902219595840841518">Avtomatik klik, kursor hajmi, kursor rangi va belgilov kursori</translation>
 <translation id="6902336033320348843">Boʻlim ishlamaydi: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Qurilmani domenga ulang.</translation>
 <translation id="6903022061658753260">Maʼlumotlaringiz bu hisob sinxronizatsiyasi yoqilgan barcha Chrome brauzerlarida sinxronlanadi. ChromeOS sinxronizatsiya usullarini <ph name="LINK_BEGIN" />ChromeOS sozlamalari orqali<ph name="LINK_END" /> sozlash mumkin.</translation>
@@ -6883,6 +6892,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7681095912841365527">Sayt Bluetooth aloqasidan foydalanishi mumkin</translation>
 <translation id="7681597159868843240">Saytlar odatda virtual reallik yoki qadam sanash kabi funksiyalar uchun qurilmadagi harakat sensorlaridan foydalanadi</translation>
 <translation id="7683373461016844951">Davom etish uchun OK tugmasini bosing. Keyin esa “Foydalanuvchi qo‘shish” bandi orqali <ph name="DOMAIN" /> domenidagi yangi profil yarating.</translation>
+<translation id="7683834360226457448">Koʻrish qobiliyati pastlar uchun ekran vositalari</translation>
 <translation id="7684212569183643648">Administratoringiz tomonidan o‘rnatilgan</translation>
 <translation id="7684559058815332124">Tegishli portalga kirish sahifasiga o‘tish</translation>
 <translation id="7684718995427157417">Ilovalar ishlab chiqish va ularni sinash uchun Android Debug Bridge (ADB) vositasini faollashtiring. Eslatma: bunda Google tomonidan tekshirilmagan Android ilovalar ham oʻrnatilishi mumkin va zavod sozlamalariga tiklash yoqilmasligi kerak.</translation>

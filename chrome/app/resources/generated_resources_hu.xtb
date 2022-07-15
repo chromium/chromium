@@ -3222,6 +3222,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="402211067068791756">Ezzel törli a megjelenített webhelyek által tárolt, összesen <ph name="TOTAL_USAGE" />-nyi adatot</translation>
 <translation id="4022426551683927403">&amp;Hozzáadás a szótárhoz</translation>
 <translation id="4025039777635956441">Kiválasztott webhely némítása</translation>
+<translation id="4027958407426528157">Webhelyek megnyitása a(z) <ph name="DEVICE_TYPE" /> eszközre telepített alkalmazásokban</translation>
 <translation id="4028467762035011525">Beviteli módszerek hozzáadása</translation>
 <translation id="4029556917477724407">Vissza a következő oldalra: <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon engedélyezve</translation>
@@ -6574,6 +6575,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
 <translation id="7378611153938412599">A gyenge jelszavakat könnyű kitalálni. Figyeljen arra, hogy erős jelszavakat hozzon létre. <ph name="BEGIN_LINK" />Itt további biztonsági tippeket talál.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">A Chrome Webáruház megnyitása</translation>
+<translation id="737938816678769289">Könnyen csatlakozhat a közeli, gyors párosítású eszközökhöz, és beállíthatja őket</translation>
 <translation id="7380459290951585794">Gondoskodjon arról, hogy telefonja a közelben legyen feloldott állapotban, valamint arról, hogy Bluetooth- és Wi-Fi-kapcsolata be legyen kapcsolva.</translation>
 <translation id="7380622428988553498">Az eszköznév érvénytelen karaktereket tartalmaz</translation>
 <translation id="7380768571499464492">Frissítve: <ph name="PRINTER_NAME" /></translation>

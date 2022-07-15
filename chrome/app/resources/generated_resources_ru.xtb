@@ -3211,6 +3211,7 @@
 <translation id="402211067068791756">Будут удалены сохраненные данные указанных сайтов (<ph name="TOTAL_USAGE" />).</translation>
 <translation id="4022426551683927403">Добавить в словарь</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
+<translation id="4027958407426528157">Открывать сайты в приложениях, установленных на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
@@ -6566,6 +6567,7 @@
 <translation id="7377481913241237033">Подключиться с помощью кода</translation>
 <translation id="7378611153938412599">Простые пароли легко подобрать. Устанавливайте надежные пароли. Больше советов по безопасности можно найти <ph name="BEGIN_LINK" />здесь<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Открыть Интернет-магазин Chrome</translation>
+<translation id="737938816678769289">С легкостью подключайтесь к устройствам поблизости и настраивайте Быстрое подключение</translation>
 <translation id="7380459290951585794">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="7380622428988553498">Имя устройства содержит недопустимые символы.</translation>
 <translation id="7380768571499464492">Обновлено: <ph name="PRINTER_NAME" /></translation>

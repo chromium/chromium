@@ -441,6 +441,7 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="4751645464639803239">New incognito tab</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4778644898150334464">Use other password</translation>
+<translation id="478808905805139173">Open in Incognito?</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9055772144595778347">Cannot Sign In</translation>
 <translation id="9057972802061533987">Can't follow. Something went wrong.</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9068336935206019333">Open in Chrome Incognito</translation>
 <translation id="9079935439869366234">Mark All Unread</translation>
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>

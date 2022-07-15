@@ -1006,6 +1006,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1935303383381416800">Dozvoljeno im je da vide vašu lokaciju</translation>
 <translation id="1936931585862840749">Navedite broj primeraka za štampanje (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Ne možete da uvezete tip arhitekture kontejnera <ph name="ARCHITECTURE_CONTAINER" /> pomoću ovog uređaja, koji je <ph name="ARCHITECTURE_DEVICE" />. Možete da probate da vratite ovaj kontejner na drugi uređaj ili da otvorite aplikaciju Datoteke da biste pristupili datotekama u slici ovog kontejnera.</translation>
+<translation id="1938240902511979591">Podešavanja visokog kontrasta, lupe i prikaza</translation>
 <translation id="1938320257168860255">Došlo je do greške. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="1938351510777341717">Spoljna komanda</translation>
 <translation id="1940546824932169984">Povezani uređaji</translation>
@@ -1425,6 +1426,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Sledeći tasteri nisu podržani: Tab, Shift, Control, Escape, Caps lock, tasteri za jačinu zvuka</translation>
 <translation id="2309620859903500144">Ovom sajtu je zabranjen pristup senzorima za pokret ili svetlo.</translation>
+<translation id="2310923358723722542">Prikaz i uvećanje</translation>
 <translation id="2312219318583366810">URL stranice</translation>
 <translation id="2314165183524574721">Aktuelno podešavanje vidljivosti je: Skriveno</translation>
 <translation id="2314774579020744484">Jezik koji se koristi za prevođenje stranica</translation>
@@ -4161,6 +4163,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="496446150016900060">Sinhronizujte WiFi mreže pomoću telefona</translation>
 <translation id="4965808351167763748">Želite li stvarno da podesite ovaj uređaj za korišćenje Hangouts Meet-a?</translation>
 <translation id="4966972803217407697">Koristite režim bez arhiviranja</translation>
+<translation id="4967227914555989138">Dodaj belešku</translation>
 <translation id="496742804571665842">Onemogućite eSIM profile</translation>
 <translation id="4971412780836297815">Otvori kada bude dovršeno</translation>
 <translation id="4971735654804503942">Brža proaktivna zaštita od opasnih veb-sajtova, preuzimanja i dodataka. Upozorava vas o otkrivanju lozinki. Zahteva slanje podataka pregledanja Google-u.</translation>
@@ -4408,6 +4411,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5233231016133573565">ID procesa</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5233736638227740678">&amp;Nalepi</translation>
+<translation id="5233794855520048159">Mono zvuk, zvukovi pri pokretanju i titlovi</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5235050375939235066">Želite li da deinstalirate aplikaciju?</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
@@ -4512,6 +4516,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5333896723098573627">Da biste uklonili aplikacije, idite u odeljak Podešavanja &gt; Aplikacije &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Aplikacije ili Menadžer aplikacija. Zatim dodirnite aplikaciju koju želite da deinstalirate (možda ćete morati da prevučete nadesno ili nalevo da biste pronašli aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
 <translation id="5334142896108694079">Keš skripte</translation>
 <translation id="5336688142483283574">Ova stranica će takođe biti uklonjena iz istorije i iz <ph name="SEARCH_ENGINE" /> aktivnosti.</translation>
+<translation id="5336689872433667741">Kursor i tačped</translation>
 <translation id="5337771866151525739">Instalirala treća strana.</translation>
 <translation id="5337926771328966926">Aktuelan naziv uređaja je <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Možete da pregledate privatno u prozoru bez arhiviranja</translation>
@@ -4522,6 +4527,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5342091991439452114">PIN mora da ima najmanje <ph name="MINIMUM" /> cifre(ara)</translation>
 <translation id="5344036115151554031">Vraća se Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desna)</translation>
+<translation id="534449933710420173">Neimenovani folder</translation>
 <translation id="5345916423802287046">Pokreni aplikaciju kada se prijavim</translation>
 <translation id="5350293332385664455">Isključite Google pomoćnik</translation>
 <translation id="535123479159372765">Tekst je kopiran sa nekog drugog uređaja</translation>
@@ -5145,6 +5151,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="595959584676692139">Ponovo učitajte ovu stranicu da biste koristili ovaj dodatak</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (najviše <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Lepljivi tasteri, tastatura na ekranu, diktiranje, pristup pomoću prekidača i poboljšano isticanje</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>
 <translation id="5965661248935608907">Kontroliše i stranicu koja se prikazuje kada kliknete na dugme Početak ili pretražujete iz omniboksa.</translation>
 <translation id="5968022600320704045">Nema rezultata pretrage</translation>
@@ -5959,6 +5966,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6770602306803890733">Poboljšava bezbednost za vas i druge na vebu</translation>
 <translation id="6771503742377376720">Jeste autoritet za izdavanje sertifikata</translation>
 <translation id="6775163072363532304">Dostupni uređaji se prikazuju ovde.</translation>
+<translation id="677646486571529447">Dodaj belešku</translation>
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
 <translation id="6777817260680419853">Preusmeravanje je blokirano</translation>
 <translation id="6778737459546443941">Roditelj ga još uvek nije odobrio</translation>
@@ -6107,6 +6115,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6900654715912436255">Želite li stvarno da izbrišete ovaj pretraživač?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Glas za pregled</translation>
+<translation id="6902219595840841518">Automatski klik, veličina kursora, boja kursora i isticanje kursora</translation>
 <translation id="6902336033320348843">Odeljak nije podržan: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Pridružite uređaj domenu</translation>
 <translation id="6903022061658753260">Podaci će se sinhronizovati u svim Chrome pregledačima u kojima ste uključili sinhronizaciju za ovaj nalog. Opcije sinhronizovanja Chrome OS-a potražite u <ph name="LINK_BEGIN" />podešavanjima Chrome OS-a<ph name="LINK_END" />.</translation>
@@ -6885,6 +6894,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7681095912841365527">Sajt može da koristi Bluetooth</translation>
 <translation id="7681597159868843240">Sajtovi obično koriste senzore pokreta uređaja za potrebe funkcija poput virtuelne realnosti ili praćenja fitnesa</translation>
 <translation id="7683373461016844951">Da biste nastavili, kliknite na Potvrdi, pa na Dodaj osobu da biste otvorili novi profil za imejl adresu za <ph name="DOMAIN" />.</translation>
+<translation id="7683834360226457448">Alatke za prikaz za slabovide</translation>
 <translation id="7684212569183643648">Instalirao je administrator</translation>
 <translation id="7684559058815332124">Poseti stranicu za prijavljivanje ulaznog portala</translation>
 <translation id="7684718995427157417">Da biste pravili i testirali aplikacije, omogućite Android Debug Bridge (ADB). Imajte na umu da ova radnja omogućava instaliranje Android aplikacija koje Google nije verifikovao i zahteva resetovanje na fabrička podešavanja da bi se onemogućila.</translation>

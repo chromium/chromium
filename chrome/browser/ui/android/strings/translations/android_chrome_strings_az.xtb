@@ -460,6 +460,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 endirmə planlanıb}other{# endirmə planlanıb}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olaraq davam edin</translation>
 <translation id="3478363558367712427">Axtarış maşınını seçə bilərsiniz</translation>
+<translation id="3479552764303398839">İndi yox</translation>
 <translation id="3493531032208478708">Təklif məzmunu haqqında <ph name="BEGIN_LINK" />daha ətraflı<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Giriş alt vərəqi yarı hündürlükdə açılıb.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -668,6 +669,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="47217992755561375">Populyar saytlara baxın</translation>
 <translation id="4732120983431207637">Stellaj Açıcı</translation>
 <translation id="4736934858538408121">Virtual kart</translation>
+<translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4738836084190194332">Sonuncu dəfə sinxronizasiya olunub: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Ünvan panelində təkmilləşdirilmiş təkliflər alacaqsınız</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>

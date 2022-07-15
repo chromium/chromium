@@ -354,6 +354,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1340527397989195812">Seadme meediumi varundamine rakendusega Failid.</translation>
 <translation id="1343865611738742294">Andke Linuxi rakendustele luba USB-seadmetele juurde pääseda. Linux ei mäleta USB-seadet pärast selle eemaldamist.</translation>
 <translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
+<translation id="1344377983938103876">Avatakse saiti <ph name="URL" /> …</translation>
 <translation id="134589511016534552">Meedia vahelehed kuvatakse ka jaotises Avatud vahelehed</translation>
 <translation id="1346630054604077329">Kinnita ja taaskäivita</translation>
 <translation id="1346748346194534595">Paremale</translation>
@@ -6961,6 +6962,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7753735457098489144">Installimine ebaõnnestus, kuna salvestusruumi on liiga vähe. Ruumi vabastamiseks kustutage seadme salvestusruumist faile.</translation>
 <translation id="7754347746598978109">Pole lubatud kasutada JavaScripti</translation>
 <translation id="7754704193130578113">Küsi enne iga faili allalaadimist, kuhu see salvestada.</translation>
+<translation id="7755134875397410803">Selleks et aidata teil toiminguid teha, saadetakse Google'ile nende saitide URL-id ja sisu, millel assistenti kasutate, ning teave, mille assistendi kaudu esitate. See teave võidakse salvestada teie Google'i kontole. Assistendi saab Chrome'i seadetes välja lülitada. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Vanem saab blokeeringu teie eest tühistada</translation>
 <translation id="7757592200364144203">Muuda seadme nime</translation>
 <translation id="7757739382819740102">Läheduses olevad kontaktid saavad teiega jagada. Vajalik on heakskiit.</translation>

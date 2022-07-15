@@ -354,6 +354,7 @@
 <translation id="1340527397989195812">파일 앱을 사용하여 기기의 미디어를 백업합니다.</translation>
 <translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
+<translation id="1344377983938103876"><ph name="URL" /> 여는 중…</translation>
 <translation id="134589511016534552">미디어 탭이 열린 탭 섹션에도 표시됩니다.</translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -6970,6 +6971,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7753735457098489144">저장공간이 부족하여 설치할 수 없습니다. 여유 공간을 확보하려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7754347746598978109">자바스크립트 사용이 허용되지 않음</translation>
 <translation id="7754704193130578113">다운로드 전에 각 파일의 저장 위치 확인</translation>
+<translation id="7755134875397410803">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠도 Google에 전송됩니다. 이 정보는 Google 계정에 저장될 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="7757592200364144203">기기 이름 변경</translation>
 <translation id="7757739382819740102">주변에 있는 연락처가 나와 공유할 수 있습니다. 수락해야 합니다.</translation>

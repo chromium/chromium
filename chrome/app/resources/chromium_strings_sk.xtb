@@ -13,6 +13,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
+<translation id="1385859895174722837">Asistent Google v prehliadači Chromium</translation>
 <translation id="1396446129537741364">Prehliadač Chromium sa snaží zobraziť heslá.</translation>
 <translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
 <translation id="1524282610922162960">Zdieľajte kartu prehliadača Chromium</translation>
@@ -103,6 +104,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="3474745554856756813">Táto akcia odstráni zo zariadenia niekoľko položiek (počet: <ph name="ITEMS_COUNT" />). Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily prehliadača Chromium</translation>
 <translation id="3509308970982693815">Zatvorte všetky okná prehliadača Chromium a skúste to znova.</translation>
+<translation id="3518180795744733843">Asistent Google v prehliadači Chromium môže za vás dokončiť akcie na weboch</translation>
 <translation id="3533435340678213462">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chromium posudzovať.</translation>
 <translation id="3567254597502212821">Vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou prehliadača Chromium v tomto zariadení.</translation>
 <translation id="3575459661164320785">V počítači máte škodlivý softvér. Chromium ho môže odstrániť, obnoviť nastavenia a deaktivovať rozšírenia, aby prehliadač znova normálne fungoval.</translation>

@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2163152940313951844">Ongeldig teken: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugees met Amerikaans pc-toetsenbord (internationaal)</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> gebruikt</translation>
 <translation id="2198315389084035571">Vereenvoudigd Chinees</translation>
 <translation id="22085916256174561">Koreaans</translation>
 <translation id="2208919847696382164">Installeren met Linux</translation>
@@ -184,6 +185,7 @@
 <translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
 <translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
 <translation id="2563185590376525700">Kikker</translation>
+<translation id="2570012981255377263">Je recente bestanden zie je hier</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">Turks met F-toetsenbord</translation>
 <translation id="2732839045120506979">Vietnamees (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Je persoonlijke Google Workspace-opslag is helemaal vol.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">Gebruik een kortere naam</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatteren…</translation>
 <translation id="2951236788251446349">Kwal</translation>
+<translation id="2958458230122209142">Nog <ph name="REMAINING_PERCENTAGE" />% opslagruimte over van je <ph name="TOTAL_SPACE" /> aan persoonlijke opslag.</translation>
 <translation id="2977940621473452797">Dit bestand is bedoeld voor een computer met Macintosh-software. Het werkt niet met je apparaat, dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="2984337792991268709">Vandaag <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> items herstellen...</translation>
@@ -342,7 +346,6 @@
 <translation id="3971140002794351170">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla (fonetisch)</translation>
-<translation id="3991446849494482687">Hiermee wordt ook de simlockinstelling op het apparaat uitgezet.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engels (VS) met Workman-toetsenbord</translation>
 <translation id="4040753847560036377">Onjuiste pukcode</translation>
@@ -546,6 +549,7 @@
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
 <translation id="5633226425545095130">Als je dit item verplaatst, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
 <translation id="5649768706273821470">Luisteren</translation>
+<translation id="5665074015635552640">Je recente video's zie je hier</translation>
 <translation id="5669691691057771421">Nieuwe pincode opgeven</translation>
 <translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
@@ -671,6 +675,7 @@
 <translation id="6823166707458800069">Er wordt automatisch online een back-up gemaakt van alle bestanden die in deze map zijn opgeslagen.</translation>
 <translation id="6825883775269213504">Russisch</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> is uit selectie verwijderd.</translation>
+<translation id="6848194403851638089">De Google Workspace-opslag van <ph name="ORGANIZATION_NAME" /> is helemaal vol.</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="6861394552169064235">Perzisch</translation>
 <translation id="6862635236584086457">Er wordt automatisch online een back-up gemaakt van alle bestanden die in deze map zijn opgeslagen</translation>
@@ -689,6 +694,7 @@
     <ph name="FILE_COUNT" /> gevonden</translation>
 <translation id="6935521024859866267">Ondersteboven</translation>
 <translation id="6943836128787782965">Ophalen van HTTP mislukt</translation>
+<translation id="6945604978460872381">Je recente documenten zie je hier</translation>
 <translation id="6949408524333579394">Servisch (transliteratie)</translation>
 <translation id="6954309393500027528">Plakken van dit bestand is geblokkeerd door je beheerder</translation>
 <translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
@@ -702,6 +708,7 @@
 <translation id="6989942356279143254">Zweeds</translation>
 <translation id="6990081529015358884">Er is onvoldoende ruimte beschikbaar</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mappen geselecteerd</translation>
+<translation id="7008426324576352165">Je organisatie heeft meer opslagruimte nodig om de upload af te ronden.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7031639531908619281">Turks</translation>
@@ -735,6 +742,7 @@
 <translation id="7295662345261934369">Delen met anderen</translation>
 <translation id="7297443947353982503">Gebruikersnaam/wachtwoord onjuist of EAP-verificatie mislukt</translation>
 <translation id="7309413087278791451">Duits (België)</translation>
+<translation id="7313374447885864533">Je recente audiobestanden zie je hier</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7343393116438664539">Vietnamees (Telex)</translation>
 <translation id="7357762654218998920">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
@@ -868,6 +876,7 @@
 <translation id="8342318071240498787">Er bestaat al een bestand of map met dezelfde naam.</translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
+<translation id="8384716930968677505">Je recente afbeeldingen zie je hier</translation>
 <translation id="8386903983509584791">Scan voltooid</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> geëxtraheerd.</translation>
 <translation id="8395901698320285466">Afmetingen</translation>
@@ -935,11 +944,13 @@
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
 <translation id="8997962250644902079">Chinees (traditioneel, Pinyin)</translation>
+<translation id="8998871447376656508">Er is onvoldoende ruimte in je Google Drive beschikbaar om de upload af te ronden.</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="9017798300203431059">Russisch fonetisch</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
 <translation id="9035689366572880647">Geef je huidige pincode op</translation>
+<translation id="9037777873893411148">*Opslag van organisatie is vol</translation>
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
 <translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="9065512565307033593">Als de verificatie mislukt, wordt je netwerktoegang ingetrokken.</translation>

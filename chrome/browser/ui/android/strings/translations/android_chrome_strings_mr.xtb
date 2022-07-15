@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केला}other{# डाउनलोड शेड्युल केले}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
+<translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">अर्ध्या उंचीवर उघडलेल्या तळाशी असलेल्या शीटमध्ये साइन इन करा.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">तुमच्या टॉप साइट पहा</translation>
 <translation id="4732120983431207637">स्टॅक अनवाइंडर</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
+<translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>

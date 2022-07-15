@@ -13,7 +13,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
-<translation id="1385859895174722837">Google asistent u Chromiumu</translation>
+<translation id="1385859895174722837">Google Asistent u Chromiumu</translation>
 <translation id="1396446129537741364">Chromium pokušava prikazati lozinke.</translation>
 <translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
 <translation id="1524282610922162960">Dijelite Chromium karticu</translation>
@@ -104,7 +104,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chromium profila</translation>
 <translation id="3509308970982693815">Zatvorite sve prozore Chromiuma i pokušajte ponovo.</translation>
-<translation id="3518180795744733843">Google asistent u Chromiumu može izvršavati radnje na web-lokacijama za vas</translation>
+<translation id="3518180795744733843">Google Asistent u Chromiumu može za vas dovršavati radnje na svim web lokacijama</translation>
 <translation id="3533435340678213462">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromiumu na razmatranje.</translation>
 <translation id="3567254597502212821">Vaša historija pregledanja, zapisi o web lokacijama koje ste posjetili koristeći Chromium na ovom uređaju.</translation>
 <translation id="3575459661164320785">Na vašem računaru se nalazi štetni softver. Chromium ga može ukloniti, vratiti vaše postavke i onemogućiti ekstenziju kako bi vaš preglednik ponovo radio normalno.</translation>

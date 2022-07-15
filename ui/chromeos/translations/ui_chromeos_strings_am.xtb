@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">ደህንነቱ ተጠብቋል</translation>
 <translation id="2638942478653899953">Google Drive ሊደረስበት አልተቻለም። እባክዎ <ph name="BEGIN_LINK" />ዘግተው ይውጡ<ph name="END_LINK" />ና ተመልሰው ይግቡ።</translation>
 <translation id="2649120831653069427">የቀስተዳመና አሳ</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="2663066752008346276">በርማኛ/ሚያንማር በሚያንሳን ቁልፍ ሰሌዳ</translation>
 <translation id="2664412712123763093">የፋይል ቦታ</translation>
 <translation id="2718540689505416944">መተግበሪያ በLinux ጫን</translation>
@@ -341,7 +342,6 @@
 <translation id="3971140002794351170">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">እንግሊዝኛ (ዩኬ)</translation>
 <translation id="3975895378829046965">ባንግላ ፎነቲክ</translation>
-<translation id="3991446849494482687">እንዲሁም ይህ በመሣሪያው ላይ ያለውን የሲም መቆለፊያ ቅንብርን ያሰናክላል።</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4017788180641807848">እንግሊዝኛ (አሜሪካ) ከዎርክማን ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="4040753847560036377">ትክክል ያልኾነ PUK</translation>
@@ -528,6 +528,7 @@
 <translation id="5489067830765222292">ላትቪያኛ</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ማጣሪያ ጠፍቷል።</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
+<translation id="5500104704744051184">PUKውን እስካላስገቡ ድረስ ይህን አውታረ መረብ ሊጠቀሙበት አይችሉም</translation>
 <translation id="5500122897333236901">አይስላንድኛ</translation>
 <translation id="5508696409934741614">ነጥቦች</translation>
 <translation id="5522908512596376669">የፋይል ዝርዝር ወደ ዝርዝር ዕይታ ተለውጧል።</translation>
@@ -633,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
 <translation id="642282551015776456">ይህ ስም የፋይል ወይም አቃፊ ስም ሆኖ ሊያገለግል አይችልም።</translation>
 <translation id="6423031066725912715">ቪዬትናምኛ በTCVN ቁልፍ ሰሌዳ</translation>
+<translation id="6430271654280079150">1 ቀሪ ሙከራ አለዎት።</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>
@@ -899,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ንጥሎችን በማመሳሰል ላይ...</translation>
 <translation id="8600173386174225982">የፋይል ዝርዝር ወደ ድንክየ ዕይታ ተለውጧል።</translation>
 <translation id="8601932370724196034">የCrostini ምስል ፋይል</translation>
+<translation id="8608515571837163082">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል። በአገልግሎት አቅራቢው የቀረበውን ባለ 8-አሃዝ የግል እገዳውን ማንሻ ቁልፍ (PUK) ያስገቡ።</translation>
 <translation id="8609695766746872526">አይስላንድኛ</translation>
 <translation id="863903787380594467">የተሳሳተ ፒን። እርስዎ <ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ወደብ</translation>

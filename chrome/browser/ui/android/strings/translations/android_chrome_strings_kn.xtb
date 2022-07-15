@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="3478363558367712427">ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಆಯ್ಕೆಮಾಡಬಹುದು</translation>
+<translation id="3479552764303398839">ಈಗ ಬೇಡ</translation>
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -666,6 +667,7 @@
 <translation id="47217992755561375">ನಿಮ್ಮ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4732120983431207637">ಸ್ಟ್ಯಾಕ್ ಅನ್‌ವೈಂಡರ್</translation>
 <translation id="4736934858538408121">ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
+<translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="4738836084190194332">ಕೊನೆಯದಾಗಿ ಸಿಂಕ್ ಮಾಡಿರುವ ಸಮಯ: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಸುಧಾರಿತ ಸಲಹೆಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>

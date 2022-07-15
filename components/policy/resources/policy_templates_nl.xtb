@@ -457,6 +457,14 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Dit beleid is ook van toepassing op componentextensies, zoals de Hangout Services-extensie.</translation>
 <translation id="148194404518916594">Toestaan dat gebruikers 'Tikken om te zoeken' gebruiken</translation>
+<translation id="1482155585027825793">Beheert de installatie van externe extensies.
+
+      Als je dit beleid toepast, kunnen externe extensies niet worden geïnstalleerd.
+
+      Als je dit beleid niet toepast of niet instelt, kunnen externe extensies worden geïnstalleerd.
+
+      Externe extensies en de installatie daarvan worden beschreven op https://developer.chrome.com/apps/external_extensions.
+      </translation>
 <translation id="1486021504508098388">Informatie over schermverlichting melden</translation>
 <translation id="1487916040416013623">Als je het beleid instelt, geef je aan welke servers op de toelatingslijst voor geïntegreerde verificatie moeten worden gezet. Geïntegreerde verificatie is alleen aangezet als <ph name="PRODUCT_NAME" /> een verificatie-uitdaging ontvangt van een proxy of een server die op deze toelatingslijst staat.
 
@@ -1045,6 +1053,10 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2076158466157390917">Automatische opruiming tijdens inloggen beheren</translation>
 <translation id="2077129598763517140">Hardwareversnelling gebruiken indien beschikbaar</translation>
 <translation id="2077273864382355561">Vertraging voor uitzetten van scherm als er op batterijspanning wordt gewerkt</translation>
+<translation id="2081969239334697268">
+        Als je het beleid niet toepast, wordt het updaten van Chrome-kiosk-apps in de sessie uitgezet (waarvoor de update-URL uit het extensiemanifest wordt gebruikt) en blijft alleen CRX-prefetching over als updatemechanisme.
+        Als je het beleid toepast of niet instelt, kunnen Chrome-kiosk-apps in de sessie worden geüpdatet.
+        </translation>
 <translation id="2082205219176343977">Configureer de minimaal toegestane Chrome-versie voor het apparaat.</translation>
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
@@ -2517,6 +2529,19 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3660562134618097814">SAML IdP-cookies overdragen tijdens het inloggen</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
+          Als je het beleid toepast, worden setTimeouts en setIntervals met een interval van minder dan 4 ms minder dwingend vastgezet.
+          Dit verbetert de prestaties op de korte termijn, maar voor websites die de API misbruiken, worden de setTimeouts uiteindelijk toch vastgezet.
+
+          Als je het beleid niet toepast, worden time-outs en setIntervals met een interval van minder dan 4 ms vastgezet.
+
+          Hierdoor kan de taakvolgorde op een webpagina veranderen, wat kan leiden tot onverwacht gedrag op sites die afhankelijk zijn van een bepaalde volgorde.
+          De functie kan ook van invloed zijn op sites die veel instanties van setTimeout() met een time-out van 0 ms gebruiken. De CPU-belasting kan bijvoorbeeld toenemen.
+
+          Voor gebruikers waarvoor dit beleid niet is ingesteld, rolt <ph name="PRODUCT_NAME" /> de wijziging geleidelijk uit op het stabiele kanaal.
+
+          Dit is een tijdelijk beleid dat volgens planning wordt verwijderd in <ph name="PRODUCT_NAME" /> 107. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
+          </translation>
 <translation id="3685979383016152590">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (waarde 0) gebruikt <ph name="PRINTERS_BULK_BLOCKLIST" /> om de toegang tot de opgegeven printers te beperken,
@@ -5578,6 +5603,13 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7109384070286741861">CECPQ2 uitzetten</translation>
 <translation id="7114169791477667553">De standaard zoekprovider uitzetten</translation>
+<translation id="7121046543122812054">Dit beleid is beëindigd. Overweeg in plaats daarvan <ph name="BROWSER_SIGNIN_POLICY_NAME" /> te gebruiken.
+
+      Hiermee kan de gebruiker inloggen bij <ph name="PRODUCT_NAME" />.
+
+      Als je dit beleid toepast, kan de gebruiker inloggen bij <ph name="PRODUCT_NAME" />.
+      Als je dit beleid niet toepast, kan de gebruiker niet inloggen. Ook wordt de werking geblokkeerd van apps en extensies die de chrome.identity API gebruiken. Als je dat wilt voorkomen, gebruik je in plaats daarvan <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Als je het beleid instelt op True, wordt het delen van tekst/bestanden van Android-apps naar ondersteunde web-apps mogelijk via het ingebouwde deelsysteem van Android.
       Als dit is aangezet, worden er voor geïnstalleerde web-apps metadata naar Google gestuurd om een Android-app te maken en te installeren.
 Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translation>

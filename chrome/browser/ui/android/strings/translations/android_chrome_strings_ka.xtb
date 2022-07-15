@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{დაგეგმილია 1 ჩამოტვირთვა}other{დაგეგმილია # ჩამოტვირთვა}}</translation>
 <translation id="3474624961160222204">გაგრძელება, როგორც <ph name="NAME" /></translation>
 <translation id="3478363558367712427">შეგიძლიათ აირჩიოთ საძიებო სისტემა</translation>
+<translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="3495219333887281978">სისტემაში შესვლის ქვედა ფურცელი გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">იხილეთ თქვენთვის შერჩეული საუკეთესო საიტები</translation>
 <translation id="4732120983431207637">სტეკის დამშლელი</translation>
 <translation id="4736934858538408121">ვირტუალური ბარათი</translation>
+<translation id="473775607612524610">განახლება</translation>
 <translation id="4738836084190194332">ბოლო სინქრონიზაცია: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">თქვენ მოგეწოდებათ გაუმჯობესებული შემოთავაზებები მისამართთა ზოლში</translation>
 <translation id="4742970037960872810">გამოყოფის ამოშლა</translation>

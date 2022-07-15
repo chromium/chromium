@@ -352,6 +352,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
+<translation id="1344377983938103876">S'està obrint <ph name="URL" />...</translation>
 <translation id="134589511016534552">Les pestanyes multimèdia també es mostren a la secció Pestanyes obertes</translation>
 <translation id="1346630054604077329">Confirma i reinicia</translation>
 <translation id="1346748346194534595">Dreta</translation>
@@ -6953,6 +6954,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7753735457098489144">Ha fallat la instal·lació perquè falta espai d'emmagatzematge. Per alliberar espai, suprimeix fitxers de l'emmagatzematge del dispositiu.</translation>
 <translation id="7754347746598978109">Sense permís per utilitzar JavaScript</translation>
 <translation id="7754704193130578113">Pregunta on es desarà cada fitxer abans de baixar-lo</translation>
+<translation id="7755134875397410803">Per ajudar-te a dur a terme tasques, Google rebrà els URL i el contingut dels llocs web en què facis servir l'Assistent, així com la informació que enviïs amb l'Assistent. Pot ser que aquesta informació s'emmagatzemi al teu Compte de Google. Pots desactivar l'Assistent a la configuració de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">El teu pare o mare et poden desbloquejar el lloc</translation>
 <translation id="7757592200364144203">Canvia el nom del dispositiu</translation>
 <translation id="7757739382819740102">Els contactes que siguin a prop poden compartir contingut amb tu. Caldrà una aprovació.</translation>

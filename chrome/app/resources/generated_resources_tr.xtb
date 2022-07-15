@@ -352,6 +352,7 @@
 <translation id="1340527397989195812">Dosyalar uygulamasını kullanarak cihazdaki medyayı yedekleyin.</translation>
 <translation id="1343865611738742294">Linux uygulamalarına USB cihazlarına erişim izni verin. Linux, kaldırılan USB cihazları daha sonra hatırlamaz.</translation>
 <translation id="1343920184519992513">Kaldığım yerden devam et ve belirli bir sayfa grubunu aç</translation>
+<translation id="1344377983938103876"><ph name="URL" /> açılıyor...</translation>
 <translation id="134589511016534552">Medya sekmeleri, Açık Sekmeler bölümünde de gösterilir</translation>
 <translation id="1346630054604077329">Onayla ve yeniden başlat</translation>
 <translation id="1346748346194534595">Sağa</translation>
@@ -6953,6 +6954,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7753735457098489144">Depolama alanı yetersiz olduğu için yüklenemedi. Yer açmak için cihaz depolama alanından dosya silin.</translation>
 <translation id="7754347746598978109">JavaScript kullanmasına izin verilmeyen siteler</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
+<translation id="7755134875397410803">Google, görevleri tamamlamanıza yardımcı olmak için Asistan'ı kullandığınız sitelerin URL'lerinin ve içeriklerinin yanı sıra Asistan aracılığıyla gönderdiğiniz bilgileri alır. Bu bilgiler Google Hesabınızda depolanabilir. Asistan'ı Chrome ayarlarından kapatabilirsiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Ebeveyniniz engellemeyi sizin için kaldırabilir</translation>
 <translation id="7757592200364144203">Cihazın adını değiştir</translation>
 <translation id="7757739382819740102">Yakındaki kişiler sizinle içerik paylaşabilir. Bunun için onay gereklidir.</translation>

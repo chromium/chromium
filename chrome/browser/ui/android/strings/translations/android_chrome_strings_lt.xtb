@@ -460,6 +460,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Suplanuotas 1 atsisiuntimas}one{Suplanuotas # atsisiuntimas}few{Suplanuoti # atsisiuntimai}many{Suplanuota # atsisiuntimo}other{Suplanuota # atsisiuntimų}}</translation>
 <translation id="3474624961160222204">Tęsti kaip <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Galite pasirinkti paieškos variklį</translation>
+<translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
 <translation id="3495219333887281978">Prisijungimo apatinis lapas atidarytas per pusę ekrano aukščio.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3622349720008044802">Langų tvarkymas</translation>
 <translation id="3631987586758005671">Bendrinama su „<ph name="DEVICE_NAME" />“</translation>
 <translation id="363596933471559332">Automatiškai prisijungti prie svetainių naudojant išsaugotus prisijungimo duomenis. Kai funkcija išjungta, kaskart prisijungiant prie svetainės prašoma patvirtinti.</translation>
+<translation id="3636940436873918441">Pageidaujamos kalbos</translation>
 <translation id="3677911431265050325">Pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="3687645719033307815">Žiūrite šio puslapio peržiūrą</translation>
 <translation id="3690369331356918524">Įspėjama, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
@@ -667,6 +669,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="47217992755561375">Peržiūrėkite populiariausias svetaines</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuali kortelė</translation>
+<translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4738836084190194332">Paskutinį kartą sinchronizuota: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Gausite patobulintų pasiūlymų adreso juostoje</translation>
 <translation id="4742970037960872810">Pašalinti paryškinimą</translation>
@@ -1278,6 +1281,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="7942131818088350342">„<ph name="PRODUCT_NAME" />“ pasenęs.</translation>
 <translation id="7944772052836377867">Sinchronizuojant reikia patvirtinti jūsų tapatybę</translation>
 <translation id="7947953824732555851">Sutikti ir prisij.</translation>
+<translation id="7957413488482743710">Virtualioji kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie virtualiąsias korteles<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Niekada</translation>
 <translation id="7961926449547174351">Išjungėte prieigą prie saugyklos. Eikite į „Nustatymų“ skiltį ir ją įgalinkite.</translation>
 <translation id="7963646190083259054">Paslaugos teikėjas:</translation>

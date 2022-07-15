@@ -460,6 +460,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download gepland}other{# downloads gepland}}</translation>
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Je kunt je zoekmachine kiezen</translation>
+<translation id="3479552764303398839">Niet nu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over voorgestelde content</translation>
 <translation id="3495219333887281978">Inlogblad onderaan is op halve hoogte geopend.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="3622349720008044802">Vensters beheren</translation>
 <translation id="3631987586758005671">Delen met <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit verifiëren voordat je kunt inloggen bij een website.</translation>
+<translation id="3636940436873918441">Voorkeurstalen</translation>
 <translation id="3677911431265050325">Mobiele site opvragen</translation>
 <translation id="3687645719033307815">Je bekijkt een voorbeeld van deze pagina</translation>
 <translation id="3690369331356918524">Waarschuwt als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
@@ -667,6 +669,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="47217992755561375">Bekijk je populaire sites</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuele kaart</translation>
+<translation id="473775607612524610">Updaten</translation>
 <translation id="4738836084190194332">Laatst gesynchroniseerd: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
@@ -1278,6 +1281,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
+<translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>
 <translation id="7963646190083259054">Leverancier:</translation>

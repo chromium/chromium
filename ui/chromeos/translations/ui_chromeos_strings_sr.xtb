@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Мрежа је одбила сертификат за потврду аутентичности</translation>
 <translation id="255937426064304553">међународна америчка</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2570012981255377263">Недавни фајлови ће се приказивати овде</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">орија</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, блокирао администратор, детаљи</translation>
@@ -345,7 +346,6 @@
 <translation id="3971140002794351170">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">енглески (УК)</translation>
 <translation id="3975895378829046965">фонетски бенгалски</translation>
-<translation id="3991446849494482687">Тиме ћете онемогућити и подешавање закључавања SIM картице на уређају.</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">енглески (САД) са тастатуром Workman</translation>
 <translation id="4040753847560036377">Нетачан PUK</translation>
@@ -548,6 +548,7 @@
 <translation id="5625294776298156701">тамилски са тастатуром Tamil99</translation>
 <translation id="5633226425545095130">Премештањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5665074015635552640">Недавни видео снимци ће се приказивати овде</translation>
 <translation id="5669691691057771421">Унесите нови PIN</translation>
 <translation id="5678784840044122290">Linux апликација ће бити доступна на терминалу, а можда ће приказивати и икону у Покретачу.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Није успео прекид везе са архивским или виртуелним диском<ph name="END_BOLD" />
@@ -692,6 +693,7 @@
     Пронађене су датотеке (<ph name="FILE_COUNT" />)</translation>
 <translation id="6935521024859866267">Наопачке</translation>
 <translation id="6943836128787782965">HTTP get није успео</translation>
+<translation id="6945604978460872381">Недавни документи ће се приказивати овде</translation>
 <translation id="6949408524333579394">транслитерација српског</translation>
 <translation id="6954309393500027528">Администратор је блокирао налепљивање овог фајла</translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
@@ -739,6 +741,7 @@
 <translation id="7295662345261934369">Делите са другима</translation>
 <translation id="7297443947353982503">Корисничко име/лозинка је нетачна или EAP потврда аутентичности није успела</translation>
 <translation id="7309413087278791451">немачки (Белгија)</translation>
+<translation id="7313374447885864533">Недавни аудио фајлови ће се приказивати овде</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="7343393116438664539">вијетнамски (Telex)</translation>
 <translation id="7357762654218998920">Овај тип фајла није подржан. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
@@ -872,6 +875,7 @@
 <translation id="8342318071240498787">Већ постоји датотека или директоријум са истим називом.</translation>
 <translation id="8372369524088641025">Неисправна WEP шифра</translation>
 <translation id="8372852072747894550">грчки</translation>
+<translation id="8384716930968677505">Недавне слике ће се приказивати овде</translation>
 <translation id="8386903983509584791">Скенирање је завршено</translation>
 <translation id="8387733224523483503">Фајл <ph name="FILE_NAME" /> је изведен.</translation>
 <translation id="8395901698320285466">Димензије</translation>

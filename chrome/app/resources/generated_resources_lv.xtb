@@ -354,6 +354,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1340527397989195812">Dublējiet multividi no savas ierīces, izmantojot lietotni “Faili”.</translation>
 <translation id="1343865611738742294">Piešķiriet Linux lietotnēm atļauju piekļūt USB ierīcēm. Pēc USB ierīces noņemšanas operētājsistēmā Linux netiks saglabāti šīs ierīces dati.</translation>
 <translation id="1343920184519992513">Atsākt darbu no vietas, kur to beidzāt, un atvērt konkrētu lapu kopu</translation>
+<translation id="1344377983938103876">Notiek vietnes <ph name="URL" /> atvēršana…</translation>
 <translation id="134589511016534552">Multivides cilnes tiek rādītas arī sadaļā Atvērtās cilnes</translation>
 <translation id="1346630054604077329">Apstiprināt un restartēt</translation>
 <translation id="1346748346194534595">Pa labi</translation>
@@ -6960,6 +6961,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7753735457098489144">Instalēšana neizdevās, jo trūkst krātuves vietas. Lai atbrīvotu vietu, izdzēsiet failus no šīs ierīces.</translation>
 <translation id="7754347746598978109">Nedrīkst izmantot JavaScript</translation>
 <translation id="7754704193130578113">Jautāt, kur saglabāt ikvienu failu pirms lejuplādēšanas</translation>
+<translation id="7755134875397410803">Lai palīdzētu jums paveikt uzdevumus, Google saņems to vietņu vietrāžus URL un saturu, kurās izmantosiet Asistentu, kā arī informāciju, ko iesniegsiet, izmantojot Asistentu. Šī informācija var tikt glabāta jūsu Google kontā. Chrome iestatījumos varat izslēgt Asistentu. <ph name="LEARN_MORE" />.</translation>
 <translation id="7755287808199759310">Lai atbloķētu, vēsieties pie vecāka</translation>
 <translation id="7757592200364144203">Mainīt ierīces nosaukumu</translation>
 <translation id="7757739382819740102">Tuvumā esošās kontaktpersonas var kopīgot saturu ar jums. Būs nepieciešams apstiprinājums.</translation>

@@ -352,6 +352,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="1343865611738742294">Da permiso a las aplicaciones de Linux para acceder a los dispositivos USB. Linux no recordará el dispositivo USB después de retirarlo.</translation>
 <translation id="1343920184519992513">Seguir por donde lo dejaste y abrir un conjunto concreto de páginas</translation>
+<translation id="1344377983938103876">Abriendo <ph name="URL" />...</translation>
 <translation id="134589511016534552">Las pestañas multimedia también se muestran en la sección Pestañas abiertas</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
 <translation id="1346748346194534595">Derecha</translation>
@@ -6954,6 +6955,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7753735457098489144">No se ha podido realizar la instalación porque falta espacio de almacenamiento. Para liberar espacio, elimina archivos del almacenamiento del dispositivo.</translation>
 <translation id="7754347746598978109">No puede usar JavaScript</translation>
 <translation id="7754704193130578113">Preguntar dónde se guardará cada archivo antes de descargarlo</translation>
+<translation id="7755134875397410803">Para ayudarte a completar tareas, Google recibirá las URLs y los contenidos de los sitios en los que uses el Asistente, así como la información que envíes a través de este. Es posible que esta información se almacene en tu cuenta de Google. Puedes desactivar el Asistente en la configuración de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Uno de tus padres puede desbloquearlo</translation>
 <translation id="7757592200364144203">Cambiar nombre del dispositivo</translation>
 <translation id="7757739382819740102">Los contactos que estén cerca pueden compartir contenido contigo. Se necesita autorización.</translation>

@@ -460,6 +460,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ütemezett letöltés}other{# ütemezett letöltés}}</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Kiválaszthatja keresőmotorját</translation>
+<translation id="3479552764303398839">Ne most</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> a javasolt tartalomról</translation>
 <translation id="3495219333887281978">Az alsó bejelentkezési lap félmagasságban megnyitva.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3622349720008044802">Ablakok kezelése</translation>
 <translation id="3631987586758005671">Megosztás a következővel: <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatikus bejelentkezés webhelyekre a tárolt hitelesítő adatokkal. Ha ez a funkció ki van kapcsolva, mindig meg kell adnia hitelesítő adatait, amikor egy webhelyre szeretne bejelentkezni.</translation>
+<translation id="3636940436873918441">Előnyben részesített nyelvek</translation>
 <translation id="3677911431265050325">Mobilwebhely kérése</translation>
 <translation id="3687645719033307815">Ön az oldal előnézetét nézi</translation>
 <translation id="3690369331356918524">Figyelmeztetést küld, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek.</translation>
@@ -667,6 +669,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="47217992755561375">A leginkább kedvelt webhelyei megtekintése</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuális kártya</translation>
+<translation id="473775607612524610">Frissítés</translation>
 <translation id="4738836084190194332">Utolsó szinkronizálás: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Jobb javaslatokat kaphat a címsávban.</translation>
 <translation id="4742970037960872810">Kiemelés eltávolítása</translation>
@@ -1278,6 +1281,7 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
+<translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="7961015016161918242">Soha</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>
 <translation id="7963646190083259054">Szolgáltató:</translation>

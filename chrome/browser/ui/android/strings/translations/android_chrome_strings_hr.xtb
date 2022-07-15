@@ -460,6 +460,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je jedno preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Možete odabrati tražilicu</translation>
+<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tablica za prijavu otvorena na pola visine.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -668,6 +669,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="47217992755561375">Prikaz web-lokacija koje najčešće posjećujete</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtualna kartica</translation>
+<translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738836084190194332">Posljednja sinkronizacija: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Primat ćete poboljšane prijedloge na adresnoj traci</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>

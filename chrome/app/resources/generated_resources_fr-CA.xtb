@@ -353,6 +353,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1340527397989195812">Sauvegarder les fichiers médiatiques de l’appareil en utilisant l’application Fichiers.</translation>
 <translation id="1343865611738742294">Accordez aux applications Linux l'autorisation d'accéder à des appareils USB. Le système Linux ne se souviendra pas d'un appareil USB une fois celui-ci retiré.</translation>
 <translation id="1343920184519992513">Reprenez le cours de vos activités et ouvrez un ensemble défini de pages</translation>
+<translation id="1344377983938103876">Ouverture de <ph name="URL" /> en cours...</translation>
 <translation id="134589511016534552">Les onglets multimédias sont également affichés dans la section Onglets ouverts</translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1346748346194534595">À droite</translation>
@@ -1248,6 +1249,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera dès que vous quitterez les paramètres de synchronisation</translation>
+<translation id="2162705204091149050">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés et des fichiers</translation>
 <translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour accéder à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
@@ -2498,6 +2500,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3359256513598016054">Contraintes des politiques de certificat</translation>
 <translation id="3360297538363969800">L'impression a échoué. Veuillez vérifier votre imprimante, puis réessayer</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{L'appareil <ph name="DEVICE_NAME" /> partage <ph name="ATTACHMENTS" /> avec vous.}one{L'appareil <ph name="DEVICE_NAME" /> partage <ph name="ATTACHMENTS" /> avec vous.}other{L'appareil <ph name="DEVICE_NAME" /> partage <ph name="ATTACHMENTS" /> avec vous.}}</translation>
+<translation id="3363202073972776113">Ce nouveau profil sera géré par votre organisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">De votre administrateur : <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Utilisez la touche Ctrl ou Alt</translation>
 <translation id="3368922792935385530">Connecté</translation>
@@ -2532,6 +2535,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="339722927132407568">Fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
+<translation id="3401484564516348917">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés, des valeurs de registre et des fichiers</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} mot de passe est stocké sur cet appareil}one{{COUNT} mot de passe est stocké sur cet appareil}other{{COUNT} mots de passe sont stockés sur cet appareil}}</translation>
 <translation id="3402255108239926910">Choisissez un avatar</translation>
 <translation id="3402585168444815892">Inscription au mode Démo en cours…</translation>
@@ -2778,6 +2782,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3627879631695760395">Installer <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Désactiver le Bluetooth</translation>
 <translation id="3629631988386925734">Entrez votre mot de passe pour activer Smart Lock. La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans le menu Paramètres.</translation>
+<translation id="3629664892718440872">Mémoriser ce choix</translation>
 <translation id="3630132874740063857">Votre téléphone</translation>
 <translation id="3630995161997703415">Ajoutez ce site à votre étagère pour pouvoir l'utiliser à tout moment</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser vos appareils Chrome OS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans Chrome OS. Ces rapports peuvent comprendre des renseignements sur, entre autres, le moment où Chrome OS plante, les fonctionnalités que vous utilisez et la quantité de mémoire que vous utilisez normalement.<ph name="END_PARAGRAPH1" />
@@ -3267,6 +3272,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Plein contrôle des appareils MIDI refusé</translation>
+<translation id="4087328411748538168">Afficher à droite</translation>
 <translation id="4089235344645910861">Paramètres enregistrés. Synchronisation lancée.</translation>
 <translation id="4090103403438682346">Activer l'accès validé</translation>
 <translation id="4090947011087001172">Réinitialiser les autorisations du site <ph name="SITE" />?</translation>
@@ -3960,6 +3966,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4779766576531456629">Renommer le réseau cellulaire de la carte eSIM</translation>
 <translation id="4780321648949301421">Enregistrer la page sous…</translation>
 <translation id="4781443161433589743">Vous profitez de la sécurité la plus robuste de Chrome</translation>
+<translation id="4782861709165039462">Tous les microphones sont désactivés par le commutateur physique des appareils</translation>
 <translation id="4785719467058219317">Vous utilisez une clé de sécurité qui n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="4785914069240823137">Annuler le recadrage</translation>
 <translation id="4788092183367008521">Veuillez vérifier votre connexion réseau et réessayer.</translation>
@@ -4726,6 +4733,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5548075230008247516">Tous les éléments ont été désélectionnés. Vous n'êtes plus en mode de sélection.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{« <ph name="TAB_TITLE" /> »}=1{« <ph name="TAB_TITLE" /> » et 1 autre onglet}one{« <ph name="TAB_TITLE" /> » et # autre onglet}other{« <ph name="TAB_TITLE" /> » et # autres onglets}}</translation>
 <translation id="5548606607480005320">Vérification de sécurité</translation>
+<translation id="5548644592758170183">Afficher à gauche</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Clavier et entrée de texte</translation>
 <translation id="5553089923092577885">Mappages des règles de certificat</translation>
@@ -6952,6 +6960,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7753735457098489144">L'installation a échoué en raison d'un manque d'espace de stockage. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="7754347746598978109">Non autorisés à utiliser JavaScript</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
+<translation id="7755134875397410803">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant. Ces données peuvent être stockées dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">L'un de tes parents peut le débloquer pour toi</translation>
 <translation id="7757592200364144203">Modifier le nom de l'appareil</translation>
 <translation id="7757739382819740102">Les contacts à proximité peuvent partager du contenu avec vous. Une approbation sera requise.</translation>
@@ -8211,6 +8220,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8980345560318123814">Rapports de commentaire</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Plantage</translation>
 <translation id="8981825781894055334">Presque à court de papier</translation>
+<translation id="8983018820925880511">Ce nouveau profil sera géré par <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> peut modifier le fichier <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Vous serez visible par tous les appareils à proximité pendant <ph name="MINUTES" /> minutes. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Bienvenue sur Steam pour Chromebook</translation>
@@ -8308,6 +8318,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9075413375877487220">Cette extension n'est pas approuvée par la navigation sécurisée améliorée.</translation>
 <translation id="9076283476770535406">Le contenu est peut-être réservé aux adultes</translation>
 <translation id="9076523132036239772">La vérification de votre adresse de courriel ou de votre mot de passe a échoué. Essayez d'abord de vous connecter à un réseau.</translation>
+<translation id="9076821103818989526">Panneau latéral</translation>
 <translation id="9076977315710973122">Partage SMB</translation>
 <translation id="9078193189520575214">Application des modifications en cours…</translation>
 <translation id="9078316009970372699">Désactiver le partage de connexion instantané</translation>

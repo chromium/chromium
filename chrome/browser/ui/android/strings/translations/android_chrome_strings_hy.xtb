@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Պլանավորված է 1 ներբեռնում}one{Պլանավորված է # ներբեռնում}other{Պլանավորված է # ներբեռնում}}</translation>
 <translation id="3474624961160222204">Շարունակել <ph name="NAME" /> հաշվով</translation>
 <translation id="3478363558367712427">Ընտրեք այլ որոնման համակարգ</translation>
+<translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
 <translation id="3495219333887281978">Հաշիվ մտնելու ներքևի էկրանը բացված է կիսով չափ։</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">Դիտեք ձեր թոփ կայքերը</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Վիրտուալ քարտ</translation>
+<translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Հասցեագոտում կհայտնվեն բարելավված հուշումներ</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>

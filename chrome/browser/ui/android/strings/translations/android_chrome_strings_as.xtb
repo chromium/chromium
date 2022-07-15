@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
+<translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">আপোনাৰ শীৰ্ষ ছাইটসমূহ চাওক</translation>
 <translation id="4732120983431207637">ষ্টেক আনৱিণ্ডাৰ</translation>
 <translation id="4736934858538408121">ভাৰ্চুৱেল কাৰ্ড</translation>
+<translation id="473775607612524610">আপডে'ট কৰক</translation>
 <translation id="4738836084190194332">অন্তিমবাৰ ছিংক কৰা সময়: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">আপুনি ঠিকনাৰ বাৰত উন্নত পৰামৰ্শসমূহ পাব</translation>
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>

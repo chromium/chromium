@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ షెడ్యూల్ చేయబడింది}other{# డౌన్‌లోడ్‌లు షెడ్యూల్ చేయబడ్డాయి}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> లాగా కొనసాగించు</translation>
 <translation id="3478363558367712427">మీరు మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోవచ్చు</translation>
+<translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్ సగం మేరకు తెరవబడింది.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@
 <translation id="47217992755561375">మీ టాప్ సైట్‍లను చూడండి</translation>
 <translation id="4732120983431207637">స్టాక్ అన్‌వైండర్</translation>
 <translation id="4736934858538408121">వర్చువల్ కార్డ్</translation>
+<translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4738836084190194332">చివరిగా సమకాలీకరించినది: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">మీరు అడ్రస్ బార్‌లో మెరుగైన సూచనలను పొందుతారు</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>

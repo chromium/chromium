@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
 <translation id="3474624961160222204">ادامه دادن به‌عنوان <ph name="NAME" /></translation>
 <translation id="3478363558367712427">می‌توانید موتور جستجویتان را انتخاب کنید</translation>
+<translation id="3479552764303398839">حالا نه</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">برگ زیرین ورود به سیستم نیمه‌باز شده است.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
+<translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3677911431265050325">درخواست سایت ویژه دستگاه همراه</translation>
 <translation id="3687645719033307815">درحال مشاهده پیش‌نمای این صفحه هستید</translation>
 <translation id="3690369331356918524">اگر گذرواژه‌ها به‌دلیل نقض داده درمعرض خطر باشد، به شما هشدار می‌دهد</translation>
@@ -667,6 +669,7 @@
 <translation id="47217992755561375">دیدن سایت‌های برتر شما</translation>
 <translation id="4732120983431207637">گره‌گشای پشته</translation>
 <translation id="4736934858538408121">کارت مجازی</translation>
+<translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">پیشنهادهای بهبودیافته‌ای در نوار نشانی دریافت خواهید کرد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
+<translation id="7957413488482743710">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>
 <translation id="7963646190083259054">ارائه‌دهنده:</translation>

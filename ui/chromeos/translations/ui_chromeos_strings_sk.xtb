@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalská klávesnica s americkou klávesnicou s medzinárodným rozložením klávesov (PC)</translation>
+<translation id="2193661397560634290">Využité: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">zjednodušená čínština</translation>
 <translation id="22085916256174561">Kórejská klávesnica</translation>
 <translation id="2208919847696382164">Inštalovať pomocou systému Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turecká klávesnica (typ F)</translation>
 <translation id="2732839045120506979">Vietnamská klávesnica s rozložením VNI</translation>
 <translation id="2735623501230989521">Povoľte aplikácii Parallels Desktop prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Vyčerpali ste celý svoj osobný ukladací priestor v službe Google Workspace.</translation>
 <translation id="2771816809568414714">Syr</translation>
 <translation id="2781645665747935084">Belgická klávesnica</translation>
 <translation id="2782104745158847185">Pri inštalácii aplikácie pre Linux sa vyskytla chyba</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Použite kratší názov</translation>
 <translation id="2949781154072577687">Disk <ph name="DRIVE_NAME" /> sa formátuje...</translation>
 <translation id="2951236788251446349">Medúza</translation>
+<translation id="2958458230122209142">Neodstatok priestoru, zostáva <ph name="REMAINING_PERCENTAGE" /> % z vášho osobného priestoru <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Nájdite vhodnú náhradnú aplikáciu v Internetovom obchode Chrome.</translation>
 <translation id="2984337792991268709">Dnes o <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Obnovujú sa položky (<ph name="COUNT" />)…</translation>
@@ -342,7 +345,6 @@
 <translation id="3971140002794351170">Stiahnite si mobilný profil, sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglická (UK) klávesnica</translation>
 <translation id="3975895378829046965">Bengálska fonetická klávesnica</translation>
-<translation id="3991446849494482687">Deaktivuje sa aj nastavenie zámky SIM karty v zariadení.</translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4017788180641807848">Anglická (US) klávesnica s rozložením Workman</translation>
 <translation id="4040753847560036377">Nesprávny kód PUK</translation>
@@ -670,6 +672,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6823166707458800069">Všetky súbory uložené v tomto priečinku sa automaticky zálohujú online.</translation>
 <translation id="6825883775269213504">Ruština</translation>
 <translation id="6847101934483209767">Položka <ph name="ENTRY_NAME" /> bola odstránená z výberu.</translation>
+<translation id="6848194403851638089">Organizácia <ph name="ORGANIZATION_NAME" /> vyčerpala všetok svoj priestor v službe Google Workspace.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">Perzská klávesnica</translation>
 <translation id="6862635236584086457">Všetky súbory uložené v tomto priečinku sa automaticky zálohujú online</translation>
@@ -701,6 +704,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6989942356279143254">Švédska klávesnica</translation>
 <translation id="6990081529015358884">Nemáte dostatok miesta</translation>
 <translation id="6998711733709403587">Počet vybratých priečinkov: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Vaša organizácia vyžaduje na dokončenie nahrávania viac priestoru.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Inštalácia zlyhala.</translation>
 <translation id="7031639531908619281">Turecká klávesnica</translation>
@@ -934,11 +938,13 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8919081441417203123">Dánčina</translation>
 <translation id="8965697826696209160">Nedostatok miesta</translation>
 <translation id="8997962250644902079">Čínska klávesnica Pchin-jin (tradičná)</translation>
+<translation id="8998871447376656508">Na Disku Google nie je dostatok voľného priestoru na dokončenie nahrávania.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, ovládané správcom, podrobnosti</translation>
 <translation id="9017798300203431059">Ruská fonetická klávesnica</translation>
 <translation id="9034924485347205037">Súbory systému Linux</translation>
 <translation id="9035012421917565900">Položky sa nedajú presunúť späť do cieľa <ph name="DESTINATION_NAME" />, takže túto akciu nebude možné vrátiť späť.</translation>
 <translation id="9035689366572880647">Zadajte aktuálny kód PIN</translation>
+<translation id="9037777873893411148">* Priestor organizácie je plný.</translation>
 <translation id="9038620279323455325">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Vyberte iný názov.</translation>
 <translation id="9046895021617826162">Zlyhanie pripojenia</translation>
 <translation id="9065512565307033593">Ak sa vám nepodarí overiť, váš prístup k sieti bude zakázaný.</translation>

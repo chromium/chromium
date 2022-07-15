@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланировано 1 скачивание.}one{Запланировано # скачивание.}few{Запланировано # скачивания.}many{Запланировано # скачиваний.}other{Запланировано # скачивания.}}</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
+<translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3495219333887281978">Нижний экран входа в аккаунт открыт наполовину.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="363596933471559332">Входить на веб-сайты с помощью сохраненного имени пользователя и пароля. Когда функция отключена, эти данные нужно указывать при каждом входе.</translation>
+<translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3677911431265050325">Мобильная версия</translation>
 <translation id="3687645719033307815">Эта страница показывается в режиме предварительного просмотра.</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
@@ -667,6 +669,7 @@
 <translation id="47217992755561375">Интересные вам сайты</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуальная карта</translation>
+<translation id="473775607612524610">Обновить</translation>
 <translation id="4738836084190194332">Последняя синхронизация: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">В адресной строке будут показываться улучшенные подсказки.</translation>
 <translation id="4742970037960872810">Снять выделение</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
+<translation id="7957413488482743710">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>

@@ -460,6 +460,7 @@
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 файлды жүктөп алуу графикке киргизилди}other{# файлды жүктөп алуу графикке киргизилди}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> катары улантуу</translation>
 <translation id="3478363558367712427">Өзүңүз каалаган издөө каражатын тандай аласыз</translation>
+<translation id="3479552764303398839">Азыр эмес</translation>
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Жарымына чейин ачылган кирүү процессинин ылдыйкы экраны жарымына чейин ачылды.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="47217992755561375">Мыкты сайттарды караңыз</translation>
 <translation id="4732120983431207637">Ороосун ачуу</translation>
 <translation id="4736934858538408121">Виртуалдык карта</translation>
+<translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4738836084190194332">Акыркы жолу качан шайкештирилген: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Дарек тилкесинде жакшыртылган сунуштарды аласыз</translation>
 <translation id="4742970037960872810">Бөлүп көрсөтүүнү өчүрүү</translation>

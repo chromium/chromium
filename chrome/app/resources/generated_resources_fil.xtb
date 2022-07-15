@@ -3226,6 +3226,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="402211067068791756">Iki-clear nito ang <ph name="TOTAL_USAGE" /> na data na na-store ng mga ipinapakitang site</translation>
 <translation id="4022426551683927403">&amp;Idagdag sa Diksyunaryo</translation>
 <translation id="4025039777635956441">I-mute ang Napiling Site</translation>
+<translation id="4027958407426528157">Buksan ang mga website sa mga app na naka-install sa iyong device <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
 <translation id="4029556917477724407">Bumalik mula sa page na <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
@@ -6578,6 +6579,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7377481913241237033">Kumonekta gamit ang code</translation>
 <translation id="7378611153938412599">Madaling hulaan ang mahihinang password. Tiyaking malalakas na password ang gagawin mo. <ph name="BEGIN_LINK" />Tumingin pa ng mga tip sa seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
+<translation id="737938816678769289">Kumonekta at mag-set up ng malalapit na device na Mabilis na Pagpares nang walang kahirap-hirap</translation>
 <translation id="7380459290951585794">Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito</translation>
 <translation id="7380622428988553498">Naglalaman ng mga invalid na character ang pangalan ng device</translation>
 <translation id="7380768571499464492">Na-update ang <ph name="PRINTER_NAME" /></translation>

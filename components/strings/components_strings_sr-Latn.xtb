@@ -1059,6 +1059,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3807873520724684969">Blokiran je štetan sadržaj.</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3816482573645936981">Vrednost (zamenjena)</translation>
+<translation id="3823402221513322552">Pregledačem upravlja <ph name="BROWSER_DOMAIN" />, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ako koristite proksi server...</translation>
 <translation id="3826050100957962900">Prijavljivanje treće strane</translation>
 <translation id="3827112369919217609">Apsolut</translation>
@@ -1556,6 +1557,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5179510805599951267">Nije <ph name="ORIGINAL_LANGUAGE" />? Prijavite ovu grešku</translation>
 <translation id="518639307526414276">Hrana i sredstva za negu kućnih ljubimaca</translation>
 <translation id="5190835502935405962">Traka sa obeleživačima</translation>
+<translation id="5191315092027169558">Profilom upravlja <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi da preuzme više datoteka</translation>
 <translation id="519422657042045905">Napomena nije dostupna</translation>
 <translation id="5201306358585911203">Ugrađena stranica na ovoj veb-stranici navodi:</translation>
@@ -2759,6 +2761,7 @@ Dodatni detalji:
 <translation id="8623885649813806493">Nijedna lozinka se ne podudara. Prikaži sve sačuvane lozinke.</translation>
 <translation id="8624354461147303341">Ostvarite popuste</translation>
 <translation id="8625384913736129811">Sačuvaj ovu karticu na ovom uređaju</translation>
+<translation id="8637577059508742477">Profilom i pregledačem upravlja <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">senzori za pokret</translation>
 <translation id="8663226718884576429">Rezime porudžbine, <ph name="TOTAL_LABEL" />, još detalja</translation>
 <translation id="8666678546361132282">engleski</translation>

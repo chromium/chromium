@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2570012981255377263">Неодамнешните датотеки ќе се појават тука</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
 <translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
@@ -345,7 +346,6 @@
 <translation id="3971140002794351170">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">англиски (ОК)</translation>
 <translation id="3975895378829046965">фонетски бангла</translation>
-<translation id="3991446849494482687">Ова ќе ја оневозможи и поставката „Заклучување SIM“ на уредот.</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">англиски (САД) со тастатура Workman</translation>
 <translation id="4040753847560036377">Погрешен PUK</translation>
@@ -547,6 +547,7 @@
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
 <translation id="5633226425545095130">Ако ја преместите ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5665074015635552640">Неодамнешните видеа ќе се појават тука</translation>
 <translation id="5669691691057771421">Внесете го новиот PIN</translation>
 <translation id="5678784840044122290">Апликацијата за Linux ќе биде достапна во вашиот терминал, а може да се прикаже икона и во „Стартерот“.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се исклучи од архива или виртуелен диск<ph name="END_BOLD" />
@@ -691,6 +692,7 @@
     Најдени се <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6943836128787782965">HTTP не успеа</translation>
+<translation id="6945604978460872381">Неодамнешните документи ќе се појават тука</translation>
 <translation id="6949408524333579394">транслитерација на српски</translation>
 <translation id="6954309393500027528">Администраторот блокирал лепење на датотекава</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
@@ -738,6 +740,7 @@
 <translation id="7295662345261934369">Сподели со другите</translation>
 <translation id="7297443947353982503">Корисничкото име/лозинката не се точни или автентикацијата со EAP не успеа</translation>
 <translation id="7309413087278791451">германски (Белгија)</translation>
+<translation id="7313374447885864533">Неодамнешните аудиодатотеки ќе се појават тука</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7343393116438664539">виетнамски телекс</translation>
 <translation id="7357762654218998920">Типов датотека не е поддржан. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
@@ -871,6 +874,7 @@
 <translation id="8342318071240498787">Веќе постои датотека или директориум со истото име.</translation>
 <translation id="8372369524088641025">Погрешен клуч WEP</translation>
 <translation id="8372852072747894550">грчки</translation>
+<translation id="8384716930968677505">Неодамнешните слики ќе се појават тука</translation>
 <translation id="8386903983509584791">Скенирањето заврши</translation>
 <translation id="8387733224523483503">Отпакувана е <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Димензии</translation>

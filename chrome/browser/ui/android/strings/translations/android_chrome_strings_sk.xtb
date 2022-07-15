@@ -460,6 +460,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Bolo naplánované 1 sťahovanie}few{Boli naplánované # sťahovania}many{# downloads scheduled}other{Bolo naplánovaných # sťahovaní}}</translation>
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Môžete si vybrať vyhľadávač</translation>
+<translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o návrhoch obsahu</translation>
 <translation id="3495219333887281978">Dolný hárok prihlásenia otvorený na polovičnú výšku.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,6 +490,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="3622349720008044802">Správa okien</translation>
 <translation id="3631987586758005671">Zdieľa sa so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Povolí automatické prihlasovanie na webové stránky pomocou uložených poverení. Keď je funkcia vypnutá, zobrazí sa výzva na overenie vždy pred prihlásením na web.</translation>
+<translation id="3636940436873918441">Preferované jazyky</translation>
 <translation id="3677911431265050325">Vyžiadať mobilný web</translation>
 <translation id="3687645719033307815">Zobrazujete si ukážku tejto stránky</translation>
 <translation id="3690369331356918524">Upozorňuje pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
@@ -667,6 +669,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="47217992755561375">Zobraziť najobľúbenejšie weby</translation>
 <translation id="4732120983431207637">Modul na rozvinutie zásobníka</translation>
 <translation id="4736934858538408121">Virtuálna karta</translation>
+<translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4738836084190194332">Synchronizované <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Budete dostávať zlepšené návrhy v paneli s adresou</translation>
 <translation id="4742970037960872810">Odstrániť zvýraznenie</translation>
@@ -1278,6 +1281,7 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="7942131818088350342">Aplikácia <ph name="PRODUCT_NAME" /> je zastaraná.</translation>
 <translation id="7944772052836377867">Synchronizácia potrebuje overiť vašu totožnosť</translation>
 <translation id="7947953824732555851">Prijať a prihl. sa</translation>
+<translation id="7957413488482743710">Virtuálnou kartou sa skryje vaša skutočná karta, čo vás ochráni pred potenciálnymi podvodmi. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7961926449547174351">Deaktivovali ste prístup k úložisku. Aktivujete ho v sekcii Nastavenia.</translation>
 <translation id="7963646190083259054">Dodávateľ:</translation>

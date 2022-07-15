@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2163152940313951844">Invalid na character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese na may US International PC keyboard</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> ang nagamit</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
 <translation id="2208919847696382164">I-install gamit ang Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turkish na may F-keyboard</translation>
 <translation id="2732839045120506979">Vietnamese VNI</translation>
 <translation id="2735623501230989521">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Nagamit mo na ang lahat ng iyong indibidwal na storage sa Google Workspace.</translation>
 <translation id="2771816809568414714">Keso</translation>
 <translation id="2781645665747935084">Belgian</translation>
 <translation id="2782104745158847185">Nagkaroon ng error sa pag-install ng Linux application</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Gumamit ng mas maikling pangalan</translation>
 <translation id="2949781154072577687">Fino-format ang <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
+<translation id="2958458230122209142">Paubos na ang storage na may natitirang <ph name="REMAINING_PERCENTAGE" />% sa iyong <ph name="TOTAL_SPACE" /> indibidwal na storage.</translation>
 <translation id="2977940621473452797">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na nagpapatakbo ng ChromeOS. Maghanap sa Chrome Web Store ng naaangkop na pamalit na app.</translation>
 <translation id="2984337792991268709">Ngayon <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Nire-restore ang <ph name="COUNT" /> (na) item...</translation>
@@ -342,7 +345,6 @@
 <translation id="3971140002794351170">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
 <translation id="3975895378829046965">Bangla Phonetic</translation>
-<translation id="3991446849494482687">Idi-disable din nito ang setting ng Lock ng SIM sa device.</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4017788180641807848">English (US) na may Workman keyboard</translation>
 <translation id="4040753847560036377">Mali ang PUK</translation>
@@ -670,6 +672,7 @@
 <translation id="6823166707458800069">Awtomatikong na-back up online ang lahat ng file na na-save sa folder na ito.</translation>
 <translation id="6825883775269213504">Russian</translation>
 <translation id="6847101934483209767">Inalis ang <ph name="ENTRY_NAME" /> sa pagpipilian.</translation>
+<translation id="6848194403851638089">Nagamit na ng <ph name="ORGANIZATION_NAME" /> ang buong storage nito sa Google Workspace.</translation>
 <translation id="6856459657722366306">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="6861394552169064235">Persian</translation>
 <translation id="6862635236584086457">Lahat ng file na na-save sa folder na ito ay awtomatikong na-back up online</translation>
@@ -701,6 +704,7 @@
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">Naubusan ka na ng espasyo</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> (na) folder ang napili</translation>
+<translation id="7008426324576352165">Kailangan ng iyong organisasyon ng mas malaking storage para makumpleto ang pag-upload.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Nabigo ang pag-install.</translation>
 <translation id="7031639531908619281">Turkish</translation>
@@ -934,11 +938,13 @@
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
+<translation id="8998871447376656508">Walang sapat na bakanteng espasyo sa iyong Google Drive para makumpleto ang pag-upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9035012421917565900">Hindi na maibabalik ang mga item sa '<ph name="DESTINATION_NAME" />,' kaya hindi mo maa-undo ang pagkilos na ito.</translation>
 <translation id="9035689366572880647">Ilagay ang kasalukuyang PIN</translation>
+<translation id="9037777873893411148">*Puno na ang storage ng org</translation>
 <translation id="9038620279323455325">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Pumili ng ibang pangalan.</translation>
 <translation id="9046895021617826162">Nabigo ang pagkonekta</translation>
 <translation id="9065512565307033593">Kung hindi ka makakapag-verify, madi-disable ang iyong access sa network.</translation>

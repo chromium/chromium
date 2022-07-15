@@ -460,6 +460,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Upakuaji wa faili moja umeratibiwa}other{Upakuaji wa faili # umeratibiwa.}}</translation>
 <translation id="3474624961160222204">Endelea ukitumia <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Unaweza kuchagua mtambo wako wa kutafuta</translation>
+<translation id="3479552764303398839">Si sasa</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu maudhui yaliyopendekezwa</translation>
 <translation id="3495219333887281978">Safu ya chini ya kuingia katika akaunti imefunguliwa katika hali ya nusu skrini.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="47217992755561375">Angalia tovuti zako maarufu</translation>
 <translation id="4732120983431207637">Kiondoaji cha Rafu</translation>
 <translation id="4736934858538408121">Kadi pepe</translation>
+<translation id="473775607612524610">Sasisha</translation>
 <translation id="4738836084190194332">Kilisawazishwa mara ya mwisho: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Utapata mapendekezo yaliyoboreshwa katika sehemu ya anwani</translation>
 <translation id="4742970037960872810">Acha kuangazia</translation>

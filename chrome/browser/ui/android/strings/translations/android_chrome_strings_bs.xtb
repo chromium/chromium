@@ -460,6 +460,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je 1 preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Možete odabrati svoj pretraživač</translation>
+<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tabela za prijavu je otvorena na pola visine.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -489,7 +490,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatski se prijavite na web lokacije korištenjem pohranjenih akreditiva. Kada je ova funkcija isključena, od vas će se tražiti potvrda prilikom svake prijave na web lokaciju.</translation>
-<translation id="3636940436873918441">Preferirani jezici</translation>
+<translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3677911431265050325">Zatraži web lokaciju za mobilni uređaj</translation>
 <translation id="3687645719033307815">Prikazan vam je pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka</translation>
@@ -668,6 +669,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="47217992755561375">Pogledajte najpopularnije web lokacije</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
+<translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738836084190194332">Posljednji put sinhronizirano: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Dobijat ćete poboljšane prijedloge u traci za adresu</translation>
 <translation id="4742970037960872810">Ukloni istaknuti tekst</translation>
@@ -1279,7 +1281,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastario.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora potvrditi da ste to vi</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>
-<translation id="7957413488482743710">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
+<translation id="7957413488482743710">Virtuelna kartica sakriva stvarnu karticu radi zaštite od potencijalne prevare. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Nikada</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Idite u Postavke da ga omogućite.</translation>
 <translation id="7963646190083259054">Dobavljač:</translation>

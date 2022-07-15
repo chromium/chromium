@@ -354,6 +354,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Säkerhetskopiera media från enheten med appen Filer.</translation>
 <translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
+<translation id="1344377983938103876">Öppnar <ph name="URL" /> …</translation>
 <translation id="134589511016534552">Mediaflikar visas också i Öppna flikar</translation>
 <translation id="1346630054604077329">Bekräfta och starta om</translation>
 <translation id="1346748346194534595">Höger</translation>
@@ -1280,6 +1281,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2180620921879609685">Blockera innehåll på alla sidor</translation>
 <translation id="2182058453334755893">Kopierat till urklipp</translation>
 <translation id="2184515124301515068">Låt Chrome välja när webbplatser kan spela upp ljud (rekommenderas)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Sidan delas från en annan enhet</translation>
 <translation id="2187675480456493911">Synkroniseras med andra enheter i kontot. Inställningar som andra användare har ändrat synkroniseras inte. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Fel vid import av servercertifikat</translation>
@@ -6970,6 +6972,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7753735457098489144">Installationen misslyckades eftersom det inte finns tillräckligt med lagringsutrymme. Frigör utrymme genom att ta bort filer från lagringsutrymmet på enheten.</translation>
 <translation id="7754347746598978109">Får inte använda JavaScript</translation>
 <translation id="7754704193130578113">Fråga var filerna ska sparas före nedladdning</translation>
+<translation id="7755134875397410803">Innehållet på en webbplats där du använder Google Assistent, dess webbadress samt information som du skickar via assistenten överförs till Google så att du kan få uppgifterna utförda. Informationen kan sparas i Google-kontot. Du kan inaktivera Google Assistent i Chrome-inställningarna. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">En förälder kan ta bort blockeringen</translation>
 <translation id="7757592200364144203">Byt namn på enheten</translation>
 <translation id="7757739382819740102">Kontakter i närheten kan dela filer med dig. Det krävs ett godkännande.</translation>

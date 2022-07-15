@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
 <translation id="2638942478653899953">ບໍ່ສາມາດເຂົ້າຫາ Google Drive ໄດ້. ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ<ph name="END_LINK" /> ແລະລົງຊື່ກັບເຂົ້າຫາອີກ.</translation>
 <translation id="2649120831653069427">ປາສາຍຮຸ້ງ</translation>
+<translation id="2653059201992392941">ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="2663066752008346276">ພາສາມຽມມາ/ພະມ້າທີ່ໃຊ້ແປ້ນພິມ Myansan</translation>
 <translation id="2664412712123763093">ສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2718540689505416944">ຕິດຕັ້ງແອັບດ້ວຍ Linux</translation>
@@ -341,7 +342,6 @@
 <translation id="3971140002794351170">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ)</translation>
 <translation id="3975895378829046965">ການອອກສຽງພາສາບັງກລາ</translation>
-<translation id="3991446849494482687">ນີ້ຈະເປັນການປິດການນຳໃຊ້ການຕັ້ງຄ່າການລັອກຊິມຢູ່ອຸປະກອນນຳ.</translation>
 <translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4017788180641807848">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Workman</translation>
 <translation id="4040753847560036377">PUK ບໍ່ຖືກຕ້ອງ</translation>
@@ -527,6 +527,7 @@
 <translation id="5489067830765222292">ພາສາລັດວຽນ</translation>
 <translation id="5489965683297092283">ປິດຕົວກັ່ນຕອງ <ph name="FILTER_NAME" /> ແລ້ວ.</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
+<translation id="5500104704744051184">ທ່ານຈະບໍ່ສາມາດໃຊ້ເຄືອຂ່າຍນີ້ໄດ້ຈົນກວ່າທ່ານຈະໃສ່ລະຫັດ PUK</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>
 <translation id="5522908512596376669">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງລາຍການແລ້ວ.</translation>
@@ -632,6 +633,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
 <translation id="642282551015776456">ຊື່ນີ້ອາດຈະບໍ່ໃຊ້ເປັນຊື່ໄຟລ໌ ຫຼືໂຟລເດີໄດ້</translation>
 <translation id="6423031066725912715">ພາສາຫວຽດນາມທີ່ໃຊ້ແປ້ນພິມ TCVN</translation>
+<translation id="6430271654280079150">ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
 <translation id="6485131920355264772">ດຶງເອົາຂໍ້ມູນຊ່ອງຫວ່າງບໍ່ສໍາເລັດ</translation>
 <translation id="6495925982925244349">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="649877868557234318">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" /> ໄປໃສ່ <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +900,7 @@
 <translation id="8579285237314169903">ກໍາລັງຊິງຄ໌ <ph name="NUMBER_OF_FILES" /> ລາຍການ...</translation>
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
+<translation id="8608515571837163082">ລະບຸ PIN ບໍ່ຖືກຕ້ອງຫຼາຍເທື່ອເກີນໄປແລ້ວ. ປ້ອນລະຫັດຍົກເລີກການບລັອກ (PUK) 8 ຫຼັກ ທີ່ໃຫ້ມາໂດຍຜູ້ໃຫ້ບໍລິການ.</translation>
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
 <translation id="863903787380594467">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ຜອດ</translation>

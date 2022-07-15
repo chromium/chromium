@@ -441,6 +441,7 @@
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
 <translation id="4775879719735953715">Стандарден прелистувач</translation>
 <translation id="4778644898150334464">Употребете друга лозинка</translation>
+<translation id="478808905805139173">Да се отвори во „Инкогнито“?</translation>
 <translation id="4802417911091824046">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay.
 
 За да ја промените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9055772144595778347">Не може да се најави</translation>
 <translation id="9057972802061533987">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="9065203028668620118">Измени</translation>
+<translation id="9068336935206019333">Отвори во „Инкогнито“ на Chrome</translation>
 <translation id="9079935439869366234">Означи ги сите како непрочитани</translation>
 <translation id="9081058212938299310">Да се ажурира лозинката за <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 ставка</translation>

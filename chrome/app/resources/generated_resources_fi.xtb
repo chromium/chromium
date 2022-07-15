@@ -354,6 +354,7 @@
 <translation id="1340527397989195812">Varmuuskopioi mediatiedostot laitteelta Tiedostot-sovelluksen avulla.</translation>
 <translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
+<translation id="1344377983938103876">Avataan <ph name="URL" />…</translation>
 <translation id="134589511016534552">Mediavälilehdet näkyvät myös Avoimet välilehdet ‑kohdassa</translation>
 <translation id="1346630054604077329">Vahvista ja käynnistä uudelleen</translation>
 <translation id="1346748346194534595">Oikealla</translation>
@@ -6967,6 +6968,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7753735457098489144">Asennus epäonnistui, koska tallennustila ei riitä. Vapauta tilaa poistamalla laitteen tallennustilasta tiedostoja.</translation>
 <translation id="7754347746598978109">JavaScriptin käyttö kielletty</translation>
 <translation id="7754704193130578113">Kysy, minne kukin tiedosto tallennetaan ennen lataamista</translation>
+<translation id="7755134875397410803">Jotta tehtävien hoitaminen sujuisi paremmin, Google saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joilla käytät Assistantia, sekä Assistantin kautta lähettämäsi tiedot. Nämä tiedot voidaan tallentaa Google-tilillesi. Voit poistaa Assistantin käytöstä Chromen asetuksissa. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Vanhempasi voi kumota eston puolestasi.</translation>
 <translation id="7757592200364144203">Vaihda laitteen nimi</translation>
 <translation id="7757739382819740102">Lähistöllä olevat kontaktit voivat jakaa sinulle sisältöä. Edellyttää hyväksyntää.</translation>

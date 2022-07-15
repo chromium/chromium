@@ -108,6 +108,11 @@
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo.</translation>
 <translation id="1123650965531933634">Niega el permiso de colocación de ventanas en todos los sitios de forma predeterminada</translation>
+<translation id="112496019059412872">Permite controlar si la función "Recordar contraseña" está habilitada en el cuadro de diálogo de autenticación Kerberos. Las contraseñas se almacenan cifradas en disco y solo se puede acceder a ellas con el daemon del sistema Kerberos durante una sesión de usuario.
+
+          Si se habilita esta política o no se establece, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para que no tengan que introducirlas de nuevo. Los tickets de Kerberos se obtienen automáticamente a menos que se necesite una autenticación adicional (autenticación de dos factores).
+
+          Si se inhabilita esta política, nunca se recordarán las contraseñas y se eliminarán todas las contraseñas almacenadas anteriormente. Los usuarios tendrán que introducir la contraseña cada vez que quieran autenticarse en el sistema Kerberos. Según la configuración del servidor, esto puede ocurrir cada 8 horas o cada varios meses.</translation>
 <translation id="1133622335785078255">Permite que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="1133814529606590009">Si se habilita esta política, siempre estará activa la recogida de datos anónima con clave de URL, que enviará las URL de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación.
 
@@ -4969,6 +4974,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita la política, se inhabilitará la optimización de WPAD, lo que hará que <ph name="PRODUCT_NAME" /> tenga que esperar más tiempo la respuesta de los servidores WPAD basados en DNS.
 
       Independientemente de si se establece o no esta política, los usuarios no podrán cambiar la opción de configuración de WPAD.</translation>
+<translation id="6365249741643189510">Esta política concede permiso a Projector para crear y transcribir grabaciones de pantalla y subirlas a Drive para los usuarios de empresa.
+      Esta política no afecta a los usuarios de Family Link.
+      Esta política no afecta a la política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para los usuarios de Family Link.
+
+      Si se habilita esta política o no se establece, se habilitará Projector.
+      Si se inhabilita esta política, se inhabilitará Projector.</translation>
 <translation id="6366574325767783825">Si se le asigna el valor "Habilitada" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> aceptará contenidos web de tipo Signed HTTP Exchanges.
 
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>
@@ -5095,6 +5106,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6518102411616460786">Esperar a que la versión actual iguale a la versión inferior objetivo</translation>
 <translation id="6520802717075138474">Importa los motores de búsqueda desde el navegador predeterminado en la primera ejecución.</translation>
 <translation id="6521971538031711337">Impedir que el usuario administrado configure el nombre de host del dispositivo</translation>
+<translation id="652593254122955308">Tiempo de espera hasta que se cierre el perfil inactivo</translation>
 <translation id="6532026122543921610">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, el cual los usuarios no pueden cambiar.
 
       Si se asignan los siguientes valores:
@@ -7290,6 +7302,13 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se define esta política, se usará la configuración predeterminada del entorno aislado de la red. Esta configuración puede variar en función de la versión de <ph name="PRODUCT_NAME" />, de las pruebas de campo que se estén ejecutando en ese momento y de la plataforma.
       El objetivo de esta política es dar a las empresas la opción de inhabilitar el entorno aislado de la red si usan software de terceros que interfiere en el entorno aislado del servicio de red.</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo‑HTTPS</translation>
+<translation id="8850156309475162935">Activa una acción cuando el ordenador está inactivo.
+
+        Si se asigna un número positivo a esta política, el número equivaldrá a los minutos. Si pasa ese tiempo y el usuario no ha realizado ninguna acción, <ph name="PRODUCT_NAME" /> cierra todas las ventanas del navegador y muestra el selector de perfil.
+
+        Si se asigna un número menor que 5 a esta política o no se establece, no ocurrirá nada cuando el ordenador esté inactivo.
+
+        Las APIs Operating System definen la función "Entrada del usuario", que incluye acciones como mover el ratón o escribir con el teclado.</translation>
 <translation id="885147810817138322">Mostrar recomendaciones de contenido multimedia al usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.
@@ -7404,6 +7423,13 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8983537551095611459">Configura la lista de IDs de extensiones que quedarán exentas del proceso de borrado de las sesiones de invitado gestionadas y restringidas.</translation>
 <translation id="8983539044126123594">Habilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="8992176907758534924">No permitir que todos los sitios muestren imágenes</translation>
+<translation id="8994954504552592260">Habilitar la migración de dispositivos gestionados por <ph name="MS_AD_NAME" /> a la gestión en la nube. Esta política permite iniciar de forma remota una migración sin contacto de varios dispositivos de una empresa. Además, se ofrecerá toda la información posible sobre la migración a los usuarios finales.
+
+      Si se habilita esta política y el ID de registro ya se ha subido a DMServer, se activará la función Powerwash en un dispositivo de forma remota.
+
+      Si se inhabilita esta política o no se establece, no se activará la función Powerwash en un dispositivo de forma remota, independientemente del estado de subida del ID de registro.
+
+      Esta comprobación se activará siempre que se cargue la pantalla de inicio de sesión y se repetirá cada hora (si el dispositivo se mantiene en la pantalla de inicio de sesión). Así, se evita que la migración comience en medio de la sesión de un usuario, lo que podría causar problemas a los usuarios finales.</translation>
 <translation id="9007632512838819703">Esta política está obsoleta. Usa la política <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
       Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.

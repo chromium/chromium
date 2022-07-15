@@ -1007,6 +1007,7 @@
 <translation id="1935303383381416800">ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
 <translation id="1937774647013465102">นำเข้าสถาปัตยกรรมคอนเทนเนอร์ประเภท <ph name="ARCHITECTURE_CONTAINER" /> ด้วยอุปกรณ์นี้ ซึ่งเป็นประเภท <ph name="ARCHITECTURE_DEVICE" /> ไม่ได้ คุณลองคืนค่าคอนเทนเนอร์นี้ไปยังอุปกรณ์อื่นได้ หรือเข้าถึงไฟล์ภายในรูปภาพของคอนเทนเนอร์นี้โดยเปิดในแอป Files</translation>
+<translation id="1938240902511979591">โหมดคอนทราสต์สูง แว่นขยาย และการตั้งค่าการแสดงผล</translation>
 <translation id="1938320257168860255">เกิดข้อผิดพลาด ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="1938351510777341717">แป้น Command ภายนอก</translation>
 <translation id="1940546824932169984">อุปกรณ์ที่เชื่อมต่อ</translation>
@@ -1426,6 +1427,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">ไม่รองรับแป้นต่อไปนี้: Tab, Shift, Control, Escape, Caps Lock, Volume</translation>
 <translation id="2309620859903500144">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสง</translation>
+<translation id="2310923358723722542">การแสดงผลและการขยาย</translation>
 <translation id="2312219318583366810">URL ของหน้าเว็บ</translation>
 <translation id="2314165183524574721">การตั้งค่าระดับการเข้าถึงปัจจุบันซ่อนอยู่</translation>
 <translation id="2314774579020744484">ภาษาที่ใช้เมื่อแปลหน้า</translation>
@@ -3210,6 +3212,7 @@
 <translation id="402211067068791756">การดำเนินการนี้จะล้างข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="4025039777635956441">ปิดเสียงเว็บไซต์ที่เลือก</translation>
+<translation id="4027958407426528157">เปิดเว็บไซต์ในแอปที่ติดตั้งใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">เพิ่มวิธีการป้อนข้อมูล</translation>
 <translation id="4029556917477724407">กลับไปจากหน้า <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
@@ -4161,6 +4164,7 @@
 <translation id="496446150016900060">ซิงค์เครือข่าย Wi-Fi กับโทรศัพท์</translation>
 <translation id="4965808351167763748">คุณแน่ใจไหมว่าต้องการตั้งค่าอุปกรณ์นี้ให้เรียกใช้การประชุม Hangouts </translation>
 <translation id="4966972803217407697">คุณอยู่ในโหมดไม่ระบุตัวตน</translation>
+<translation id="4967227914555989138">เพิ่มโน้ต</translation>
 <translation id="496742804571665842">ปิดใช้โปรไฟล์ eSIM</translation>
 <translation id="4971412780836297815">เปิดเมื่อเสร็จสิ้น</translation>
 <translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
@@ -4408,6 +4412,7 @@
 <translation id="5233231016133573565">รหัสดำเนินการ</translation>
 <translation id="5233638681132016545">แท็บใหม่</translation>
 <translation id="5233736638227740678">&amp;วาง</translation>
+<translation id="5233794855520048159">เสียงโมโน เสียงเมื่อเริ่มต้นระบบ และคำบรรยาย</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5235050375939235066">ถอนการติดตั้งแอปไหม</translation>
 <translation id="523505283826916779">การตั้งค่าสำหรับการเข้าถึง</translation>
@@ -4512,6 +4517,7 @@
 <translation id="5333896723098573627">หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; แอป &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องปัดไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) จากนั้นแตะถอนการติดตั้งหรือปิดใช้</translation>
 <translation id="5334142896108694079">แคชของสคริปต์</translation>
 <translation id="5336688142483283574">ระบบจะนำหน้านี้ออกจากประวัติการเข้าชมและกิจกรรมใน <ph name="SEARCH_ENGINE" /> ด้วย</translation>
+<translation id="5336689872433667741">เคอร์เซอร์และทัชแพด</translation>
 <translation id="5337771866151525739">ติดตั้งโดยบุคคลที่สาม</translation>
 <translation id="5337926771328966926">อุปกรณ์ปัจจุบันชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">คุณจะท่องเว็บแบบส่วนตัวได้โดยใช้หน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -4522,6 +4528,7 @@
 <translation id="5342091991439452114">PIN ต้องมีอย่างน้อย <ph name="MINIMUM" /> หลัก</translation>
 <translation id="5344036115151554031">กำลังคืนค่า Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
+<translation id="534449933710420173">โฟลเดอร์ที่ไม่มีชื่อ</translation>
 <translation id="5345916423802287046">เริ่มต้นแอปเมื่อคุณลงชื่อเข้าใช้</translation>
 <translation id="5350293332385664455">ปิด Google Assistant</translation>
 <translation id="535123479159372765">ข้อความคัดลอกมาจากอุปกรณ์อื่น</translation>
@@ -5142,6 +5149,7 @@
 <translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="595959584676692139">โหลดหน้าซ้ำเพื่อใช้ส่วนขยายนี้</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (สูงสุด <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">คีย์ติดหนึบ แป้นพิมพ์บนหน้าจอ การพิมพ์ตามคำบอก การเข้าถึงด้วยสวิตช์ และไฮไลต์ที่ได้รับการปรับปรุง</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="5965661248935608907">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณคลิกปุ่ม "หน้าแรก" หรือทำการค้นหาจากแถบอเนกประสงค์</translation>
 <translation id="5968022600320704045">ไม่พบผลการค้นหา</translation>
@@ -5952,6 +5960,7 @@
 <translation id="6770602306803890733">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6771503742377376720">เป็นผู้ออกใบรับรอง</translation>
 <translation id="6775163072363532304">อุปกรณ์ที่ใช้ได้จะแสดงที่นี่</translation>
+<translation id="677646486571529447">เพิ่มโน้ต</translation>
 <translation id="6776729248872343918">เปิดใช้ฟีเจอร์จับคู่ด่วน</translation>
 <translation id="6777817260680419853">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="6778737459546443941">ผู้ปกครองยังไม่ได้อนุมัติเว็บไซต์นี้</translation>
@@ -6100,6 +6109,7 @@
 <translation id="6900654715912436255">คุณแน่ใจไหมว่าต้องการลบเครื่องมือค้นหานี้</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">แสดงตัวอย่างเสียง</translation>
+<translation id="6902219595840841518">การคลิกโดยอัตโนมัติ ขนาดของเคอร์เซอร์ สีของเคอร์เซอร์ และการไฮไลต์เคอร์เซอร์</translation>
 <translation id="6902336033320348843">ส่วนที่ไม่รองรับ: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">นำอุปกรณ์เข้าร่วมโดเมน</translation>
 <translation id="6903022061658753260">ระบบจะซิงค์ข้อมูลในทุกเบราว์เซอร์ Chrome ที่คุณเปิดการซิงค์ไว้สำหรับบัญชีนี้ สำหรับตัวเลือกการซิงค์ของ Chrome OS ให้ไปที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome OS<ph name="LINK_END" /></translation>
@@ -6556,6 +6566,7 @@
 <translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="7378611153938412599">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ตรวจสอบว่าคุณกำลังตั้งรหัสผ่านที่รัดกุม <ph name="BEGIN_LINK" />ดูเคล็ดลับความปลอดภัยเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">เปิด Chrome เว็บสโตร์</translation>
+<translation id="737938816678769289">เชื่อมต่อและตั้งค่าอุปกรณ์จับคู่ด่วนที่อยู่ใกล้ๆ ได้โดยง่าย</translation>
 <translation id="7380459290951585794">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="7380622428988553498">ชื่ออุปกรณ์มีอักขระที่ไม่ถูกต้อง</translation>
 <translation id="7380768571499464492">อัปเดต <ph name="PRINTER_NAME" /> แล้ว</translation>
@@ -6877,6 +6888,7 @@
 <translation id="7681095912841365527">เว็บไซต์ใช้บลูทูธได้</translation>
 <translation id="7681597159868843240">โดยปกติแล้วเว็บไซต์จะใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวของอุปกรณ์เพื่อดำเนินการตามฟีเจอร์อย่าง Virtual Reality หรือการติดตามการออกกำลังกาย</translation>
 <translation id="7683373461016844951">หากต้องการดำเนินการต่อ ให้คลิก "ตกลง" จากนั้นคลิก "เพิ่มบุคคล" เพื่อสร้างโปรไฟล์ใหม่สำหรับที่อยู่อีเมล <ph name="DOMAIN" /></translation>
+<translation id="7683834360226457448">เครื่องมือแสดงผลสำหรับผู้ที่มีสายตาเลือนราง</translation>
 <translation id="7684212569183643648">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="7684559058815332124">ดูหน้าการเข้าสู่ระบบแคปทีฟพอร์ทัล</translation>
 <translation id="7684718995427157417">หากต้องการสร้างและทดสอบแอป ให้เปิดใช้ Android Debug Bridge (ADB) โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>

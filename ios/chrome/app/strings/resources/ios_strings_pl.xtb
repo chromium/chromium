@@ -439,6 +439,7 @@ Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, 
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
+<translation id="478808905805139173">Otworzyć w trybie incognito?</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
@@ -959,6 +960,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9055772144595778347">Nie można zalogować</translation>
 <translation id="9057972802061533987">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
 <translation id="9065203028668620118">Edytuj</translation>
+<translation id="9068336935206019333">Otwórz w Chrome w trybie incognito</translation>
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Jeden element</translation>

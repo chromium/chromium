@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2163152940313951844">အက္ခရာ မမှန်ကန်ပါ- <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ယူအက်စ်နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် ပေါ်တူဂီ</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> သုံးထားသည်</translation>
 <translation id="2198315389084035571">ရိုးရှင်း တရုတ်</translation>
 <translation id="22085916256174561">ကိုရီးယား</translation>
 <translation id="2208919847696382164">Linux ဖြင့် ထည့်သွင်းရန်</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">F ကီးဘုတ်ဖြင့် တူရကီ</translation>
 <translation id="2732839045120506979">ဗီယက်နမ် VNI</translation>
 <translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်</translation>
+<translation id="2764206540577097904">သင်၏တစ်ဦးချင်း Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးပြီးပါပြီ။</translation>
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2781645665747935084">ဘယ်လ်ဂျီယံ</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">ပိုတိုသောအမည်ကို အသုံးပြုပါ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချနေသည်...</translation>
 <translation id="2951236788251446349">ငါးထီး</translation>
+<translation id="2958458230122209142">သင်၏တစ်ဦးချင်းသိုလှောင်ခန်း <ph name="TOTAL_SPACE" /> အနက် <ph name="REMAINING_PERCENTAGE" />% သာ အနည်းငယ်ကျန်တော့သည်။</translation>
 <translation id="2977940621473452797">ဤဖိုင်ကို ကွန်ပျူတာအတွက် Macintosh ဆော့ဖ်ဝဲဖြင့် ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ ChromeOS သုံးသော သင့်စက်နှင့် တွဲဖက်အသုံးမပြုနိုင်ပါ။ သင့်လျော်သည့် အစားထိုးအက်ပ်အား Chrome Web Store တွင် ရှာဖွေပါ။</translation>
 <translation id="2984337792991268709">ယနေ့ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> ခုကို ပြန်ယူနေသည်...</translation>
@@ -342,7 +345,6 @@
 <translation id="3971140002794351170">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">အင်္ဂလိပ် (ယူကေ)</translation>
 <translation id="3975895378829046965">ဘင်္ဂါလီ အသံထွက်</translation>
-<translation id="3991446849494482687">၎င်းက စက်ရှိ ‘ဆင်းမ်ကတ်လော့ခ်’ ဆက်တင်ကိုလည်း ပိတ်ပါမည်။</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4017788180641807848">Workman ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="4040753847560036377">PUK မမှန်ပါ</translation>
@@ -669,6 +671,7 @@
 <translation id="6823166707458800069">ဤဖိုင်တွဲတွင်သိမ်းထားသည့် ဖိုင်အားလုံးကို အွန်လိုင်းတွင် အလိုအလျောက် အရန်သိမ်းသည်။</translation>
 <translation id="6825883775269213504">ရုရှား</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်မှုမှ ဖယ်ရှားထားသည်။</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> သည် ၎င်း၏ Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးပြီးပါပြီ။</translation>
 <translation id="6856459657722366306">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="6861394552169064235">ပါရှား</translation>
 <translation id="6862635236584086457">ဒီဖိုလ်ဒါ ထဲမှာ သိမ်းဆည်းထားသည့် ဖိုင်များ အားလုံးကို အွန်လိုင်းမှာ အလိုအလျောက် ဘက်အာပ် လုပ်ပေးသည်</translation>
@@ -700,6 +703,7 @@
 <translation id="6989942356279143254">ဆွီဒင်</translation>
 <translation id="6990081529015358884">သင့်ဆီမှာ နေရာ ကုန်သွားပြီ</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ဖိုင်တွဲရွေးထား</translation>
+<translation id="7008426324576352165">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင့်အဖွဲ့အစည်းက သိုလှောင်ခန်း ထပ်မံလိုအပ်ပါသည်။</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="7031639531908619281">တူရကီ</translation>
@@ -933,11 +937,13 @@
 <translation id="8919081441417203123">ဒိန်းမတ်</translation>
 <translation id="8965697826696209160">နေရာ လုံလုံလောက်လောက် မရှိပါ။</translation>
 <translation id="8997962250644902079">တရုတ် (ရိုးရာ) ပင်ယင်</translation>
+<translation id="8998871447376656508">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင်၏ Google Drive တွင် နေရာ မလုံလောက်ပါ။</translation>
 <translation id="9003940392834790328">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="9017798300203431059">ရုရှားအသံထွက်</translation>
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9035012421917565900">၎င်းတို့ကို '<ph name="DESTINATION_NAME" />' သို့ ပြန်ရွှေ့၍မရသည့်အတွက် ဤလုပ်ဆောင်ချက်ကို တစ်ဆင့်နောက်ပြန်၍ ရမည်မဟုတ်ပါ။</translation>
 <translation id="9035689366572880647">လက်ရှိပင်နံပါတ် ထည့်ပါ</translation>
+<translation id="9037777873893411148">*အဖွဲ့အစည်းသိုလှောင်ခန်း ပြည့်ပါပြီ</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" အမည်ဖြင့်ဖိုင် ရှိပြီးဖြစ်သည်။ အခြားအမည်ရွေးပါ။</translation>
 <translation id="9046895021617826162">ကွန်ရက်ချိတ်ဆက်မှု မအောင်မြင်ပါ</translation>
 <translation id="9065512565307033593">အတည်ပြု၍မရပါက သင့်ကွန်ရက်သုံးခွင့်ကို ပိတ်လိုက်ပါမည်။</translation>

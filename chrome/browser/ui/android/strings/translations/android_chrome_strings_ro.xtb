@@ -460,6 +460,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{O descărcare programată}few{# descărcări programate}other{# de descărcări programate}}</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
+<translation id="3479552764303398839">Nu acum</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre conținutul sugerat</translation>
 <translation id="3495219333887281978">Foaia de conectare din partea de jos deschisă la jumătate din înălțime.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -667,6 +668,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="47217992755561375">Vezi principalele site-uri</translation>
 <translation id="4732120983431207637">Instrument de derulare a stivei</translation>
 <translation id="4736934858538408121">Card virtual</translation>
+<translation id="473775607612524610">Actualizează</translation>
 <translation id="4738836084190194332">Ultima sincronizare: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Vei primi sugestii îmbunătățite în bara de adrese</translation>
 <translation id="4742970037960872810">Elimină evidențierea</translation>

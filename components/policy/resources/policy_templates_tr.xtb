@@ -108,6 +108,11 @@
 
       Bu politikayı ayarlarsanız kullanıcılar tarafından değiştirilemez.</translation>
 <translation id="1123650965531933634">Pencere yerleşimi iznini tüm sitelerde varsayılan olarak reddeder</translation>
+<translation id="112496019059412872">Kerberos kimlik doğrulama iletişim kutusunda "Şifreyi hatırla" özelliğinin etkinleştirilip etkinleştirilmediğini kontrol eder. Şifreler diskte şifrelenmiş olarak saklanır ve yalnızca Kerberos sistemi arka alan programı tarafından ve bir kullanıcı oturumu sırasında erişilebilir.
+
+          Bu politika etkinleştirilir veya ayarlanırsa kullanıcılar, tekrar girmeleri gerekmesin diye Kerberos şifrelerinin hatırlanıp hatırlanmayacağına karar verebilirler. Ek bir kimlik doğrulama işlemi (iki faktörlü kimlik doğrulama) gerekmedikçe Kerberos biletleri otomatik olarak getirilir.
+
+          Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve daha önce saklanan tüm şifreler silinir. Kullanıcılar, Kerberos sisteminde kimlik doğrulamaları gerektiğinde her zaman şifrelerini girmelidirler. Sunucu ayarlarına bağlı olarak, bu genellikle her 8 saatte bir ile birkaç ayda bir arasında olur.</translation>
 <translation id="1133622335785078255">Kullanıcıların, <ph name="LACROS_NAME" /> tarayıcıda hem ikinci profiller oluşturup kullanmalarına hem de misafir modunu kullanmalarına izin ver</translation>
 <translation id="1133814529606590009">Politika, Etkin değerine ayarlanırsa kullanıcının ziyaret ettiği sayfaların URL'lerini, arama ve göz atmayı iyileştirmek için Google'a gönderen, URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
 
@@ -4913,6 +4918,12 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Politika, Devre Dışı değerine ayarlanırsa WPAD optimizasyonu devre dışı bırakılarak <ph name="PRODUCT_NAME" /> ürününün DNS tabanlı WPAD sunucularını daha fazla beklemesine neden olur.
 
       Bu politika ayarlansa da ayarlanmasa da kullanıcılar WPAD optimizasyonu ayarını değiştiremez.</translation>
+<translation id="6365249741643189510">Bu politika, kurumsal kullanıcılar için Projector uygulamasının ekran kaydı oluşturup metne dönüştürmesine ve bunları Drive'a yüklemesine izin verir.
+      Bu politika Family Link kullanıcılarını etkilemez.
+      Bu politika Family Link kullanıcıları için <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> politikasını etkilemez.
+
+      Politika ayarlanmazsa veya etkinleştirilirse Projector etkinleştirilir.
+      Politika devre dışı bırakılırsa Projector da devre dışı bırakılır.</translation>
 <translation id="6366574325767783825">Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, İmzalanmış HTTP Takası olarak yayınlanan web içeriklerini kabul eder.
 
       Politikanın False (Yanlış) değerine ayarlanması, İmzalanmış HTTP Takası içeriğinin yüklenmesini önler.</translation>
@@ -5039,6 +5050,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6518102411616460786">Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle</translation>
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
 <translation id="6521971538031711337">Yönetilen kullanıcının, cihazın ana makine adını yapılandırmasını engelle</translation>
+<translation id="652593254122955308">Boşta kalan profil kapatılıncaya kadar zaman aşımı</translation>
 <translation id="6532026122543921610"><ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> politikası otomatik saat dilimi algılama ayarını kapatmadıkça, politikayı ayarlamak kullanıcıların değiştiremeyeceği otomatik saat dilimi algılama yöntemini belirtir.
 
       Politika ayarları:
@@ -7219,6 +7231,13 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Bu politika ayarlanmazsa ağ korumalı alanının varsayılan yapılandırması kullanılır. Bu yapılandırma <ph name="PRODUCT_NAME" /> sürümüne, mevcut saha denemelerine ve platforma bağlı olarak değişebilir.
       Bu politika, ağ hizmeti korumalı alanının çalışmasını etkileyen üçüncü taraf yazılımı kullanan işletmelere ağ korumalı alanını devre dışı bırakma esnekliği sunmak amacıyla tasarlanmıştır.</translation>
 <translation id="8842208363354615697">Yalnızca HTTPS Modunun etkinleştirilmesine izin ver</translation>
+<translation id="8850156309475162935">Bilgisayar boşta kaldığında işlem tetikler.
+
+        Bu politika pozitif bir sayıya ayarlandığında dakika sayısı ayarlanmış demektir. Ayarlanan dakika sayısı boyunca kullanıcı girişi olmazsa <ph name="PRODUCT_NAME" /> tüm tarayıcı pencerelerini kapatır ve profil seçiciyi gösterir.
+
+        Bu politika 5'ten daha düşük bir sayıya ayarlanırsa veya ayarlanmadan bırakılırsa bilgisayar boşta kaldığında hiçbir şey olmaz.
+
+        "Kullanıcı girişi", işletim sistemi API'leri tarafından tanımlanır ve fareyi hareket ettirme ya da klavyede yazma gibi işlemleri içerir.</translation>
 <translation id="885147810817138322">Kullanıcıya medya önerileri göster</translation>
 <translation id="8852579753940989645">Oluşturucu Kod Bütünlüğü'nü etkinleştir</translation>
 <translation id="8854571659927427063">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan yer işaretleri ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yer işaretleri ilk çalıştırmada içe aktarılmaz.
@@ -7330,6 +7349,13 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8983537551095611459">Kısıtlanmış yönetilen misafir oturumunu temizleme prosedüründen muaf tutulan uzantı kimliklerinin listesini yapılandırın</translation>
 <translation id="8983539044126123594">Ek Google hesaplarıyla oturum açmayı etkinleştir</translation>
 <translation id="8992176907758534924">Hiçbir sitenin resimleri görüntülemesine izin verme</translation>
+<translation id="8994954504552592260"><ph name="MS_AD_NAME" /> tarafından yönetilen cihazların bulut yönetimine taşınmasını etkinleştir. Bu politika, bir şirketteki çeşitli cihazların hiç dokunulmadan uzaktan taşınmasına olanak tanır. Ayrıca, taşıma işlemi son kullanıcılar açısından mümkün olduğunca şeffaf bir şekilde gerçekleştirilir.
+
+      Bu politika etkinleştirilirse ve kayıt kimliği halihazırda DMServer'a yüklenmiş olursa cihazın powerwash işlevi uzaktan tetiklenir.
+
+      Bu politika devre dışı bırakılır veya ayarlanmazsa, kayıt kimliğinin yüklenme durumu ne olursa olsun cihazın powerwash işlevi uzaktan tetiklenmez.
+
+      Bu denetim, giriş ekranı her yüklendiğinde tetiklenir. Cihazda giriş ekranı açık kalırsa denetim saatte bir yeniden tetiklenir. Böylece, taşıma işlemi kullanıcı oturumunun ortasında başlamaz ve son kullanıcıların bundan dolayı sorun yaşama ihtimali ortadan kalkar.</translation>
 <translation id="9007632512838819703">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> politikasını kullanın.
 
       Yazım denetimi dillerini zorla devre dışı bırakır. Bu listedeki tanınmayan diller yoksayılır.
