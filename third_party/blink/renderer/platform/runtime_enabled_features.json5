@@ -957,10 +957,6 @@
       status: "stable",
     },
     {
-      name: "ExceptionMetaDataForDevTools",
-      status: "stable",
-    },
-    {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
     },

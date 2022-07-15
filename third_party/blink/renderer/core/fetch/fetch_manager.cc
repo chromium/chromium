@@ -904,21 +904,19 @@ void FetchManager::Loader::Failed(
     } else {
       v8::Local<v8::Value> value = exception_.Get(state->GetIsolate());
       exception_.Reset();
-      if (RuntimeEnabledFeatures::ExceptionMetaDataForDevToolsEnabled()) {
-        ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
-        if (devtools_request_id) {
-          debugger->GetV8Inspector()->associateExceptionData(
-              state->GetContext(), value,
-              V8AtomicString(state->GetIsolate(), "requestId"),
-              V8String(state->GetIsolate(), *devtools_request_id));
-        }
-        if (issue_id) {
-          debugger->GetV8Inspector()->associateExceptionData(
-              state->GetContext(), value,
-              V8AtomicString(state->GetIsolate(), "issueId"),
-              V8String(state->GetIsolate(),
-                       IdentifiersFactory::IdFromToken(*issue_id)));
-        }
+      ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
+      if (devtools_request_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "requestId"),
+            V8String(state->GetIsolate(), *devtools_request_id));
+      }
+      if (issue_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "issueId"),
+            V8String(state->GetIsolate(),
+                     IdentifiersFactory::IdFromToken(*issue_id)));
       }
       resolver_->Reject(value);
     }
