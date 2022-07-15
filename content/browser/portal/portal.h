@@ -66,8 +66,9 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   void DestroySelf();
 
   // Called from a synchronous IPC from the renderer process in order to create
-  // the proxy.
-  RenderFrameProxyHost* CreateProxyAndAttachPortal();
+  // the proxy. `remote_frame_interfaces` must not be null.
+  RenderFrameProxyHost* CreateProxyAndAttachPortal(
+      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces);
 
   // Closes the contents associated with this object gracefully, and destroys
   // itself thereafter. This will fire unload and related event handlers.

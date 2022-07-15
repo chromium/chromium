@@ -34,24 +34,25 @@ class CORE_EXPORT WebRemoteFrameImpl final
   static WebRemoteFrameImpl* CreateMainFrame(
       WebView*,
       WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener);
+      WebFrame* opener,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
+
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,
       WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const WebElement& frame_owner);
+      const WebElement& frame_owner,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      WebRemoteFrameClient*,
-                     InterfaceRegistry*,
-                     AssociatedInterfaceProvider*,
                      const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;
 
@@ -76,11 +77,13 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const WebString& name,
       const FramePolicy&,
       WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener) override;
+      WebFrame* opener,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::RemoteFrameHostInterfaceBase> remote_frame_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
+          receiver) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
@@ -104,14 +107,18 @@ class CORE_EXPORT WebRemoteFrameImpl final
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
       const override;
   bool IsAdSubframe() const override;
-  void InitializeCoreFrame(Page&,
-                           FrameOwner*,
-                           WebFrame* parent,
-                           WebFrame* previous_sibling,
-                           FrameInsertType,
-                           const AtomicString& name,
-                           WindowAgentFactory*,
-                           const base::UnguessableToken& devtools_frame_token);
+  void InitializeCoreFrame(
+      Page&,
+      FrameOwner*,
+      WebFrame* parent,
+      WebFrame* previous_sibling,
+      FrameInsertType,
+      const AtomicString& name,
+      WindowAgentFactory*,
+      const base::UnguessableToken& devtools_frame_token,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
   RemoteFrame* GetFrame() const { return frame_.Get(); }
 
   WebRemoteFrameClient* Client() const { return client_; }
@@ -142,9 +149,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
   // TODO(dcheng): Inline this field directly rather than going through Member.
   Member<RemoteFrameClientImpl> frame_client_;
   Member<RemoteFrame> frame_;
-
-  InterfaceRegistry* const interface_registry_;
-  AssociatedInterfaceProvider* const associated_interface_provider_;
 
   // Oilpan: WebRemoteFrameImpl must remain alive until close() is called.
   // Accomplish that by keeping a self-referential Persistent<>. It is

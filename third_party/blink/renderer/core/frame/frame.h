@@ -32,6 +32,8 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink-forward.h"
@@ -83,6 +86,8 @@ class WindowProxyManager;
 struct FrameLoadRequest;
 class WindowAgentFactory;
 class WebFrame;
+class WebLocalFrame;
+class WebRemoteFrame;
 
 enum class FrameDetachType { kRemove, kSwap };
 
@@ -396,7 +401,18 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Detaches a frame from its parent frame if it has one.
   void DetachFromParent();
 
-  bool Swap(WebFrame*);
+  // Swap out this frame for a new local frame.
+  bool Swap(WebLocalFrame*);
+
+  // Swap out this frame for a new remote frame. This method takes the
+  // mojo interfaces because they are provided in the construction IPC
+  // as opposed to being fetched via an AssociatedInterfaceProvider which
+  // WebLocalFrame uses.
+  bool Swap(WebRemoteFrame*,
+            mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+                remote_frame_host,
+            mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+                remote_frame_receiver);
 
   // Removes the given child from this frame.
   void RemoveChild(Frame* child);
@@ -500,6 +516,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   bool FocusCrossesFencedBoundary();
 
   void CancelFormSubmissionWithVersion(uint64_t version);
+
+  bool SwapImpl(WebFrame*,
+                mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+                    remote_frame_host,
+                mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+                    remote_frame_receiver);
 
   Member<FrameClient> client_;
   const Member<WindowProxyManager> window_proxy_manager_;

@@ -74,7 +74,6 @@ namespace {
 
 constexpr int32_t kSubframeRouteId = 20;
 constexpr int32_t kSubframeWidgetRouteId = 21;
-constexpr int32_t kFrameProxyRouteId = 22;
 
 const char kParentFrameHTML[] = "Parent frame <iframe name='frame'></iframe>";
 
@@ -131,6 +130,16 @@ class RenderFrameImplTest : public RenderViewTest {
     frame_replication_state->name = "frame";
     frame_replication_state->unique_name = "frame-uniqueName";
 
+    auto remote_frame_interfaces =
+        mojom::RemoteFrameInterfacesFromBrowser::New();
+    mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+    remote_frame_interfaces->frame_receiver =
+        frame.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<blink::mojom::RemoteFrameHost> frame_host;
+    std::ignore = frame_host.BindNewEndpointAndPassDedicatedReceiver();
+    remote_frame_interfaces->frame_host = frame_host.Unbind();
+
     auto remote_main_frame_interfaces = mojom::RemoteMainFrameInterfaces::New();
     mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
     remote_main_frame_interfaces->main_frame =
@@ -143,8 +152,9 @@ class RenderFrameImplTest : public RenderViewTest {
     blink::RemoteFrameToken remote_child_token = blink::RemoteFrameToken();
     RenderFrameImpl::FromWebFrame(
         GetMainRenderFrame()->GetWebFrame()->FirstChild())
-        ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
-                 remote_child_token, std::move(remote_main_frame_interfaces));
+        ->Unload(false, frame_replication_state->Clone(), remote_child_token,
+                 std::move(remote_frame_interfaces),
+                 std::move(remote_main_frame_interfaces));
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,

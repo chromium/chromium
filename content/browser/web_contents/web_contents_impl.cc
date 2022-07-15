@@ -2418,6 +2418,9 @@ bool WebContentsImpl::IsInnerWebContentsForGuest() {
 void WebContentsImpl::AttachInnerWebContents(
     std::unique_ptr<WebContents> inner_web_contents,
     RenderFrameHost* render_frame_host,
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
+        remote_frame_host_receiver,
     bool is_full_page) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::AttachInnerWebContents",
                         "inner_web_contents",
@@ -2489,6 +2492,10 @@ void WebContentsImpl::AttachInnerWebContents(
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
           render_frame_host_impl->GetSiteInstance(),
           inner_main_frame->frame_tree_node());
+  if (remote_frame && remote_frame_host_receiver) {
+    proxy->BindRemoteFrameInterfaces(std::move(remote_frame),
+                                     std::move(remote_frame_host_receiver));
+  }
 
   // When attaching a GuestView as an inner WebContents, there should already be
   // a live RenderFrame, which has to be swapped. When attaching a portal, there

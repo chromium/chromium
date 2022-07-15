@@ -22,7 +22,6 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   void Detached(FrameDetachType) override;
 
   unsigned BackForwardLength() override;
-  AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 

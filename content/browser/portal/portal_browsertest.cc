@@ -2355,7 +2355,17 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallCreateProxyAndAttachPortalTwice) {
   portal_interceptor->SetNavigateCallback(base::BindRepeating(
       [](Portal* portal, const GURL& url, blink::mojom::ReferrerPtr referrer,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal->CreateProxyAndAttachPortal();
+        // Create stub RemoteFrameInterfaces.
+        auto remote_frame_interfaces =
+            mojom::RemoteFrameInterfacesFromRenderer::New();
+        remote_frame_interfaces->frame_host_receiver =
+            mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
+                .BindNewEndpointAndPassDedicatedReceiver();
+        mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+        std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
+        remote_frame_interfaces->frame = frame.Unbind();
+
+        portal->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
         std::move(callback).Run();
       },
       portal));

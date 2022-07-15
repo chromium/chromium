@@ -27,8 +27,18 @@
 
 namespace blink {
 
-bool WebFrame::Swap(WebFrame* frame) {
+bool WebFrame::Swap(WebLocalFrame* frame) {
   return ToCoreFrame(*this)->Swap(frame);
+}
+
+bool WebFrame::Swap(
+    WebRemoteFrame* frame,
+    CrossVariantMojoAssociatedRemote<mojom::blink::RemoteFrameHostInterfaceBase>
+        remote_frame_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
+        remote_frame_receiver) {
+  return ToCoreFrame(*this)->Swap(frame, std::move(remote_frame_host),
+                                  std::move(remote_frame_receiver));
 }
 
 void WebFrame::Detach() {

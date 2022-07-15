@@ -32,9 +32,7 @@ class FrameSinkId;
 
 namespace blink {
 
-class AssociatedInterfaceProvider;
 class ChildFrameCompositingHelper;
-class InterfaceRegistry;
 class LocalFrame;
 class RemoteFrameClient;
 class WebFrameWidget;
@@ -53,18 +51,20 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.
-  RemoteFrame(RemoteFrameClient*,
-              Page&,
-              FrameOwner*,
-              Frame* parent,
-              Frame* previous_sibling,
-              FrameInsertType insert_type,
-              const RemoteFrameToken& frame_token,
-              WindowAgentFactory* inheriting_agent_factory,
-              InterfaceRegistry*,
-              AssociatedInterfaceProvider*,
-              WebFrameWidget* ancestor_widget,
-              const base::UnguessableToken& devtools_frame_token);
+  RemoteFrame(
+      RemoteFrameClient*,
+      Page&,
+      FrameOwner*,
+      Frame* parent,
+      Frame* previous_sibling,
+      FrameInsertType insert_type,
+      const RemoteFrameToken& frame_token,
+      WindowAgentFactory* inheriting_agent_factory,
+      WebFrameWidget* ancestor_widget,
+      const base::UnguessableToken& devtools_frame_token,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
   ~RemoteFrame() override;
 
   // Frame overrides:
@@ -253,10 +253,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void ApplyReplicatedPermissionsPolicyHeader();
   void RecordSentVisualProperties();
 
-  static void BindToReceiver(
-      RemoteFrame* frame,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
-
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;
   absl::optional<blink::FrameVisualProperties> sent_visual_properties_;
@@ -274,8 +270,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   // local root ancestor (eg it is a proxy of the root frame) then the pointer
   // is null.
   WebFrameWidget* ancestor_widget_;
-
-  InterfaceRegistry* const interface_registry_;
 
   // True when the process rendering the child's frame contents has terminated
   // and ChildProcessGone() is called.

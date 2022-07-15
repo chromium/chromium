@@ -1141,8 +1141,8 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
           "iframe");
   EXPECT_FALSE(HasRemoteFrame(iframe));
 
-  webview->MainFrameImpl()->FirstChild()->Swap(
-      frame_test_helpers::CreateRemote());
+  frame_test_helpers::SwapRemoteFrame(webview->MainFrameImpl()->FirstChild(),
+                                      frame_test_helpers::CreateRemote());
   EXPECT_TRUE(HasRemoteFrame(iframe));
 }
 

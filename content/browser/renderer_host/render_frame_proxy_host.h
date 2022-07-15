@@ -93,8 +93,9 @@ class CONTENT_EXPORT RenderFrameProxyHost
     virtual void OnCreated(RenderFrameProxyHost* host) {}
     // Called when a RenderFrameProxyHost is deleted.
     virtual void OnDeleted(RenderFrameProxyHost* host) {}
-    // Called when RemoteMainFrame mojo channels are bound to a
+    // Called when Remote/RemoteMainFrame mojo channels are bound to a
     // RenderFrameProxyHost.
+    virtual void OnRemoteFrameBound(RenderFrameProxyHost* host) {}
     virtual void OnRemoteMainFrameBound(RenderFrameProxyHost* host) {}
   };
 
@@ -249,20 +250,26 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void DidUpdateVisualProperties(const cc::RenderFrameMetadata& metadata);
   void ChildProcessGone();
 
-  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfacesTesting();
   bool IsInertForTesting();
 
+  mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
+  BindRemoteFrameReceiverForTesting();
   mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame>
   BindRemoteMainFrameReceiverForTesting();
 
   const blink::RemoteFrameToken& GetFrameToken() const { return frame_token_; }
 
-  // Bind mojo endpoints of the RemoteMainFrame in blink and pass unbound
+  // Bind mojo endpoints of the Remote/RemoteMainFrame in blink and pass unbound
   // corresponding endpoints. The corresponding endpoints should be transferred
   // and bound in blink.
+  mojom::RemoteFrameInterfacesFromBrowserPtr
+  CreateAndBindRemoteFrameInterfaces();
   mojom::RemoteMainFrameInterfacesPtr CreateAndBindRemoteMainFrameInterfaces();
 
-  // Bind mojo endpoints of the RemoteMainFrame in blink.
+  // Bind mojo endpoints of the Remote/RemoteMainFrame in blink.
+  void BindRemoteFrameInterfaces(
+      mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame>,
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>);
   void BindRemoteMainFrameInterfaces(
       mojo::PendingAssociatedRemote<blink::mojom::RemoteMainFrame>
           remote_main_frame,
@@ -291,13 +298,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Helper to retrieve the |AgentSchedulingGroup| this proxy host is associated
   // with.
   AgentSchedulingGroupHost& GetAgentSchedulingGroup();
-
-  // IPC::Listener
-  void OnAssociatedInterfaceRequest(
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
-
-  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces();
 
   // Needed for tests to be able to swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&

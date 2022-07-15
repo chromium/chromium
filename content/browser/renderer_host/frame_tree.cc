@@ -707,7 +707,8 @@ void FrameTree::SetPageFocus(SiteInstanceGroup* group, bool is_focused) {
     RenderFrameProxyHost* proxy = root_manager->current_frame_host()
                                       ->browsing_context_state()
                                       ->GetRenderFrameProxyHost(group);
-    proxy->GetAssociatedRemoteFrame()->SetPageFocus(is_focused);
+    if (proxy->is_render_frame_proxy_live())
+      proxy->GetAssociatedRemoteFrame()->SetPageFocus(is_focused);
   }
 }
 

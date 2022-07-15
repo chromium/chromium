@@ -120,7 +120,9 @@ void Portal::DestroySelf() {
   owner_render_frame_host_->DestroyPortal(this);
 }
 
-RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
+RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces) {
+  DCHECK(remote_frame_interfaces);
   WebContentsImpl* outer_contents_impl = GetPortalHostContents();
 
   // Check if portal has already been attached.
@@ -169,7 +171,9 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
                           "ownership is yielded";
   outer_contents_impl->AttachInnerWebContents(
       portal_contents_.ReleaseOwnership(), outer_node->current_frame_host(),
-      false /* is_full_page */);
+      std::move(remote_frame_interfaces->frame),
+      std::move(remote_frame_interfaces->frame_host_receiver),
+      /*is_full_page=*/false);
 
   // Create the view for all RenderViewHosts that don't have a
   // RenderWidgetHostViewChildFrame view.

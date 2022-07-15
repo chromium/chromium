@@ -263,8 +263,11 @@ void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
   RenderFrameHostManager* render_manager =
       navigation_request_.frame_tree_node()->render_manager();
   if (RenderFrameProxyHost* proxy = render_manager->GetProxyToParent()) {
-    proxy->GetAssociatedRemoteFrame()->RenderFallbackContentWithResourceTiming(
-        std::move(timing_info_), server_timing_value_);
+    if (proxy->is_render_frame_proxy_live()) {
+      proxy->GetAssociatedRemoteFrame()
+          ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
+                                                    server_timing_value_);
+    }
   } else {
     render_manager->current_frame_host()
         ->GetAssociatedLocalFrame()

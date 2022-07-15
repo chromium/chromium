@@ -13,15 +13,12 @@
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
 namespace blink {
-class AssociatedInterfaceProvider;
 
 class RemoteFrameClient : public FrameClient {
  public:
   ~RemoteFrameClient() override = default;
 
   unsigned BackForwardLength() override = 0;
-
-  virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
 };
 
 }  // namespace blink

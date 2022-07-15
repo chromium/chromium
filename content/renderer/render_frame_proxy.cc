@@ -39,33 +39,19 @@
 
 namespace content {
 
-namespace {
-
-// Facilitates lookup of RenderFrameProxy by routing_id.
-typedef std::map<int, RenderFrameProxy*> RoutingIDProxyMap;
-static base::LazyInstance<RoutingIDProxyMap>::DestructorAtExit
-    g_routing_id_proxy_map = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 // static
 RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* frame_to_replace,
-    int routing_id,
     blink::mojom::TreeScopeType tree_scope_type,
     const blink::RemoteFrameToken& proxy_frame_token) {
-  CHECK_NE(routing_id, MSG_ROUTING_NONE);
-
-  std::unique_ptr<RenderFrameProxy> proxy(
-      new RenderFrameProxy(agent_scheduling_group, routing_id));
+  std::unique_ptr<RenderFrameProxy> proxy(new RenderFrameProxy());
 
   // When a RenderFrame is replaced by a RenderProxy, the WebRemoteFrame should
   // always come from WebRemoteFrame::create and a call to WebFrame::swap must
   // follow later.
   blink::WebRemoteFrame* web_frame = blink::WebRemoteFrame::Create(
-      tree_scope_type, proxy.get(), proxy->blink_interface_registry_.get(),
-      proxy->GetRemoteAssociatedInterfaces(), proxy_frame_token);
+      tree_scope_type, proxy.get(), proxy_frame_token);
 
   proxy->Init(web_frame);
   return proxy.release();
@@ -75,13 +61,13 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
 RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     AgentSchedulingGroup& agent_scheduling_group,
     const blink::RemoteFrameToken& frame_token,
-    int routing_id,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
     const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
+    mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
   blink::WebRemoteFrame* parent = nullptr;
   if (parent_frame_token) {
@@ -93,8 +79,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
       return nullptr;
   }
 
-  std::unique_ptr<RenderFrameProxy> proxy(
-      new RenderFrameProxy(agent_scheduling_group, routing_id));
+  std::unique_ptr<RenderFrameProxy> proxy(new RenderFrameProxy());
   blink::WebRemoteFrame* web_frame = nullptr;
 
   blink::WebFrame* opener = nullptr;
@@ -106,9 +91,9 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
         RenderViewImpl::FromRoutingID(render_view_routing_id);
     blink::WebView* web_view = render_view->GetWebView();
     web_frame = blink::WebRemoteFrame::CreateMainFrame(
-        web_view, proxy.get(), proxy->blink_interface_registry_.get(),
-        proxy->GetRemoteAssociatedInterfaces(), frame_token,
-        devtools_frame_token, opener);
+        web_view, proxy.get(), frame_token, devtools_frame_token, opener,
+        std::move(remote_frame_interfaces->frame_host),
+        std::move(remote_frame_interfaces->frame_receiver));
     // Root frame proxy has no ancestors to point to their RenderWidget.
 
     // The WebRemoteFrame created here was already attached to the Page as its
@@ -122,10 +107,10 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // should not wind up here.
     web_frame = parent->CreateRemoteChild(
         tree_scope_type, blink::WebString::FromUTF8(replicated_state->name),
-        replicated_state->frame_policy, proxy.get(),
-        proxy->blink_interface_registry_.get(),
-        proxy->GetRemoteAssociatedInterfaces(), frame_token,
-        devtools_frame_token, opener);
+        replicated_state->frame_policy, proxy.get(), frame_token,
+        devtools_frame_token, opener,
+        std::move(remote_frame_interfaces->frame_host),
+        std::move(remote_frame_interfaces->frame_receiver));
   }
 
   proxy->Init(web_frame);
@@ -145,39 +130,24 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 RenderFrameProxy* RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* parent,
-    int proxy_routing_id,
     const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const blink::WebElement& frame_owner) {
-  auto proxy = base::WrapUnique(
-      new RenderFrameProxy(agent_scheduling_group, proxy_routing_id));
+    const blink::WebElement& frame_owner,
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost> frame_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame> frame) {
+  auto proxy = base::WrapUnique(new RenderFrameProxy());
   blink::WebRemoteFrame* web_frame =
       blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
-          blink::mojom::TreeScopeType::kDocument, proxy.get(),
-          proxy->blink_interface_registry_.get(),
-          proxy->GetRemoteAssociatedInterfaces(), frame_token,
-          devtools_frame_token, frame_owner);
+          blink::mojom::TreeScopeType::kDocument, proxy.get(), frame_token,
+          devtools_frame_token, frame_owner, std::move(frame_host),
+          std::move(frame));
   proxy->Init(web_frame);
   return proxy.release();
 }
 
-RenderFrameProxy::RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
-                                   int routing_id)
-    : agent_scheduling_group_(agent_scheduling_group),
-      routing_id_(routing_id) {
-  std::pair<RoutingIDProxyMap::iterator, bool> result =
-      g_routing_id_proxy_map.Get().insert(std::make_pair(routing_id_, this));
-  CHECK(result.second) << "Inserting a duplicate item.";
-  agent_scheduling_group_.AddRoute(routing_id_, this);
-  blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
-      binder_registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr());
-}
+RenderFrameProxy::RenderFrameProxy() = default;
 
-RenderFrameProxy::~RenderFrameProxy() {
-  CHECK(!web_frame_);
-  agent_scheduling_group_.RemoveRoute(routing_id_);
-  g_routing_id_proxy_map.Get().erase(routing_id_);
-}
+RenderFrameProxy::~RenderFrameProxy() = default;
 
 void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame) {
   CHECK(web_frame);
@@ -232,21 +202,6 @@ void RenderFrameProxy::SetReplicatedState(
       state->has_received_user_gesture_before_nav);
 }
 
-bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {
-  return false;
-}
-
-void RenderFrameProxy::OnAssociatedInterfaceRequest(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  if (interface_name == blink::mojom::RemoteFrame::Name_)
-    associated_interfaces_.TryBindInterface(interface_name, &handle);
-}
-
-bool RenderFrameProxy::Send(IPC::Message* message) {
-  return agent_scheduling_group_.Send(message);
-}
-
 void RenderFrameProxy::DidStartLoading() {
   web_frame_->DidStartLoading();
 }
@@ -256,22 +211,6 @@ void RenderFrameProxy::FrameDetached(DetachType type) {
   web_frame_ = nullptr;
 
   delete this;
-}
-
-blink::AssociatedInterfaceProvider*
-RenderFrameProxy::GetRemoteAssociatedInterfaces() {
-  if (!remote_associated_interfaces_) {
-    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
-        remote_interfaces;
-    agent_scheduling_group_.GetRemoteRouteProvider()->GetRoute(
-        routing_id_, remote_interfaces.InitWithNewEndpointAndPassReceiver());
-    remote_associated_interfaces_ =
-        std::make_unique<blink::AssociatedInterfaceProvider>(
-            std::move(remote_interfaces),
-            agent_scheduling_group_.agent_group_scheduler()
-                .DefaultTaskRunner());
-  }
-  return remote_associated_interfaces_.get();
 }
 
 }  // namespace content

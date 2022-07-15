@@ -844,7 +844,8 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
     WebFrame* grandchild = WebView().MainFrame()->FirstChild()->FirstChild();
     EXPECT_TRUE(grandchild);
     EXPECT_TRUE(grandchild->IsWebLocalFrame());
-    grandchild->Swap(frame_test_helpers::CreateRemote());
+    frame_test_helpers::SwapRemoteFrame(grandchild,
+                                        frame_test_helpers::CreateRemote());
   }
   auto* widget = WebView().MainFrameViewWidget();
   widget->SetPageScaleStateAndLimits(1.3f, true, 1.0f, 3.0f);

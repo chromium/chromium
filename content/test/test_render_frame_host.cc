@@ -271,7 +271,17 @@ TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
   fenced_frames_.push_back(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
-  fenced_frame->CreateProxyAndAttachToOuterFrameTree();
+  // Create stub RemoteFrameInterfaces.
+  auto remote_frame_interfaces =
+      mojom::RemoteFrameInterfacesFromRenderer::New();
+  remote_frame_interfaces->frame_host_receiver =
+      mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
+          .BindNewEndpointAndPassDedicatedReceiver();
+  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+  std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
+  remote_frame_interfaces->frame = frame.Unbind();
+  fenced_frame->CreateProxyAndAttachToOuterFrameTree(
+      std::move(remote_frame_interfaces));
   return static_cast<TestRenderFrameHost*>(fenced_frame->GetInnerRoot());
 }
 

@@ -522,8 +522,14 @@ void GuestViewBase::WillAttach(
 
   web_contents()->ResumeLoadingCreatedWebContents();
 
+  // Since this inner WebContents is created from the browser side we do
+  // not have RemoteFrame mojo channels so we pass in
+  // NullAssociatedRemote/Receivers. New channels will be bound when the
+  // `CreateFrameProxy` IPC is sent.
   owner_web_contents_->AttachInnerWebContents(
       base::WrapUnique<WebContents>(web_contents()), outer_contents_frame,
+      /*remote_frame=*/mojo::NullAssociatedRemote(),
+      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
       is_full_page_plugin);
   // We don't ACK until after AttachToOuterWebContentsFrame, so that
   // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame

@@ -1384,7 +1384,10 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   // ShadowDOM as well so we need to check the `FrameTree::Type` as well.
   if (frame_tree_node_->IsFencedFrameRoot() &&
       frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame) {
-    GetProxyToOuterDelegate()->GetAssociatedRemoteFrame()->Collapse(collapsed);
+    if (GetProxyToOuterDelegate()->is_render_frame_proxy_live()) {
+      GetProxyToOuterDelegate()->GetAssociatedRemoteFrame()->Collapse(
+          collapsed);
+    }
     return;
   }
 
@@ -1403,7 +1406,8 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
     RenderFrameProxyHost* proxy_to_parent =
         frame_tree_node_->GetBrowsingContextStateForSubframe()
             ->GetRenderFrameProxyHost(parent_site_instance->group());
-    proxy_to_parent->GetAssociatedRemoteFrame()->Collapse(collapsed);
+    if (proxy_to_parent->is_render_frame_proxy_live())
+      proxy_to_parent->GetAssociatedRemoteFrame()->Collapse(collapsed);
   }
 }
 
@@ -1463,8 +1467,10 @@ void RenderFrameHostManager::UpdateUserActivationState(
   for (const auto& pair :
        render_frame_host_->browsing_context_state()->proxy_hosts()) {
     RenderFrameProxyHost* proxy = pair.second.get();
-    proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
-        update_type, notification_type);
+    if (proxy->is_render_frame_proxy_live()) {
+      proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
+          update_type, notification_type);
+    }
   }
 
   // If any frame in an inner delegate is activated, then the FrameTreeNode that
@@ -1477,6 +1483,7 @@ void RenderFrameHostManager::UpdateUserActivationState(
   RenderFrameProxyHost* outer_delegate_proxy =
       root->render_manager()->GetProxyToOuterDelegate();
   if (outer_delegate_proxy &&
+      outer_delegate_proxy->is_render_frame_proxy_live() &&
       update_type ==
           blink::mojom::UserActivationUpdateType::kNotifyActivation) {
     outer_delegate_proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
@@ -3858,7 +3865,7 @@ void RenderFrameHostManager::CreateOpenerProxies(
     // If there is no proxy, the cycle may involve nodes in the same process,
     // or, if this is a subframe, --site-per-process may be off.  Either way,
     // there's nothing more to do.
-    if (!proxy)
+    if (!proxy || !proxy->is_render_frame_proxy_live())
       continue;
 
     auto opener_frame_token = node->render_manager()->GetOpenerFrameToken(

@@ -414,9 +414,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   Visibility GetVisibility() override;
   bool NeedToFireBeforeUnloadOrUnloadEvents() override;
   void DispatchBeforeUnload(bool auto_cancel) override;
-  void AttachInnerWebContents(std::unique_ptr<WebContents> inner_web_contents,
-                              RenderFrameHost* render_frame_host,
-                              bool is_full_page) override;
+  void AttachInnerWebContents(
+      std::unique_ptr<WebContents> inner_web_contents,
+      RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
+          remote_frame_host_receiver,
+      bool is_full_page) override;
   bool IsInnerWebContentsForGuest() override;
   bool IsPortal() override;
   WebContentsImpl* GetPortalHostWebContents() override;

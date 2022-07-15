@@ -74,9 +74,4 @@ unsigned RemoteFrameClientImpl::BackForwardLength() {
   return To<WebViewImpl>(web_frame_->View())->HistoryListLength();
 }
 
-AssociatedInterfaceProvider*
-RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
-  return web_frame_->Client()->GetRemoteAssociatedInterfaces();
-}
-
 }  // namespace blink

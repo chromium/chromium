@@ -843,18 +843,19 @@ class CONTENT_EXPORT RenderFrameImpl
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories) override;
   void SetWantErrorMessageStackTrace() override;
-  void Unload(int proxy_routing_id,
-              bool is_loading,
-              blink::mojom::FrameReplicationStatePtr replicated_frame_state,
-              const blink::RemoteFrameToken& frame_token,
-              mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
-      override;
-  void Delete(mojom::FrameDeleteIntention intent) override;
-  void UndoCommitNavigation(
-      int proxy_routing_id,
+  void Unload(
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
+      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
+  void Delete(mojom::FrameDeleteIntention intent) override;
+  void UndoCommitNavigation(
+      bool is_loading,
+      blink::mojom::FrameReplicationStatePtr replicated_frame_state,
+      const blink::RemoteFrameToken& frame_token,
+      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void BlockRequests() override;
@@ -1116,10 +1117,10 @@ class CONTENT_EXPORT RenderFrameImpl
   //
   // Important: after this method returns, `this` has been deleted.
   bool SwapOutAndDeleteThis(
-      int proxy_routing_id,
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
+      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
   // Stores the WebLocalFrame we are associated with.  This is null from the

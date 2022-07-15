@@ -155,6 +155,14 @@ WebRemoteFrameImpl* CreateRemoteChild(WebRemoteFrame& parent,
                                       scoped_refptr<SecurityOrigin> = nullptr,
                                       TestWebRemoteFrameClient* = nullptr);
 
+// Call Swap with a `new_remote_frame` stubbing out the mojo channels if
+// necessary.
+void SwapRemoteFrame(
+    WebFrame* old_frame,
+    WebRemoteFrame* new_remote_frame,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost> =
+        mojo::NullAssociatedRemote());
+
 class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
                                public mojom::blink::FrameWidgetHost {
  public:
@@ -606,15 +614,10 @@ class TestWebRemoteFrameClient : public WebRemoteFrameClient {
 
   // WebRemoteFrameClient:
   void FrameDetached(DetachType) override;
-  AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
-    return associated_interface_provider_.get();
-  }
 
  private:
   // If set to a non-null value, self-deletes on frame detach.
   std::unique_ptr<TestWebRemoteFrameClient> self_owned_;
-
-  std::unique_ptr<AssociatedInterfaceProvider> associated_interface_provider_;
 
   // This is null from when the client is created until it is initialized with
   // Bind().

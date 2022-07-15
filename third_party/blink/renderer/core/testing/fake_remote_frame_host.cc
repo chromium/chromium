@@ -8,11 +8,9 @@
 
 namespace blink {
 
-void FakeRemoteFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
-  provider->OverrideBinderForTesting(
-      mojom::blink::RemoteFrameHost::Name_,
-      base::BindRepeating(&FakeRemoteFrameHost::BindFrameHostReceiver,
-                          base::Unretained(this)));
+mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+FakeRemoteFrameHost::BindNewAssociatedRemote() {
+  return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
 void FakeRemoteFrameHost::SetInheritedEffectiveTouchAction(
@@ -61,11 +59,5 @@ void FakeRemoteFrameHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& properties) {}
 
 void FakeRemoteFrameHost::OpenURL(mojom::blink::OpenURLParamsPtr params) {}
-
-void FakeRemoteFrameHost::BindFrameHostReceiver(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(
-      std::move(handle)));
-}
 
 }  // namespace blink

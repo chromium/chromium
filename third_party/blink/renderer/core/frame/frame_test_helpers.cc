@@ -131,6 +131,16 @@ T* CreateDefaultClientIfNeeded(T* client, std::unique_ptr<T>& owned_client) {
   return owned_client.get();
 }
 
+template <typename T>
+mojo::PendingAssociatedRemote<T> CreateStubRemoteIfNeeded(
+    mojo::PendingAssociatedRemote<T> remote) {
+  if (remote.is_valid())
+    return remote;
+  mojo::AssociatedRemote<T> stub_remote;
+  std::ignore = stub_remote.BindNewEndpointAndPassDedicatedReceiver();
+  return stub_remote.Unbind();
+}
+
 viz::FrameSinkId AllocateFrameSinkId() {
   // A static increasing count of frame sinks created so they are all unique.
   static uint32_t s_frame_sink_count = 0;
@@ -306,9 +316,7 @@ WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* client) {
   std::unique_ptr<TestWebRemoteFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
-      mojom::blink::TreeScopeType::kDocument, client,
-      InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      client->GetRemoteAssociatedInterfaces(), RemoteFrameToken());
+      mojom::blink::TreeScopeType::kDocument, client, RemoteFrameToken());
   client->Bind(frame, std::move(owned_client));
   return frame;
 }
@@ -322,14 +330,28 @@ WebRemoteFrameImpl* CreateRemoteChild(
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebRemoteFrameImpl>(parent.CreateRemoteChild(
       mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
-      InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      client->GetRemoteAssociatedInterfaces(), RemoteFrameToken(),
-      /*devtools_frame_token=*/base::UnguessableToken(), nullptr));
+      RemoteFrameToken(),
+      /*devtools_frame_token=*/base::UnguessableToken(), /*opener=*/nullptr,
+      CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
+          mojo::NullAssociatedRemote()),
+      mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
+          .BindNewEndpointAndPassDedicatedReceiver()));
   client->Bind(frame, std::move(owned_client));
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
   frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
   return frame;
+}
+
+void SwapRemoteFrame(
+    WebFrame* old_frame,
+    WebRemoteFrame* new_remote_frame,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost> frame_host) {
+  old_frame->Swap(new_remote_frame,
+                  CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
+                      std::move(frame_host)),
+                  mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
+                      .BindNewEndpointAndPassDedicatedReceiver());
 }
 
 WebViewHelper::WebViewHelper(
@@ -465,11 +487,12 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
   web_remote_frame_client = CreateDefaultClientIfNeeded(
       web_remote_frame_client, owned_web_remote_frame_client);
   WebRemoteFrameImpl* frame = WebRemoteFrameImpl::CreateMainFrame(
-      web_view_, web_remote_frame_client,
-      InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      web_remote_frame_client->GetRemoteAssociatedInterfaces(),
-      RemoteFrameToken(), /*devtools_frame_token=*/base::UnguessableToken(),
-      opener);
+      web_view_, web_remote_frame_client, RemoteFrameToken(),
+      /*devtools_frame_token=*/base::UnguessableToken(), opener,
+      CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
+          mojo::NullAssociatedRemote()),
+      mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
+          .BindNewEndpointAndPassDedicatedReceiver());
   web_remote_frame_client->Bind(frame,
                                 std::move(owned_web_remote_frame_client));
   if (!security_origin)
@@ -814,9 +837,7 @@ void TestWebFrameClient::DidMeaningfulLayout(
   }
 }
 
-TestWebRemoteFrameClient::TestWebRemoteFrameClient()
-    : associated_interface_provider_(new AssociatedInterfaceProvider(nullptr)) {
-}
+TestWebRemoteFrameClient::TestWebRemoteFrameClient() = default;
 
 void TestWebRemoteFrameClient::Bind(
     WebRemoteFrame* frame,

@@ -24,7 +24,9 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
  public:
   FakeRemoteFrameHost() = default;
 
-  void Init(blink::AssociatedInterfaceProvider* provider);
+  mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+  BindNewAssociatedRemote();
+
   void SetInheritedEffectiveTouchAction(cc::TouchAction touch_action) override;
   void UpdateRenderThrottlingStatus(bool is_throttled,
                                     bool subtree_throttled,
@@ -58,8 +60,6 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
   void OpenURL(mojom::blink::OpenURLParamsPtr params) override;
 
  private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
-
   mojo::AssociatedReceiver<mojom::blink::RemoteFrameHost> receiver_{this};
 };
 

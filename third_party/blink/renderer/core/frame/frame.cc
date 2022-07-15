@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
@@ -721,7 +722,26 @@ bool Frame::ShouldAllowScriptFocus() {
   }
 }
 
-bool Frame::Swap(WebFrame* new_web_frame) {
+bool Frame::Swap(WebLocalFrame* new_web_frame) {
+  return SwapImpl(new_web_frame, mojo::NullAssociatedRemote(),
+                  mojo::NullAssociatedReceiver());
+}
+
+bool Frame::Swap(WebRemoteFrame* new_web_frame,
+                 mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+                     remote_frame_host,
+                 mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+                     remote_frame_receiver) {
+  return SwapImpl(new_web_frame, std::move(remote_frame_host),
+                  std::move(remote_frame_receiver));
+}
+
+bool Frame::SwapImpl(
+    WebFrame* new_web_frame,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+        remote_frame_host,
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+        remote_frame_receiver) {
   DCHECK(IsAttached());
 
   using std::swap;
@@ -775,11 +795,14 @@ bool Frame::Swap(WebFrame* new_web_frame) {
   GetWindowProxyManager()->ReleaseGlobalProxies(global_proxies);
 
   if (new_web_frame->IsWebRemoteFrame()) {
+    DCHECK(remote_frame_host && remote_frame_receiver);
     CHECK(!WebFrame::ToCoreFrame(*new_web_frame));
     To<WebRemoteFrameImpl>(new_web_frame)
         ->InitializeCoreFrame(*page, owner, WebFrame::FromCoreFrame(parent_),
                               nullptr, FrameInsertType::kInsertLater, name,
-                              &window_agent_factory(), devtools_frame_token_);
+                              &window_agent_factory(), devtools_frame_token_,
+                              std::move(remote_frame_host),
+                              std::move(remote_frame_receiver));
     // At this point, a `RemoteFrame` will have already updated
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` as appropriate, and
     // its `parent_` pointer is also populated.
@@ -789,6 +812,7 @@ bool Frame::Swap(WebFrame* new_web_frame) {
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` updates are deferred
     // until after `new_frame` is linked into the frame tree.
     // TODO(dcheng): Make local and remote frame updates more uniform.
+    DCHECK(!remote_frame_host && !remote_frame_receiver);
   }
 
   Frame* new_frame = WebFrame::ToCoreFrame(*new_web_frame);

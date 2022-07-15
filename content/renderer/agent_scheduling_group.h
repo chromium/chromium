@@ -95,13 +95,13 @@ class CONTENT_EXPORT AgentSchedulingGroup
   void CreateFrame(mojom::CreateFrameParamsPtr params) override;
   void CreateFrameProxy(
       const blink::RemoteFrameToken& token,
-      int32_t routing_id,
       const absl::optional<blink::FrameToken>& opener_frame_token,
       int32_t view_routing_id,
       const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
       blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,
+      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void CreateSharedStorageWorkletService(

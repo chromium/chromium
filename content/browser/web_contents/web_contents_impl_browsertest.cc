@@ -4099,9 +4099,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHost* child_contents_subframe =
       ChildFrameAt(child_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child_contents_subframe);
-  child_contents->AttachInnerWebContents(std::move(grandchild_contents_ptr),
-                                         child_contents_subframe,
-                                         false /* is_full_page */);
+  child_contents->AttachInnerWebContents(
+      std::move(grandchild_contents_ptr), child_contents_subframe,
+      /*remote_frame=*/mojo::NullAssociatedRemote(),
+      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
+      /*is_full_page=*/false);
 
   // At this point the child hasn't been attached to the root.
   {
@@ -4117,9 +4119,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHost* root_contents_subframe =
       ChildFrameAt(root_web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(root_contents_subframe);
-  root_web_contents->AttachInnerWebContents(std::move(child_contents_ptr),
-                                            root_contents_subframe,
-                                            false /* is_full_page */);
+  root_web_contents->AttachInnerWebContents(
+      std::move(child_contents_ptr), root_contents_subframe,
+      /*remote_frame=*/mojo::NullAssociatedRemote(),
+      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
+      /*is_full_page=*/false);
 
   // Verify views registered for both child and grandchild.
   {

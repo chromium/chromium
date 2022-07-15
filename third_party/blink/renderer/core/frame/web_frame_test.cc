@@ -9196,7 +9196,7 @@ class WebFrameSwapTest : public WebFrameTest {
 
 TEST_F(WebFrameSwapTest, SwapMainFrame) {
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_frame);
 
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame);
@@ -9215,7 +9215,7 @@ TEST_F(WebFrameSwapTest, SwapMainFrameWithPageScaleReset) {
   EXPECT_EQ(1.25, WebView()->PageScaleFactor());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_frame);
 
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost> main_frame_host;
   std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
@@ -9231,7 +9231,7 @@ TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
   gfx::Size size(111, 222);
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_frame);
 
   To<WebViewImpl>(remote_frame->View())->Resize(size);
 
@@ -9253,7 +9253,7 @@ TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
 TEST_F(WebFrameSwapTest,
        ValidateBrowserControlsSizeOnRemoteToLocalMainFrameSwap) {
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_frame);
 
   // Create a provisional main frame frame but don't swap it in yet.
   WebLocalFrame* local_frame =
@@ -9294,8 +9294,10 @@ class SwapMainFrameWhenTitleChangesWebFrameClient
     if (title.IsEmpty())
       return;
 
-    if (!Frame()->Parent())
-      Frame()->Swap(frame_test_helpers::CreateRemote());
+    if (!Frame()->Parent()) {
+      frame_test_helpers::SwapRemoteFrame(Frame(),
+                                          frame_test_helpers::CreateRemote());
+    }
   }
 };
 
@@ -9347,7 +9349,12 @@ void WebFrameTest::SwapAndVerifyFirstChildConsistency(const char* const message,
                                                       WebFrame* parent,
                                                       WebFrame* new_child) {
   SCOPED_TRACE(message);
-  parent->FirstChild()->Swap(new_child);
+  if (new_child->IsWebLocalFrame()) {
+    parent->FirstChild()->Swap(new_child->ToWebLocalFrame());
+  } else {
+    frame_test_helpers::SwapRemoteFrame(parent->FirstChild(),
+                                        new_child->ToWebRemoteFrame());
+  }
 
   EXPECT_EQ(new_child, parent->FirstChild());
   EXPECT_EQ(new_child->Parent(), parent);
@@ -9385,7 +9392,7 @@ TEST_F(WebFrameSwapTest, DoNotPropagateDisplayNonePropertyOnSwap) {
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  child_frame->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(child_frame, remote_frame);
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
 
   WebLocalFrame* local_frame =
@@ -9400,7 +9407,13 @@ void WebFrameTest::SwapAndVerifyMiddleChildConsistency(
     WebFrame* parent,
     WebFrame* new_child) {
   SCOPED_TRACE(message);
-  parent->FirstChild()->NextSibling()->Swap(new_child);
+
+  if (new_child->IsWebLocalFrame()) {
+    parent->FirstChild()->NextSibling()->Swap(new_child->ToWebLocalFrame());
+  } else {
+    frame_test_helpers::SwapRemoteFrame(parent->FirstChild()->NextSibling(),
+                                        new_child->ToWebRemoteFrame());
+  }
 
   Frame* parent_frame = WebFrame::ToCoreFrame(*parent);
   Frame* new_child_frame = WebFrame::ToCoreFrame(*new_child);
@@ -9438,7 +9451,12 @@ void WebFrameTest::SwapAndVerifyLastChildConsistency(const char* const message,
                                                      WebFrame* parent,
                                                      WebFrame* new_child) {
   SCOPED_TRACE(message);
-  parent->LastChild()->Swap(new_child);
+  if (new_child->IsWebLocalFrame()) {
+    parent->LastChild()->Swap(new_child->ToWebLocalFrame());
+  } else {
+    frame_test_helpers::SwapRemoteFrame(parent->LastChild(),
+                                        new_child->ToWebRemoteFrame());
+  }
 
   EXPECT_EQ(new_child, parent->LastChild());
   EXPECT_EQ(new_child->Parent(), parent);
@@ -9496,7 +9514,13 @@ void WebFrameTest::SwapAndVerifySubframeConsistency(const char* const message,
   SCOPED_TRACE(message);
 
   EXPECT_TRUE(old_frame->FirstChild());
-  old_frame->Swap(new_frame);
+
+  if (new_frame->IsWebLocalFrame()) {
+    old_frame->Swap(new_frame->ToWebLocalFrame());
+  } else {
+    frame_test_helpers::SwapRemoteFrame(old_frame,
+                                        new_frame->ToWebRemoteFrame());
+  }
 
   EXPECT_FALSE(new_frame->FirstChild());
   EXPECT_FALSE(new_frame->LastChild());
@@ -9593,7 +9617,7 @@ TEST_F(WebFrameSwapTest, SwapPreservesGlobalContext) {
   // Make sure window reference stays the same when swapping to a remote frame.
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   WebFrame* target_frame = MainFrame()->FirstChild()->NextSibling();
-  target_frame->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(target_frame, remote_frame);
   v8::Local<v8::Value> remote_window = MainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource("document.querySelector('#frame2').contentWindow;"));
   EXPECT_TRUE(original_window->StrictEquals(remote_window));
@@ -9626,7 +9650,7 @@ TEST_F(WebFrameSwapTest, SetTimeoutAfterSwap) {
   // Swap the frame to a remote frame.
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   WebFrame* target_frame = MainFrame()->FirstChild();
-  target_frame->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(target_frame, remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -9660,7 +9684,7 @@ TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
   ASSERT_TRUE(last_child->IsObject());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->LastChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
   v8::Local<v8::Value> remote_window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("saved.top"));
   EXPECT_TRUE(remote_window_top->IsObject());
@@ -9681,7 +9705,7 @@ TEST_F(WebFrameSwapTest, RemoteFramesAreIndexable) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->LastChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
   v8::Local<v8::Value> remote_window =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("window[2]"));
   EXPECT_TRUE(remote_window->IsObject());
@@ -9695,7 +9719,7 @@ TEST_F(WebFrameSwapTest, RemoteFrameLengthAccess) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->LastChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
   v8::Local<v8::Value> remote_window_length =
       MainFrame()->ExecuteScriptAndReturnValue(
           WebScriptSource("window[2].length"));
@@ -9710,7 +9734,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowNamedAccess) {
   // named window access on a remote window works. For now, just test that
   // accessing a named property doesn't crash.
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->LastChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
   v8::Local<v8::Value> remote_window_property =
@@ -9724,7 +9748,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowToString) {
   v8::HandleScope scope(isolate);
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->LastChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
   v8::Local<v8::Value> to_string_result =
       MainFrame()->ExecuteScriptAndReturnValue(
           WebScriptSource("Object.prototype.toString.call(window[2])"));
@@ -9740,7 +9764,7 @@ TEST_F(WebFrameSwapTest, FramesOfRemoteParentAreIndexable) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_parent_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_parent_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_parent_frame);
   remote_parent_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -9768,7 +9792,7 @@ TEST_F(WebFrameSwapTest, FrameElementInFramesWithRemoteParent) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_parent_frame = frame_test_helpers::CreateRemote();
-  MainFrame()->Swap(remote_parent_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_parent_frame);
   remote_parent_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -9811,7 +9835,7 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterExistingRemoteToLocalSwap) {
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   WebFrame* target_frame = MainFrame()->FirstChild();
   ASSERT_TRUE(target_frame);
-  target_frame->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(target_frame, remote_frame);
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
@@ -9847,15 +9871,15 @@ class RemoteFrameHostInterceptor : public FakeRemoteFrameHost {
 
 TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
   frame_test_helpers::TestWebRemoteFrameClient client;
+  RemoteFrameHostInterceptor interceptor;
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote(&client);
   WebFrame* target_frame = MainFrame()->FirstChild();
   ASSERT_TRUE(target_frame);
-  target_frame->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(target_frame, remote_frame,
+                                      interceptor.BindNewAssociatedRemote());
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
-  RemoteFrameHostInterceptor interceptor;
-  interceptor.Init(client.GetRemoteAssociatedInterfaces());
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin::CreateFromString("http://127.0.0.1"), false);
   MainFrame()->ExecuteScript(
@@ -9873,9 +9897,11 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
 
 TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
   frame_test_helpers::TestWebRemoteFrameClient remote_client;
+  RemoteFrameHostInterceptor interceptor;
   WebRemoteFrame* remote_frame =
       frame_test_helpers::CreateRemote(&remote_client);
-  MainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(MainFrame()->FirstChild(), remote_frame,
+                                      interceptor.BindNewAssociatedRemote());
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -9883,8 +9909,6 @@ TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
   LocalDOMWindow* main_window =
       To<WebLocalFrameImpl>(MainFrame())->GetFrame()->DomWindow();
 
-  RemoteFrameHostInterceptor interceptor;
-  interceptor.Init(remote_client.GetRemoteAssociatedInterfaces());
   String destination = "data:text/html:destination";
   NonThrowableExceptionState exception_state;
   ScriptState* script_state =
@@ -10890,10 +10914,11 @@ TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
   )HTML");
   frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
   TestViewportIntersection remote_frame_host;
-  remote_frame_host.Init(remote_frame_client.GetRemoteAssociatedInterfaces());
   WebRemoteFrameImpl* remote_frame =
       frame_test_helpers::CreateRemote(&remote_frame_client);
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame,
+      remote_frame_host.BindNewAssociatedRemote());
   web_view->MainFrameImpl()
       ->GetFrame()
       ->View()
@@ -11050,8 +11075,6 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
         web_view_helper_.InitializeAndLoad(base_url_ + "single_iframe.html")
             ->MainFrameImpl();
     web_view_helper_.Resize(gfx::Size(640, 480));
-    remote_frame_host_.Init(
-        remote_frame_client_.GetRemoteAssociatedInterfaces());
     web_remote_frame_ = frame_test_helpers::CreateRemote(&remote_frame_client_);
   }
 
@@ -11066,7 +11089,9 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
   }
 
   void SwapLocalFrameToRemoteFrame() {
-    MainFrame()->LastChild()->Swap(RemoteFrame());
+    frame_test_helpers::SwapRemoteFrame(
+        MainFrame()->LastChild(), RemoteFrame(),
+        remote_frame_host_.BindNewAssociatedRemote());
   }
 
   WebLocalFrame* MainFrame() { return frame_; }
@@ -13544,10 +13569,11 @@ TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
   )HTML");
   frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
   TestViewportIntersection remote_frame_host;
-  remote_frame_host.Init(remote_frame_client.GetRemoteAssociatedInterfaces());
   WebRemoteFrame* remote_frame =
       frame_test_helpers::CreateRemote(&remote_frame_client);
-  MainFrame().FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      MainFrame().FirstChild(), remote_frame,
+      remote_frame_host.BindNewAssociatedRemote());
   Compositor().BeginFrame();
   RunPendingTasks();
   EXPECT_TRUE(remote_frame_host.GetIntersectionState()
@@ -13949,7 +13975,8 @@ TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
   )HTML");
 
   WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -13988,7 +14015,8 @@ TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
   )HTML");
 
   WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -14027,7 +14055,8 @@ TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
   )HTML");
 
   WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
@@ -14065,7 +14094,8 @@ TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
   )HTML");
 
   WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
-  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 

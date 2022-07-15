@@ -26,16 +26,16 @@ class Origin;
 
 namespace content {
 
-// This class implements a RemoteFrame that can be attached to the
-// AssociatedInterfaceProvider so that it will be called when the browser
-// normally sends a request to the renderer process. But for a unittest
-// setup it can be intercepted by this class.
+// This class implements a RemoteFrame that can be bound and passed to
+// the RenderFrameProxy. Calls typically routed to the renderer process
+// will then be intercepted to this class.
 class FakeRemoteFrame : public blink::mojom::RemoteFrame {
  public:
   FakeRemoteFrame();
   ~FakeRemoteFrame() override;
 
-  void Init(blink::AssociatedInterfaceProvider* provider);
+  void Init(
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame> receiver);
 
   // blink::mojom::RemoteFrame overrides:
   void WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) override;
@@ -94,8 +94,6 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void ChildProcessGone() override;
 
  private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
-
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};
 };
 

@@ -5191,7 +5191,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       root->render_manager()->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group_a =
       AgentSchedulingGroupHost::GetOrCreate(*site_instance_group_a, *process_a);
-  int new_routing_id = process_a->GetNextRoutingID();
   int view_routing_id = root->frame_tree()
                             ->GetRenderViewHost(site_instance_group_a)
                             ->GetRoutingID();
@@ -5202,6 +5201,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameDeletedObserver observer(root->child_at(0)->current_frame_host());
   EXPECT_TRUE(ExecJs(
       root, "document.body.removeChild(document.querySelector('iframe'));"));
+
+  auto remote_frame_interfaces = mojom::RemoteFrameInterfacesFromBrowser::New();
+  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+  remote_frame_interfaces->frame_receiver =
+      frame.BindNewEndpointAndPassReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::RemoteFrameHost> frame_host;
+  std::ignore = frame_host.BindNewEndpointAndPassReceiver();
+  remote_frame_interfaces->frame_host = frame_host.Unbind();
 
   auto remote_main_frame_interfaces = mojom::RemoteMainFrameInterfaces::New();
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
@@ -5216,10 +5224,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // used to crash, as `parent_frame_token` refers to a proxy that doesn't exist
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
-      blink::RemoteFrameToken(), new_routing_id, absl::nullopt, view_routing_id,
+      blink::RemoteFrameToken(), absl::nullopt, view_routing_id,
       parent_frame_token, blink::mojom::TreeScopeType::kDocument,
       blink::mojom::FrameReplicationState::New(),
-      base::UnguessableToken::Create(),
+      base::UnguessableToken::Create(), std::move(remote_frame_interfaces),
       std::move(remote_main_frame_interfaces));
 
   // Ensure the subframe is detached in the browser process.

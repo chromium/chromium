@@ -7781,7 +7781,9 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
             frame_tree_node_->frame_owner_element_type());
   if (RenderFrameProxyHost* proxy =
           frame_tree_node_->render_manager()->GetProxyToParent()) {
-    proxy->GetAssociatedRemoteFrame()->RenderFallbackContent();
+    if (proxy->is_render_frame_proxy_live()) {
+      proxy->GetAssociatedRemoteFrame()->RenderFallbackContent();
+    }
   } else {
     frame_tree_node_->current_frame_host()
         ->GetAssociatedLocalFrame()

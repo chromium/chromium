@@ -105,7 +105,8 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
     view_->SetFrameConnector(this);
     if (visibility_ != blink::mojom::FrameVisibility::kRenderedInViewport)
       OnVisibilityChanged(visibility_);
-    if (frame_proxy_in_parent_renderer_) {
+    if (frame_proxy_in_parent_renderer_ &&
+        frame_proxy_in_parent_renderer_->is_render_frame_proxy_live()) {
       frame_proxy_in_parent_renderer_->GetAssociatedRemoteFrame()
           ->SetFrameSinkId(view_->GetFrameSinkId());
     }
@@ -175,6 +176,8 @@ void CrossProcessFrameConnector::SendIntrinsicSizingInfoToParent(
          (sizing_info->size.height() >= 0.f));
   DCHECK((sizing_info->aspect_ratio.width() >= 0.f) &&
          (sizing_info->aspect_ratio.height() >= 0.f));
+  if (!frame_proxy_in_parent_renderer_->is_render_frame_proxy_live())
+    return;
   frame_proxy_in_parent_renderer_->GetAssociatedRemoteFrame()
       ->IntrinsicSizingInfoOfChildChanged(std::move(sizing_info));
 }

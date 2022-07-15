@@ -286,8 +286,11 @@ WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
 
   // Attach. |inner_contents| becomes owned by |outer_contents|.
   WebContents* inner_contents = inner_contents_ptr.get();
-  outer_contents->AttachInnerWebContents(std::move(inner_contents_ptr), rfh,
-                                         false /* is_full_page */);
+  outer_contents->AttachInnerWebContents(
+      std::move(inner_contents_ptr), rfh,
+      /*remote_frame=*/mojo::NullAssociatedRemote(),
+      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
+      /*is_full_page=*/false);
 
   return inner_contents;
 }

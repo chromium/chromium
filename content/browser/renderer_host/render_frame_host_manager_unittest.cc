@@ -2291,7 +2291,7 @@ class UpdateOpenerProxyObserver : public RenderFrameProxyHost::TestObserver {
   class Remote : public content::FakeRemoteFrame {
    public:
     explicit Remote(RenderFrameProxyHost* proxy) {
-      Init(proxy->GetRemoteAssociatedInterfacesTesting());
+      Init(proxy->BindRemoteFrameReceiverForTesting());
     }
     void UpdateOpener(
         const absl::optional<blink::FrameToken>& frame_token) override {
@@ -2305,7 +2305,7 @@ class UpdateOpenerProxyObserver : public RenderFrameProxyHost::TestObserver {
     absl::optional<blink::FrameToken> frame_token_;
   };
 
-  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+  void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -2560,7 +2560,7 @@ class PageFocusProxyObserver : public RenderFrameProxyHost::TestObserver {
   class Remote : public content::FakeRemoteFrame {
    public:
     explicit Remote(RenderFrameProxyHost* proxy) {
-      Init(proxy->GetRemoteAssociatedInterfacesTesting());
+      Init(proxy->BindRemoteFrameReceiverForTesting());
     }
     void SetPageFocus(bool is_focused) override {
       set_page_focus_ = is_focused;
@@ -2571,7 +2571,7 @@ class PageFocusProxyObserver : public RenderFrameProxyHost::TestObserver {
     bool set_page_focus_ = false;
   };
 
-  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+  void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -3264,7 +3264,7 @@ class InsecureRequestPolicyProxyObserver
   class RemoteFrame : public content::FakeRemoteFrame {
    public:
     explicit RemoteFrame(RenderFrameProxyHost* render_frame_proxy_host) {
-      Init(render_frame_proxy_host->GetRemoteAssociatedInterfacesTesting());
+      Init(render_frame_proxy_host->BindRemoteFrameReceiverForTesting());
     }
 
     void EnforceInsecureRequestPolicy(
@@ -3279,7 +3279,7 @@ class InsecureRequestPolicyProxyObserver
     blink::mojom::InsecureRequestPolicy enforce_insecure_request_policy_;
   };
 
-  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+  void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<RemoteFrame>(proxy_host);
   }
 
@@ -3392,7 +3392,7 @@ class StartStopLoadingProxyObserver
   class Remote : public content::FakeRemoteFrame {
    public:
     explicit Remote(RenderFrameProxyHost* proxy) {
-      Init(proxy->GetRemoteAssociatedInterfacesTesting());
+      Init(proxy->BindRemoteFrameReceiverForTesting());
     }
     void DidStartLoading() override { is_loading_ = true; }
     void DidStopLoading() override { is_loading_ = false; }
@@ -3402,7 +3402,7 @@ class StartStopLoadingProxyObserver
     bool is_loading_ = false;
   };
 
-  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+  void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -3668,10 +3668,10 @@ class RenderFrameHostManagerAdTaggingSignalTest
     RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
 
-  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+  void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
     auto fake_remote_frame =
         std::make_unique<AdStatusInterceptingRemoteFrame>();
-    fake_remote_frame->Init(proxy_host->GetRemoteAssociatedInterfacesTesting());
+    fake_remote_frame->Init(proxy_host->BindRemoteFrameReceiverForTesting());
 
     // TODO(yaoxia): when a proxy host is deleted, remove the corresponding map
     // entry.

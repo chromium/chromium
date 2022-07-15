@@ -169,7 +169,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
               OnRemoteIframeAttached(main_frame->GetLocalFrameToken(),
                                      remote_frame->GetRemoteFrameToken(),
                                      iframe_attribution_matcher));
-  main_frame->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(main_frame->FirstChild(), remote_frame);
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Create another remote frame, this time with a remote parent. No
@@ -196,7 +196,8 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
                                        new_remote_frame->GetRemoteFrameToken(),
                                        iframe_attribution_matcher));
   }
-  main_frame->FirstChild()->Swap(new_remote_frame);
+  frame_test_helpers::SwapRemoteFrame(main_frame->FirstChild(),
+                                      new_remote_frame);
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Remote -> Local
@@ -244,7 +245,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
                                        remote_frame->GetRemoteFrameToken(),
                                        iframe_attribution_matcher));
   }
-  main_frame->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(main_frame->FirstChild(), remote_frame);
   mock_process_coordination_unit_->VerifyExpectations();
 }
 
@@ -269,7 +270,7 @@ TEST_F(RendererResourceCoordinatorImplTest, NonIframeNotifications) {
   WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
   EXPECT_CALL(*mock_process_coordination_unit_, OnRemoteIframeAttached(_, _, _))
       .Times(0);
-  main_frame->FirstChild()->Swap(remote_frame);
+  frame_test_helpers::SwapRemoteFrame(main_frame->FirstChild(), remote_frame);
   mock_process_coordination_unit_->VerifyExpectations();
 }
 

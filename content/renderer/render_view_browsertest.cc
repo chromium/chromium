@@ -263,7 +263,20 @@ blink::mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
   return params;
 }
 
-mojom::RemoteMainFrameInterfacesPtr CreateStubRemoteFrameInterfaces() {
+mojom::RemoteFrameInterfacesFromBrowserPtr CreateStubRemoteFrameInterfaces() {
+  auto interfaces = mojom::RemoteFrameInterfacesFromBrowser::New();
+
+  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+  interfaces->frame_receiver = frame.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::RemoteFrameHost> frame_host;
+  std::ignore = frame_host.BindNewEndpointAndPassDedicatedReceiver();
+  interfaces->frame_host = frame_host.Unbind();
+
+  return interfaces;
+}
+
+mojom::RemoteMainFrameInterfacesPtr CreateStubRemoteMainFrameInterfaces() {
   auto interfaces = mojom::RemoteMainFrameInterfaces::New();
 
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
@@ -601,9 +614,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
           root_web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
   ASSERT_TRUE(child_frame_2);
   static_cast<mojom::Frame*>(child_frame_1)
-      ->Unload(kProxyRoutingId, true,
+      ->Unload(/*is_loading=*/true,
                ReconstructReplicationStateForTesting(child_frame_1),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(root_web_frame->FirstChild()->IsWebRemoteFrame());
   EXPECT_FALSE(root_web_frame->FirstChild()
                    ->ToWebRemoteFrame()
@@ -629,9 +643,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   // and registering of a new RenderFrameProxy, which should pick up the
   // existing setting.
   static_cast<mojom::Frame*>(child_frame_2)
-      ->Unload(kProxyRoutingId + 1, true,
+      ->Unload(/*is_loading=*/true,
                ReconstructReplicationStateForTesting(child_frame_2),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(root_web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   // Verify new child has the flag too.
   EXPECT_TRUE(root_web_frame->FirstChild()
@@ -998,9 +1013,10 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   ASSERT_TRUE(child_frame);
 
   static_cast<mojom::Frame*>(child_frame)
-      ->Unload(kProxyRoutingId + 1, true,
+      ->Unload(/*is_loading=*/true,
                ReconstructReplicationStateForTesting(child_frame),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
   // Verify that the system device scale factor has propagated into the
@@ -1038,8 +1054,9 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   auto replication_state = ReconstructReplicationStateForTesting(child_frame);
   replication_state->origin = url::Origin::Create(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(child_frame)
-      ->Unload(kProxyRoutingId, true, replication_state->Clone(),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+      ->Unload(/*is_loading=*/true, replication_state->Clone(),
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
 
   // The child frame should now be a WebRemoteFrame.
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
@@ -1057,8 +1074,9 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
       static_cast<TestRenderFrame*>(RenderFrame::FromWebFrame(
           web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
   static_cast<mojom::Frame*>(child_frame2)
-      ->Unload(kProxyRoutingId + 1, true, std::move(replication_state),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+      ->Unload(/*is_loading=*/true, std::move(replication_state),
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   EXPECT_TRUE(
       web_frame->FirstChild()->NextSibling()->GetSecurityOrigin().IsOpaque());
@@ -1085,8 +1103,8 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   auto replication_state = ReconstructReplicationStateForTesting(frame());
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(frame())->Unload(
-      kProxyRoutingId, true, replication_state->Clone(),
-      remote_child_frame_token, CreateStubRemoteFrameInterfaces());
+      /*is_loading=*/true, replication_state->Clone(), remote_child_frame_token,
+      CreateStubRemoteFrameInterfaces(), CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(web_view_->MainFrame()->IsWebRemoteFrame());
 
   // Do the remote-to-local transition for the proxy, which is to create a
@@ -1178,8 +1196,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   blink::RemoteFrameToken child_remote_frame_token = blink::RemoteFrameToken();
   auto replication_state = ReconstructReplicationStateForTesting(child_frame);
   static_cast<mojom::Frame*>(child_frame)
-      ->Unload(kProxyRoutingId, true, replication_state.Clone(),
-               child_remote_frame_token, CreateStubRemoteFrameInterfaces());
+      ->Unload(/*is_loading=*/true, replication_state.Clone(),
+               child_remote_frame_token, CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
   // Do the first step of a remote-to-local transition for the child proxy,
@@ -1229,9 +1248,10 @@ TEST_F(RenderViewImplScaleFactorTest, SetZoomLevelAfterCrossProcessNavigation) {
   // Unload the main frame after which it should become a WebRemoteFrame.
   TestRenderFrame* main_frame = frame();
   static_cast<mojom::Frame*>(main_frame)
-      ->Unload(kProxyRoutingId, true,
+      ->Unload(/*is_loading=*/true,
                ReconstructReplicationStateForTesting(main_frame),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+               CreateStubRemoteMainFrameInterfaces());
   EXPECT_TRUE(web_view_->MainFrame()->IsWebRemoteFrame());
 }
 
@@ -2960,8 +2980,9 @@ TEST_F(RenderViewImplAddMessageToConsoleTest,
 
         // Unloads the main frame.
         static_cast<mojom::Frame*>(frame())->Unload(
-            1, false, blink::mojom::FrameReplicationState::New(),
-            blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+            /*is_loading=*/false, blink::mojom::FrameReplicationState::New(),
+            blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces(),
+            CreateStubRemoteMainFrameInterfaces());
 
         was_callback_run = true;
         run_loop.Quit();

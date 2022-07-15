@@ -168,7 +168,9 @@ FrameTree* FencedFrame::LoadingTree() {
   return web_contents_->LoadingTree();
 }
 
-RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
+RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree(
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces) {
+  DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
   // Connect the outer delegate RenderFrameHost with the inner main
   // FrameTreeNode. This allows us to traverse from the outer delegate RFH
@@ -185,6 +187,10 @@ RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
           ->browsing_context_state()
           ->CreateOuterDelegateProxy(
               owner_render_frame_host_->GetSiteInstance(), inner_root);
+
+  proxy_host->BindRemoteFrameInterfaces(
+      std::move(remote_frame_interfaces->frame),
+      std::move(remote_frame_interfaces->frame_host_receiver));
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 

@@ -39,6 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -776,6 +777,9 @@ class WebContents : public PageNavigator,
   virtual void AttachInnerWebContents(
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
+          remote_frame_host_receiver,
       bool is_full_page) = 0;
 
   // Returns whether this WebContents is an inner WebContents for a guest.

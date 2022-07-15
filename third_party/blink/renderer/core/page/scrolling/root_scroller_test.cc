@@ -543,7 +543,8 @@ TEST_F(RootScrollerTest, IFrameSwapToRemote) {
 
   // Swap in a remote frame. Make sure we revert back to the document.
   {
-    MainWebFrame()->FirstChild()->Swap(frame_test_helpers::CreateRemote());
+    frame_test_helpers::SwapRemoteFrame(MainWebFrame()->FirstChild(),
+                                        frame_test_helpers::CreateRemote());
     UpdateAllLifecyclePhases(MainFrameView());
     EXPECT_EQ(MainFrame()->GetDocument(),
               EffectiveRootScroller(MainFrame()->GetDocument()));

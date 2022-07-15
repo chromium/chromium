@@ -26,10 +26,6 @@ class WebRemoteFrameClient {
   // and release any resources associated with it.
   virtual void FrameDetached(DetachType) {}
 
-  // Returns an AssociatedInterfaceProvider the frame can use to request
-  // associated interfaces from the browser.
-  virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
-
  protected:
   virtual ~WebRemoteFrameClient() = default;
 };

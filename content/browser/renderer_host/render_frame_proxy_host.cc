@@ -165,7 +165,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
     // the top-level RenderFrame will delete the RenderFrameProxy.
     // This can be removed once we don't have a swapped out state on
     // RenderFrame. See https://crbug.com/357747
-    if (!frame_tree_node_->IsMainFrame())
+    if (!frame_tree_node_->IsMainFrame() && is_render_frame_proxy_live())
       GetAssociatedRemoteFrame()->DetachAndDispose();
   }
 
@@ -259,10 +259,11 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
 
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
   GetAgentSchedulingGroup().CreateFrameProxy(
-      frame_token_, routing_id_, opener_frame_token, view_routing_id,
-      parent_frame_token, frame_tree_node_->tree_scope_type(),
+      frame_token_, opener_frame_token, view_routing_id, parent_frame_token,
+      frame_tree_node_->tree_scope_type(),
       frame_tree_node_->current_replication_state().Clone(),
       frame_tree_node_->devtools_frame_token(),
+      CreateAndBindRemoteFrameInterfaces(),
       CreateAndBindRemoteMainFrameInterfaces());
 
   SetRenderFrameProxyCreated(true);
@@ -292,37 +293,6 @@ AgentSchedulingGroupHost& RenderFrameProxyHost::GetAgentSchedulingGroup() {
   return site_instance_group_->agent_scheduling_group();
 }
 
-void RenderFrameProxyHost::OnAssociatedInterfaceRequest(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  if (interface_name == blink::mojom::RemoteFrameHost::Name_) {
-    remote_frame_host_receiver_.Bind(
-        mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>(
-            std::move(handle)));
-  }
-}
-
-blink::AssociatedInterfaceProvider*
-RenderFrameProxyHost::GetRemoteAssociatedInterfaces() {
-  if (!remote_associated_interfaces_) {
-    mojo::AssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
-        remote_interfaces;
-    IPC::ChannelProxy* channel = GetAgentSchedulingGroup().GetChannel();
-    if (channel) {
-      GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
-          GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
-    } else {
-      // The channel may not be initialized in some tests environments. In this
-      // case we set up a dummy interface provider.
-      std::ignore = remote_interfaces.BindNewEndpointAndPassDedicatedReceiver();
-    }
-    remote_associated_interfaces_ =
-        std::make_unique<blink::AssociatedInterfaceProvider>(
-            remote_interfaces.Unbind());
-  }
-  return remote_associated_interfaces_.get();
-}
-
 void RenderFrameProxyHost::SetRenderFrameProxyCreated(bool created) {
   render_frame_proxy_created_ = created;
 
@@ -334,8 +304,7 @@ void RenderFrameProxyHost::SetRenderFrameProxyCreated(bool created) {
 
 const mojo::AssociatedRemote<blink::mojom::RemoteFrame>&
 RenderFrameProxyHost::GetAssociatedRemoteFrame() {
-  if (!remote_frame_)
-    GetRemoteAssociatedInterfaces()->GetInterface(&remote_frame_);
+  DCHECK(remote_frame_.is_bound());
   return remote_frame_;
 }
 
@@ -373,6 +342,8 @@ void RenderFrameProxyHost::UpdateOpener() {
         frame_tree_node_->current_frame_host()->browsing_context_state());
   }
 
+  if (!is_render_frame_proxy_live())
+    return;
   auto opener_frame_token =
       frame_tree_node_->render_manager()->GetOpenerFrameToken(
           site_instance_group());
@@ -380,12 +351,16 @@ void RenderFrameProxyHost::UpdateOpener() {
 }
 
 void RenderFrameProxyHost::SetFocusedFrame() {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->Focus();
 }
 
 void RenderFrameProxyHost::ScrollRectToVisible(
     const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->ScrollRectToVisible(rect_to_scroll,
                                                   std::move(params));
 }
@@ -420,19 +395,27 @@ void RenderFrameProxyHost::CheckCompleted() {
 
 void RenderFrameProxyHost::EnableAutoResize(const gfx::Size& min_size,
                                             const gfx::Size& max_size) {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->EnableAutoResize(min_size, max_size);
 }
 
 void RenderFrameProxyHost::DisableAutoResize() {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->DisableAutoResize();
 }
 
 void RenderFrameProxyHost::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->DidUpdateVisualProperties(metadata);
 }
 
 void RenderFrameProxyHost::ChildProcessGone() {
+  if (!is_render_frame_proxy_live())
+    return;
   GetAssociatedRemoteFrame()->ChildProcessGone();
 }
 
@@ -756,15 +739,25 @@ bool RenderFrameProxyHost::IsInertForTesting() {
   return cross_process_frame_connector_->IsInert();
 }
 
-blink::AssociatedInterfaceProvider*
-RenderFrameProxyHost::GetRemoteAssociatedInterfacesTesting() {
-  return GetRemoteAssociatedInterfaces();
+mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
+RenderFrameProxyHost::BindRemoteFrameReceiverForTesting() {
+  remote_frame_.reset();
+  return remote_frame_.BindNewEndpointAndPassDedicatedReceiver();
 }
 
 mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame>
 RenderFrameProxyHost::BindRemoteMainFrameReceiverForTesting() {
   remote_main_frame_.reset();
   return remote_main_frame_.BindNewEndpointAndPassDedicatedReceiver();
+}
+
+mojom::RemoteFrameInterfacesFromBrowserPtr
+RenderFrameProxyHost::CreateAndBindRemoteFrameInterfaces() {
+  auto params = mojom::RemoteFrameInterfacesFromBrowser::New();
+  BindRemoteFrameInterfaces(
+      params->frame_receiver.InitWithNewEndpointAndPassRemote(),
+      params->frame_host.InitWithNewEndpointAndPassReceiver());
+  return params;
 }
 
 mojom::RemoteMainFrameInterfacesPtr
@@ -774,6 +767,20 @@ RenderFrameProxyHost::CreateAndBindRemoteMainFrameInterfaces() {
       params->main_frame.InitWithNewEndpointAndPassRemote(),
       params->main_frame_host.InitWithNewEndpointAndPassReceiver());
   return params;
+}
+
+void RenderFrameProxyHost::BindRemoteFrameInterfaces(
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
+        remote_frame_host_receiver) {
+  DCHECK(!remote_frame_.is_bound());
+  DCHECK(!remote_frame_host_receiver_.is_bound());
+
+  remote_frame_.Bind(std::move(remote_frame));
+  remote_frame_host_receiver_.Bind(std::move(remote_frame_host_receiver));
+
+  if (g_observer_for_testing)
+    g_observer_for_testing->OnRemoteFrameBound(this);
 }
 
 void RenderFrameProxyHost::BindRemoteMainFrameInterfaces(

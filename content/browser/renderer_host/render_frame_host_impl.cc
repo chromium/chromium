@@ -3624,7 +3624,8 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   }
 
   // Propagate the token to the right process, if a proxy was found.
-  if (target_render_frame_proxy) {
+  if (target_render_frame_proxy &&
+      target_render_frame_proxy->is_render_frame_proxy_live()) {
     target_render_frame_proxy->GetAssociatedRemoteFrame()->SetEmbeddingToken(
         embedding_token_.value());
   }
@@ -4738,9 +4739,9 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     SetLifecycleState(LifecycleStateImpl::kRunningUnloadHandlers);
     if (IsRenderFrameLive()) {
       GetMojomFrameInRenderer()->Unload(
-          proxy->GetRoutingID(), is_loading,
+          is_loading,
           proxy->frame_tree_node()->current_replication_state().Clone(),
-          proxy->GetFrameToken(),
+          proxy->GetFrameToken(), proxy->CreateAndBindRemoteFrameInterfaces(),
           proxy->CreateAndBindRemoteMainFrameInterfaces());
       // Remember that a RenderFrameProxy was created as part of processing the
       // Unload message above.
@@ -4784,9 +4785,10 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
     proxy.TearDownMojoConnection();
 
     GetMojomFrameInRenderer()->UndoCommitNavigation(
-        proxy.GetRoutingID(), is_loading,
+        is_loading,
         proxy.frame_tree_node()->current_replication_state().Clone(),
-        proxy.GetFrameToken(), proxy.CreateAndBindRemoteMainFrameInterfaces());
+        proxy.GetFrameToken(), proxy.CreateAndBindRemoteFrameInterfaces(),
+        proxy.CreateAndBindRemoteMainFrameInterfaces());
   }
 
   SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
@@ -4817,9 +4819,10 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
   GetMojomFrameInRenderer()->Unload(
-      proxy->GetRoutingID(), /*is_loading=*/false,
+      /*is_loading=*/false,
       browsing_context_state_->current_replication_state().Clone(),
-      proxy->GetFrameToken(), proxy->CreateAndBindRemoteMainFrameInterfaces());
+      proxy->GetFrameToken(), proxy->CreateAndBindRemoteFrameInterfaces(),
+      proxy->CreateAndBindRemoteMainFrameInterfaces());
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {
@@ -5981,7 +5984,10 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
     return;
   }
 
-  proxy->GetAssociatedRemoteFrame()->SetNeedsOcclusionTracking(needs_tracking);
+  if (proxy->is_render_frame_proxy_live()) {
+    proxy->GetAssociatedRemoteFrame()->SetNeedsOcclusionTracking(
+        needs_tracking);
+  }
 }
 
 void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
@@ -6119,7 +6125,8 @@ void RenderFrameHostImpl::DispatchLoad() {
     return;
   }
 
-  proxy->GetAssociatedRemoteFrame()->DispatchLoadEventForFrameOwner();
+  if (proxy->is_render_frame_proxy_live())
+    proxy->GetAssociatedRemoteFrame()->DispatchLoadEventForFrameOwner();
 }
 
 void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
@@ -6257,8 +6264,10 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
                                     bad_message::RFH_NO_PROXY_TO_PARENT);
     return;
   }
-  proxy->GetAssociatedRemoteFrame()->AddResourceTimingFromChild(
-      std::move(timing));
+  if (proxy->is_render_frame_proxy_live()) {
+    proxy->GetAssociatedRemoteFrame()->AddResourceTimingFromChild(
+        std::move(timing));
+  }
 }
 
 RenderWidgetHostViewBase* RenderFrameHostImpl::GetViewForAccessibility() {
@@ -6549,9 +6558,11 @@ void RenderFrameHostImpl::EnterFullscreen(
     RenderFrameProxyHost* child_proxy =
         rfh->browsing_context_state()->GetRenderFrameProxyHost(
             static_cast<SiteInstanceImpl*>(parent_site_instance)->group());
-    child_proxy->GetAssociatedRemoteFrame()->WillEnterFullscreen(
-        options.Clone());
-    notified_instances.insert(parent_site_instance);
+    if (child_proxy->is_render_frame_proxy_live()) {
+      child_proxy->GetAssociatedRemoteFrame()->WillEnterFullscreen(
+          options.Clone());
+      notified_instances.insert(parent_site_instance);
+    }
   }
 
   // Focus the window if another frame may have delegated the capability.
@@ -6807,8 +6818,10 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
     return;
   }
 
-  proxy->GetAssociatedRemoteFrame()->BubbleLogicalScroll(direction,
-                                                         granularity);
+  if (proxy->is_render_frame_proxy_live()) {
+    proxy->GetAssociatedRemoteFrame()->BubbleLogicalScroll(direction,
+                                                           granularity);
+  }
 }
 
 void RenderFrameHostImpl::ShowPopupMenu(
@@ -7476,6 +7489,7 @@ void RenderFrameHostImpl::CreateNewWindow(
 void RenderFrameHostImpl::CreatePortal(
     mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
     mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     CreatePortalCallback callback) {
   if (!Portal::IsEnabled()) {
     frame_host_associated_receiver_.ReportBadMessage(
@@ -7524,7 +7538,14 @@ void RenderFrameHostImpl::CreatePortal(
   portal->Bind(std::move(pending_receiver), std::move(client));
   auto it = portals_.insert(std::move(portal)).first;
 
-  RenderFrameProxyHost* proxy_host = (*it)->CreateProxyAndAttachPortal();
+  RenderFrameProxyHost* proxy_host =
+      (*it)->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
+
+  if (!proxy_host) {
+    frame_host_associated_receiver_.ReportBadMessage(
+        "Trying to attach a portal that has already been attached.");
+    return;
+  }
 
   // Since the portal is newly created and has yet to commit a navigation, this
   // state is default-constructed.
@@ -7532,14 +7553,15 @@ void RenderFrameHostImpl::CreatePortal(
       proxy_host->frame_tree_node()->current_replication_state();
   DCHECK(initial_replicated_state.origin.opaque());
 
-  std::move(callback).Run(proxy_host->GetRoutingID(),
-                          initial_replicated_state.Clone(),
+  std::move(callback).Run(initial_replicated_state.Clone(),
                           (*it)->portal_token(), proxy_host->GetFrameToken(),
                           (*it)->GetDevToolsFrameToken());
 }
 
-void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
-                                      AdoptPortalCallback callback) {
+void RenderFrameHostImpl::AdoptPortal(
+    const blink::PortalToken& portal_token,
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    AdoptPortalCallback callback) {
   Portal* portal = FindPortalByToken(portal_token);
   if (!portal) {
     frame_host_associated_receiver_.ReportBadMessage(
@@ -7547,7 +7569,14 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
     return;
   }
   DCHECK_EQ(portal->owner_render_frame_host(), this);
-  RenderFrameProxyHost* proxy_host = portal->CreateProxyAndAttachPortal();
+  RenderFrameProxyHost* proxy_host =
+      portal->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
+
+  if (!proxy_host) {
+    frame_host_associated_receiver_.ReportBadMessage(
+        "Trying to attach a portal that has already been attached.");
+    return;
+  }
 
   // |frame_sink_id| should be set to the associated frame. See
   // https://crbug.com/966119 for details.
@@ -7558,7 +7587,6 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
   proxy_host->GetAssociatedRemoteFrame()->SetFrameSinkId(frame_sink_id);
 
   std::move(callback).Run(
-      proxy_host->GetRoutingID(),
       proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 }
@@ -7581,13 +7609,14 @@ void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
     blink::mojom::FencedFrameMode mode,
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     CreateFencedFrameCallback callback) {
   // We should defer fenced frame creation during prerendering, so creation at
   // this point is an error.
   if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::FF_CREATE_WHILE_PRERENDERING);
-    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
                             blink::RemoteFrameToken(),
                             base::UnguessableToken::Create());
     return;
@@ -7595,7 +7624,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
   if (!frame_tree_->IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
-    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
                             blink::RemoteFrameToken(),
                             base::UnguessableToken::Create());
     return;
@@ -7606,7 +7635,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
   if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
-    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
                             blink::RemoteFrameToken(),
                             base::UnguessableToken::Create());
     return;
@@ -7618,7 +7647,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
       GetMainFrame()->frame_tree_node()->GetFencedFrameMode() != mode) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
-    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
                             blink::RemoteFrameToken(),
                             base::UnguessableToken::Create());
     return;
@@ -7627,7 +7656,8 @@ void RenderFrameHostImpl::CreateFencedFrame(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
-      fenced_frame->CreateProxyAndAttachToOuterFrameTree();
+      fenced_frame->CreateProxyAndAttachToOuterFrameTree(
+          std::move(remote_frame_interfaces));
   fenced_frame->Bind(std::move(pending_receiver));
 
   // Since the fenced frame is newly created and has yet to commit a navigation,
@@ -7640,9 +7670,9 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // and this default-constructed FRS does not impact that.
   DCHECK(initial_replicated_state.origin.opaque());
 
-  std::move(callback).Run(
-      proxy_host->GetRoutingID(), initial_replicated_state.Clone(),
-      proxy_host->GetFrameToken(), fenced_frame->GetDevToolsFrameToken());
+  std::move(callback).Run(initial_replicated_state.Clone(),
+                          proxy_host->GetFrameToken(),
+                          fenced_frame->GetDevToolsFrameToken());
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

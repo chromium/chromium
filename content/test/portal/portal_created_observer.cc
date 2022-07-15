@@ -30,14 +30,15 @@ mojom::FrameHost* PortalCreatedObserver::GetForwardingInterface() {
 void PortalCreatedObserver::CreatePortal(
     mojo::PendingAssociatedReceiver<blink::mojom::Portal> portal,
     mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     CreatePortalCallback callback) {
   PortalInterceptorForTesting* portal_interceptor =
       PortalInterceptorForTesting::Create(render_frame_host_impl_,
                                           std::move(portal), std::move(client));
   portal_ = portal_interceptor->GetPortal();
-  RenderFrameProxyHost* proxy_host = portal_->CreateProxyAndAttachPortal();
+  RenderFrameProxyHost* proxy_host =
+      portal_->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
   std::move(callback).Run(
-      proxy_host->GetRoutingID(),
       proxy_host->frame_tree_node()->current_replication_state().Clone(),
       portal_->portal_token(), proxy_host->GetFrameToken(),
       portal_->GetDevToolsFrameToken());
@@ -45,15 +46,17 @@ void PortalCreatedObserver::CreatePortal(
   DidCreatePortal();
 }
 
-void PortalCreatedObserver::AdoptPortal(const blink::PortalToken& portal_token,
-                                        AdoptPortalCallback callback) {
+void PortalCreatedObserver::AdoptPortal(
+    const blink::PortalToken& portal_token,
+    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    AdoptPortalCallback callback) {
   Portal* portal = render_frame_host_impl_->FindPortalByToken(portal_token);
   PortalInterceptorForTesting* portal_interceptor =
       PortalInterceptorForTesting::Create(render_frame_host_impl_, portal);
   portal_ = portal_interceptor->GetPortal();
-  RenderFrameProxyHost* proxy_host = portal_->CreateProxyAndAttachPortal();
+  RenderFrameProxyHost* proxy_host =
+      portal_->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
   std::move(callback).Run(
-      proxy_host->GetRoutingID(),
       proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 

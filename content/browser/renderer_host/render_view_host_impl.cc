@@ -486,7 +486,8 @@ bool RenderViewHostImpl::CreateRenderView(
   } else {
     params->main_frame = mojom::CreateMainFrameUnion::NewRemoteParams(
         mojom::CreateRemoteMainFrameParams::New(
-            main_rfph->GetFrameToken(), proxy_route_id,
+            main_rfph->GetFrameToken(),
+            main_rfph->CreateAndBindRemoteFrameInterfaces(),
             main_rfph->CreateAndBindRemoteMainFrameInterfaces()));
   }
 

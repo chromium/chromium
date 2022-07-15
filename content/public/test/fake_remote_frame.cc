@@ -12,11 +12,9 @@ FakeRemoteFrame::FakeRemoteFrame() = default;
 
 FakeRemoteFrame::~FakeRemoteFrame() = default;
 
-void FakeRemoteFrame::Init(blink::AssociatedInterfaceProvider* provider) {
-  provider->OverrideBinderForTesting(
-      blink::mojom::RemoteFrame::Name_,
-      base::BindRepeating(&FakeRemoteFrame::BindFrameHostReceiver,
-                          base::Unretained(this)));
+void FakeRemoteFrame::Init(
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void FakeRemoteFrame::WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) {}
@@ -84,12 +82,6 @@ void FakeRemoteFrame::IntrinsicSizingInfoOfChildChanged(
 
 void FakeRemoteFrame::UpdateOpener(
     const absl::optional<blink::FrameToken>& opener_frame_token) {}
-
-void FakeRemoteFrame::FakeRemoteFrame::BindFrameHostReceiver(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>(
-      std::move(handle)));
-}
 
 void FakeRemoteFrame::DetachAndDispose() {}
 
