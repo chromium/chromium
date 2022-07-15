@@ -5628,11 +5628,6 @@ crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js 
 
 # V8 roll
 crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
-# For landing https://chromium-review.googlesource.com/c/v8/v8/+/3726147
-fast/js/kde/garbage-n.html [ Skip ]
-http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Skip ]
-http/tests/workers/shared-worker-importScripts.html [ Skip ]
-http/tests/workers/worker-importScripts.html [ Skip ]
 
 crbug.com/1341227 [ Mac ] http/tests/workers/worker-invalid-context.html [ Skip ]
 

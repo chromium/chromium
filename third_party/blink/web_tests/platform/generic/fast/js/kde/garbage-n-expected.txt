@@ -1,4 +1,4 @@
-CONSOLE ERROR: Uncaught SyntaxError: Unexpected identifier
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected identifier 'code'
 KDE JS Test
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
