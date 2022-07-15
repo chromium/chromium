@@ -1337,8 +1337,13 @@ void FeedStream::ReportFeedViewed(const StreamType& stream_type,
   metrics_reporter_->FeedViewed(surface_id);
 
   Stream& stream = GetStream(stream_type);
-  if (!stream.surfaces.HasSurfaceShowingContent())
+
+  // Skip feed-close refresh scheduling if this surface was already viewed.
+  // entry should never be null, but if it is, we will skip rescheduling.
+  StreamSurfaceSet::Entry* entry = stream.surfaces.FindSurface(surface_id);
+  if (entry && !entry->feed_viewed)
     ScheduleFeedCloseRefreshOnFirstView(stream_type);
+
   stream.surfaces.FeedViewed(surface_id);
   MaybeNotifyHasUnreadContent(stream_type);
 }
