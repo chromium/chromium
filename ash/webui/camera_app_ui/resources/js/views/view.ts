@@ -258,9 +258,15 @@ export class View {
    */
   onUncoveredAsTop(_viewName: ViewName): void {
     this.setFocusable();
+    // Focus on last focused element or default selector
     if (this.lastFocusedElement !== null) {
       this.lastFocusedElement.focus();
       this.lastFocusedElement = null;
+    } else {
+      const el = this.root.querySelector(this.defaultFocusSelector);
+      if (el !== null) {
+        assertInstanceof(el, HTMLElement).focus();
+      }
     }
   }
 
