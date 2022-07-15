@@ -17,6 +17,13 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
@@ -62,13 +69,6 @@
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
-#include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
-#include "chromeos/dbus/arc/arc_camera_client.h"
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
-#include "chromeos/dbus/arc/arc_keymaster_client.h"
-#include "chromeos/dbus/arc/arc_midis_client.h"
-#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
-#include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
@@ -129,14 +129,14 @@ void InitializeDBus() {
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
   InitializeDBusClient<AnomalyDetectorClient>(bus);
-  InitializeDBusClient<chromeos::ArcAppfuseProviderClient>(bus);
-  InitializeDBusClient<chromeos::ArcCameraClient>(bus);
-  InitializeDBusClient<chromeos::ArcDataSnapshotdClient>(bus);
-  InitializeDBusClient<chromeos::ArcKeymasterClient>(bus);
-  InitializeDBusClient<chromeos::ArcMidisClient>(bus);
-  InitializeDBusClient<chromeos::ArcObbMounterClient>(bus);
+  InitializeDBusClient<ArcAppfuseProviderClient>(bus);
+  InitializeDBusClient<ArcCameraClient>(bus);
+  InitializeDBusClient<ArcDataSnapshotdClient>(bus);
+  InitializeDBusClient<ArcKeymasterClient>(bus);
+  InitializeDBusClient<ArcMidisClient>(bus);
+  InitializeDBusClient<ArcObbMounterClient>(bus);
   InitializeDBusClient<ArcQuotaClient>(bus);
-  InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
+  InitializeDBusClient<ArcSensorServiceClient>(bus);
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
@@ -308,12 +308,12 @@ void ShutdownDBus() {
   AuthPolicyClient::Shutdown();
   AttestationClient::Shutdown();
   ArcQuotaClient::Shutdown();
-  chromeos::ArcObbMounterClient::Shutdown();
-  chromeos::ArcMidisClient::Shutdown();
-  chromeos::ArcKeymasterClient::Shutdown();
-  chromeos::ArcDataSnapshotdClient::Shutdown();
-  chromeos::ArcCameraClient::Shutdown();
-  chromeos::ArcAppfuseProviderClient::Shutdown();
+  ArcObbMounterClient::Shutdown();
+  ArcMidisClient::Shutdown();
+  ArcKeymasterClient::Shutdown();
+  ArcDataSnapshotdClient::Shutdown();
+  ArcCameraClient::Shutdown();
+  ArcAppfuseProviderClient::Shutdown();
   AnomalyDetectorClient::Shutdown();
 
   chromeos::DBusThreadManager::Shutdown();

@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("arc") {
-  output_name = "chromeos_dbus_arc"
-  defines = [ "IS_CHROMEOS_DBUS_ARC_IMPL" ]
+  output_name = "ash_dbus_arc"
+  defines = [ "IS_ASH_DBUS_ARC_IMPL" ]
 
   deps = [
     "//base",

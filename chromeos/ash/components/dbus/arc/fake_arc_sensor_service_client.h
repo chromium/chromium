@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_
 
-#include "chromeos/dbus/arc/arc_sensor_service_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_sensor_service_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of ArcSensorServiceClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcSensorServiceClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcSensorServiceClient
     : public ArcSensorServiceClient {
  public:
   // Returns the fake global instance if initialized. May return null.
@@ -31,6 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcSensorServiceClient
       delete;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_SENSOR_SERVICE_CLIENT_H_

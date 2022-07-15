@@ -10,7 +10,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/arc/arc_midis_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -102,7 +102,7 @@ void ArcMidisBridge::Connect(
 
   midis_host_remote_.set_disconnect_handler(base::BindOnce(
       &ArcMidisBridge::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
-  chromeos::ArcMidisClient::Get()->BootstrapMojoConnection(
+  ash::ArcMidisClient::Get()->BootstrapMojoConnection(
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&ArcMidisBridge::OnBootstrapMojoConnection,
                      weak_factory_.GetWeakPtr(), std::move(receiver),

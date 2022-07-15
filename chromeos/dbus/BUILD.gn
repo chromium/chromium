@@ -11,7 +11,6 @@ component("dbus") {
   output_name = "chromeos_dbus"  # Avoid conflict with //dbus
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   public_deps = [
-    "//chromeos/dbus/arc",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",

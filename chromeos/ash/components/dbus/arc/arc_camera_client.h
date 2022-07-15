@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_ARC_CAMERA_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_ARC_CAMERA_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_CAMERA_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_CAMERA_CLIENT_H_
 
 #include <string>
 
@@ -13,11 +13,11 @@
 
 #include "base/files/scoped_file.h"
 
-namespace chromeos {
+namespace ash {
 
 // ArcCameraClient is used to communicate with the arc-camera service for ARC
 // Camera HAL v1.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcCameraClient {
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcCameraClient {
  public:
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
@@ -46,11 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcCameraClient {
   virtual ~ArcCameraClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ArcCameraClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_ARC_CAMERA_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_CAMERA_CLIENT_H_

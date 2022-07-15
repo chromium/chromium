@@ -10,7 +10,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
 
 namespace arc {
 
@@ -57,14 +57,13 @@ void ArcObbMounterBridge::MountObb(const std::string& obb_file,
                                    const std::string& target_path,
                                    int32_t owner_gid,
                                    MountObbCallback callback) {
-  chromeos::ArcObbMounterClient::Get()->MountObb(
-      obb_file, target_path, owner_gid, std::move(callback));
+  ash::ArcObbMounterClient::Get()->MountObb(obb_file, target_path, owner_gid,
+                                            std::move(callback));
 }
 
 void ArcObbMounterBridge::UnmountObb(const std::string& target_path,
                                      UnmountObbCallback callback) {
-  chromeos::ArcObbMounterClient::Get()->UnmountObb(target_path,
-                                                   std::move(callback));
+  ash::ArcObbMounterClient::Get()->UnmountObb(target_path, std::move(callback));
 }
 
 }  // namespace arc

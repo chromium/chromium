@@ -12,7 +12,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
@@ -83,15 +83,15 @@ void ArcAppfuseBridge::Mount(uint32_t uid,
                              int32_t mount_id,
                              MountCallback callback) {
   // This is safe because ArcAppfuseProviderClient outlives ArcServiceLauncher.
-  chromeos::ArcAppfuseProviderClient::Get()->Mount(
+  ash::ArcAppfuseProviderClient::Get()->Mount(
       uid, mount_id, base::BindOnce(&RunWithScopedHandle, std::move(callback)));
 }
 
 void ArcAppfuseBridge::Unmount(uint32_t uid,
                                int32_t mount_id,
                                UnmountCallback callback) {
-  chromeos::ArcAppfuseProviderClient::Get()->Unmount(uid, mount_id,
-                                                     std::move(callback));
+  ash::ArcAppfuseProviderClient::Get()->Unmount(uid, mount_id,
+                                                std::move(callback));
 }
 
 void ArcAppfuseBridge::OpenFile(uint32_t uid,
@@ -99,7 +99,7 @@ void ArcAppfuseBridge::OpenFile(uint32_t uid,
                                 int32_t file_id,
                                 int32_t flags,
                                 OpenFileCallback callback) {
-  chromeos::ArcAppfuseProviderClient::Get()->OpenFile(
+  ash::ArcAppfuseProviderClient::Get()->OpenFile(
       uid, mount_id, file_id, flags,
       base::BindOnce(&RunWithScopedHandle, std::move(callback)));
 }

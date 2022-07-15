@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_
 
-#include "chromeos/dbus/arc/arc_camera_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of ArcCameraClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcCameraClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcCameraClient
     : public ArcCameraClient {
  public:
   // Returns the fake global instance if initialized. May return null.
@@ -31,6 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcCameraClient
   ~FakeArcCameraClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_CAMERA_CLIENT_H_

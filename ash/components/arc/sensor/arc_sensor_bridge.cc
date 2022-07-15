@@ -13,7 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/dbus/arc/arc_sensor_service_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_sensor_service_client.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -78,7 +78,7 @@ void ArcSensorBridge::GetSensorService(
   }
   base::ScopedFD fd =
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD();
-  chromeos::ArcSensorServiceClient::Get()->BootstrapMojoConnection(
+  ash::ArcSensorServiceClient::Get()->BootstrapMojoConnection(
       fd.get(), token, base::BindOnce([](bool success) {}));
 }
 

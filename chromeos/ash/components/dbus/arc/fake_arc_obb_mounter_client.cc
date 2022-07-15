@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_obb_mounter_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeArcObbMounterClient::FakeArcObbMounterClient() = default;
 
@@ -32,4 +32,4 @@ void FakeArcObbMounterClient::UnmountObb(const std::string& mount_path,
       FROM_HERE, base::BindOnce(std::move(callback), false));
 }
 
-}  // namespace chromeos
+}  // namespace ash

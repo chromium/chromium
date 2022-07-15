@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_
 
-#include "chromeos/dbus/arc/arc_midis_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ArcMidisClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcMidisClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcMidisClient
     : public ArcMidisClient {
  public:
   FakeArcMidisClient() = default;
@@ -28,6 +28,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcMidisClient
                                VoidDBusMethodCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_MIDIS_CLIENT_H_

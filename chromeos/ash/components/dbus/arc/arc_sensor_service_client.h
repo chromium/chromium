@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_
 
 #include <string>
 
@@ -12,10 +12,10 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 
-namespace chromeos {
+namespace ash {
 
 // ArcSensorServiceClient is used to communicate with arc-sensor-service.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcSensorServiceClient {
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcSensorServiceClient {
  public:
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
@@ -42,11 +42,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcSensorServiceClient {
   ArcSensorServiceClient& operator=(const ArcSensorServiceClient&) = delete;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ArcSensorServiceClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_

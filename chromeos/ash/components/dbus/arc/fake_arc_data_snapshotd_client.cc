@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_data_snapshotd_client.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeArcDataSnapshotdClient::FakeArcDataSnapshotdClient() = default;
 FakeArcDataSnapshotdClient::~FakeArcDataSnapshotdClient() = default;
@@ -65,4 +65,4 @@ void FakeArcDataSnapshotdClient::WaitForServiceToBeAvailable(
       FROM_HERE, base::BindOnce(std::move(callback), is_available_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

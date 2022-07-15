@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/fake_arc_appfuse_provider_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_appfuse_provider_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeArcAppfuseProviderClient::FakeArcAppfuseProviderClient() = default;
 
@@ -43,4 +43,4 @@ void FakeArcAppfuseProviderClient::OpenFile(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/fake_arc_sensor_service_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_camera_client.h"
 
 #include <utility>
 
@@ -10,36 +10,35 @@
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 // Used to track the fake instance, mirrors the instance in the base class.
-FakeArcSensorServiceClient* g_instance = nullptr;
+FakeArcCameraClient* g_instance = nullptr;
 
 }  // namespace
 
-FakeArcSensorServiceClient::FakeArcSensorServiceClient() {
+FakeArcCameraClient::FakeArcCameraClient() {
   DCHECK(!g_instance);
   g_instance = this;
 }
 
-FakeArcSensorServiceClient::~FakeArcSensorServiceClient() {
+FakeArcCameraClient::~FakeArcCameraClient() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }
 
 // static
-FakeArcSensorServiceClient* FakeArcSensorServiceClient::Get() {
+FakeArcCameraClient* FakeArcCameraClient::Get() {
   return g_instance;
 }
 
-void FakeArcSensorServiceClient::BootstrapMojoConnection(
-    int fd,
-    const std::string& token,
-    VoidDBusMethodCallback callback) {
+void FakeArcCameraClient::StartService(int fd,
+                                       const std::string& token,
+                                       VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_
 
 #include <stdint.h>
 
@@ -12,13 +12,13 @@
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 // ArcAppfuseProviderClient is used to communicate with the ArcAppfuseProvider
 // service which provides ProxyFileDescriptor (aka appfuse) feature for ARC. All
 // methods should be called from the origin thread (UI thread) which initializes
 // the DBusThreadManager instance.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcAppfuseProviderClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcAppfuseProviderClient
     : public DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
@@ -56,6 +56,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcAppfuseProviderClient
   ~ArcAppfuseProviderClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_APPFUSE_PROVIDER_CLIENT_H_

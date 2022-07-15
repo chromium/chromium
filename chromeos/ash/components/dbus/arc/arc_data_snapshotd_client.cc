@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 
 #include <memory>
 
@@ -11,12 +11,12 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/arc-data-snapshotd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -218,4 +218,4 @@ ArcDataSnapshotdClient::~ArcDataSnapshotdClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

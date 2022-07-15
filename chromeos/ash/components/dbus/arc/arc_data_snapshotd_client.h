@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_
 
 #include <string>
 
@@ -13,11 +13,11 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // ArcDataSnapshotdClient is used to delegate ARC data/ snapshot related tasks
 // to arc-data-snapshotd daemon in Chrome OS.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcDataSnapshotdClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcDataSnapshotdClient
     : public DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
@@ -82,6 +82,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcDataSnapshotdClient
   ~ArcDataSnapshotdClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_DATA_SNAPSHOTD_CLIENT_H_

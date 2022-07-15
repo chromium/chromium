@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_
 
 #include <string>
 
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ArcDataSnapshotdClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcDataSnapshotdClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcDataSnapshotdClient
     : public ArcDataSnapshotdClient {
  public:
   FakeArcDataSnapshotdClient();
@@ -56,6 +56,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcDataSnapshotdClient
   base::RepeatingClosure signal_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_DATA_SNAPSHOTD_CLIENT_H_

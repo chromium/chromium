@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
 
 #include "base/files/scoped_file.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 // ArcKeymasterClient is used to bootstrap a Mojo connection with the
 // arc-keymasterd daemon in Chrome OS.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
-    : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcKeymasterClient : public DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ArcKeymasterClient* Get();
@@ -42,6 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
   ~ArcKeymasterClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_

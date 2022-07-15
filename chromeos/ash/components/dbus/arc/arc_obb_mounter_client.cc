@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_obb_mounter_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -112,4 +112,4 @@ ArcObbMounterClient::~ArcObbMounterClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

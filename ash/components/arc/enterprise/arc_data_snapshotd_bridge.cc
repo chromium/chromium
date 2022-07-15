@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 
 namespace arc {
 namespace data_snapshotd {
@@ -55,7 +55,7 @@ void ArcDataSnapshotdBridge::WaitForDBusService() {
 
   dbus_waiting_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  chromeos::ArcDataSnapshotdClient::Get()->WaitForServiceToBeAvailable(
+  ash::ArcDataSnapshotdClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&ArcDataSnapshotdBridge::OnWaitedForDBusService,
                      dbus_waiting_weak_ptr_factory_.GetWeakPtr()));
   ScheduleWaitingForDBusService();
@@ -91,7 +91,7 @@ void ArcDataSnapshotdBridge::GenerateKeyPair(
   }
 
   VLOG(1) << "GenerateKeyPair via D-Bus";
-  chromeos::ArcDataSnapshotdClient::Get()->GenerateKeyPair(std::move(callback));
+  ash::ArcDataSnapshotdClient::Get()->GenerateKeyPair(std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::ClearSnapshot(
@@ -103,8 +103,7 @@ void ArcDataSnapshotdBridge::ClearSnapshot(
     return;
   }
   VLOG(1) << "ClearSnapshot via D-Bus";
-  chromeos::ArcDataSnapshotdClient::Get()->ClearSnapshot(last,
-                                                         std::move(callback));
+  ash::ArcDataSnapshotdClient::Get()->ClearSnapshot(last, std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::TakeSnapshot(
@@ -116,8 +115,8 @@ void ArcDataSnapshotdBridge::TakeSnapshot(
     return;
   }
   VLOG(1) << "TakeSnapshot via D-Bus";
-  chromeos::ArcDataSnapshotdClient::Get()->TakeSnapshot(account_id,
-                                                        std::move(callback));
+  ash::ArcDataSnapshotdClient::Get()->TakeSnapshot(account_id,
+                                                   std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::LoadSnapshot(
@@ -129,8 +128,8 @@ void ArcDataSnapshotdBridge::LoadSnapshot(
     return;
   }
   VLOG(1) << "LoadSnapshot via D-Bus";
-  chromeos::ArcDataSnapshotdClient::Get()->LoadSnapshot(account_id,
-                                                        std::move(callback));
+  ash::ArcDataSnapshotdClient::Get()->LoadSnapshot(account_id,
+                                                   std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::Update(int percent,
@@ -141,7 +140,7 @@ void ArcDataSnapshotdBridge::Update(int percent,
     return;
   }
   VLOG(1) << "Update via D-Bus";
-  chromeos::ArcDataSnapshotdClient::Get()->Update(percent, std::move(callback));
+  ash::ArcDataSnapshotdClient::Get()->Update(percent, std::move(callback));
 }
 
 void ArcDataSnapshotdBridge::ConnectToUiCancelledSignal(
@@ -152,7 +151,7 @@ void ArcDataSnapshotdBridge::ConnectToUiCancelledSignal(
     return;
   }
   VLOG(1) << "Connect to UiCancelled D-Bus signal.";
-  chromeos::ArcDataSnapshotdClient::Get()->ConnectToUiCancelledSignal(
+  ash::ArcDataSnapshotdClient::Get()->ConnectToUiCancelledSignal(
       std::move(signal_callback),
       base::BindOnce(
           &ArcDataSnapshotdBridge::OnUiCancelledSignalConnectedCallback,

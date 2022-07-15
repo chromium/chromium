@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_
-#define CHROMEOS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_
 
 #include <string>
 
-#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ArcObbMounterClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcObbMounterClient
+class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcObbMounterClient
     : public ArcObbMounterClient {
  public:
   FakeArcObbMounterClient();
@@ -34,6 +34,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcObbMounterClient
                   VoidDBusMethodCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARC_OBB_MOUNTER_CLIENT_H_

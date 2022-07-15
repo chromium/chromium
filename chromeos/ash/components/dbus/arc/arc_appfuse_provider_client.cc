@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 
 #include <utility>
 
@@ -11,13 +11,13 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "chromeos/dbus/arc/fake_arc_appfuse_provider_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arc_appfuse_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -149,4 +149,4 @@ ArcAppfuseProviderClient::~ArcAppfuseProviderClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash
