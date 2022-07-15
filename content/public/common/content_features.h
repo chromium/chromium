@@ -110,6 +110,7 @@ CONTENT_EXPORT extern const base::Feature
 CONTENT_EXPORT extern const base::Feature kGreaseUACH;
 CONTENT_EXPORT extern const base::Feature kIdentityInCanMakePaymentEventFeature;
 CONTENT_EXPORT extern const base::Feature kIdleDetection;
+CONTENT_EXPORT extern const base::Feature kInMemoryCodeCache;
 CONTENT_EXPORT extern const base::Feature kIncludeIpcOverheadInNavigationStart;
 CONTENT_EXPORT extern const base::Feature kInstalledApp;
 CONTENT_EXPORT extern const base::Feature kInstalledAppProvider;

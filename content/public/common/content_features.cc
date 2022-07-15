@@ -431,6 +431,10 @@ const base::Feature kIdentityInCanMakePaymentEventFeature{
 const base::Feature kIdleDetection{"IdleDetection",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
+// A feature flag for the memory-backed code cache.
+const base::Feature kInMemoryCodeCache{"InMemoryCodeCache",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Historically most navigations required IPC from browser to renderer and
 // from renderer back to browser. This was done to check for before-unload
 // handlers on the current page and occurred regardless of whether a
