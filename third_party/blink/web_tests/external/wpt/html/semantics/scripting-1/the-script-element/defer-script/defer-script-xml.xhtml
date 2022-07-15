@@ -5,29 +5,13 @@
   <title>Defer Script Execution Order</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="resources/helper.js"></script>
 </head>
 <body>
   <div id="scriptlog"/>
   <input id="testElement"/>
   <script>
   setup({single_test: true});
-  window.result = [];
-  function log(msg) {
-    window.result.push(msg);
-  }
-  function checkIfReachedBodyEnd() {
-    const endelement = document.getElementById("bodyend");
-    if (endelement != null) {
-      if (endelement.textContent === "End") {
-        log("EndOfBody");
-        endelement.textContent = "Detected";
-      }
-    }
-  }
-  function logScript(msg) {
-    checkIfReachedBodyEnd();
-    log(msg);
-  }
   function finish() {
     assert_array_equals(
         window.result,
@@ -41,7 +25,6 @@
   }
   logScript("Inline1");
   window.addEventListener("load", finish);
-  document.addEventListener("DOMContentLoaded", function() { logScript("DOMContentLoaded"); });
   </script>
 
   <script src="resources/sync-script-1.js"></script>

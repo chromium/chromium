@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL document.write() assert_array_equals: Execution order expected property 2 to be "Async1" but got "Sync1" (expected array ["Inline1", "Sync2", "Async1", "Sync1", "EndOfBody", "DOMContentLoaded", "WindowLoad"] got ["Inline1", "Sync2", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1", "WindowLoad"])
+FAIL document.write(),close() assert_array_equals: Execution order expected property 2 to be "Async1" but got "Sync1" (expected array ["Inline1", "Sync2", "Async1", "Sync1", "EndOfBody", "DOMContentLoaded", "WindowLoad"] got ["Inline1", "Sync2", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1", "WindowLoad"])
+FAIL document.open(),write() assert_array_equals: Execution order expected property 2 to be "Async1" but got "Sync1" (expected array ["Inline1", "Sync2", "Async1", "Sync1", "EndOfBody", "DOMContentLoaded", "WindowLoad"] got ["Inline1", "Sync2", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1", "WindowLoad"])
+FAIL document.open(),write(),close() assert_array_equals: Execution order expected property 2 to be "Async1" but got "Sync1" (expected array ["Inline1", "Sync2", "Async1", "Sync1", "EndOfBody", "DOMContentLoaded", "WindowLoad"] got ["Inline1", "Sync2", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1", "WindowLoad"])
+Harness: the test ran to completion.
+

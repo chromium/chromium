@@ -169,6 +169,7 @@ void HTMLParserScriptRunner::Detach() {
     PendingScript* pending_script = force_deferred_scripts_.TakeFirst();
     pending_script->Dispose();
   }
+  delayer_for_force_defer_->Deactivate();
 
   while (!scripts_to_execute_after_parsing_.IsEmpty()) {
     PendingScript* pending_script =
