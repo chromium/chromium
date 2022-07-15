@@ -8,11 +8,14 @@
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
+#include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_type.h"
@@ -240,6 +243,21 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
+                                         AuthSessionStatusCallback callback) {
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  LOGIN_LOG(EVENT) << "Requesting authsession status";
+  user_data_auth::GetAuthSessionStatusRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  client_->GetAuthSessionStatus(
+      request, base::BindOnce(&AuthPerformer::OnGetAuthSessionStatus,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 /// ---- private callbacks ----
 
 void AuthPerformer::OnStartAuthSession(
@@ -300,6 +318,51 @@ void AuthPerformer::OnAuthenticateAuthSession(
   DCHECK(reply->authenticated());
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+void AuthPerformer::OnGetAuthSessionStatus(
+    std::unique_ptr<UserContext> context,
+    AuthSessionStatusCallback callback,
+    absl::optional<user_data_auth::GetAuthSessionStatusReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+
+  if (error == user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+    // Do not trigger error handling
+    std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
+                            std::move(context),
+                            /*cryptohome_error=*/absl::nullopt);
+    return;
+  }
+
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(EVENT) << "Failed to get authsession status " << error;
+    std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
+                            std::move(context), CryptohomeError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  base::TimeDelta lifetime;
+  AuthSessionStatus status;
+  switch (reply->status()) {
+    case ::user_data_auth::AUTH_SESSION_STATUS_NOT_SET:
+    case ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION:
+      break;
+    case ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED:
+      status.Put(AuthSessionLevel::kSessionIsValid);
+      // Once we support multi-factor authentication (and have partially
+      // authenticated sessions) we might need to use value from reply.
+      lifetime = base::TimeDelta::Max();
+      break;
+    case ::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED:
+      status.Put(AuthSessionLevel::kSessionIsValid);
+      status.Put(AuthSessionLevel::kCryptohomeStrong);
+      lifetime = base::Seconds(reply->time_left());
+      break;
+    default:
+      NOTREACHED();
+  }
+  std::move(callback).Run(status, lifetime, std::move(context),
+                          /*cryptohome_error=*/absl::nullopt);
 }
 
 }  // namespace ash

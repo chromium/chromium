@@ -9,6 +9,7 @@
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/public/auth_factors_data.h"
+#include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -250,6 +251,157 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   ASSERT_TRUE(result.Get<1>().has_value());
   ASSERT_EQ(result.Get<1>().value().error_code,
             user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+}
+
+// Checks how AuthSessionStatus works when cryptohome returns an error.
+TEST_F(AuthPerformerTest, AuthSessionStatusOnError) {
+  AuthPerformer performer(&mock_client_);
+  context_->SetAuthSessionId("123");
+
+  EXPECT_CALL(mock_client_, GetAuthSessionStatus(_, _))
+      .WillOnce([](const ::user_data_auth::GetAuthSessionStatusRequest& request,
+                   UserDataAuthClient::GetAuthSessionStatusCallback callback) {
+        ::user_data_auth::GetAuthSessionStatusReply reply;
+        reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT);
+        reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_NOT_SET);
+        std::move(callback).Run(reply);
+      });
+  base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
+  // Session does not have a status
+  ASSERT_EQ(result.Get<0>(), AuthSessionStatus());
+  // Session does not have a lifetime:
+  ASSERT_TRUE(result.Get<1>().is_zero());
+  // Context exists
+  ASSERT_TRUE(result.Get<2>());
+  // Error is passed
+  ASSERT_TRUE(result.Get<3>().has_value());
+  ASSERT_EQ(result.Get<3>().value().error_code,
+            user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT);
+}
+
+// Checks how AuthSessionStatus works when session is not valid.
+TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSession) {
+  AuthPerformer performer(&mock_client_);
+  context_->SetAuthSessionId("123");
+
+  EXPECT_CALL(mock_client_, GetAuthSessionStatus(_, _))
+      .WillOnce([](const ::user_data_auth::GetAuthSessionStatusRequest& request,
+                   UserDataAuthClient::GetAuthSessionStatusCallback callback) {
+        ::user_data_auth::GetAuthSessionStatusReply reply;
+        reply.set_error(
+            ::user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+        reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_NOT_SET);
+        std::move(callback).Run(reply);
+      });
+  base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
+  // Session does not have a status
+  ASSERT_EQ(result.Get<0>(), AuthSessionStatus());
+  // Session does not have a lifetime:
+  ASSERT_TRUE(result.Get<1>().is_zero());
+  // Context exists
+  ASSERT_TRUE(result.Get<2>());
+  // No error is passed - this is a special case.
+  ASSERT_FALSE(result.Get<3>().has_value());
+}
+
+// Checks how AuthSessionStatus works when session was just invalidated
+// (cryptohome still finds authsession, but it is already marked as invalid).
+TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSessionAnotherFlow) {
+  AuthPerformer performer(&mock_client_);
+  context_->SetAuthSessionId("123");
+
+  EXPECT_CALL(mock_client_, GetAuthSessionStatus(_, _))
+      .WillOnce([](const ::user_data_auth::GetAuthSessionStatusRequest& request,
+                   UserDataAuthClient::GetAuthSessionStatusCallback callback) {
+        ::user_data_auth::GetAuthSessionStatusReply reply;
+        reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+        reply.set_status(
+            ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION);
+        std::move(callback).Run(reply);
+      });
+  base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
+  // Session does not have a status
+  ASSERT_EQ(result.Get<0>(), AuthSessionStatus());
+  // Session does not have a lifetime:
+  ASSERT_TRUE(result.Get<1>().is_zero());
+  // Context exists
+  ASSERT_TRUE(result.Get<2>());
+  // No error is passed - this is a special case.
+  ASSERT_FALSE(result.Get<3>().has_value());
+}
+
+// Checks how AuthSessionStatus works when session is not authenticated.
+TEST_F(AuthPerformerTest, AuthSessionStatusWhenNotAuthenticated) {
+  AuthPerformer performer(&mock_client_);
+  context_->SetAuthSessionId("123");
+
+  EXPECT_CALL(mock_client_, GetAuthSessionStatus(_, _))
+      .WillOnce([](const ::user_data_auth::GetAuthSessionStatusRequest& request,
+                   UserDataAuthClient::GetAuthSessionStatusCallback callback) {
+        ::user_data_auth::GetAuthSessionStatusReply reply;
+        reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+        reply.set_status(
+            ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
+        std::move(callback).Run(reply);
+      });
+  base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
+  // Session is valid but not authenticated
+  ASSERT_EQ(result.Get<0>(),
+            AuthSessionStatus(AuthSessionLevel::kSessionIsValid));
+  // Session have infinite lifetime
+  ASSERT_TRUE(result.Get<1>().is_max());
+  // Context exists
+  ASSERT_TRUE(result.Get<2>());
+  // No error is passed
+  ASSERT_FALSE(result.Get<3>().has_value());
+}
+
+// Checks how AuthSessionStatus works when session is authenticated.
+TEST_F(AuthPerformerTest, AuthSessionStatusWhenAuthenticated) {
+  AuthPerformer performer(&mock_client_);
+  context_->SetAuthSessionId("123");
+
+  EXPECT_CALL(mock_client_, GetAuthSessionStatus(_, _))
+      .WillOnce([](const ::user_data_auth::GetAuthSessionStatusRequest& request,
+                   UserDataAuthClient::GetAuthSessionStatusCallback callback) {
+        ::user_data_auth::GetAuthSessionStatusReply reply;
+        reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+        reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
+        reply.set_time_left(10 * 60);
+        std::move(callback).Run(reply);
+      });
+
+  base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
+  // Session is authenticated
+  ASSERT_EQ(result.Get<0>(),
+            AuthSessionStatus(AuthSessionLevel::kSessionIsValid,
+                              AuthSessionLevel::kCryptohomeStrong));
+  // Session have some finite lifetime
+  ASSERT_EQ(result.Get<1>(), base::Minutes(10));
+  // Context exists
+  ASSERT_TRUE(result.Get<2>());
+  // No error is passed
+  ASSERT_FALSE(result.Get<3>().has_value());
 }
 
 }  // namespace

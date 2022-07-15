@@ -180,6 +180,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (const ::user_data_auth::RemoveAuthFactorRequest& request,
                RemoveAuthFactorCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GetAuthSessionStatus,
+              (const ::user_data_auth::GetAuthSessionStatusRequest& request,
+               GetAuthSessionStatusCallback callback),
+              (override));
 };
 
 }  // namespace ash

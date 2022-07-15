@@ -230,6 +230,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) override;
+  void GetAuthSessionStatus(
+      const ::user_data_auth::GetAuthSessionStatusRequest& request,
+      GetAuthSessionStatusCallback callback) override;
 
   // Sets the CryptohomeError value to return.
   void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {

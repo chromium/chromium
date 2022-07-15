@@ -29,6 +29,7 @@ component("authpublic") {
     "auth_factors_data.h",
     "auth_failure.cc",
     "auth_failure.h",
+    "auth_session_status.h",
     "cryptohome_error.cc",
     "cryptohome_error.h",
     "cryptohome_key_constants.cc",

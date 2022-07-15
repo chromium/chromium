@@ -946,6 +946,30 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeUserDataAuthClient::GetAuthSessionStatus(
+    const ::user_data_auth::GetAuthSessionStatusRequest& request,
+    GetAuthSessionStatusCallback callback) {
+  ::user_data_auth::GetAuthSessionStatusReply reply;
+
+  const std::string auth_session_id = request.auth_session_id();
+  auto auth_session = auth_sessions_.find(auth_session_id);
+
+  // Check if the token refers to a valid AuthSession.
+  if (auth_session == auth_sessions_.end()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  } else if (auth_session->second.authenticated) {
+    reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
+    // Use 5 minutes timeout - as if auth session has just started.
+    reply.set_time_left(5 * 60);
+  } else {
+    reply.set_status(
+        ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
+  }
+
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (TestApi::Get()->service_is_available_ ||

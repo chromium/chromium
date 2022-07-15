@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
   using RemoveAuthFactorCallback =
       DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
+  using GetAuthSessionStatusCallback =
+      DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -286,6 +288,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) = 0;
+
+  // This is called when a user wants to get an AuthSession status.
+  virtual void GetAuthSessionStatus(
+      const ::user_data_auth::GetAuthSessionStatusRequest& request,
+      GetAuthSessionStatusCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

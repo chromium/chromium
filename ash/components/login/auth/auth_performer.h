@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/public/auth_callbacks.h"
+#include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/cryptohome_error.h"
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -36,6 +37,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
 
   using StartSessionCallback =
       base::OnceCallback<void(bool /* user_exists */,
+                              std::unique_ptr<UserContext>,
+                              absl::optional<CryptohomeError>)>;
+
+  using AuthSessionStatusCallback =
+      base::OnceCallback<void(AuthSessionStatus status,
+                              base::TimeDelta lifetime,
                               std::unique_ptr<UserContext>,
                               absl::optional<CryptohomeError>)>;
 
@@ -95,6 +102,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   void AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                            AuthOperationCallback callback);
 
+  void GetAuthSessionStatus(std::unique_ptr<UserContext> context,
+                            AuthSessionStatusCallback callback);
+
  private:
   void OnServiceRunning(std::unique_ptr<UserContext> context,
                         bool ephemeral,
@@ -119,6 +129,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply);
+
+  void OnGetAuthSessionStatus(
+      std::unique_ptr<UserContext> context,
+      AuthSessionStatusCallback callback,
+      absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
 
   const base::raw_ptr<UserDataAuthClient> client_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};

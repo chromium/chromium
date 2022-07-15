@@ -87,6 +87,8 @@ template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
         const absl::optional<PrepareVaultForMigrationReply>&);
 template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<RemoveAuthFactorReply>&);
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<GetAuthSessionStatusReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const absl::optional<GetKeyDataReply>& reply) {
