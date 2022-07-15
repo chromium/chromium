@@ -644,11 +644,26 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
       base::test::ParseJson(kPWGRasterOnlyPrinterSimpleDescription);
   ASSERT_TRUE(original_capability.is_dict());
 
+  // TODO(thestig): Consolidate constants used in this section.
+  base::Value::Dict original_capability_with_dpi_dict =
+      original_capability.GetDict().Clone();
+  base::Value::Dict* printer =
+      original_capability_with_dpi_dict.FindDict("printer");
+  ASSERT_TRUE(printer);
+  base::Value::Dict default_dpi_option;
+  default_dpi_option.Set("horizontal_dpi", kDefaultPdfDpi);
+  default_dpi_option.Set("vertical_dpi", kDefaultPdfDpi);
+  base::Value::List dpi_list;
+  dpi_list.Append(std::move(default_dpi_option));
+  base::Value::Dict dpi_dict;
+  dpi_dict.Set("option", std::move(dpi_list));
+  printer->Set("dpi", std::move(dpi_dict));
+
   fake_api->TriggerNextGetCapabilityCallback(
-      original_capability.GetDict().Clone());
+      std::move(original_capability.GetDict()));
 
   EXPECT_EQ(1u, call_count);
-  EXPECT_EQ(capability, original_capability.GetDict());
+  EXPECT_EQ(capability, original_capability_with_dpi_dict);
 }
 
 TEST_F(ExtensionPrinterHandlerTest, GetCapability_Reset) {

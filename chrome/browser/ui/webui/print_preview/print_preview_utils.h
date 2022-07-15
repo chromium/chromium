@@ -26,14 +26,14 @@ extern const char kSelectString[];
 extern const char kTypeKey[];
 extern const char kVendorCapabilityKey[];
 
-// Converts |printer_list| to a base::Value::List form, runs |callback| with the
-// converted list as the argument if it is not empty, and runs |done_callback|.
+// Converts `printer_list` to a base::Value::List form, runs `callback` with the
+// converted list as the argument if it is not empty, and runs `done_callback`.
 void ConvertPrinterListForCallback(
     PrinterHandler::AddedPrintersCallback callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
     const PrinterList& printer_list);
 
-// Returns a sanitized version of |cdd| to prevent possible JS
+// Returns a sanitized version of `cdd` to prevent possible JS
 // errors in Print Preview. Will remove null items from lists or options lists
 // and remove any lists/options that are empty or only contain null values.
 // Will also check some CDD entries to make sure the input conforms to the
@@ -41,14 +41,22 @@ void ConvertPrinterListForCallback(
 // On failure, returns an empty dict.
 base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 
-// Starts a local print of |print_data| with print settings dictionary
-// |job_settings|. Runs |callback| on failure or success.
+// Returns an updated version of `cdd` and ensures it has a valid value for the
+// DPI capability. Uses the existing validated value if it exists, or fills in a
+// reasonable default if the capability is missing. Having a DPI is not required
+// in the CDD, but it is crucial for performing page setup.
+//
+// Assumes `cdd` is the output from ValidateCddForPrintPreview().
+base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd);
+
+// Starts a local print of `print_data` with print settings dictionary
+// `job_settings`. Runs `callback` on failure or success.
 void StartLocalPrint(base::Value::Dict job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);
 
-// Parses print job settings. Returns |true| on success.
+// Parses print job settings. Returns `true` on success.
 // This is used by extension printers.
 bool ParseSettings(const base::Value::Dict& settings,
                    std::string* out_destination_id,

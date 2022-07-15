@@ -28,6 +28,7 @@
 #include "printing/backend/print_backend_consts.h"
 #include "printing/page_range.h"
 #include "printing/print_job_constants.h"
+#include "printing/units.h"
 
 namespace printing {
 
@@ -196,6 +197,24 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
     }
   }
   cdd.Set(kPrinter, std::move(out_caps));
+  return cdd;
+}
+
+base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd) {
+  base::Value::Dict* printer = cdd.FindDict(kPrinter);
+  if (!printer)
+    return cdd;
+
+  if (!printer->FindDict(kDpiCapabilityKey)) {
+    base::Value::Dict default_dpi;
+    default_dpi.Set(kHorizontalDpi, kDefaultPdfDpi);
+    default_dpi.Set(kVerticalDpi, kDefaultPdfDpi);
+    base::Value::List dpi_options;
+    dpi_options.Append(std::move(default_dpi));
+    base::Value::Dict dpi_capability;
+    dpi_capability.Set(kOptionKey, std::move(dpi_options));
+    printer->Set(kDpiCapabilityKey, std::move(dpi_capability));
+  }
   return cdd;
 }
 

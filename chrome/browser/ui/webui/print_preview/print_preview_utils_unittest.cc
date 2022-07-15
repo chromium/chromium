@@ -439,4 +439,60 @@ TEST_F(PrintPreviewUtilsTest, CddResetToDefault) {
   EXPECT_FALSE(GetDpiResetToDefault(std::move(cdd_out)));
 }
 
+TEST_F(PrintPreviewUtilsTest, AddMissingDpi) {
+  // Set up the test expectation to have only the 300 DPI setting, which is the
+  // default DPI setting.
+  base::Value::Dict printer = GetCapabilitiesFull();
+  base::Value::Dict* dpi_dict = printer.FindDict(kDpi);
+  ASSERT_TRUE(dpi_dict);
+  base::Value::List* dpi_list = dpi_dict->FindList(kOptionKey);
+  ASSERT_TRUE(dpi_list);
+  ASSERT_EQ(2u, dpi_list->size());
+  dpi_list->erase(dpi_list->begin() + 1);
+  ASSERT_EQ(1u, dpi_list->size());
+  ASSERT_EQ(
+      base::test::ParseJson("{\"horizontal_dpi\": 300, \"vertical_dpi\": 300}"),
+      (*dpi_list)[0]);
+
+  // Initialize `cdd` but clear the DPI list.
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
+  base::Value::Dict* cdd_printer_dpi_dict = cdd_printer.FindDict(kDpi);
+  ASSERT_TRUE(cdd_printer_dpi_dict);
+  base::Value::List* cdd_printer_dpi_list =
+      cdd_printer_dpi_dict->FindList(kOptionKey);
+  ASSERT_TRUE(cdd_printer_dpi_list);
+  cdd_printer_dpi_list->clear();
+
+  // ValidateCddForPrintPreview() should delete the `kDpi` key altogether, since
+  // the associated value was an empty list.
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  const base::Value::Dict* cdd_out_printer = cdd_out.FindDict(kPrinter);
+  ASSERT_TRUE(cdd_out_printer);
+  EXPECT_FALSE(cdd_out_printer->FindDict(kDpi));
+
+  // Update `cdd_out` with the default value for this required capability. Then
+  // `cdd_out` will pass validation.
+  ValidatePrinter(UpdateCddWithDpiIfMissing(std::move(cdd_out)), printer);
+}
+
+TEST_F(PrintPreviewUtilsTest, ExistingValidDpiCapabilityDoesNotChange) {
+  // Ensure the test expectation has multiple DPIs.
+  const base::Value::Dict printer = GetCapabilitiesFull();
+  const base::Value::Dict* dpi_dict = printer.FindDict(kDpi);
+  ASSERT_TRUE(dpi_dict);
+  const base::Value::List* dpi_list = dpi_dict->FindList(kOptionKey);
+  ASSERT_TRUE(dpi_list);
+  ASSERT_EQ(2u, dpi_list->size());
+
+  // Initialize `cdd`, which is perfectly valid. It should pass through
+  // ValidateCddForPrintPreview() and UpdateCddWithDpiIfMissing() without any
+  // changes.
+  base::Value::Dict cdd;
+  cdd.Set(kPrinter, printer.Clone());
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(UpdateCddWithDpiIfMissing(std::move(cdd_out)), printer);
+}
+
 }  // namespace printing
