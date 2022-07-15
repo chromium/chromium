@@ -322,13 +322,15 @@ decision.
     limit, and instead relies on the OS to discard processes.
 * **Aggressive Reuse**: For some cases (including on Android), Chromium will
     aggressively look for existing same-site processes to reuse even before
-    reaching the process limit. Out-of-process iframes (OOPIFs) use this
-    approach, such that an `example.com` iframe in a cross-site page will be
-    placed in an existing `example.com` process (in any browsing context group),
-    even if the process limit has not been reached. This keeps the process
-    count lower, based on the assumption that most iframes are less resource
-    demanding than top-level documents. Similarly, ServiceWorkers are generally
-    placed in the same process as a document that is likely to rely on them.
+    reaching the process limit. Out-of-process iframes (OOPIFs) and [fenced
+    frames](https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/)
+    use this approach, such that an `example.com` iframe in a cross-site page
+    will be placed in an existing `example.com` process (in any browsing context
+    group), even if the process limit has not been reached. This keeps the
+    process count lower, based on the assumption that most iframes/fenced frames
+    are less resource demanding than top-level documents. Similarly,
+    ServiceWorkers are generally placed in the same process as a document that
+    is likely to rely on them.
 * **Extensions**: Chromium ensures that extensions do not share a process with
     each other or with web pages, but also that a large number of extensions
     will not consume the entire soft process limit, forcing same-site web pages
