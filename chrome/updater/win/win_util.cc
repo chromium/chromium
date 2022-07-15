@@ -848,4 +848,21 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
              : CompareOSVersionsInternal(os_version, kOSTypeMask, oper);
 }
 
+bool EnableSecureDllLoading() {
+  static const auto set_default_dll_directories =
+      reinterpret_cast<decltype(&::SetDefaultDllDirectories)>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "SetDefaultDllDirectories"));
+
+  if (!set_default_dll_directories)
+    return true;
+
+#if defined(COMPONENT_BUILD)
+  const DWORD directory_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+#else
+  const DWORD directory_flags = LOAD_LIBRARY_SEARCH_SYSTEM32;
+#endif
+
+  return set_default_dll_directories(directory_flags);
+}
+
 }  // namespace updater

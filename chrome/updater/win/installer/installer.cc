@@ -511,6 +511,8 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 }
 
 ProcessExitResult WMain(HMODULE module) {
+  CHECK(EnableSecureDllLoading());
+
   CommandString cmd_line_args;
   ProcessExitResult args_result = BuildCommandLineArguments(
       ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());

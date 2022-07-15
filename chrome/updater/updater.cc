@@ -228,6 +228,10 @@ constexpr const char* BuildArch() {
 }  // namespace
 
 int UpdaterMain(int argc, const char* const* argv) {
+#if BUILDFLAG(IS_WIN)
+  CHECK(EnableSecureDllLoading());
+#endif
+
   base::PlatformThread::SetName("UpdaterMain");
   base::AtExitManager exit_manager;
 

@@ -268,4 +268,8 @@ TEST(WinUtil, IsCOMCallerAdmin) {
   EXPECT_EQ(is_com_caller_admin, ::IsUserAnAdmin());
 }
 
+TEST(WinUtil, EnableSecureDllLoading) {
+  EXPECT_TRUE(EnableSecureDllLoading());
+}
+
 }  // namespace updater

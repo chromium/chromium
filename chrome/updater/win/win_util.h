@@ -266,6 +266,12 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion();
 // call to `::GetVersionEx` or `::RtlGetVersion`.
 bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 
+// This function calls ::SetDefaultDllDirectories to restrict DLL loads to
+// either full paths or %SYSTEM32%. ::SetDefaultDllDirectories is available on
+// Windows 8.1 and above, and on Windows Vista and above when KB2533623 is
+// applied.
+[[nodiscard]] bool EnableSecureDllLoading();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_
