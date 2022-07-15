@@ -915,10 +915,6 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdSubframe();
 }
 
-void HTMLFrameOwnerElement::LoadIfLazyAfterTimeout() {
-  LoadImmediatelyIfLazy();
-}
-
 bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {
   // LazyAds targets are third-party frames.
   // Not eligible if the frame url is a same-origin as the parent url.
@@ -956,8 +952,9 @@ void HTMLFrameOwnerElement::MaybeSetTimeoutToStartFrameLoading(
       .GetTaskRunner(TaskType::kInternalLoading)
       ->PostDelayedTask(
           FROM_HERE,
-          WTF::Bind(&HTMLFrameOwnerElement::LoadIfLazyAfterTimeout,
-                    WrapWeakPersistent(this)),
+          WTF::Bind(
+              base::IgnoreResult(&HTMLFrameOwnerElement::LoadImmediatelyIfLazy),
+              WrapWeakPersistent(this)),
           timeout_ms);
 }
 

@@ -224,9 +224,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       const KURL& url,
       bool is_loading_attr_lazy,
       AutomaticLazyLoadReason auto_lazy_load_reason);
-  // This function is used for the call back PostDelayedTask.
-  // Trigger loading if the frame is lazy-loaded but not started yet.
-  void LoadIfLazyAfterTimeout();
 
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.
