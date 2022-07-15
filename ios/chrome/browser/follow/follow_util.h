@@ -11,7 +11,15 @@ namespace web {
 class WebState;
 }
 
+// Key used to store the last shown time of follow in-product help (IPH).
+extern NSString* const kFollowIPHLastShownTime;
+
 // Returns the Follow action state for |webState|.
 FollowActionState GetFollowActionState(web::WebState* webState);
+
+#pragma mark - For Follow IPH
+// Returns true if the time between the last time a Follow IPH was shown and now
+// is long enough for another Follow IPH appearance.
+bool IsFollowIPHShownFrequencyEligible();
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_

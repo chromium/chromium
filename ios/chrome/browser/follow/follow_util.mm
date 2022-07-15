@@ -16,6 +16,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// Set the Follow IPH apperance threshold to 15 minutes.
+NSTimeInterval const kFollowIPHAppearanceThresholdInSeconds = 15 * 60;
+}  // namespace
+
+NSString* const kFollowIPHLastShownTime = @"FollowIPHLastShownTime";
+
 FollowActionState GetFollowActionState(web::WebState* webState) {
   // This method should be called only if the feature flag has been enabled.
   DCHECK(IsWebChannelsEnabled());
@@ -45,4 +52,15 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
     return FollowActionStateEnabled;
   }
   return FollowActionStateHidden;
+}
+
+#pragma mark - For Follow IPH
+bool IsFollowIPHShownFrequencyEligible() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDate* lastFollowIPHShownTime =
+      [defaults objectForKey:kFollowIPHLastShownTime];
+  return (
+      [[NSDate
+          dateWithTimeIntervalSinceNow:-kFollowIPHAppearanceThresholdInSeconds]
+          compare:lastFollowIPHShownTime] != NSOrderedAscending);
 }

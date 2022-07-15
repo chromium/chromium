@@ -132,8 +132,10 @@ void FollowTabHelper::PageLoaded(
                     .GetFollowProvider()
                     ->GetRecommendedStatus(web_page_urls);
 
-            // Do not show follow IPH if the site is not recommended.
-            if (!channel_recommended)
+            // Do not show follow IPH if:
+            // 1. The site is not recommended;
+            // 2. The IPH was shown too recently.
+            if (!channel_recommended || !IsFollowIPHShownFrequencyEligible())
               return;
 
             // Check if the site has enough visit count.

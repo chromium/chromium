@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -245,6 +246,12 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.followWhileBrowsingBubbleTipPresenter = presenter;
+
+  // Store the time when showing the Follow IPH. Set it everytime so the value
+  // in NSUserDefault is always the last time a Follow IPH was shown.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:[NSDate date] forKey:kFollowIPHLastShownTime];
+  [defaults synchronize];
 }
 
 - (void)presentDefaultSiteViewTipBubble {
