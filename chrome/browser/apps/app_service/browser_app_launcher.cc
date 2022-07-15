@@ -59,15 +59,13 @@ content::WebContents* LaunchAppWithParamsImpl(
         web_app_launch_manager->OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
-      RecordAppLaunchMetrics(
-          profile, apps::AppType::kWeb, app_id,
-          ConvertLaunchSourceToMojomLaunchSource(launch_source), container);
+      RecordAppLaunchMetrics(profile, apps::AppType::kWeb, app_id,
+                             launch_source, container);
       return web_contents;
     }
 
     RecordAppLaunchMetrics(profile, apps::AppType::kWeb, app_id,
-                           apps::mojom::LaunchSource::kFromFullRestore,
-                           container);
+                           apps::LaunchSource::kFromFullRestore, container);
 
     int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
     if (!SessionID::IsValidValue(session_id)) {
@@ -94,7 +92,7 @@ content::WebContents* LaunchAppWithParamsImpl(
   // restore file.
   if (SessionID::IsValidValue(params.restore_id)) {
     RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
-                           apps::mojom::LaunchSource::kFromFullRestore,
+                           apps::LaunchSource::kFromFullRestore,
                            params.container);
 
     apps::AppLaunchParams params_for_restore(
@@ -109,10 +107,8 @@ content::WebContents* LaunchAppWithParamsImpl(
         std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
   } else {
-    RecordAppLaunchMetrics(
-        profile, apps::AppType::kChromeApp, params.app_id,
-        ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-        params.container);
+    RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
+                           params.launch_source, params.container);
   }
 #endif
 

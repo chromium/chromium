@@ -197,11 +197,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source) override;
+  void PerformPostLaunchTasks(apps::LaunchSource launch_source) override;
 
   void RecordAppPlatformMetrics(Profile* profile,
                                 const apps::AppUpdate& update,
-                                apps::mojom::LaunchSource launch_source,
+                                apps::LaunchSource launch_source,
                                 apps::LaunchContainer container) override;
 
   void InitAppPlatformMetrics();

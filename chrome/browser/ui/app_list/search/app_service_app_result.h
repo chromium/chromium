@@ -12,10 +12,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
@@ -54,7 +54,7 @@ class AppServiceAppResult : public AppResult {
   void ExecuteLaunchCommand(int event_flags) override;
 
   ash::SearchResultType GetSearchResultType() const;
-  void Launch(int event_flags, apps::mojom::LaunchSource launch_source);
+  void Launch(int event_flags, apps::LaunchSource launch_source);
 
   int GetIconDimension(bool chip);
   void CallLoadIcon(bool chip, bool allow_placeholder_icon);

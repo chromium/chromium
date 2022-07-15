@@ -583,7 +583,7 @@ void ExecuteTaskAfterMimeTypesCollected(
   if (task.task_type == TASK_TYPE_ARC_APP &&
       !ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
     apps::RecordAppLaunchMetrics(profile, apps::AppType::kArc, task.app_id,
-                                 apps::mojom::LaunchSource::kFromFileManager,
+                                 apps::LaunchSource::kFromFileManager,
                                  apps::LaunchContainer::kLaunchContainerWindow);
     ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
   } else {
@@ -889,8 +889,7 @@ bool ExecuteFileTask(Profile* profile,
 
   // TODO(crbug.com/1005640): Move recording this metric to the App Service when
   // file handling is supported there.
-  apps::RecordAppLaunch(task.app_id,
-                        apps::mojom::LaunchSource::kFromFileManager);
+  apps::RecordAppLaunch(task.app_id, apps::LaunchSource::kFromFileManager);
 
   if (auto* notifier = FileTasksNotifier::GetForProfile(profile)) {
     notifier->NotifyFileTasks(file_urls);

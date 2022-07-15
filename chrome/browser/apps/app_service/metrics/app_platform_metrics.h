@@ -60,7 +60,7 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet();
 void RecordAppLaunchMetrics(Profile* profile,
                             AppType app_type,
                             const std::string& app_id,
-                            apps::mojom::LaunchSource launch_source,
+                            apps::LaunchSource launch_source,
                             apps::LaunchContainer container);
 
 class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
@@ -127,7 +127,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records UKM when launching an app.
   void RecordAppLaunchUkm(AppType app_type,
                           const std::string& app_id,
-                          apps::mojom::LaunchSource launch_source,
+                          apps::LaunchSource launch_source,
                           apps::LaunchContainer container);
 
   // Records UKM when uninstalling an app.

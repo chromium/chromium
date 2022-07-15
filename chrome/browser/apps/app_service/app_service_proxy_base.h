@@ -389,11 +389,11 @@ class AppServiceProxyBase : public KeyedService,
   apps::mojom::IntentFilterPtr FindBestMatchingMojomFilter(
       const apps::mojom::IntentPtr& intent);
 
-  virtual void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source);
+  virtual void PerformPostLaunchTasks(apps::LaunchSource launch_source);
 
   virtual void RecordAppPlatformMetrics(Profile* profile,
                                         const apps::AppUpdate& update,
-                                        apps::mojom::LaunchSource launch_source,
+                                        apps::LaunchSource launch_source,
                                         apps::LaunchContainer container);
 
   virtual void PerformPostUninstallTasks(

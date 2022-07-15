@@ -220,7 +220,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
 
 // Records the number of times Chrome OS apps are launched grouped by the launch
 // source.
-void RecordAppLaunchSource(apps::mojom::LaunchSource launch_source) {
+void RecordAppLaunchSource(apps::LaunchSource launch_source) {
   base::UmaHistogramEnumeration("Apps.AppLaunchSource", launch_source);
 }
 
@@ -325,7 +325,7 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
 void RecordAppLaunchMetrics(Profile* profile,
                             AppType app_type,
                             const std::string& app_id,
-                            apps::mojom::LaunchSource launch_source,
+                            apps::LaunchSource launch_source,
                             apps::LaunchContainer container) {
   if (app_type == AppType::kUnknown) {
     return;
@@ -632,11 +632,10 @@ void AppPlatformMetrics::OnTwoHours() {
   RecordAppsUsageTimeUkm();
 }
 
-void AppPlatformMetrics::RecordAppLaunchUkm(
-    AppType app_type,
-    const std::string& app_id,
-    apps::mojom::LaunchSource launch_source,
-    apps::LaunchContainer container) {
+void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
+                                            const std::string& app_id,
+                                            apps::LaunchSource launch_source,
+                                            apps::LaunchContainer container) {
   if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_)) {
     return;
   }

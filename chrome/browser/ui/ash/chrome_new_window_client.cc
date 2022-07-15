@@ -67,6 +67,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -512,8 +513,7 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
   DCHECK(IsCameraAppEnabled());
   ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
       queries, arc::GetArcWindow(task_id));
-  apps::RecordAppLaunch(web_app::kCameraAppId,
-                        apps::mojom::LaunchSource::kFromArc);
+  apps::RecordAppLaunch(web_app::kCameraAppId, apps::LaunchSource::kFromArc);
 }
 
 void ChromeNewWindowClient::CloseCameraApp() {
