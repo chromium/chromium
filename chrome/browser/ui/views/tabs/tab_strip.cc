@@ -196,17 +196,19 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return drag_controller_ && drag_controller_->started_drag();
   }
 
-  bool IsMutating() const {
-    return drag_controller_ && drag_controller_->is_mutating();
+  void TabWasAdded() {
+    if (drag_controller_)
+      drag_controller_->TabWasAdded();
   }
 
-  bool IsDraggingWindow() const {
-    return drag_controller_ && drag_controller_->is_dragging_window();
+  void OnTabWillBeRemoved(content::WebContents* contents) {
+    if (drag_controller_)
+      drag_controller_->OnTabWillBeRemoved(contents);
   }
 
-  bool IsDraggingTab(content::WebContents* contents) const {
-    return contents && drag_controller_ &&
-           drag_controller_->IsDraggingTab(contents);
+  bool CanRemoveTabIfDragging(content::WebContents* contents) const {
+    return drag_controller_ ? drag_controller_->CanRemoveTabDuringDrag(contents)
+                            : true;
   }
 
   void MaybeStartDrag(TabSlotView* source,
@@ -1000,17 +1002,11 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data) {
   for (TabStripObserver& observer : observers_)
     observer.OnTabAdded(model_index);
 
-  // Stop dragging when a new tab is added and dragging a window. Doing
-  // otherwise results in a confusing state if the user attempts to reattach. We
-  // could allow this and make TabDragController update itself during the add,
-  // but this comes up infrequently enough that it's not worth the complexity.
-  //
   // At the start of AddTabAt() the model and tabs are out sync. Any queries to
   // find a tab given a model index can go off the end of |tabs_|. As such, it
   // is important that we complete the drag *after* adding the tab so that the
   // model and tabstrip are in sync.
-  if (!drag_context_->IsMutating() && drag_context_->IsDraggingWindow())
-    EndDrag(END_DRAG_COMPLETE);
+  drag_context_->TabWasAdded();
 
   Profile* profile = controller_->GetProfile();
   if (profile) {
@@ -1049,11 +1045,10 @@ void TabStrip::MoveTab(int from_model_index,
 void TabStrip::RemoveTabAt(content::WebContents* contents,
                            int model_index,
                            bool was_active) {
-  // OnTabWillBeRemoved should have ended any ongoing drags already - unless the
-  // call is coming from inside the house! (i.e. the TabDragController is doing
-  // the removing as part of reverting a drag)
-  DCHECK(!drag_context_->IsDragSessionActive() ||
-         drag_context_->GetDragController()->is_mutating());
+  // OnTabWillBeRemoved should have ended any ongoing drags containing
+  // `contents` already - unless the call is coming from inside the house! (i.e.
+  // the TabDragController is doing the removing as part of reverting a drag)
+  DCHECK(drag_context_->CanRemoveTabIfDragging(contents));
   tab_container_->RemoveTab(model_index, was_active);
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
@@ -1066,10 +1061,7 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
 
 void TabStrip::OnTabWillBeRemoved(content::WebContents* contents,
                                   int model_index) {
-  // End the drag before we remove a tab that's being dragged, to avoid complex
-  // special cases that could result.
-  if (!drag_context_->IsMutating() && drag_context_->IsDraggingTab(contents))
-    EndDrag(END_DRAG_COMPLETE);
+  drag_context_->OnTabWillBeRemoved(contents);
 }
 
 void TabStrip::SetTabData(int model_index, TabRendererData data) {

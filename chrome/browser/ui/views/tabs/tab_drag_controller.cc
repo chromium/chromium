@@ -449,7 +449,7 @@ TabDragController::~TabDragController() {
 
   widget_observation_.Reset();
 
-  if (is_dragging_window())
+  if (current_state_ == DragState::kDraggingWindow)
     GetAttachedBrowserWidget()->EndMoveLoop();
 
   if (event_source_ == EVENT_SOURCE_TOUCH) {
@@ -578,12 +578,28 @@ TabDragContext* TabDragController::GetSourceContext() {
                                : nullptr;
 }
 
-bool TabDragController::IsDraggingTab(content::WebContents* contents) {
-  for (auto& drag_data : drag_data_) {
-    if (drag_data.contents == contents)
-      return true;
-  }
-  return false;
+void TabDragController::TabWasAdded() {
+  // Stop dragging when a new tab is added and dragging a window, unless we're
+  // doing so ourselves (e.g. while attaching to a new browser). Doing otherwise
+  // results in a confusing state if the user attempts to reattach. We could
+  // allow this and update ourselves during the add, but this comes up
+  // infrequently enough that it's not worth the complexity.
+  if (current_state_ == DragState::kDraggingWindow && !is_mutating_)
+    EndDrag(END_DRAG_COMPLETE);
+}
+
+void TabDragController::OnTabWillBeRemoved(content::WebContents* contents) {
+  // End the drag before we remove a tab that's being dragged, to avoid
+  // complex special cases that could result.
+  if (!CanRemoveTabDuringDrag(contents))
+    EndDrag(END_DRAG_COMPLETE);
+}
+
+bool TabDragController::CanRemoveTabDuringDrag(
+    content::WebContents* contents) const {
+  // Tab removal can happen without interrupting dragging only if either a) the
+  // tab isn't part of the drag or b) we're doing the removal ourselves.
+  return !IsDraggingTab(contents) || is_mutating_;
 }
 
 void TabDragController::Drag(const gfx::Point& point_in_screen) {
@@ -2106,6 +2122,14 @@ void TabDragController::BringWindowUnderPointToFront(
     if (current_state_ == DragState::kDraggingWindow)
       attached_context_->GetWidget()->StackAtTop();
   }
+}
+
+bool TabDragController::IsDraggingTab(content::WebContents* contents) const {
+  for (auto& drag_data : drag_data_) {
+    if (drag_data.contents == contents)
+      return true;
+  }
+  return false;
 }
 
 views::Widget* TabDragController::GetAttachedBrowserWidget() {

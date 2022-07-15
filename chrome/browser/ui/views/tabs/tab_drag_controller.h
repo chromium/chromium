@@ -118,26 +118,25 @@ class TabDragController : public views::WidgetObserver {
   // Returns true if a drag started.
   bool started_drag() const { return current_state_ != DragState::kNotStarted; }
 
-  // Returns true if mutating the TabStripModel.
-  bool is_mutating() const { return is_mutating_; }
-
-  // Returns true if we've detached from a tabstrip and are running a nested
-  // move message loop.
-  bool is_dragging_window() const {
-    return current_state_ == DragState::kDraggingWindow;
-  }
-
   // Returns the tab group being dragged, if any. Will only return a value if
   // the user is dragging a tab group header, not an individual tab or tabs from
   // a group.
   const absl::optional<tab_groups::TabGroupId>& group() const { return group_; }
 
-  // Returns true if currently dragging a tab with |contents|.
-  bool IsDraggingTab(content::WebContents* contents);
-
   bool IsRemovingLastTabForRevert() const {
     return is_removing_last_tab_for_revert_;
   }
+
+  // Call when a tab was just added to the attached tabstrip. May end the drag.
+  void TabWasAdded();
+
+  // Call when `contents` is about to be removed from the attached tabstrip. May
+  // end the drag.
+  void OnTabWillBeRemoved(content::WebContents* contents);
+
+  // Returns true if removing `contents` from the attached tabstrip is fine, and
+  // false if that would be problematic for the drag session.
+  bool CanRemoveTabDuringDrag(content::WebContents* contents) const;
 
   // Invoked to drag to the new location, in screen coordinates.
   void Drag(const gfx::Point& point_in_screen);
@@ -453,6 +452,9 @@ class TabDragController : public views::WidgetObserver {
   int num_dragging_tabs() {
     return header_drag_ ? drag_data_.size() - 1 : drag_data_.size();
   }
+
+  // Returns true if currently dragging a tab with |contents|.
+  bool IsDraggingTab(content::WebContents* contents) const;
 
   // Returns the index of the first Tab, since the first dragging view may
   // instead be a TabGroupHeader.
