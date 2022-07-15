@@ -8,6 +8,7 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,6 +48,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Mock
     private TabModelSelector mTabModelSelector;
@@ -173,6 +178,49 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
         Assert.assertFalse("Back press should be handled by OS.",
                 mHandler.getHandleBackPressChangedSupplier().get());
+        Assert.assertEquals(0, d1.getDelta());
+    }
+
+    @Test
+    @SmallTest
+    public void testMinimizeApp_NoValidTab() {
+        HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
+                MinimizeAppAndCloseTabType.MINIMIZE_APP);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+        mHandler.handleBackPress();
+
+        Mockito.verify(mSendToBackground).onResult(null);
+        Mockito.verify(mSendToBackground,
+                       Mockito.description("App should be minimized without closing any tab"))
+                .onResult(null);
+        Assert.assertEquals(1, d1.getDelta());
+    }
+
+    @Test
+    @SmallTest
+    public void testMinimizeApp_NoValidTab_SystemBack() {
+        createBackPressHandler(true);
+
+        HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
+                MinimizeAppAndCloseTabType.MINIMIZE_APP);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+
+        Assert.assertFalse("Back press should be handled by OS.",
+                mHandler.getHandleBackPressChangedSupplier().get());
+
+        thrown.expect(Matchers.instanceOf(AssertionError.class));
+        thrown.expectMessage(
+                "Should be disabled when there is no valid tab and back press will be consumed.");
+
+        mHandler.handleBackPress();
+
+        Mockito.verify(mSendToBackground, Mockito.never()).onResult(Mockito.any());
+        Mockito.verify(mShouldCloseTab, Mockito.never()).test(Mockito.any());
+        Assert.assertEquals(0, d1.getDelta());
     }
 
     private void createBackPressHandler() {

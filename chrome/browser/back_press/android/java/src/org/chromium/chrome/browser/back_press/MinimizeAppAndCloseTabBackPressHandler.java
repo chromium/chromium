@@ -75,26 +75,33 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
 
     @Override
     public void handleBackPress() {
-        if (mTabModelSelectorSupplier.get() == null) {
-            assert !shouldUseSystemBack();
-            mSendToBackground.onResult(null);
-            return;
-        }
-        Tab currentTab = mTabModelSelectorSupplier.get().getCurrentTab();
-        // At this point we know either the tab will close or the app will minimize.
-        NativePage nativePage = currentTab.getNativePage();
-        if (nativePage != null) {
-            nativePage.notifyHidingWithBack();
+        boolean minimizeApp;
+        boolean shouldCloseTab;
+        Tab currentTab = null;
+
+        if (mTabModelSelectorSupplier.get() == null
+                || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
+            assert !shouldUseSystemBack()
+                : "Should be disabled when there is no valid tab and back press will be consumed.";
+            minimizeApp = true;
+            shouldCloseTab = false;
+        } else {
+            currentTab = mTabModelSelectorSupplier.get().getCurrentTab();
+            // At this point we know either the tab will close or the app will minimize.
+            NativePage nativePage = currentTab.getNativePage();
+            if (nativePage != null) {
+                nativePage.notifyHidingWithBack();
+            }
+
+            shouldCloseTab = mBackShouldCloseTab.test(currentTab);
+
+            // Minimize the app if either:
+            // - we decided not to close the tab
+            // - we decided to close the tab, but it was opened by an external app, so we will go
+            //   exit Chrome on top of closing the tab
+            minimizeApp = !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
         }
 
-        final boolean shouldCloseTab = mBackShouldCloseTab.test(currentTab);
-
-        // Minimize the app if either:
-        // - we decided not to close the tab
-        // - we decided to close the tab, but it was opened by an external app, so we will go
-        //   exit Chrome on top of closing the tab
-        final boolean minimizeApp =
-                !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
         if (minimizeApp) {
             record(shouldCloseTab ? MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB
                                   : MinimizeAppAndCloseTabType.MINIMIZE_APP);
@@ -122,7 +129,8 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
         mTabModelSelectorSupplier.removeObserver(mOnTabModelSelectorAvailableCallback);
         if (shouldUseSystemBack()) {
-            mBackPressSupplier.set(mBackShouldCloseTab.test(tabModelSelector.getCurrentTab()));
+            Tab tab = tabModelSelector.getCurrentTab();
+            mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
             mTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
                 @Override
                 public void didSelectTab(Tab tab, int type, int lastId) {
