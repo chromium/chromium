@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_PLAYER_H_
-#define MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_PLAYER_H_
+#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_LISTENER_H_
+#define MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_LISTENER_H_
 
 #include <limits.h>
 #include <memory>
@@ -31,10 +31,9 @@ struct DecoderWrapperConfig;
 // Default timeout used when waiting for events.
 constexpr base::TimeDelta kDefaultEventWaitTimeout = base::Seconds(30);
 
-// The video player provides a framework to build video decode accelerator tests
-// upon. It provides methods to manipulate video playback, and wait for specific
-// events to occur.
-class VideoPlayer {
+// This class provides methods to manipulate video playback and wait for
+// specific events to occur.
+class DecoderListener {
  public:
   enum class Event : size_t {
     kInitialized,
@@ -50,13 +49,13 @@ class VideoPlayer {
   };
   using EventCallback = base::RepeatingCallback<bool(Event)>;
 
-  VideoPlayer(const VideoPlayer&) = delete;
-  VideoPlayer& operator=(const VideoPlayer&) = delete;
+  DecoderListener(const DecoderListener&) = delete;
+  DecoderListener& operator=(const DecoderListener&) = delete;
 
-  ~VideoPlayer();
+  ~DecoderListener();
 
   // Create an instance of this class. Must be Initialize()d before use.
-  static std::unique_ptr<VideoPlayer> Create(
+  static std::unique_ptr<DecoderListener> Create(
       const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors = {});
@@ -107,7 +106,7 @@ class VideoPlayer {
   size_t GetFrameDecodedCount() const;
 
  private:
-  VideoPlayer(
+  DecoderListener(
       const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
@@ -138,4 +137,4 @@ class VideoPlayer {
 }  // namespace test
 }  // namespace media
 
-#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_PLAYER_H_
+#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_LISTENER_H_

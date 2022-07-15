@@ -20,9 +20,9 @@
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
+#include "media/gpu/test/video_player/decoder_listener.h"
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/media_buildflags.h"
@@ -114,7 +114,7 @@ media::test::VideoPlayerTestEnvironment* g_env;
 // Video decode test class. Performs setup and teardown for each single test.
 class VideoDecoderTest : public ::testing::Test {
  public:
-  std::unique_ptr<VideoPlayer> CreateVideoPlayer(
+  std::unique_ptr<DecoderListener> CreateDecoderListener(
       const Video* video,
       DecoderWrapperConfig config = DecoderWrapperConfig(),
       std::unique_ptr<FrameRendererDummy> frame_renderer =
@@ -182,8 +182,8 @@ class VideoDecoderTest : public ::testing::Test {
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
 
-    auto video_player = VideoPlayer::Create(config, std::move(frame_renderer),
-                                            std::move(frame_processors));
+    auto video_player = DecoderListener::Create(
+        config, std::move(frame_renderer), std::move(frame_processors));
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
@@ -277,7 +277,7 @@ class VideoDecoderTest : public ::testing::Test {
 // Play video from start to end. Wait for the kFlushDone event at the end of the
 // stream, that notifies us all frames have been decoded.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForFlushDone());
@@ -289,7 +289,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
 
 // Flush the decoder immediately after initialization.
 TEST_F(VideoDecoderTest, FlushAfterInitialize) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Flush();
   EXPECT_TRUE(tvp->WaitForFlushDone());
@@ -303,7 +303,7 @@ TEST_F(VideoDecoderTest, FlushAfterInitialize) {
 
 // Reset the decoder immediately after initialization.
 TEST_F(VideoDecoderTest, ResetAfterInitialize) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Reset();
   EXPECT_TRUE(tvp->WaitForResetDone());
@@ -318,7 +318,7 @@ TEST_F(VideoDecoderTest, ResetAfterInitialize) {
 
 // Reset the decoder when the middle of the stream is reached.
 TEST_F(VideoDecoderTest, ResetMidStream) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForFrameDecoded(g_env->Video()->NumFrames() / 2));
@@ -341,7 +341,7 @@ TEST_F(VideoDecoderTest, ResetMidStream) {
 
 // Reset the decoder when the end of the stream is reached.
 TEST_F(VideoDecoderTest, ResetEndOfStream) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForFlushDone());
@@ -360,7 +360,7 @@ TEST_F(VideoDecoderTest, ResetEndOfStream) {
 // Reset the decoder immediately when the end-of-stream flush starts, without
 // waiting for a kFlushDone event.
 TEST_F(VideoDecoderTest, ResetBeforeFlushDone) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   // Reset when a kFlushing event is received.
   tvp->Play();
@@ -387,10 +387,10 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
       g_env->Video()->Codec() != media::VideoCodec::kHEVC)
     GTEST_SKIP();
 
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
-  tvp->PlayUntil(VideoPlayer::Event::kConfigInfo);
-  EXPECT_TRUE(tvp->WaitForEvent(VideoPlayer::Event::kConfigInfo));
+  tvp->PlayUntil(DecoderListener::Event::kConfigInfo);
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kConfigInfo));
   tvp->Reset();
   EXPECT_TRUE(tvp->WaitForResetDone());
   size_t numFramesDecoded = tvp->GetFrameDecodedCount();
@@ -401,7 +401,7 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
   EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
   EXPECT_EQ(tvp->GetFrameDecodedCount(),
             numFramesDecoded + g_env->Video()->NumFrames());
-  EXPECT_GE(tvp->GetEventCount(VideoPlayer::Event::kConfigInfo), 1u);
+  EXPECT_GE(tvp->GetEventCount(DecoderListener::Event::kConfigInfo), 1u);
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
 
@@ -409,10 +409,10 @@ TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
   if (g_env->GetDecoderImplementation() != DecoderImplementation::kVDVDA)
     GTEST_SKIP();
 
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
-  tvp->PlayUntil(VideoPlayer::Event::kNewBuffersRequested);
-  EXPECT_TRUE(tvp->WaitForEvent(VideoPlayer::Event::kNewBuffersRequested));
+  tvp->PlayUntil(DecoderListener::Event::kNewBuffersRequested);
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kNewBuffersRequested));
 
   // TODO(b/192523692): Add a new test case that continues passing input buffers
   // between the resolution change has been aborted and resetting the decoder.
@@ -434,7 +434,7 @@ TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
 TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {
   DecoderWrapperConfig config;
   config.max_outstanding_decode_requests = 4;
-  auto tvp = CreateVideoPlayer(g_env->Video(), config);
+  auto tvp = CreateDecoderListener(g_env->Video(), config);
 
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForFlushDone());
@@ -449,10 +449,10 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
   // The minimal number of concurrent decoders we expect to be supported.
   constexpr size_t kMinSupportedConcurrentDecoders = 3;
 
-  std::vector<std::unique_ptr<VideoPlayer>> tvps(
+  std::vector<std::unique_ptr<DecoderListener>> tvps(
       kMinSupportedConcurrentDecoders);
   for (size_t i = 0; i < kMinSupportedConcurrentDecoders; ++i)
-    tvps[i] = CreateVideoPlayer(g_env->Video());
+    tvps[i] = CreateDecoderListener(g_env->Video());
 
   for (size_t i = 0; i < kMinSupportedConcurrentDecoders; ++i)
     tvps[i]->Play();
@@ -470,8 +470,8 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
 // video's configuration (e.g. codec and resolution). The test only verifies
 // initialization and doesn't decode the video.
 TEST_F(VideoDecoderTest, Initialize) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
-  EXPECT_EQ(tvp->GetEventCount(VideoPlayer::Event::kInitialized), 1u);
+  auto tvp = CreateDecoderListener(g_env->Video());
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 1u);
 }
 
 // Test video decoder re-initialization. Re-initialization is only supported by
@@ -482,12 +482,12 @@ TEST_F(VideoDecoderTest, Reinitialize) {
     GTEST_SKIP();
 
   // Create and initialize the video decoder.
-  auto tvp = CreateVideoPlayer(g_env->Video());
-  EXPECT_EQ(tvp->GetEventCount(VideoPlayer::Event::kInitialized), 1u);
+  auto tvp = CreateDecoderListener(g_env->Video());
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 1u);
 
   // Re-initialize the video decoder, without having played the video.
   EXPECT_TRUE(tvp->Initialize(g_env->Video()));
-  EXPECT_EQ(tvp->GetEventCount(VideoPlayer::Event::kInitialized), 2u);
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 2u);
 
   // Play the video from start to end.
   tvp->Play();
@@ -498,7 +498,7 @@ TEST_F(VideoDecoderTest, Reinitialize) {
 
   // Try re-initializing the video decoder again.
   EXPECT_TRUE(tvp->Initialize(g_env->Video()));
-  EXPECT_EQ(tvp->GetEventCount(VideoPlayer::Event::kInitialized), 3u);
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 3u);
 }
 
 // Create a video decoder and immediately destroy it without initializing. The
@@ -508,7 +508,7 @@ TEST_F(VideoDecoderTest, Reinitialize) {
 TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   DecoderWrapperConfig config = DecoderWrapperConfig();
   config.implementation = g_env->GetDecoderImplementation();
-  auto tvp = VideoPlayer::Create(config, FrameRendererDummy::Create());
+  auto tvp = DecoderListener::Create(config, FrameRendererDummy::Create());
   EXPECT_NE(tvp, nullptr);
 }
 

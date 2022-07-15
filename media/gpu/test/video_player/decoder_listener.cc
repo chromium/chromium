@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/test/video_player/video_player.h"
+#include "media/gpu/test/video_player/decoder_listener.h"
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -17,21 +17,21 @@ namespace test {
 
 namespace {
 // Get the name of the specified video player |event|.
-const char* EventName(VideoPlayer::Event event) {
+const char* EventName(DecoderListener::Event event) {
   switch (event) {
-    case VideoPlayer::Event::kInitialized:
+    case DecoderListener::Event::kInitialized:
       return "Initialized";
-    case VideoPlayer::Event::kFrameDecoded:
+    case DecoderListener::Event::kFrameDecoded:
       return "FrameDecoded";
-    case VideoPlayer::Event::kFlushing:
+    case DecoderListener::Event::kFlushing:
       return "Flushing";
-    case VideoPlayer::Event::kFlushDone:
+    case DecoderListener::Event::kFlushDone:
       return "FlushDone";
-    case VideoPlayer::Event::kResetting:
+    case DecoderListener::Event::kResetting:
       return "Resetting";
-    case VideoPlayer::Event::kResetDone:
+    case DecoderListener::Event::kResetDone:
       return "ResetDone";
-    case VideoPlayer::Event::kConfigInfo:
+    case DecoderListener::Event::kConfigInfo:
       return "ConfigInfo";
     default:
       return "Unknown";
@@ -39,7 +39,7 @@ const char* EventName(VideoPlayer::Event event) {
 }
 }  // namespace
 
-VideoPlayer::~VideoPlayer() {
+DecoderListener::~DecoderListener() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
@@ -47,22 +47,22 @@ VideoPlayer::~VideoPlayer() {
 }
 
 // static
-std::unique_ptr<VideoPlayer> VideoPlayer::Create(
+std::unique_ptr<DecoderListener> DecoderListener::Create(
     const DecoderWrapperConfig& config,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
-  return base::WrapUnique(new VideoPlayer(config, std::move(frame_renderer),
-                                          std::move(frame_processors)));
+  return base::WrapUnique(new DecoderListener(config, std::move(frame_renderer),
+                                              std::move(frame_processors)));
 }
 
-void VideoPlayer::SetEventWaitTimeout(base::TimeDelta timeout) {
+void DecoderListener::SetEventWaitTimeout(base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
   event_timeout_ = timeout;
 }
 
-bool VideoPlayer::Initialize(const Video* video) {
+bool DecoderListener::Initialize(const Video* video) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video);
   DVLOGF(4);
@@ -76,7 +76,7 @@ bool VideoPlayer::Initialize(const Video* video) {
   return true;
 }
 
-void VideoPlayer::Play() {
+void DecoderListener::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
@@ -84,7 +84,7 @@ void VideoPlayer::Play() {
   PlayUntil(Event::kNumEvents);
 }
 
-void VideoPlayer::PlayUntil(Event event) {
+void DecoderListener::PlayUntil(Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
@@ -92,21 +92,21 @@ void VideoPlayer::PlayUntil(Event event) {
   decoder_wrapper_->Play();
 }
 
-void VideoPlayer::Reset() {
+void DecoderListener::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
   decoder_wrapper_->Reset();
 }
 
-void VideoPlayer::Flush() {
+void DecoderListener::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
   decoder_wrapper_->Flush();
 }
 
-bool VideoPlayer::WaitForEvent(Event sought_event, size_t times) {
+bool DecoderListener::WaitForEvent(Event sought_event, size_t times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(times, 1u);
   DVLOGF(4) << "Event: " << EventName(sought_event);
@@ -137,60 +137,60 @@ bool VideoPlayer::WaitForEvent(Event sought_event, size_t times) {
   }
 }
 
-bool VideoPlayer::WaitForFlushDone() {
+bool DecoderListener::WaitForFlushDone() {
   return WaitForEvent(Event::kFlushDone);
 }
 
-bool VideoPlayer::WaitForResetDone() {
+bool DecoderListener::WaitForResetDone() {
   return WaitForEvent(Event::kResetDone);
 }
 
-bool VideoPlayer::WaitForFrameDecoded(size_t times) {
+bool DecoderListener::WaitForFrameDecoded(size_t times) {
   return WaitForEvent(Event::kFrameDecoded, times);
 }
 
-size_t VideoPlayer::GetEventCount(Event event) const {
+size_t DecoderListener::GetEventCount(Event event) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(event_lock_);
   return video_player_event_counts_[static_cast<size_t>(event)];
 }
 
-bool VideoPlayer::WaitForFrameProcessors() {
+bool DecoderListener::WaitForFrameProcessors() {
   return decoder_wrapper_->WaitForFrameProcessors();
 }
 
-void VideoPlayer::WaitForRenderer() {
+void DecoderListener::WaitForRenderer() {
   decoder_wrapper_->WaitForRenderer();
 }
 
-size_t VideoPlayer::GetFlushDoneCount() const {
+size_t DecoderListener::GetFlushDoneCount() const {
   return GetEventCount(Event::kFlushDone);
 }
 
-size_t VideoPlayer::GetResetDoneCount() const {
+size_t DecoderListener::GetResetDoneCount() const {
   return GetEventCount(Event::kResetDone);
 }
 
-size_t VideoPlayer::GetFrameDecodedCount() const {
+size_t DecoderListener::GetFrameDecodedCount() const {
   return GetEventCount(Event::kFrameDecoded);
 }
 
-VideoPlayer::VideoPlayer(
+DecoderListener::DecoderListener(
     const DecoderWrapperConfig& config,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors)
     : decoder_wrapper_(DecoderWrapper::Create(
           // base::Unretained is safe here because |decoder_wrapper_| is fully
           // owned.
-          base::BindRepeating(&VideoPlayer::NotifyEvent,
+          base::BindRepeating(&DecoderListener::NotifyEvent,
                               base::Unretained(this)),
           std::move(frame_renderer),
           std::move(frame_processors),
           config)),
       event_cv_(&event_lock_) {}
 
-bool VideoPlayer::NotifyEvent(Event event) {
+bool DecoderListener::NotifyEvent(Event event) {
   base::AutoLock auto_lock(event_lock_);
   video_player_events_.push(event);
   video_player_event_counts_[static_cast<size_t>(event)]++;

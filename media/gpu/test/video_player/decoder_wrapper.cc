@@ -47,7 +47,7 @@ void CallbackThunk(absl::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
 }  // namespace
 
 DecoderWrapper::DecoderWrapper(
-    const VideoPlayer::EventCallback& event_cb,
+    const DecoderListener::EventCallback& event_cb,
     std::unique_ptr<FrameRendererDummy> renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const DecoderWrapperConfig& config)
@@ -87,7 +87,7 @@ DecoderWrapper::~DecoderWrapper() {
 
 // static
 std::unique_ptr<DecoderWrapper> DecoderWrapper::Create(
-    const VideoPlayer::EventCallback& event_cb,
+    const DecoderListener::EventCallback& event_cb,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const DecoderWrapperConfig& config) {
@@ -299,7 +299,7 @@ void DecoderWrapper::DecodeNextFragmentTask() {
 
   // Throw event when we encounter a config info in a H.264/HEVC stream.
   if (has_config_info)
-    FireEvent(VideoPlayer::Event::kConfigInfo);
+    FireEvent(DecoderListener::Event::kConfigInfo);
 }
 
 void DecoderWrapper::FlushTask() {
@@ -314,7 +314,7 @@ void DecoderWrapper::FlushTask() {
       weak_this_, worker_task_runner_, &DecoderWrapper::OnFlushDoneTask);
   decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), std::move(flush_done_cb));
 
-  FireEvent(VideoPlayer::Event::kFlushing);
+  FireEvent(DecoderListener::Event::kFlushing);
 }
 
 void DecoderWrapper::ResetTask() {
@@ -329,7 +329,7 @@ void DecoderWrapper::ResetTask() {
   decoder_->Reset(base::BindOnce(
       CallbackThunk<decltype(&DecoderWrapper::OnResetDoneTask)>, weak_this_,
       worker_task_runner_, &DecoderWrapper::OnResetDoneTask));
-  FireEvent(VideoPlayer::Event::kResetting);
+  FireEvent(DecoderListener::Event::kResetting);
 }
 
 void DecoderWrapper::OnDecoderInitializedTask(DecoderStatus status) {
@@ -339,7 +339,7 @@ void DecoderWrapper::OnDecoderInitializedTask(DecoderStatus status) {
   ASSERT_TRUE(status.is_ok()) << "Initializing decoder failed";
 
   state_ = DecoderWrapperState::kIdle;
-  FireEvent(VideoPlayer::Event::kInitialized);
+  FireEvent(DecoderListener::Event::kInitialized);
 }
 
 void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
@@ -382,7 +382,7 @@ void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   // Notify the test a frame has been decoded. We should only do this after
   // scheduling the frame to be processed, so calling WaitForFrameProcessors()
   // after receiving this event will always guarantee the frame to be processed.
-  FireEvent(VideoPlayer::Event::kFrameDecoded);
+  FireEvent(DecoderListener::Event::kFrameDecoded);
 
   current_frame_index_++;
 }
@@ -395,7 +395,7 @@ void DecoderWrapper::OnFlushDoneTask(DecoderStatus status) {
   // might keep in preparation of the next stream of video frames.
   frame_renderer_->RenderFrame(VideoFrame::CreateEOSFrame());
   state_ = DecoderWrapperState::kIdle;
-  FireEvent(VideoPlayer::Event::kFlushDone);
+  FireEvent(DecoderListener::Event::kFlushDone);
 }
 
 void DecoderWrapper::OnResetDoneTask() {
@@ -409,16 +409,16 @@ void DecoderWrapper::OnResetDoneTask() {
 
   frame_renderer_->RenderFrame(VideoFrame::CreateEOSFrame());
   state_ = DecoderWrapperState::kIdle;
-  FireEvent(VideoPlayer::Event::kResetDone);
+  FireEvent(DecoderListener::Event::kResetDone);
 }
 
 bool DecoderWrapper::OnResolutionChangedTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
 
-  return FireEvent(VideoPlayer::Event::kNewBuffersRequested);
+  return FireEvent(DecoderListener::Event::kNewBuffersRequested);
 }
 
-bool DecoderWrapper::FireEvent(VideoPlayer::Event event) {
+bool DecoderWrapper::FireEvent(DecoderListener::Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
 
   bool continue_decoding = event_cb_.Run(event);

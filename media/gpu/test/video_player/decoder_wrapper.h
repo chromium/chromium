@@ -18,7 +18,7 @@
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
-#include "media/gpu/test/video_player/video_player.h"
+#include "media/gpu/test/video_player/decoder_listener.h"
 
 namespace media {
 
@@ -63,7 +63,7 @@ class DecoderWrapper {
   // whenever an event occurs (e.g. frame decoded) and should be thread-safe.
   // The produced DecoderWrapper must be Initialize()d before being used.
   static std::unique_ptr<DecoderWrapper> Create(
-      const VideoPlayer::EventCallback& event_cb,
+      const DecoderListener::EventCallback& event_cb,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const DecoderWrapperConfig& config);
@@ -100,7 +100,7 @@ class DecoderWrapper {
   };
 
   DecoderWrapper(
-      const VideoPlayer::EventCallback& event_cb,
+      const DecoderListener::EventCallback& event_cb,
       std::unique_ptr<FrameRendererDummy> renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const DecoderWrapperConfig& config);
@@ -135,12 +135,12 @@ class DecoderWrapper {
 
   // Fires the specified event, and returns true if the caller should continue
   // decoding.
-  bool FireEvent(VideoPlayer::Event event);
+  bool FireEvent(DecoderListener::Event event);
 
   SEQUENCE_CHECKER(parent_sequence_checker_);
   SEQUENCE_CHECKER(worker_sequence_checker_);
 
-  VideoPlayer::EventCallback event_cb_;
+  DecoderListener::EventCallback event_cb_;
   std::unique_ptr<FrameRendererDummy> frame_renderer_;
   std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors_;
 
