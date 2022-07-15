@@ -60,16 +60,16 @@ class PreloadHelper final {
                                  Document*,
                                  LocalFrame*,
                                  LinkCaller);
-  static Resource* PrefetchIfNeeded(const LinkLoadParameters&,
-                                    Document&,
-                                    PendingLinkPreload*);
-  static Resource* PreloadIfNeeded(const LinkLoadParameters&,
-                                   Document&,
-                                   const KURL& base_url,
-                                   LinkCaller,
-                                   const ViewportDescription*,
-                                   ParserDisposition,
-                                   PendingLinkPreload*);
+  static void PrefetchIfNeeded(const LinkLoadParameters&,
+                               Document&,
+                               PendingLinkPreload*);
+  static void PreloadIfNeeded(const LinkLoadParameters&,
+                              Document&,
+                              const KURL& base_url,
+                              LinkCaller,
+                              const ViewportDescription*,
+                              ParserDisposition,
+                              PendingLinkPreload*);
   static void ModulePreloadIfNeeded(const LinkLoadParameters&,
                                     Document&,
                                     const ViewportDescription*,

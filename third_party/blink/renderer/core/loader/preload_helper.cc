@@ -254,7 +254,7 @@ absl::optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
 // URLs in srcset, which should be based on the resource's URL, not the
 // document's base URL. If |base_url| is a null URL, relative URLs are resolved
 // using |document.CompleteURL()|.
-Resource* PreloadHelper::PreloadIfNeeded(
+void PreloadHelper::PreloadIfNeeded(
     const LinkLoadParameters& params,
     Document& document,
     const KURL& base_url,
@@ -263,7 +263,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
     ParserDisposition parser_disposition,
     PendingLinkPreload* pending_preload) {
   if (!document.Loader() || !params.rel.IsLinkPreload())
-    return nullptr;
+    return;
 
   absl::optional<ResourceType> resource_type =
       PreloadHelper::GetResourceTypeFromAsAttribute(params.as);
@@ -285,7 +285,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning,
         String("<link rel=preload> has an invalid `href` value")));
-    return nullptr;
+    return;
   }
 
   bool media_matches = true;
@@ -305,7 +305,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
       pending_preload->Dispose();
     } else if (pending_preload->MatchesMedia()) {
       // Media still matches, no need to re-fetch.
-      return nullptr;
+      return;
     }
   }
 
@@ -313,7 +313,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
 
   // Preload only if media matches
   if (!media_matches)
-    return nullptr;
+    return;
 
   if (caller == kLinkCalledFromHeader)
     UseCounter::Count(document, WebFeature::kLinkHeaderPreload);
@@ -327,14 +327,14 @@ Resource* PreloadHelper::PreloadIfNeeded(
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning, message));
-    return nullptr;
+    return;
   }
   if (!IsSupportedType(resource_type.value(), params.type)) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning,
         String("<link rel=preload> has an unsupported `type` value")));
-    return nullptr;
+    return;
   }
   ResourceRequest resource_request(url);
   resource_request.SetRequestContext(ResourceFetcher::DetermineRequestContext(
@@ -418,7 +418,6 @@ Resource* PreloadHelper::PreloadIfNeeded(
                                                    link_fetch_params, document);
   if (pending_preload)
     pending_preload->AddResource(resource);
-  return resource;
 }
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload
@@ -565,67 +564,63 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // client->NotifyModuleLoadFinished() is called.
 }
 
-Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
-                                          Document& document,
-                                          PendingLinkPreload* pending_preload) {
-  if (document.Loader() && document.Loader()->Archive()) {
-    return nullptr;
+void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
+                                     Document& document,
+                                     PendingLinkPreload* pending_preload) {
+  if (document.Loader() && document.Loader()->Archive())
+    return;
+
+  if (!params.rel.IsLinkPrefetch() || !params.href.IsValid() ||
+      !document.GetFrame())
+    return;
+  UseCounter::Count(document, WebFeature::kLinkRelPrefetch);
+
+  ResourceRequest resource_request(params.href);
+
+  // Later a security check is done asserting that the initiator of a
+  // cross-origin prefetch request is same-origin with the origin that the
+  // browser process is aware of. However, since opaque request initiators are
+  // always cross-origin with every other origin, we must not request
+  // cross-origin prefetches from opaque requestors.
+  if (EqualIgnoringASCIICase(params.as, "document") &&
+      !document.GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+    resource_request.SetPrefetchMaybeForTopLevelNavigation(true);
   }
 
-  if (params.rel.IsLinkPrefetch() && params.href.IsValid() &&
-      document.GetFrame()) {
-    UseCounter::Count(document, WebFeature::kLinkRelPrefetch);
+  // This request could have originally been a preload header on a prefetch
+  // response, that was promoted to a prefetch request by LoadLinksFromHeader.
+  // In that case, it may have a recursive prefetch token used by the browser
+  // process to ensure this request is cached correctly. Propagate it.
+  resource_request.SetRecursivePrefetchToken(params.recursive_prefetch_token);
 
-    ResourceRequest resource_request(params.href);
+  resource_request.SetReferrerPolicy(params.referrer_policy);
+  resource_request.SetFetchPriorityHint(
+      GetFetchPriorityAttributeValue(params.fetch_priority_hint));
 
-    // Later a security check is done asserting that the initiator of a
-    // cross-origin prefetch request is same-origin with the origin that the
-    // browser process is aware of. However, since opaque request initiators are
-    // always cross-origin with every other origin, we must not request
-    // cross-origin prefetches from opaque requestors.
-    if (EqualIgnoringASCIICase(params.as, "document") &&
-        !document.GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
-      resource_request.SetPrefetchMaybeForTopLevelNavigation(true);
-    }
-
-    // This request could have originally been a preload header on a prefetch
-    // response, that was promoted to a prefetch request by LoadLinksFromHeader.
-    // In that case, it may have a recursive prefetch token used by the browser
-    // process to ensure this request is cached correctly. Propagate it.
-    resource_request.SetRecursivePrefetchToken(params.recursive_prefetch_token);
-
-    resource_request.SetReferrerPolicy(params.referrer_policy);
-    resource_request.SetFetchPriorityHint(
-        GetFetchPriorityAttributeValue(params.fetch_priority_hint));
-
-    if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyChanges)) {
-      resource_request.SetRedirectMode(network::mojom::RedirectMode::kError);
-      resource_request.SetReferrerPolicy(
-          network::mojom::ReferrerPolicy::kNever);
-      // TODO(domfarolino): Implement more privacy-preserving prefetch changes.
-      // See crbug.com/988956.
-    }
-
-    ResourceLoaderOptions options(
-        document.GetExecutionContext()->GetCurrentWorld());
-    options.initiator_info.name = fetch_initiator_type_names::kLink;
-
-    FetchParameters link_fetch_params(std::move(resource_request), options);
-    if (params.cross_origin != kCrossOriginAttributeNotSet) {
-      link_fetch_params.SetCrossOriginAccessControl(
-          document.GetExecutionContext()->GetSecurityOrigin(),
-          params.cross_origin);
-    }
-    link_fetch_params.SetSignedExchangePrefetchCacheEnabled(
-        RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
-            document.GetExecutionContext()));
-    Resource* resource =
-        LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());
-    if (pending_preload)
-      pending_preload->AddResource(resource);
-    return resource;
+  if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyChanges)) {
+    resource_request.SetRedirectMode(network::mojom::RedirectMode::kError);
+    resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+    // TODO(domfarolino): Implement more privacy-preserving prefetch changes.
+    // See crbug.com/988956.
   }
-  return nullptr;
+
+  ResourceLoaderOptions options(
+      document.GetExecutionContext()->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kLink;
+
+  FetchParameters link_fetch_params(std::move(resource_request), options);
+  if (params.cross_origin != kCrossOriginAttributeNotSet) {
+    link_fetch_params.SetCrossOriginAccessControl(
+        document.GetExecutionContext()->GetSecurityOrigin(),
+        params.cross_origin);
+  }
+  link_fetch_params.SetSignedExchangePrefetchCacheEnabled(
+      RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
+          document.GetExecutionContext()));
+  Resource* resource =
+      LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());
+  if (pending_preload)
+    pending_preload->AddResource(resource);
 }
 
 void PreloadHelper::LoadLinksFromHeader(
