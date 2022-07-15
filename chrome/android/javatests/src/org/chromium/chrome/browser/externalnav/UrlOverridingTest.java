@@ -52,6 +52,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
@@ -96,6 +97,7 @@ import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -235,7 +237,7 @@ public class UrlOverridingTest {
                     && intent.getPackage().equals(ExternalNavigationHandler.PLAY_APP_PACKAGE)) {
                 return true;
             }
-            if (intent.getScheme().equals("market")) return true;
+            if (intent.getScheme() != null && intent.getScheme().equals("market")) return true;
             return false;
         }
 
@@ -314,6 +316,15 @@ public class UrlOverridingTest {
         if (mContextToRestore != null) {
             ContextUtils.initApplicationContextForTests(mContextToRestore);
         }
+    }
+
+    private Origin createExampleOrigin() {
+        org.chromium.url.internal.mojom.Origin origin =
+                new org.chromium.url.internal.mojom.Origin();
+        origin.scheme = "https";
+        origin.host = "example.com";
+        origin.port = 80;
+        return new Origin(origin);
     }
 
     private Intent getCustomTabFromChromeIntent(final String url, final boolean markFromChrome) {
@@ -397,9 +408,15 @@ public class UrlOverridingTest {
             mActivityTestRule.getActivity().getTabModelSelector().addObserver(selectorObserver);
         });
 
-        mActivityTestRule.getActivity().onUserInteraction();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tab.loadUrl(new LoadUrlParams(url, PageTransition.LINK)); });
+        LoadUrlParams params = new LoadUrlParams(url, transition);
+        if (transition == PageTransition.LINK || transition == PageTransition.FORM_SUBMIT) {
+            params.setIsRendererInitiated(true);
+            params.setInitiatorOrigin(createExampleOrigin());
+        }
+        if (!RedirectHandler.isRefactoringEnabled()) {
+            mActivityTestRule.getActivity().onUserInteraction();
+        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.loadUrl(params); });
 
         if (finishCallback.getCallCount() == 0) {
             try {
@@ -487,9 +504,9 @@ public class UrlOverridingTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mActivityMonitor.getHits(), Matchers.is(shouldLaunchExternalIntent ? 1 : 0));
+            boolean finishesTwice = hasFallbackUrl || (shouldLaunchExternalIntent && !needClick);
+            Criteria.checkThat(finishCallback.getCallCount(), Matchers.is(finishesTwice ? 2 : 1));
         });
-        Assert.assertEquals(1 + (hasFallbackUrl ? 1 : 0), finishCallback.getCallCount());
-
         Assert.assertEquals(shouldFailNavigation ? 1 : 0, failCallback.getCallCount());
 
         return lastResultValue.get();
@@ -1155,14 +1172,12 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url = mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE);
-        @OverrideUrlLoadingResultType
-        int result = loadUrlAndWaitForIntentUrl(url, false, null, PageTransition.AUTO_BOOKMARK);
-        Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result);
-        assertMessagePresent();
+        loadUrlAndWaitForIntentUrl(url, true, null, PageTransition.AUTO_BOOKMARK);
     }
 
     @Test
     @LargeTest
+    @DisabledTest(message = "Re-enable when crbug.com/1300539 is fixed.")
     public void testRedirectFromBookmarkWithFallback() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
