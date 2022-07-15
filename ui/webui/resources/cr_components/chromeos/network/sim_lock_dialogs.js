@@ -578,6 +578,16 @@ Polymer({
    * @return {string}
    * @private
    */
+  getEnterPinDescription_() {
+    return this.isSimPinLockRestricted_ ?
+        this.i18n('networkSimLockPolicyAdminSubtitle') :
+        this.i18n('networkSimEnterPinDescription');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
   getErrorMsg_() {
     if (this.error_ === ErrorType.NONE) {
       return '';

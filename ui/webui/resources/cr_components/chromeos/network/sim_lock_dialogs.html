@@ -61,7 +61,7 @@
       <div slot="title">[[i18n('networkSimEnterPinTitle')]]</div>
       <div slot="body">
         <div id="enter-pin-description" aria-hidden="true">
-          [[i18n('networkSimEnterPinDescription')]]
+          [[getEnterPinDescription_(isSimPinLockRestricted_)]]
         </div>
         <network-password-input id="enterPin"
             value="{{pin_}}"

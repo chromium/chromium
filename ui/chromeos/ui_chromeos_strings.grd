@@ -1773,7 +1773,7 @@
         SIM card is locked
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_POLICY_ADMIN_SUBTITLE" desc="Settings > Internet > Network details > Unlock SIM card: Title for unlocking SIM locked dialog when restrict SIM PIN lock policy is on.">
-        This will also disable the SIM Lock setting on the device.
+        Your administrator requires you to disable SIM Lock.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title informing the user to enter a PIN provided by the carrier in order unlock network.">
         An incorrect PIN was entered too many times. To set up a new PIN, enter the 8-digit Personal Unblocking Key (PUK) provided by your carrier.
