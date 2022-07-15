@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1343222">
+
+<div>This test passes if it generates no console messages.</div>
+<form><input type=datetime-local></form>
+
+<script>
+  testRunner.dumpAsText();
+  testRunner.setDumpConsoleMessages(true);
+  // Forcing layout on the input is required to generate the console warning.
+  document.querySelector('input').getBoundingClientRect();
+  document.querySelector('form').reset();
+</script>

@@ -111,7 +111,7 @@ String DateTimeLocalInputType::LocalizeValue(
 }
 
 void DateTimeLocalInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value != GetElement().SanitizeValue(value))
+  if (value && value != GetElement().SanitizeValue(value))
     AddWarningToConsole(
         "The specified value %s does not conform to the required format.  The "
         "format is \"yyyy-MM-ddThh:mm\" followed by optional \":ss\" or "
