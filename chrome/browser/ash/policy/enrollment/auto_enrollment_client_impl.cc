@@ -59,17 +59,6 @@ int NextPowerOf2(int64_t value) {
   return AutoEnrollmentClient::kMaximumPower + 1;
 }
 
-// Sets or clears a value in a dictionary.
-void UpdateDict(base::Value* dict,
-                const char* pref_path,
-                bool set_or_clear,
-                std::unique_ptr<base::Value> value) {
-  if (set_or_clear)
-    dict->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
-  else
-    dict->RemoveKey(pref_path);
-}
-
 // Provides device identifier for Forced Re-Enrollment (FRE), where the
 // server-backed state key is used. It will set the identifier for the
 // DeviceAutoEnrollmentRequest.
@@ -688,36 +677,31 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
       return;
     }
 
-    AutoEnrollmentStateMessageProcessor::ParsedResponse parsed_response =
-        std::move(parsed_response_result.value());
-    {
-      DictionaryPrefUpdate dict(local_state_, prefs::kServerBackedDeviceState);
-      UpdateDict(
-          dict.Get(), kDeviceStateManagementDomain,
-          parsed_response.management_domain.has_value(),
-          std::make_unique<base::Value>(
-              parsed_response.management_domain.value_or(std::string())));
+    AutoEnrollmentStateMessageProcessor::ParsedResponse& parsed_response =
+        *parsed_response_result;
 
-      UpdateDict(dict.Get(), kDeviceStateMode,
-                 !parsed_response.restore_mode.empty(),
-                 std::make_unique<base::Value>(parsed_response.restore_mode));
+    base::Value::Dict state;
+    if (parsed_response.management_domain.has_value())
+      state.Set(kDeviceStateManagementDomain,
+                *parsed_response.management_domain);
 
-      UpdateDict(dict.Get(), kDeviceStateDisabledMessage,
-                 parsed_response.disabled_message.has_value(),
-                 std::make_unique<base::Value>(
-                     parsed_response.disabled_message.value_or(std::string())));
+    if (!parsed_response.restore_mode.empty())
+      state.Set(kDeviceStateMode, parsed_response.restore_mode);
 
-      UpdateDict(
-          dict.Get(), kDeviceStatePackagedLicense,
-          parsed_response.is_license_packaged_with_device.has_value(),
-          std::make_unique<base::Value>(
-              parsed_response.is_license_packaged_with_device.value_or(false)));
+    if (parsed_response.disabled_message.has_value())
+      state.Set(kDeviceStateDisabledMessage, *parsed_response.disabled_message);
 
-      UpdateDict(dict.Get(), kDeviceStateLicenseType,
-                 parsed_response.license_type.has_value(),
-                 std::make_unique<base::Value>(
-                     parsed_response.license_type.value_or(std::string())));
-    }
+    if (parsed_response.is_license_packaged_with_device.has_value())
+      state.Set(kDeviceStatePackagedLicense,
+                *parsed_response.is_license_packaged_with_device);
+
+    if (parsed_response.license_type.has_value())
+      state.Set(kDeviceStateLicenseType, *parsed_response.license_type);
+
+    local_state_->SetDict(prefs::kServerBackedDeviceState, std::move(state));
+
+    // TODO(https://crbug.com/1344737) This seems unnecessary (we are not
+    // shutting down, for instance).
     local_state_->CommitPendingWrite();
 
     device_state_available_ = true;
