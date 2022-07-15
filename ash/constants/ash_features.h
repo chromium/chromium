@@ -29,6 +29,8 @@ extern const base::Feature kAllowPolyDevicePairing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAllowRepeatedUpdates;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAllowScrollSettings;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAlwaysReinstallSystemWebApps;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAmbientModeFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled;
@@ -272,6 +274,8 @@ extern const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlReauthenticationOnLockscreen;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableSavedDesks;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableAllSystemWebApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableTouchpadsInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)

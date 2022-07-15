@@ -53,6 +53,11 @@ const base::Feature kAllowPolyDevicePairing{"AllowPolyDevicePairing",
 const base::Feature kAllowRepeatedUpdates{"AllowRepeatedUpdates",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Always reinstall system web apps, instead of only doing so after version
+// upgrade or locale changes.
+const base::Feature kAlwaysReinstallSystemWebApps{
+    "ReinstallSystemWebApps", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Shows settings for adjusting scroll acceleration/sensitivity for
 // mouse/touchpad.
 const base::Feature kAllowScrollSettings{"AllowScrollSettings",
@@ -634,6 +639,11 @@ const base::Feature kEnableSamlReauthenticationOnLockscreen{
 
 const base::Feature kEnableSavedDesks{"EnableSavedDesks",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables all registered system web apps, regardless of their respective
+// feature flags.
+const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, touchpad cards will be shown in the diagnostics app's input
 // section.

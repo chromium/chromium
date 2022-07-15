@@ -41,11 +41,6 @@ const base::Feature kAllowTouchpadHapticClickSettings{
     "AllowTouchpadHapticClickSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(IS_CHROMEOS_ASH)
 
-// Always reinstall system web apps, instead of only doing so after version
-// upgrade or locale changes.
-const base::Feature kAlwaysReinstallSystemWebApps{
-    "ReinstallSystemWebApps", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_ANDROID)
 const base::Feature kAnonymousUpdateChecks{"AnonymousUpdateChecks",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
@@ -363,11 +358,6 @@ const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
     "ElidePrioritizationOfPreNativeBootstrapTasks",
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
-
-// Enables all registered system web apps, regardless of their respective
-// feature flags.
-const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the restricted web APIs for high-trusted apps.
 const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",

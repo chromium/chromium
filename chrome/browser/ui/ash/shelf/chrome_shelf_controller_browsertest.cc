@@ -3082,7 +3082,7 @@ class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kFilesSWA, features::kEnableAllSystemWebApps}, {});
+        {ash::features::kFilesSWA, ash::features::kEnableAllSystemWebApps}, {});
     ShelfPlatformAppBrowserTest::SetUp();
   }
 

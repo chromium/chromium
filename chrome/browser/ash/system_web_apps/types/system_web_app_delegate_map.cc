@@ -4,22 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
-
 namespace ash {
-
-bool IsSystemWebAppEnabled(const SystemWebAppDelegateMap& delegates,
-                           SystemWebAppType type) {
-  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-    return true;
-
-  const SystemWebAppDelegate* delegate = GetSystemWebApp(delegates, type);
-  if (!delegate)
-    return false;
-
-  return delegate->IsAppEnabled();
-}
 
 const SystemWebAppDelegate* GetSystemWebApp(
     const SystemWebAppDelegateMap& delegates,

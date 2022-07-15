@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -352,16 +353,16 @@ class SystemWebAppManagerTest_PrefMigrationEnabled
     bool enable_migration = GetParam();
     if (enable_migration) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+          {::features::kUseWebAppDBInsteadOfExternalPrefs}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+          {}, {::features::kUseWebAppDBInsteadOfExternalPrefs});
     }
   }
 
   bool IsExternalDataReadFromDBEnabled() {
     return base::FeatureList::IsEnabled(
-        features::kUseWebAppDBInsteadOfExternalPrefs);
+        ::features::kUseWebAppDBInsteadOfExternalPrefs);
   }
 
  private:

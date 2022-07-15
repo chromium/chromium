@@ -46,9 +46,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAllowTouchpadHapticClickSettings;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kAlwaysReinstallSystemWebApps;
-
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAnonymousUpdateChecks;
@@ -244,9 +241,6 @@ extern const base::Feature kEarlyLibraryLoad;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks;
 #endif
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kEnableAllSystemWebApps;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableAmbientAuthenticationInGuestSession;

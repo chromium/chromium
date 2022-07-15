@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -149,7 +149,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   SystemWebAppDelegateMap delegate_map;
   for (auto& info : info_vec) {
     if (info->IsAppEnabled() ||
-        base::FeatureList::IsEnabled(::features::kEnableAllSystemWebApps)) {
+        base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
       // Gets `type` before std::move().
       SystemWebAppType type = info->GetType();
       delegate_map.emplace(type, std::move(info));
@@ -224,7 +224,7 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
     update_policy_ = UpdatePolicy::kAlwaysUpdate;
 
     // Populate with real system apps if the test asks for it.
-    if (base::FeatureList::IsEnabled(::features::kEnableAllSystemWebApps))
+    if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
       system_app_delegates_ = CreateSystemWebApps(profile_);
 
     return;
@@ -305,7 +305,15 @@ void SystemWebAppManager::StopBackgroundTasks() {
 }
 
 bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
-  return IsSystemWebAppEnabled(system_app_delegates_, type);
+  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
+    return true;
+
+  const SystemWebAppDelegate* delegate =
+      GetSystemWebApp(system_app_delegates_, type);
+  if (!delegate)
+    return false;
+
+  return delegate->IsAppEnabled();
 }
 
 void SystemWebAppManager::SetSubsystems(
@@ -682,7 +690,7 @@ void SystemWebAppManager::StartBackgroundTasks() const {
 }
 
 bool SystemWebAppManager::ShouldForceInstallApps() const {
-  if (base::FeatureList::IsEnabled(::features::kAlwaysReinstallSystemWebApps))
+  if (base::FeatureList::IsEnabled(features::kAlwaysReinstallSystemWebApps))
     return true;
 
   if (update_policy_ == UpdatePolicy::kAlwaysUpdate)
