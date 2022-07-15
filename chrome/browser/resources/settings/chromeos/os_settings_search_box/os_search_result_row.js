@@ -17,6 +17,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/personalization/search.mojom-webui.js';
+import {SearchResultType} from '../../mojom-webui/search/search.mojom-webui.js';
+import {SearchResultIcon} from '../../mojom-webui/search/search_result_icon.mojom-webui.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Router} from '../../router.js';
 import {SearchResult} from '../combined_search_handler.js';
@@ -584,7 +586,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           loadTimeData.getInteger('entryPointEnumSize'));
       return;
     }
-    const SearchResultType = chromeos.settings.mojom.SearchResultType;
 
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.SearchResultTypeSelected', this.searchResult.type,
@@ -662,89 +663,88 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     if (isPersonalizationSearchResult(this.searchResult)) {
       return 'os-settings:paint-brush';
     }
-    const Icon = chromeos.settings.mojom.SearchResultIcon;
     switch (this.searchResult.icon) {
-      case Icon.kA11y:
+      case SearchResultIcon.kA11y:
         return 'os-settings:accessibility';
-      case Icon.kAndroid:
+      case SearchResultIcon.kAndroid:
         return 'os-settings:android';
-      case Icon.kAppsGrid:
+      case SearchResultIcon.kAppsGrid:
         return 'os-settings:apps';
-      case Icon.kAssistant:
+      case SearchResultIcon.kAssistant:
         return 'os-settings:assistant';
-      case Icon.kAudio:
+      case SearchResultIcon.kAudio:
         return 'os-settings:audio';
-      case Icon.kAuthKey:
+      case SearchResultIcon.kAuthKey:
         return 'os-settings:auth-key';
-      case Icon.kAvatar:
+      case SearchResultIcon.kAvatar:
         return 'cr:person';
-      case Icon.kBluetooth:
+      case SearchResultIcon.kBluetooth:
         return 'cr:bluetooth';
-      case Icon.kCellular:
+      case SearchResultIcon.kCellular:
         return 'os-settings:cellular';
-      case Icon.kChrome:
+      case SearchResultIcon.kChrome:
         return 'os-settings:chrome';
-      case Icon.kClock:
+      case SearchResultIcon.kClock:
         return 'os-settings:access-time';
-      case Icon.kDeveloperTags:
+      case SearchResultIcon.kDeveloperTags:
         return 'os-settings:developer-tags';
-      case Icon.kDisplay:
+      case SearchResultIcon.kDisplay:
         return 'os-settings:display';
-      case Icon.kDrive:
+      case SearchResultIcon.kDrive:
         return 'os-settings:google-drive';
-      case Icon.kEthernet:
+      case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
-      case Icon.kFingerprint:
+      case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
-      case Icon.kFolder:
+      case SearchResultIcon.kFolder:
         return 'os-settings:folder-outline';
-      case Icon.kGlobe:
+      case SearchResultIcon.kGlobe:
         return 'os-settings:language';
-      case Icon.kGooglePlay:
+      case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play';
-      case Icon.kHardDrive:
+      case SearchResultIcon.kHardDrive:
         return 'os-settings:hard-drive';
-      case Icon.kInstantTethering:
+      case SearchResultIcon.kInstantTethering:
         return 'os-settings:magic-tethering';
-      case Icon.kKeyboard:
+      case SearchResultIcon.kKeyboard:
         return 'os-settings:keyboard';
-      case Icon.kLaptop:
+      case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
-      case Icon.kLock:
+      case SearchResultIcon.kLock:
         return 'os-settings:lock';
-      case Icon.kMagnifyingGlass:
+      case SearchResultIcon.kMagnifyingGlass:
         return 'cr:search';
-      case Icon.kMessages:
+      case SearchResultIcon.kMessages:
         return 'os-settings:multidevice-messages';
-      case Icon.kMouse:
+      case SearchResultIcon.kMouse:
         return 'os-settings:mouse';
-      case Icon.kNearbyShare:
+      case SearchResultIcon.kNearbyShare:
         return 'os-settings:nearby-share';
-      case Icon.kPaintbrush:
+      case SearchResultIcon.kPaintbrush:
         return 'os-settings:paint-brush';
-      case Icon.kPenguin:
+      case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
-      case Icon.kPhone:
+      case SearchResultIcon.kPhone:
         return 'os-settings:multidevice-better-together-suite';
-      case Icon.kPluginVm:
+      case SearchResultIcon.kPluginVm:
         return 'os-settings:plugin-vm';
-      case Icon.kPower:
+      case SearchResultIcon.kPower:
         return 'os-settings:power';
-      case Icon.kPrinter:
+      case SearchResultIcon.kPrinter:
         return 'os-settings:print';
-      case Icon.kReset:
+      case SearchResultIcon.kReset:
         return 'os-settings:restore';
-      case Icon.kShield:
+      case SearchResultIcon.kShield:
         return 'cr:security';
-      case Icon.kStartup:
+      case SearchResultIcon.kStartup:
         return 'os-settings:startup';
-      case Icon.kStylus:
+      case SearchResultIcon.kStylus:
         return 'os-settings:stylus';
-      case Icon.kSync:
+      case SearchResultIcon.kSync:
         return 'os-settings:sync';
-      case Icon.kWallpaper:
+      case SearchResultIcon.kWallpaper:
         return 'os-settings:wallpaper';
-      case Icon.kWifi:
+      case SearchResultIcon.kWifi:
         return 'os-settings:network-wifi';
       default:
         return 'os-settings:settings-general';

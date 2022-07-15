@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setUserActionRecorderForTesting, UserActionRecorderMojom} from 'chrome://os-settings/chromeos/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,7 +17,7 @@ suite('InternetConfig', function() {
   /** @type {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote|undefined} */
   let mojoApi_;
 
-  /** @type {?chromeos.settings.mojom.UserActionRecorderInterface} */
+  /** @type {?UserActionRecorderMojom.UserActionRecorderInterface} */
   let userActionRecorder;
 
   suiteSetup(function() {

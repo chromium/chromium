@@ -96,31 +96,17 @@ if (optimize_webui) {
   }
 }
 
-copy("ash_search_mojo_bindings") {
-  sources = [
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search.mojom-lite.js",
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-lite.js",
-  ]
-  outputs = [ "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/search/{{source_file_part}}" ]
-  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js" ]
-}
-
 # OS Settings specific mojo files, bundled in optimized builds.
 # TODO(crbug.com/1179821) remove this build rule once these lite bindings
 # have been converted to WebUI bindings
 preprocess_if_expr("preprocess_mojo") {
-  deps = [
-    ":ash_search_mojo_bindings",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
-  ]
+  deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js" ]
   in_folder = get_path_info("../../../ui/webui/settings/chromeos/", "gen_dir")
   out_folder = "$target_gen_dir/$preprocessed_folder"
   out_manifest = "$target_gen_dir/$mojo_manifest"
   in_files = [
     "constants/routes.mojom-lite.js",
     "constants/setting.mojom-lite.js",
-    "search/search.mojom-lite.js",
-    "search/search_result_icon.mojom-lite.js",
   ]
 }
 
@@ -137,6 +123,8 @@ preprocess_if_expr("preprocess_mojo_webui") {
   in_files = [
     "mojom-webui/routes.mojom-webui.js",
     "mojom-webui/setting.mojom-webui.js",
+    "mojom-webui/search/search.mojom-webui.js",
+    "mojom-webui/search/search_result_icon.mojom-webui.js",
     "mojom-webui/search/user_action_recorder.mojom-webui.js",
     "mojom-webui/personalization/search.mojom-webui.js",
   ]

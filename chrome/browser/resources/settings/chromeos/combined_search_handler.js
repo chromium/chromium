@@ -6,12 +6,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization/search.mojom-webui.js';
+import {ParentResultBehavior, SearchResult as SettingsSearchResult} from '../mojom-webui/search/search.mojom-webui.js';
 
 import {getPersonalizationSearchHandler} from './personalization_search_handler.js';
 import {getSettingsSearchHandler} from './settings_search_handler.js';
 
 /**
- * @typedef {chromeos.settings.mojom.SearchResult|PersonalizationSearchResult}
+ * @typedef {SettingsSearchResult|PersonalizationSearchResult}
  */
 export let SearchResult;
 
@@ -33,7 +34,7 @@ function mergeResults(a, b, maxNumResults) {
  * Search both settings and personalization and merge the results.
  * @param {!String16} query
  * @param {!number} maxNumResults
- * @param {!chromeos.settings.mojom.ParentResultBehavior} parentResultBehavior
+ * @param {!ParentResultBehavior} parentResultBehavior
  * @return {!Promise<{results: !Array<!SearchResult>}>}
  */
 export async function combinedSearch(
