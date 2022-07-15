@@ -23,13 +23,13 @@ enum class AvProductState { kOn, kOff, kSnoozed, kExpired };
 // On Win7 and below, this can be retrieve by an undocumented method in WMI,
 // which goes through the SecurityCenter2 WMI server.
 struct AvProduct {
-  std::string display_name;
-  AvProductState state;
+  std::string display_name{};
+  AvProductState state = AvProductState::kOff;
 
   // Although not present on the documentation, IWscProduct exposes a
   // `get_ProductGuid` function to retrieve an GUID representing an Antivirus
   // software.
-  std::string product_id;
+  std::string product_id{};
 
   bool operator==(const AvProduct& other) const;
 
@@ -41,7 +41,7 @@ struct InstalledHotfix {
   // In WMI, this value represents the `HotFixID` property from entries in
   // "Win32_QuickFixEngineering". They have a format looking like `KB123123`.
   // https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-quickfixengineering
-  std::string hotfix_id;
+  std::string hotfix_id{};
 
   bool operator==(const InstalledHotfix& other) const;
 

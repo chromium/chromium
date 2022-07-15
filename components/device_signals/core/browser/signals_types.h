@@ -59,7 +59,7 @@ struct BaseSignalResponse {
 
   // If set, represents a collection error that occurred while getting the
   // signal.
-  absl::optional<SignalCollectionError> collection_error;
+  absl::optional<SignalCollectionError> collection_error = absl::nullopt;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -71,7 +71,7 @@ struct AntiVirusSignalResponse : BaseSignalResponse {
 
   ~AntiVirusSignalResponse() override;
 
-  std::vector<AvProduct> av_products;
+  std::vector<AvProduct> av_products{};
 };
 
 struct HotfixSignalResponse : BaseSignalResponse {
@@ -82,7 +82,7 @@ struct HotfixSignalResponse : BaseSignalResponse {
 
   ~HotfixSignalResponse() override;
 
-  std::vector<InstalledHotfix> hotfixes;
+  std::vector<InstalledHotfix> hotfixes{};
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -94,7 +94,7 @@ struct FileSystemInfoResponse : BaseSignalResponse {
 
   ~FileSystemInfoResponse() override;
 
-  std::vector<FileSystemItem> file_system_items;
+  std::vector<FileSystemItem> file_system_items{};
 };
 
 // Request struct containing properties that will be used by the
@@ -110,14 +110,14 @@ struct SignalsAggregationRequest {
   ~SignalsAggregationRequest();
 
   // Information about the user for whom these signals are collected.
-  UserContext user_context;
+  UserContext user_context{};
 
   // Names of the signals that need to be collected.
-  std::unordered_set<SignalName> signal_names;
+  std::unordered_set<SignalName> signal_names{};
 
   // Parameters required when requesting the collection of signals living on
   // the device's file system.
-  std::vector<GetFileSystemInfoOptions> file_system_signal_parameters;
+  std::vector<GetFileSystemInfoOptions> file_system_signal_parameters{};
 
   bool operator==(const SignalsAggregationRequest& other) const;
 };
@@ -135,13 +135,14 @@ struct SignalsAggregationResponse {
 
   // If set, represents an error that occurred before any signal could be
   // collected.
-  absl::optional<SignalCollectionError> top_level_error;
+  absl::optional<SignalCollectionError> top_level_error = absl::nullopt;
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<AntiVirusSignalResponse> av_signal_response;
-  absl::optional<HotfixSignalResponse> hotfix_signal_response;
+  absl::optional<AntiVirusSignalResponse> av_signal_response = absl::nullopt;
+  absl::optional<HotfixSignalResponse> hotfix_signal_response = absl::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
-  absl::optional<FileSystemInfoResponse> file_system_info_response;
+  absl::optional<FileSystemInfoResponse> file_system_info_response =
+      absl::nullopt;
 };
 
 }  // namespace device_signals

@@ -27,20 +27,20 @@ struct ExecutableMetadata {
   // Is true if the file for which this payload was generated is indeed an
   // executable. If this is false, all of the other properties will be
   // absl::nullopt.
-  bool is_executable;
+  bool is_executable = false;
 
   // Is true if a currently running process was spawned from this file.
-  absl::optional<bool> is_running;
+  absl::optional<bool> is_running = absl::nullopt;
 
   // SHA256 hash of the public key of the certificate used to sign the
   // executable.
-  absl::optional<std::string> public_key_sha256;
+  absl::optional<std::string> public_key_sha256 = absl::nullopt;
 
   // Product name of this executable.
-  absl::optional<std::string> product_name;
+  absl::optional<std::string> product_name = absl::nullopt;
 
   // Version of this executable.
-  absl::optional<std::string> version;
+  absl::optional<std::string> version = absl::nullopt;
 
   bool operator==(const ExecutableMetadata& other) const;
 };
@@ -54,20 +54,20 @@ struct FileSystemItem {
   ~FileSystemItem();
 
   // Path to the file system object for whom those signals were collected.
-  base::FilePath file_path;
+  base::FilePath file_path{};
 
   // Value indicating whether the specific resource could be found or not.
-  PresenceValue presence;
+  PresenceValue presence = PresenceValue::kUnspecified;
 
   // SHA256 hash of a file’s bytes. Ignored when `path` points to a
   // directory. Collected only when `compute_sha256` is set to true in the
   // corresponding GetFileSystemInfoOptions parameter.
-  absl::optional<std::string> sha256_hash;
+  absl::optional<std::string> sha256_hash = absl::nullopt;
 
   // Set of properties only relevant for executable files. Will only be
   // collected if computeIsExecutable is set to true in the given signals
   // collection parameters and if `path` points to an executable file.
-  absl::optional<ExecutableMetadata> executable_metadata;
+  absl::optional<ExecutableMetadata> executable_metadata = absl::nullopt;
 
   bool operator==(const FileSystemItem& other) const;
 };
@@ -80,11 +80,11 @@ struct GetFileSystemInfoOptions {
 
   ~GetFileSystemInfoOptions();
 
-  base::FilePath file_path;
+  base::FilePath file_path{};
 
-  bool compute_sha256;
+  bool compute_sha256 = false;
 
-  bool compute_is_executable;
+  bool compute_is_executable = false;
 
   bool operator==(const GetFileSystemInfoOptions& other) const;
 };
