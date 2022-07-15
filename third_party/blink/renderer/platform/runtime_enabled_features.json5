@@ -1196,7 +1196,7 @@
     // if the HighlightInheritance feature is not enabled.
     {
       name: "HighlightAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HighlightInheritance",
