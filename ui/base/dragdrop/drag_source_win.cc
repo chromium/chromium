@@ -16,7 +16,6 @@ DragSourceWin::DragSourceWin() : cancel_drag_(false), data_(nullptr) {
 }
 
 HRESULT DragSourceWin::QueryContinueDrag(BOOL escape_pressed, DWORD key_state) {
-  num_query_continues_++;
   if (cancel_drag_)
     return DRAGDROP_S_CANCEL;
 

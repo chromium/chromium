@@ -46,10 +46,6 @@ class DragSourceWin
     cancel_drag_ = true;
   }
 
-  // This is used to tell if the drag drop actually started, for generating
-  // a BooleanSuccess histogram.
-  int num_query_continues() const { return num_query_continues_; }
-
   // IDropSource implementation:
   HRESULT __stdcall QueryContinueDrag(BOOL escape_pressed,
                                       DWORD key_state) override;
@@ -70,12 +66,6 @@ class DragSourceWin
   bool cancel_drag_;
 
   raw_ptr<const OSExchangeData> data_;
-
-  // The number of times for this drag that Windows asked if the drag should
-  // continue. This is used in DesktopDragDropClientWin::StartDragAndDrop to
-  // detect if touch drag drop started successfully. See comment there for much
-  // more info.
-  int num_query_continues_ = 0;
 };
 
 }  // namespace ui
