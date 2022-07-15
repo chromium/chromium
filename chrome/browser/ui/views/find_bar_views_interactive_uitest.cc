@@ -4,6 +4,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -22,6 +23,7 @@
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -766,19 +768,53 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSimplePage)));
 
-  // Open find
+  // Open find.
   browser()->GetFindBarController()->Show(false, true);
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
-  // Put focus into location bar
-  chrome::FocusLocationBar(browser());
+  // Put focus to the bookmarks' toolbar, which won't consume the escape key.
+  chrome::FocusBookmarksToolbar(browser());
 
-  // Close find with escape
+  // Close find with escape.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
 
-  // Find should be closed
-  ASSERT_FALSE(IsFindBarVisible());
+  // Find should be closed.
+  EXPECT_FALSE(IsFindBarVisible());
+}
+
+class FindInPageTestEnabledBlurWithEscape : public FindInPageTest {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(omnibox::kBlurWithEscape);
+    FindInPageTest::SetUp();
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FindInPageTestEnabledBlurWithEscape,
+                       ConsumedGlobalEscapeDoesNotCloseFind) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
+
+  // Open find.
+  browser()->GetFindBarController()->Show(false, true);
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  // Put focus into location bar, which will consume escape presses.
+  chrome::FocusLocationBar(browser());
+
+  // Press escape.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+
+  // Find should not be closed; the escape should have been consumed by the
+  // location bar.
+  EXPECT_TRUE(IsFindBarVisible());
 }
 
 // See http://crbug.com/1142027

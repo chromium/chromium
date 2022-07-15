@@ -1262,7 +1262,8 @@ void OmniboxEditModel::OnKillFocus() {
 }
 
 bool OmniboxEditModel::WillHandleEscapeKey() const {
-  return user_input_in_progress_ || has_temporary_text_;
+  return user_input_in_progress_ || has_temporary_text_ ||
+         base::FeatureList::IsEnabled(omnibox::kBlurWithEscape);
 }
 
 bool OmniboxEditModel::OnEscapeKeyPressed() {
