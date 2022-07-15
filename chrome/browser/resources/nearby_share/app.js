@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {NearbyShareSettingsBehavior, NearbyShareSettingsBehaviorInterface} from './shared/nearby_share_settings_behavior.js';
 import {CloseReason} from './shared/types.js';
 
@@ -44,7 +45,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

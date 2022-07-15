@@ -27,6 +27,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager} from './discovery_manager.js';
+import {getTemplate} from './nearby_confirmation_page.html.js';
 import {CloseReason} from './shared/types.js';
 
 /** @implements {nearbyShare.mojom.TransferUpdateListenerInterface} */
@@ -84,7 +85,7 @@ export class NearbyConfirmationPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
