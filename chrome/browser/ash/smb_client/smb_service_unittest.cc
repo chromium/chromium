@@ -369,7 +369,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
         EXPECT_EQ(options.username, kTestUser);
         EXPECT_TRUE(options.workgroup.empty());
         EXPECT_EQ(options.password, kTestPassword);
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_FALSE(options.kerberos_options);
         smbfs_host_delegate = delegate;
         return std::move(mock_mounter);
@@ -528,7 +528,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
         // Workgroup/domain is converted to upper-case.
         EXPECT_EQ(options.workgroup, base::ToUpperASCII(kTestADDomain));
         EXPECT_TRUE(options.password.empty());
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_EQ(
             options.kerberos_options->source,
             smbfs::SmbFsMounter::KerberosOptions::Source::kActiveDirectory);
@@ -653,7 +653,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
         EXPECT_EQ(options.username, kTestUser);
         EXPECT_EQ(options.workgroup, kTestDomain);
         EXPECT_TRUE(options.password.empty());
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_FALSE(options.kerberos_options);
         EXPECT_TRUE(options.save_restore_password);
         EXPECT_FALSE(options.account_hash.empty());

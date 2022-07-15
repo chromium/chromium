@@ -107,8 +107,7 @@ class SmbService : public KeyedService,
   // Updates credentials for Kerberos service.
   void UpdateKerberosCredentials(const std::string& account_identifier);
 
-  // Returns true if Kerberos was enabled via policy at service creation time
-  // and is still enabled now.
+  // Returns true if the Kerberos feature is enabled.
   bool IsKerberosEnabledViaPolicy() const;
 
   // Sets the mounter creation callback, which is passed to

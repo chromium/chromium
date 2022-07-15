@@ -8,6 +8,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/common/pref_names.h"
@@ -21,12 +24,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::RunClosure;
+
 namespace ash {
+namespace smb_client {
 
 namespace {
 
 constexpr char kProfileEmail[] = "gaia_user@example.com";
 constexpr char kPrincipal[] = "user@EXAMPLE.COM";
+constexpr char kOtherPrincipal[] = "icebear_cloud@EXAMPLE.COM";
 constexpr char kPassword[] = "m1sst1ped>_<";
 constexpr char kConfig[] = "[libdefaults]";
 
@@ -45,8 +52,8 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
       : scoped_user_manager_(CreateMockUserManager()),
         local_state_(TestingBrowserProcess::GetGlobal()) {
     // Enable Kerberos via policy.
-    local_state_.Get()->SetManagedPref(prefs::kKerberosEnabled,
-                                       std::make_unique<base::Value>(true));
+    SetPref(prefs::kKerberosEnabled, base::Value(true));
+
     // Initialize User, Profile and KerberosCredentialsManager.
     KerberosClient::InitializeFake();
     TestingProfile::Builder profile_builder;
@@ -55,24 +62,34 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     credentials_manager_ = std::make_unique<KerberosCredentialsManager>(
         local_state_.Get(), profile_.get());
   }
+
   ~SmbKerberosCredentialsUpdaterTest() override {
     // Remove KerberosCredentialsManager instance, before shutting down
     // KerberosClient.
+    credentials_updater_.reset();
     credentials_manager_.reset();
     KerberosClient::Shutdown();
   }
 
  protected:
-  void AddAndAuthenticate(const std::string& principal_name) {
-    base::RunLoop run_loop;
+  void AddAccountAndAuthenticate(
+      const std::string& principal_name,
+      KerberosCredentialsManager::ResultCallback callback) {
     credentials_manager_->AddAccountAndAuthenticate(
-        principal_name, /*is_managed=*/true, kPassword,
+        principal_name, /*is_managed=*/false, kPassword,
         /*remember_password=*/true, kConfig, /*allow_existing=*/false,
-        base::BindLambdaForTesting([&run_loop](kerberos::ErrorType result) {
-          EXPECT_EQ(kerberos::ERROR_NONE, result);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+        std::move(callback));
+  }
+
+  void SetPref(const char* name, base::Value value) {
+    local_state_.Get()->SetManagedPref(
+        name, std::make_unique<base::Value>(std::move(value)));
+  }
+
+  void CreateCredentialsUpdater(
+      SmbKerberosCredentialsUpdater::ActiveAccountChangedCallback callback) {
+    credentials_updater_ = std::make_unique<SmbKerberosCredentialsUpdater>(
+        credentials_manager_.get(), std::move(callback));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -80,35 +97,111 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<KerberosCredentialsManager> credentials_manager_;
+  std::unique_ptr<SmbKerberosCredentialsUpdater> credentials_updater_;
 };
 
-TEST_F(SmbKerberosCredentialsUpdaterTest, TestActiveAccountChanged) {
-  // If active accounts changed callback is called, we will set this variable to
-  // true.
-  bool callback_called = false;
-  std::string callback_account;
+TEST_F(SmbKerberosCredentialsUpdaterTest, FirstAccountAdded) {
+  base::RunLoop run_loop;
+  base::MockRepeatingCallback<void(const std::string& account_identifier)>
+      account_changed_callback;
+  base::MockOnceCallback<void(kerberos::ErrorType)> result_callback;
 
-  smb_client::SmbKerberosCredentialsUpdater credentials_updater(
-      credentials_manager_.get(),
-      base::BindLambdaForTesting([&callback_called, &callback_account](
-                                     const std::string& account_identifier) {
-        callback_called = true;
-        callback_account = account_identifier;
-      }));
+  CreateCredentialsUpdater(account_changed_callback.Get());
+  EXPECT_CALL(account_changed_callback, Run(kPrincipal)).Times(1);
+  EXPECT_CALL(result_callback, Run(kerberos::ErrorType::ERROR_NONE))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  EXPECT_FALSE(callback_called);
+  AddAccountAndAuthenticate(kPrincipal, result_callback.Get());
+  run_loop.Run();
 
-  AddAndAuthenticate(kPrincipal);
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
 
-  EXPECT_TRUE(callback_called);
-  EXPECT_EQ(callback_account, kPrincipal);
-
-  callback_called = false;
-
-  // Try to notify the change now without changing/adding a user.
+  // Set the active user to the same one.
   credentials_manager_->SetActiveAccount(kPrincipal);
 
-  EXPECT_FALSE(callback_called);
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
 }
 
+TEST_F(SmbKerberosCredentialsUpdaterTest, SecondAccountAdded) {
+  base::RunLoop run_loop;
+  base::RunLoop other_run_loop;
+  base::MockRepeatingCallback<void(const std::string& account_identifier)>
+      account_changed_callback;
+  base::MockOnceCallback<void(kerberos::ErrorType)> result_callback;
+  base::MockOnceCallback<void(kerberos::ErrorType)> other_result_callback;
+
+  CreateCredentialsUpdater(account_changed_callback.Get());
+  EXPECT_CALL(account_changed_callback, Run(kPrincipal)).Times(2);
+  EXPECT_CALL(account_changed_callback, Run(kOtherPrincipal)).Times(1);
+  EXPECT_CALL(result_callback, Run(kerberos::ErrorType::ERROR_NONE))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(other_result_callback, Run(kerberos::ErrorType::ERROR_NONE))
+      .WillOnce(RunClosure(other_run_loop.QuitClosure()));
+
+  AddAccountAndAuthenticate(kPrincipal, result_callback.Get());
+  run_loop.Run();
+
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
+
+  AddAccountAndAuthenticate(kOtherPrincipal, other_result_callback.Get());
+  other_run_loop.Run();
+
+  EXPECT_EQ(credentials_updater_->active_account_name(), kOtherPrincipal);
+
+  // Change the active user back to the first one.
+  credentials_manager_->SetActiveAccount(kPrincipal);
+
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
+}
+
+TEST_F(SmbKerberosCredentialsUpdaterTest, KerberosGetsDisabled) {
+  base::RunLoop run_loop;
+  base::MockRepeatingCallback<void(const std::string& account_identifier)>
+      account_changed_callback;
+  base::MockOnceCallback<void(kerberos::ErrorType)> result_callback;
+
+  EXPECT_CALL(account_changed_callback, Run("")).Times(1);
+  EXPECT_CALL(result_callback, Run(kerberos::ErrorType::ERROR_NONE))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  // Starting with one account added.
+  AddAccountAndAuthenticate(kPrincipal, result_callback.Get());
+  run_loop.Run();
+
+  CreateCredentialsUpdater(account_changed_callback.Get());
+
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
+
+  // Disable Kerberos via policy.
+  SetPref(prefs::kKerberosEnabled, base::Value(false));
+
+  EXPECT_TRUE(credentials_updater_->active_account_name().empty());
+}
+
+TEST_F(SmbKerberosCredentialsUpdaterTest, KerberosGetsEnabled) {
+  base::RunLoop run_loop;
+  base::MockRepeatingCallback<void(const std::string& account_identifier)>
+      account_changed_callback;
+  base::MockOnceCallback<void(kerberos::ErrorType)> result_callback;
+
+  EXPECT_CALL(account_changed_callback, Run(kPrincipal)).Times(1);
+  EXPECT_CALL(result_callback, Run(kerberos::ErrorType::ERROR_NONE))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  // Starting with Kerberos disabled via policy.
+  SetPref(prefs::kKerberosEnabled, base::Value(false));
+
+  CreateCredentialsUpdater(account_changed_callback.Get());
+
+  EXPECT_TRUE(credentials_updater_->active_account_name().empty());
+
+  // Enable Kerberos via policy, then add an account.
+  SetPref(prefs::kKerberosEnabled, base::Value(true));
+  AddAccountAndAuthenticate(kPrincipal, result_callback.Get());
+  run_loop.Run();
+
+  EXPECT_EQ(credentials_updater_->active_account_name(), kPrincipal);
+}
+
+}  // namespace smb_client
 }  // namespace ash

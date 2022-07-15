@@ -77,11 +77,6 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
   source->AddBoolean("isActiveDirectoryUser",
                      user && user->IsActiveDirectoryUser());
 
-  // Check if Kerberos was and still is enabled via policy at the creation time
-  // of SmbService. As a result, if Kerberos policy was enabled during a user
-  // session, SSO option will not be available/visible.
-  // TODO(crbug.com/1040138): subscribe to pref. changes in SmbService and setup
-  // Kerberos after it is enabled during a user session.
   const ash::smb_client::SmbService* const smb_service =
       ash::smb_client::SmbServiceFactory::Get(profile);
   bool is_kerberos_enabled =

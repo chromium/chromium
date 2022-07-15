@@ -128,7 +128,7 @@ SmbService::SmbService(Profile* profile,
 
   KerberosCredentialsManager* credentials_manager =
       KerberosCredentialsManagerFactory::GetExisting(profile);
-  if (credentials_manager && credentials_manager->IsKerberosEnabled()) {
+  if (credentials_manager) {
     kerberos_credentials_updater_ =
         std::make_unique<SmbKerberosCredentialsUpdater>(
             credentials_manager,

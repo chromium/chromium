@@ -9,13 +9,15 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
 namespace ash {
 namespace smb_client {
 
 // Updates Kerberos credentials in SmbService after receiving a
-// OnAccountsChanged notification from KerberosCredentialsManager.
+// `OnKerberosEnabledStateChanged` or `OnAccountsChanged` notification from
+// `KerberosCredentialsManager`.
 class SmbKerberosCredentialsUpdater
     : public KerberosCredentialsManager::Observer {
  public:
@@ -25,10 +27,12 @@ class SmbKerberosCredentialsUpdater
   SmbKerberosCredentialsUpdater(
       KerberosCredentialsManager* credentials_manager,
       ActiveAccountChangedCallback active_account_changed_callback);
+  ~SmbKerberosCredentialsUpdater() override;
+
+  // Disallow copy and assignment.
   SmbKerberosCredentialsUpdater(const SmbKerberosCredentialsUpdater&) = delete;
   SmbKerberosCredentialsUpdater& operator=(
       const SmbKerberosCredentialsUpdater&) = delete;
-  ~SmbKerberosCredentialsUpdater() override;
 
   // Checks if Kerberos is enabled by asking KerberosCredentialsManager.
   bool IsKerberosEnabled() const;
@@ -38,11 +42,17 @@ class SmbKerberosCredentialsUpdater
   }
 
  private:
+  // Updates `active_account_name_`, if the given `account_name` has a different
+  // value. In that case, calls `active_account_changed_callback_` with the new
+  // value.
+  void UpdateActiveAccount(const std::string& account_name);
+
   // KerberosCredentialsManager::Observer:
+  void OnKerberosEnabledStateChanged() override;
   void OnAccountsChanged() override;
 
   // Not owned.
-  KerberosCredentialsManager* credentials_manager_;
+  raw_ptr<KerberosCredentialsManager> credentials_manager_;
   std::string active_account_name_;
   const ActiveAccountChangedCallback active_account_changed_callback_;
 };
