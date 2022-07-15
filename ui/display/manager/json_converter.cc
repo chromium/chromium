@@ -185,23 +185,24 @@ bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
   if (!value->is_dict())
     return false;
 
-  value->SetBoolKey(kDefaultUnifiedKey, layout.default_unified);
-  value->SetStringKey(kPrimaryIdKey, base::NumberToString(layout.primary_id));
+  base::Value::Dict& dict = value->GetDict();
 
-  base::Value::ListStorage placement_list;
+  dict.Set(kDefaultUnifiedKey, layout.default_unified);
+  dict.Set(kPrimaryIdKey, base::NumberToString(layout.primary_id));
+
+  base::Value::List placement_list;
   for (const auto& placement : layout.placement_list) {
-    base::Value placement_value(base::Value::Type::DICTIONARY);
-    placement_value.SetStringKey(
-        kPositionKey, DisplayPlacement::PositionToString(placement.position));
-    placement_value.SetIntKey(kOffsetKey, placement.offset);
-    placement_value.SetStringKey(kDisplayPlacementDisplayIdKey,
-                                 base::NumberToString(placement.display_id));
-    placement_value.SetStringKey(
-        kDisplayPlacementParentDisplayIdKey,
-        base::NumberToString(placement.parent_display_id));
-    placement_list.push_back(std::move(placement_value));
+    base::Value::Dict placement_value;
+    placement_value.Set(kPositionKey,
+                        DisplayPlacement::PositionToString(placement.position));
+    placement_value.Set(kOffsetKey, placement.offset);
+    placement_value.Set(kDisplayPlacementDisplayIdKey,
+                        base::NumberToString(placement.display_id));
+    placement_value.Set(kDisplayPlacementParentDisplayIdKey,
+                        base::NumberToString(placement.parent_display_id));
+    placement_list.Append(std::move(placement_value));
   }
-  value->SetKey(kDisplayPlacementKey, base::Value(std::move(placement_list)));
+  dict.Set(kDisplayPlacementKey, std::move(placement_list));
 
   return true;
 }
