@@ -119,6 +119,13 @@ void UnifiedSideSearchController::OpenSidePanel() {
   if (browser_view) {
     browser_view->side_panel_coordinator()->Show(
         SidePanelEntry::Id::kSideSearch);
+    auto* active_contents = browser_view->GetActiveWebContents();
+    if (active_contents) {
+      auto* helper =
+          SideSearchTabContentsHelper::FromWebContents(active_contents);
+      if (helper)
+        helper->MaybeRecordDurationSidePanelAvailableToFirstOpen();
+    }
   }
   UpdateSidePanel();
 }
@@ -193,11 +200,15 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
                             base::Unretained(this)));
     entry->AddObserver(this);
     registry->Register(std::move(entry));
+    RecordSideSearchAvailabilityChanged(
+        SideSearchAvailabilityChangeType::kBecomeAvailable);
   }
 
   if (current_entry && !is_available) {
     current_entry->RemoveObserver(this);
     registry->Deregister(SidePanelEntry::Id::kSideSearch);
+    RecordSideSearchAvailabilityChanged(
+        SideSearchAvailabilityChangeType::kBecomeUnavailable);
   }
 }
 
