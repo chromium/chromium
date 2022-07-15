@@ -1,7 +1,7 @@
 Name: V8 to Istanbul Coverage Converter
 Short Name: v8-to-istanbul
 URL: https://www.npmjs.com/package/v8-to-istanbul
-Version: 7.1.2
+Version: 9.0.1
 License: ISC
 License File: NOT_SHIPPED
 Security Critical: no
@@ -15,7 +15,7 @@ Local Modifications:
 Name: Source map
 Short Name: source-map
 URL: https://www.npmjs.com/package/source-map
-Version: 0.7.3
+Version: 0.7.4
 License: BSD-3-Clause
 License File: NOT_SHIPPED
 Security Critical: No. Not shipped in Chrome, used to generate source maps for build steps.
@@ -56,3 +56,14 @@ Security Critical: No. Not shipped in Chrome, used to take arguments for JS file
 Description:
 Argparse is used to take, validate and parse CLI arguments for JavaScript scripts
 which are run as CLI scripts.
+
+Name: istanbul-lib-coverage
+Short Name: istanbul-lib-coverage
+URL: https://www.npmjs.com/package/istanbul-lib-coverage
+Version: 3.2.0
+License: BSD-3-Clause
+License File: NOT_SHIPPED
+Security Critical: No. Not shipped in Chrome, used to merge coverage reports.
+
+Description:
+istanbul-lib-coverage is used to merge coverage reports by the NYC library.
