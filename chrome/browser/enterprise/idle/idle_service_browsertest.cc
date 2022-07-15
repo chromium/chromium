@@ -12,6 +12,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/mock_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -178,7 +179,13 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfile) {
+// TODO(crbug.com/1344609): Test flaky on Mac.
+#if defined(IS_MAC)
+#define MAYBE_MultiProfile DISABLED_MultiProfile
+#else
+#define MAYBE_MultiProfile MultiProfile
+#endif
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   ON_CALL(provider(), CheckIdleStateIsLocked()).WillByDefault(Return(false));
 
   // `profile` has the IdleProfileCloseTimeout policy set to 5 minutes.
