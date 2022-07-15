@@ -114,6 +114,7 @@ preprocess_if_expr("preprocess_mojo") {
 preprocess_if_expr("preprocess_mojo_webui") {
   deps = [
     ":generate_ash_search_mojo_webui",
+    ":generate_cros_audio_config_mojo_webui",
     ":generate_personalization_search_mojo_webui",
     ":generate_settings_mojo_webui",
   ]
@@ -127,7 +128,14 @@ preprocess_if_expr("preprocess_mojo_webui") {
     "mojom-webui/search/search_result_icon.mojom-webui.js",
     "mojom-webui/search/user_action_recorder.mojom-webui.js",
     "mojom-webui/personalization/search.mojom-webui.js",
+    "mojom-webui/audio/cros_audio_config.mojom-webui.js",
   ]
+}
+
+copy("generate_cros_audio_config_mojo_webui") {
+  deps = [ "//ash/components/audio/public/mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/mojom-webui/audio/{{source_file_part}}" ]
 }
 
 copy("generate_settings_mojo_webui") {
