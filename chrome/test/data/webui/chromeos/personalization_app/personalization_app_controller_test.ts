@@ -512,7 +512,6 @@ suite('full screen mode', () => {
     wallpaperProvider = new TestWallpaperProvider();
     personalizationStore = new TestPersonalizationStore({});
     personalizationStore.setReducersEnabled(true);
-    loadTimeData.resetForTesting({[fullscreenPreviewFeature]: true});
   });
 
   test(
@@ -715,8 +714,6 @@ suite('local images available but no internet connection', () => {
   });
 
   test('error displays when fetch collections failed', async () => {
-    loadTimeData.overrideValues({['networkError']: 'someError'});
-
     // Set collections to null to simulate collections failure.
     wallpaperProvider.setCollectionsToFail();
 
@@ -745,7 +742,7 @@ suite('local images available but no internet connection', () => {
           // Set collections.
           // Collections are completed loading with null value. Error displays.
           {
-            'error': {message: loadTimeData.getString('networkError')},
+            'error': {message: loadTimeData.getString('wallpaperNetworkError')},
           },
         ],
         personalizationStore.states.map(filterAndFlattenState(['error'])));

@@ -72,7 +72,8 @@ function errorReducer(
     case WallpaperActionName.SET_COLLECTIONS:
       const {collections} = action;
       if (!isNonEmptyArray(collections)) {
-        return state || {message: loadTimeData.getString('networkError')};
+        return state ||
+            {message: loadTimeData.getString('wallpaperNetworkError')};
       }
       return state;
     case PersonalizationActionName.SET_ERROR:
