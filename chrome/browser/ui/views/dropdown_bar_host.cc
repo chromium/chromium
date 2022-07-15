@@ -53,7 +53,6 @@ void DropdownBarHost::Init(views::View* host_view,
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "DropdownBarHost";
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view_->GetWidget()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #if BUILDFLAG(IS_MAC)
@@ -100,6 +99,8 @@ void DropdownBarHost::StopAnimation() {
 }
 
 void DropdownBarHost::Show(bool animate) {
+  DCHECK(host_);
+
   if (!focus_tracker_) {
     // Stores the currently focused view, and tracks focus changes so that we
     // can restore focus when the dropdown widget is closed.
@@ -213,6 +214,7 @@ void DropdownBarHost::AnimationEnded(const gfx::Animation* animation) {
 
   if (!animation_->IsShowing()) {
     // Animation has finished closing.
+    DCHECK(host_);
     host_->Hide();
     is_visible_ = false;
     OnVisibilityChanged();

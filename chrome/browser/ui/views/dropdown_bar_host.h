@@ -13,6 +13,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
 class BrowserView;
@@ -181,7 +182,7 @@ class DropdownBarHost : public ui::AcceleratorTarget,
 
   // Host is the Widget implementation that is created and maintained by the
   // dropdown bar. It contains the DropdownBarView.
-  std::unique_ptr<views::Widget> host_;
+  views::UniqueWidgetPtr host_;
 
   // A flag to manually manage visibility. GTK/X11 is asynchronous and
   // the state of the widget can be out of sync.
