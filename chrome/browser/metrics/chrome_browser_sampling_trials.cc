@@ -1,0 +1,168 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
+
+#include "base/metrics/field_trial.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/common/channel_info.h"
+#include "components/ukm/ukm_recorder_impl.h"
+#include "components/variations/variations_associated_data.h"
+#include "components/version_info/channel.h"
+
+namespace metrics {
+namespace {
+
+// Note that the trial name must be kept in sync with the server config
+// controlling sampling. If they don't match, then clients will be shuffled into
+// different groups when the server config takes over from the fallback trial.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+constexpr char kSamplingTrialName[] = "MetricsAndCrashSampling";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kPostFREFixSamplingTrialName[] =
+    "PostFREFixMetricsAndCrashSampling";
+#endif  // BUILDFLAG(IS_ANDROID)
+constexpr char kUkmSamplingTrialName[] = "UkmSamplingRate";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// Appends a group to the sampling controlling |trial|. The group will be
+// associated with a variation param for reporting sampling |rate| in per mille.
+void AppendSamplingTrialGroup(const std::string& group_name,
+                              int rate,
+                              base::FieldTrial* trial) {
+  std::map<std::string, std::string> params = {
+      {metrics::internal::kRateParamName, base::NumberToString(rate)}};
+  variations::AssociateVariationParams(trial->trial_name(), group_name, params);
+  trial->AppendGroup(group_name, rate);
+}
+
+// Unconditionally attempts to create a field trial to control client side
+// metrics/crash sampling to use as a fallback when one hasn't been
+// provided. This is expected to occur on first-run on platforms that don't
+// have first-run variations support. This should only be called when there is
+// no existing field trial controlling the sampling feature, and on the
+// correct platform. |trial_name| is the name of the trial. |feature_name| is
+// the name of the feature that determines sampling. |sampled_in_rate| is the
+// sampling rate per mille.
+void CreateFallbackSamplingTrial(const std::string& trial_name,
+                                 const std::string& feature_name,
+                                 const int sampled_in_rate_per_mille,
+                                 base::FeatureList* feature_list) {
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          trial_name, /*total_probability=*/1000, "Default",
+          base::FieldTrial::ONE_TIME_RANDOMIZED,
+          /*default_group_number=*/nullptr));
+
+  // Like the trial name, the order that these two groups are added to the trial
+  // must be kept in sync with the order that they appear in the server config.
+  // The desired order is: OutOfReportingSample, InReportingSample.
+
+  const char kSampledOutGroup[] = "OutOfReportingSample";
+  const int sampled_out_rate_per_mille = 1000 - sampled_in_rate_per_mille;
+  AppendSamplingTrialGroup(kSampledOutGroup, sampled_out_rate_per_mille,
+                           trial.get());
+
+  const char kInSampleGroup[] = "InReportingSample";
+  AppendSamplingTrialGroup(kInSampleGroup, sampled_in_rate_per_mille,
+                           trial.get());
+
+  // Set up the feature. This must be done after all groups are added since
+  // GetGroupNameWithoutActivation() will finalize the group choice.
+  const std::string& group_name = trial->GetGroupNameWithoutActivation();
+
+  feature_list->RegisterFieldTrialOverride(
+      feature_name,
+      group_name == kSampledOutGroup
+          ? base::FeatureList::OVERRIDE_DISABLE_FEATURE
+          : base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial.get());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
+// Unconditionally attempts to create a field trial to control client side
+// UKM sampling to use as a fallback when one hasn't been provided. This is
+// expected to occur on first-run on platforms that don't have first-run
+// variations support. This should only be called when there is no existing
+// field trial controlling the sampling feature.
+void CreateFallbackUkmSamplingTrial(bool is_stable_channel,
+                                    base::FeatureList* feature_list) {
+  static const char kSampledGroup_Stable[] = "Sampled_NoSeed_Stable";
+  static const char kSampledGroup_Other[] = "Sampled_NoSeed_Other";
+  const char* sampled_group = kSampledGroup_Other;
+  int default_sampling = 1;  // Sampling is 1-in-N; this is N.
+
+  // Nothing is sampled out except for "stable" which omits almost everything
+  // in this configuration. This is done so that clients that fail to receive
+  // a configuration from the server do not bias aggregated results because
+  // of a relatively large number of records from them.
+  if (is_stable_channel) {
+    sampled_group = kSampledGroup_Stable;
+    default_sampling = 1000000;
+  }
+
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kUkmSamplingTrialName, /*total_probability=*/100, sampled_group,
+          base::FieldTrial::ONE_TIME_RANDOMIZED,
+          /*default_group_number=*/nullptr));
+
+  // Everybody (100%) should have a sampling configuration.
+  std::map<std::string, std::string> params = {
+      {"_default_sampling", base::NumberToString(default_sampling)}};
+  variations::AssociateVariationParams(trial->trial_name(), sampled_group,
+                                       params);
+  trial->AppendGroup(sampled_group, 100);
+
+  // Setup the feature.
+  feature_list->RegisterFieldTrialOverride(
+      ukm::kUkmSamplingRateFeature.name,
+      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+}
+
+}  // namespace
+
+void CreateFallbackSamplingTrialsIfNeeded(base::FeatureList* feature_list) {
+  [[maybe_unused]] const bool is_stable =
+      chrome::GetChannel() == version_info::Channel::STABLE;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  if (!base::FieldTrialList::TrialExists(kSamplingTrialName)) {
+    // On all channels except stable, we sample out at a minimal rate to ensure
+    // the code paths are exercised in the wild before hitting stable.
+    const int kPreStableSampledInRatePerMille = 990;
+    const int kStableSampledInRatePerMille = 100;
+    CreateFallbackSamplingTrial(
+        kSamplingTrialName, metrics::internal::kMetricsReportingFeature.name,
+        is_stable ? kStableSampledInRatePerMille
+                  : kPreStableSampledInRatePerMille,
+        feature_list);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FieldTrialList::TrialExists(kPostFREFixSamplingTrialName)) {
+    // On all channels except stable, we sample out at a minimal rate to ensure
+    // the code paths are exercised in the wild before hitting stable.
+    const int kPreStableSampledInRatePerMille = 990;
+    const int kStableSampledInRatePerMille = 190;
+    CreateFallbackSamplingTrial(
+        kPostFREFixSamplingTrialName,
+        metrics::internal::kPostFREFixMetricsReportingFeature.name,
+        is_stable ? kStableSampledInRatePerMille
+                  : kPreStableSampledInRatePerMille,
+        feature_list);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void CreateFallbackUkmSamplingTrialIfNeeded(base::FeatureList* feature_list) {
+  if (!base::FieldTrialList::TrialExists(kUkmSamplingTrialName)) {
+    const bool is_stable =
+        chrome::GetChannel() == version_info::Channel::STABLE;
+    CreateFallbackUkmSamplingTrial(is_stable, feature_list);
+  }
+}
+
+}  // namespace metrics

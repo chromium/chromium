@@ -790,6 +790,8 @@ static_library("browser") {
     "metrics/bluetooth_metrics_provider.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
     "metrics/chrome_browser_main_extra_parts_metrics.h",
+    "metrics/chrome_browser_sampling_trials.cc",
+    "metrics/chrome_browser_sampling_trials.h",
     "metrics/chrome_feature_list_creator.cc",
     "metrics/chrome_feature_list_creator.h",
     "metrics/chrome_metrics_extensions_helper.cc",

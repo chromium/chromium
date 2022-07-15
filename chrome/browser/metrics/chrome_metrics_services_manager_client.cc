@@ -106,17 +106,6 @@ void PostStoreMetricsClientInfo(const metrics::ClientInfo& client_info) {
                                 client_info));
 }
 
-// Appends a group to the sampling controlling |trial|. The group will be
-// associated with a variation param for reporting sampling |rate| in per mille.
-void AppendSamplingTrialGroup(const std::string& group_name,
-                              int rate,
-                              base::FieldTrial* trial) {
-  std::map<std::string, std::string> params = {
-      {metrics::internal::kRateParamName, base::NumberToString(rate)}};
-  variations::AssociateVariationParams(trial->trial_name(), group_name, params);
-  trial->AppendGroup(group_name, rate);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if we should use the new sampling trial and feature to determine
 // sampling. See the comment on |kUsePostFREFixSamplingTrial| for more details.
@@ -225,70 +214,6 @@ ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() {}
 metrics::MetricsStateManager*
 ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
   return GetMetricsStateManager();
-}
-
-// static
-void ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
-    version_info::Channel channel,
-    base::FeatureList* feature_list) {
-  // The trial name must be kept in sync with the server config controlling
-  // sampling. If they don't match, then clients will be shuffled into different
-  // groups when the server config takes over from the fallback trial.
-  std::string trial_name = "MetricsAndCrashSampling";
-  // The name of the feature used to control sampling.
-  std::string feature_name = metrics::internal::kMetricsReportingFeature.name;
-
-  bool use_post_fre_fix_sampling_trial = false;
-#if BUILDFLAG(IS_ANDROID)
-  // Depending on the |kUsePostFREFixSamplingTrial| pref, we may apply a
-  // different sampling trial and rate.
-  if (ShouldUsePostFREFixSamplingTrial()) {
-    use_post_fre_fix_sampling_trial = true;
-    trial_name = "PostFREFixMetricsAndCrashSampling";
-    feature_name = metrics::internal::kPostFREFixMetricsReportingFeature.name;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          trial_name, 1000, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr));
-
-  // On all channels except stable, we sample out at a minimal rate to ensure
-  // the code paths are exercised in the wild before hitting stable.
-  int sampled_in_rate = 990;
-  int sampled_out_rate = 10;
-  if (channel == version_info::Channel::STABLE) {
-    if (use_post_fre_fix_sampling_trial) {
-      // See crbug/1306481 for details on why the new sampling rate is 19%.
-      sampled_in_rate = 190;
-      sampled_out_rate = 810;
-    } else {
-      sampled_in_rate = 100;
-      sampled_out_rate = 900;
-    }
-  }
-
-  // Like the trial name, the order that these two groups are added to the trial
-  // must be kept in sync with the order that they appear in the server config.
-  // The desired order is: OutOfReportingSample, InReportingSample.
-
-  const char kSampledOutGroup[] = "OutOfReportingSample";
-  AppendSamplingTrialGroup(kSampledOutGroup, sampled_out_rate, trial.get());
-
-  const char kInSampleGroup[] = "InReportingSample";
-  AppendSamplingTrialGroup(kInSampleGroup, sampled_in_rate, trial.get());
-
-  // Set up the feature. This must be done after all groups are added since
-  // GetGroupNameWithoutActivation() will finalize the group choice.
-  const std::string& group_name = trial->GetGroupNameWithoutActivation();
-
-  feature_list->RegisterFieldTrialOverride(
-      feature_name,
-      group_name == kSampledOutGroup
-          ? base::FeatureList::OVERRIDE_DISABLE_FEATURE
-          : base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-      trial.get());
 }
 
 // static

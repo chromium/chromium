@@ -6,16 +6,12 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_default_state.h"
-#include "components/metrics/metrics_service_accessor.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -56,7 +52,6 @@ class ChromeMetricsServicesManagerClientTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 };
 
-using CreateFallbackSamplingTrialTest = ChromeMetricsServicesManagerClientTest;
 using IsClientInSampleTest = ChromeMetricsServicesManagerClientTest;
 
 TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
@@ -127,132 +122,6 @@ TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
   EXPECT_TRUE(metrics_state_manager->is_foreground_session() ||
               metrics_state_manager->is_background_session());
 }
-
-// Verifies that CreateFallBackSamplingTrial() uses the MetricsAndCrashSampling
-// sampling trial if the |kUsePostFREFixSamplingTrial| pref is not set. This is
-// the case if 1) this is a non-Android platform, or 2) this is an Android
-// client that is not using the new sampling trial. This also verifies that the
-// param |kRateParamName| is correctly set, depending on which group we are
-// assigned to during the test (not deterministic).
-TEST_F(CreateFallbackSamplingTrialTest, UsesMetricsAndCrashSamplingTrial) {
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(
-      local_state()->GetBoolean(metrics::prefs::kUsePostFREFixSamplingTrial));
-#endif
-
-  // Initially, neither sampling trial should exist.
-  ASSERT_FALSE(base::FieldTrialList::TrialExists("MetricsAndCrashSampling"));
-  ASSERT_FALSE(
-      base::FieldTrialList::TrialExists("PostFREFixMetricsAndCrashSampling"));
-
-  // Create the fallback sampling trial.
-  auto feature_list = std::make_unique<base::FeatureList>();
-  ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
-      version_info::Channel::STABLE, feature_list.get());
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
-
-  // Since the |kUsePostFREFixSamplingTrial| pref was not set to true, the
-  // MetricsAndCrashSampling sampling trial should be registered.
-  EXPECT_TRUE(base::FieldTrialList::TrialExists("MetricsAndCrashSampling"));
-  EXPECT_FALSE(
-      base::FieldTrialList::TrialExists("PostFREFixMetricsAndCrashSampling"));
-
-  // The MetricsReporting feature should be associated with the
-  // MetricsAndCrashSampling trial, and its state should be overridden.
-  base::FieldTrial* associated_trial = base::FeatureList::GetFieldTrial(
-      metrics::internal::kMetricsReportingFeature);
-  EXPECT_THAT(associated_trial, NotNull());
-  EXPECT_EQ("MetricsAndCrashSampling", associated_trial->trial_name());
-  EXPECT_TRUE(base::FeatureList::GetStateIfOverridden(
-                  metrics::internal::kMetricsReportingFeature)
-                  .has_value());
-
-  // Verify that we are either in the "OutOfReportingSample" or
-  // "InReportingSample" group, and verify that the sampling rate is what we
-  // expect (10% sampled in rate or 90% sampled out rate for Stable).
-  // TODO(crbug/1322904): Maybe make
-  // ChromeMetricsServicesManagerClient::GetSamplingRatePerMille return the
-  // sampling rate even when sampled out, so that we can replace the code below
-  // with ChromeMetricsServicesManagerClient::GetSamplingRatePerMille.
-  const std::string group_name = associated_trial->group_name();
-  ASSERT_TRUE(group_name == "OutOfReportingSample" ||
-              group_name == "InReportingSample");
-  base::FieldTrialParams params;
-  ASSERT_TRUE(
-      base::GetFieldTrialParams(associated_trial->trial_name(), &params));
-  ASSERT_TRUE(base::Contains(params, metrics::internal::kRateParamName));
-  int sampling_rate_per_mille;
-  ASSERT_TRUE(base::StringToInt(params[metrics::internal::kRateParamName],
-                                &sampling_rate_per_mille));
-  EXPECT_EQ(group_name == "OutOfReportingSample" ? 900 : 100,
-            sampling_rate_per_mille);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-// Verifies that CreateFallBackSamplingTrial() uses the post-FRE-fix sampling
-// trial (PostFREFixMetricsAndCrashSampling) if the
-// |kUsePostFREFixSamplingTrial| pref is set. This also verifies that the param
-// |kRateParamName| is correctly set, depending on which group we are assigned
-// to during the test (not deterministic).
-TEST_F(CreateFallbackSamplingTrialTest, UsesPostFREFixTrialWhenPrefSet) {
-  // Set the |kUsePostFREFixSamplingTrial| pref to true.
-  local_state()->SetBoolean(metrics::prefs::kUsePostFREFixSamplingTrial, true);
-
-  // Initially, neither sampling trial should exist.
-  ASSERT_FALSE(base::FieldTrialList::TrialExists("MetricsAndCrashSampling"));
-  ASSERT_FALSE(
-      base::FieldTrialList::TrialExists("PostFREFixMetricsAndCrashSampling"));
-
-  // Create the fallback sampling trial.
-  auto feature_list = std::make_unique<base::FeatureList>();
-  ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
-      version_info::Channel::STABLE, feature_list.get());
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
-
-  // Since the |kUsePostFREFixSamplingTrial| pref was set to true, the
-  // post-FRE-fix sampling trial (PostFREFixMetricsAndCrashSampling) should be
-  // registered.
-  EXPECT_FALSE(base::FieldTrialList::TrialExists("MetricsAndCrashSampling"));
-  EXPECT_TRUE(
-      base::FieldTrialList::TrialExists("PostFREFixMetricsAndCrashSampling"));
-
-  // The PostFREFixMetricsReporting feature should be associated with the
-  // PostFREFixMetricsAndCrashSampling trial, and its state should be
-  // overridden.
-  base::FieldTrial* associated_trial = base::FeatureList::GetFieldTrial(
-      metrics::internal::kPostFREFixMetricsReportingFeature);
-  EXPECT_THAT(associated_trial, NotNull());
-  EXPECT_EQ("PostFREFixMetricsAndCrashSampling",
-            associated_trial->trial_name());
-  EXPECT_TRUE(base::FeatureList::GetStateIfOverridden(
-                  metrics::internal::kPostFREFixMetricsReportingFeature)
-                  .has_value());
-
-  // Verify that we are either in the "OutOfReportingSample" or
-  // "InReportingSample" group, and verify that the sampling rate is what we
-  // expect (19% sampled in rate or 81% sampled out rate for Stable).
-  // TODO(crbug/1322904): Maybe make
-  // ChromeMetricsServicesManagerClient::GetSamplingRatePerMille return the
-  // sampling rate even when sampled out, so that we can replace the code below
-  // with ChromeMetricsServicesManagerClient::GetSamplingRatePerMille.
-  const std::string group_name = associated_trial->group_name();
-  ASSERT_TRUE(group_name == "OutOfReportingSample" ||
-              group_name == "InReportingSample");
-  base::FieldTrialParams params;
-  ASSERT_TRUE(
-      base::GetFieldTrialParams(associated_trial->trial_name(), &params));
-  ASSERT_TRUE(base::Contains(params, metrics::internal::kRateParamName));
-  int sampling_rate_per_mille;
-  ASSERT_TRUE(base::StringToInt(params[metrics::internal::kRateParamName],
-                                &sampling_rate_per_mille));
-  EXPECT_EQ(group_name == "OutOfReportingSample" ? 810 : 190,
-            sampling_rate_per_mille);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Verifies that IsClientInSample() uses the "MetricsReporting" sampling
 // feature to determine sampling if the |kUsePostFREFixSamplingTrial| pref is

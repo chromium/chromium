@@ -15,15 +15,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
-#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
-#include "components/ukm/ukm_recorder_impl.h"
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -41,26 +39,6 @@
 #include "ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #include "chrome/browser/ash/login/consolidated_consent_field_trial.h"
 #endif
-
-namespace {
-
-// Create a field trial to control metrics/crash sampling for Stable on
-// Windows/Android if no variations seed was applied.
-void CreateFallbackSamplingTrialIfNeeded(base::FeatureList* feature_list) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
-      chrome::GetChannel(), feature_list);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-}
-
-// Create a field trial to control UKM sampling for Stable if no variations
-// seed was applied.
-void CreateFallbackUkmSamplingTrialIfNeeded(base::FeatureList* feature_list) {
-  ukm::UkmRecorderImpl::CreateFallbackSamplingTrial(
-      chrome::GetChannel() == version_info::Channel::STABLE, feature_list);
-}
-
-}  // namespace
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
@@ -90,11 +68,14 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
   // Only create the fallback trials if there isn't already a variations seed
   // being applied. This should occur during first run when first-run variations
   // isn't supported. It's assumed that, if there is a seed, then it either
-  // contains the relavent studies, or is intentionally omitted, so no fallback
-  // is needed.
+  // contains the relevant studies, or is intentionally omitted, so no fallback
+  // is needed. The exception is for sampling trials. Fallback trials are
+  // created even if no variations seed was applied. This allows testing the
+  // fallback code by intentionally omitting the sampling trial from a
+  // variations seed.
+  metrics::CreateFallbackSamplingTrialsIfNeeded(feature_list);
+  metrics::CreateFallbackUkmSamplingTrialIfNeeded(feature_list);
   if (!has_seed) {
-    CreateFallbackSamplingTrialIfNeeded(feature_list);
-    CreateFallbackUkmSamplingTrialIfNeeded(feature_list);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif

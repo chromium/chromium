@@ -54,19 +54,6 @@ class ChromeMetricsServicesManagerClient
 
   metrics::MetricsStateManager* GetMetricsStateManagerForTesting();
 
-  // Unconditionally attempts to create a field trial to control client side
-  // metrics/crash sampling to use as a fallback when one hasn't been
-  // provided. This is expected to occur on first-run on platforms that don't
-  // have first-run variations support. This should only be called when there is
-  // no existing field trial controlling the sampling feature, and on the
-  // correct platform. |channel| will affect the sampling rates that are
-  // applied. Stable will be sampled at 10%, other channels at 99%. On Android
-  // Chrome, Stable will be sampled at 19% if the |kUsePostFREFixSamplingTrial|
-  // pref is set to true. See the comment on |kUsePostFREFixSamplingTrial| for
-  // more details.
-  static void CreateFallbackSamplingTrial(version_info::Channel channel,
-                                          base::FeatureList* feature_list);
-
   // Determines if this client is eligible to send metrics. If they are, and
   // there was user consent, then metrics and crashes would be reported.
   static bool IsClientInSample();

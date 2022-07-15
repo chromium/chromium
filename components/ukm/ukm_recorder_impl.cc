@@ -37,7 +37,6 @@
 
 namespace ukm {
 
-COMPONENT_EXPORT(UKM_RECORDER)
 const base::Feature kUkmSamplingRateFeature{"UkmSamplingRate",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -217,42 +216,6 @@ UkmRecorderImpl::UkmRecorderImpl()
 }
 
 UkmRecorderImpl::~UkmRecorderImpl() = default;
-
-// static
-void UkmRecorderImpl::CreateFallbackSamplingTrial(
-    bool is_stable_channel,
-    base::FeatureList* feature_list) {
-  static const char kSampledGroup_Stable[] = "Sampled_NoSeed_Stable";
-  static const char kSampledGroup_Other[] = "Sampled_NoSeed_Other";
-  const char* sampled_group = kSampledGroup_Other;
-  int default_sampling = 1;  // Sampling is 1-in-N; this is N.
-
-  // Nothing is sampled out except for "stable" which omits almost everything
-  // in this configuration. This is done so that clients that fail to receive
-  // a configuration from the server do not bias aggregated results because
-  // of a relatively large number of records from them.
-  if (is_stable_channel) {
-    sampled_group = kSampledGroup_Stable;
-    default_sampling = 1000000;
-  }
-
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kUkmSamplingRateFeature.name, 100, sampled_group,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr));
-
-  // Everybody (100%) should have a sampling configuration.
-  std::map<std::string, std::string> params = {
-      {"_default_sampling", base::NumberToString(default_sampling)}};
-  variations::AssociateVariationParams(trial->trial_name(), sampled_group,
-                                       params);
-  trial->AppendGroup(sampled_group, 100);
-
-  // Setup the feature.
-  feature_list->RegisterFieldTrialOverride(
-      kUkmSamplingRateFeature.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-      trial.get());
-}
 
 UkmRecorderImpl::EventAggregate::EventAggregate() = default;
 UkmRecorderImpl::EventAggregate::~EventAggregate() = default;
