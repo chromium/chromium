@@ -77,9 +77,9 @@ source_set("browser_test_support") {
   ]
 
   data = [
+    "//ash/webui/system_apps/public/js/dom_testing_helpers.js",
     "test/driver.js",
     "test/driver_api.js",
-    "test/dom_testing_helpers.js",
     "test/guest_query_receiver.js",
     "test/media_app_ui_browsertest.js",
     "test/media_app_guest_ui_browsertest.js",
@@ -149,18 +149,13 @@ js_library("test_driver_api_js") {
   sources = [ "test/driver_api.js" ]
 }
 
-js_library("test_dom_testing_helpers_js") {
-  testonly = true
-  sources = [ "test/dom_testing_helpers.js" ]
-}
-
 js_library("test_guest_query_receiver_js") {
   testonly = true
   sources = [ "test/guest_query_receiver.js" ]
   deps = [
-    ":test_dom_testing_helpers_js",
     ":test_driver_api_js",
     "//ash/webui/media_app_ui/resources/js:receiver",
+    "//ash/webui/system_apps/public/js:dom_testing_helpers",
     "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
