@@ -1,60 +1,7 @@
 include_rules = [
-  # //chrome/browser/chromeos is conceptually part of "ash". It is migrating to
-  # //chrome/browser/ash. See the Lacros source code migration design doc:
-  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
-  "+ash",
+  # See README.md.
+  "-ash",
+  "-chrome/browser/ash",
 
-  "+chrome/browser/image_decoder",
-  "+chrome/services/keymaster/public",
-  "+chrome/services/wilco_dtc_supportd/public",
-  "+components/account_manager_core",
-  "+components/app_constants",
-  "+components/app_restore",
-  "+components/guest_os",
-  "+components/reporting",
-  "+components/services/app_service/public",
-  "+cros",
-  "+dbus",
-  "+device/bluetooth",
-  "+media/audio/sounds",  # For system sounds
-  "+media/base/media_switches.h",  # For media command line switches.
-  "+media/mojo/mojom",  # For platform verification mojom interface.
-  "+remoting/host/chromeos",  # For remoting reporting module
-  "+services/device/public",
-  "+services/metrics/public",
-  "+services/network",
-  "+services/tracing/public",
-  "+services/viz/public/mojom",
-  "+third_party/ced",
+  "+ash/constants",
 ]
-
-specific_include_rules = {
-  # Dependencies specific for fuzz targets and other fuzzing-related code.
-  ".*fuzz.*": [
-    "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
-  ],
-  "child_status_collector_browsertest.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ],
-  "device_status_collector_browsertest.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ],
-  # TODO(b/209791738): Remove chrome/browser/ui dependencies from
-  # chrome/browser/chromeos/arc.
-  "arc/icon_decode_request.cc": [
-    "+chrome/browser/ui/app_list/md_icon_normalizer.h",
-  ],
-  "legacy_device_status_collector_browsertest.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ],
-  "event_rewriter_unittest\.cc": [
-    "+ui/events/devices/device_data_manager.h",
-  ],
-  "external_protocol_dialog\.cc": [
-    "+chrome/browser/ui/views/external_protocol_dialog.h",
-  ],
-  "file_manager_browsertest_base.cc": [
-    "+chrome/browser/ui/views/extensions/extension_dialog.h",
-    "+chrome/browser/ui/views/select_file_dialog_extension.h",
-  ],
-}

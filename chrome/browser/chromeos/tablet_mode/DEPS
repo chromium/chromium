@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "chrome_content_browser_client_tablet_mode_part_browsertest\.cc": [
+    "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  ],
+  "tablet_mode_page_behavior_browsertest.cc": [
+    "+ash/public/cpp/test/shell_test_api.h",
+  ],
+}

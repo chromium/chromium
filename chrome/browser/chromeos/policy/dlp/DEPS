@@ -1,0 +1,4 @@
+include_rules = [
+  "+ash",
+  "+chrome/browser/ash",
+]

@@ -1,0 +1,9 @@
+include_rules = [
+  # TODO(https://crbug.com/1164001): fileapi/ will be eventually split between
+  # Ash-only code that will be moved to chrome/browser/ash/ and generic code
+  # that will be used by both Ash and Lacros and remain here.
+  # The latter won't be able to depend on the directories below. Remove them
+  # once that is done.
+  "+ash",
+  "+chrome/browser/ash",
+]
