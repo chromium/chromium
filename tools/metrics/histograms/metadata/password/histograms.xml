@@ -2358,13 +2358,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+    name="PasswordManager.PasswordStoreAndroidBackend{Function}{UnenrollmentFromUPM}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core ChromeSync 1P API{Function}.
-    Recorded when the asynchronous job has returned.
+    Recorded when the asynchronous job has returned. {UnenrollmentFromUPM}
   </summary>
   <token key="Function">
     <variant name=""/>
@@ -2376,16 +2376,23 @@ chromium-metrics-reviews@google.com.
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
   </token>
+  <token key="UnenrollmentFromUPM">
+    <variant name=""/>
+    <variant name=".UnenrolledFromUPM"
+        summary="Recorded for clients unenrolled from UnifiedPasswordManager
+                 after experiencing an error."/>
+  </token>
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend{Function}.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="2022-06-30">
+    name="PasswordManager.PasswordStoreAndroidBackend{Function}{UnenrollmentFromUPM}.ErrorCode"
+    enum="PasswordStoreAndroidBackendError" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     This metric reports the error observed when {Function} the PasswordStore
     Android backend. Recorded when the asynchronous job has returned.
+    {UnenrollmentFromUPM}
   </summary>
   <token key="Function">
     <variant name=""
@@ -2398,6 +2405,12 @@ chromium-metrics-reviews@google.com.
         summary="retrieving logins filtered by signon realm from"/>
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
     <variant name=".UpdateLoginAsync" summary="updating a login in"/>
+  </token>
+  <token key="UnenrollmentFromUPM">
+    <variant name=""/>
+    <variant name=".UnenrolledFromUPM"
+        summary="Recorded for clients unenrolled from UnifiedPasswordManager
+                 after experiencing an error."/>
   </token>
 </histogram>
 
@@ -2523,14 +2536,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStore{Backend}{Function}.Success"
+<histogram
+    name="PasswordManager.PasswordStore{Backend}{Function}{UnenrollmentFromUPM}.Success"
     enum="BooleanSuccess" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Records whether {Function} the PasswordStore {Backend}. Recorded when the
     asynchronous job has returned. False is emitted if an error occurs;
-    otherwise true is emitted.
+    otherwise true is emitted. {UnenrollmentFromUPM}
   </summary>
   <token key="Backend">
     <variant name="AndroidBackend" summary="Android backend"/>
@@ -2565,6 +2579,12 @@ chromium-metrics-reviews@google.com.
                  logins filtered by creation time from"/>
     <variant name=".UpdateLoginAsync"
         summary="UpdateLoginAsync() succeeded in updating a login in"/>
+  </token>
+  <token key="UnenrollmentFromUPM">
+    <variant name=""/>
+    <variant name=".UnenrolledFromUPM"
+        summary="Recorded for clients unenrolled from UnifiedPasswordManager
+                 after experiencing an error."/>
   </token>
 </histogram>
 

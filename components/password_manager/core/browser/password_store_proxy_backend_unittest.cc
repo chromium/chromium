@@ -750,8 +750,9 @@ TEST_F(PasswordStoreProxyBackendTest,
   proxy_backend().GetAllLoginsAsync(base::DoNothing());
 }
 
-TEST_F(PasswordStoreProxyBackendTest,
-       UsesAndroidBackendAsMainBackendUserUnenrolledFromUPMDueToErrors) {
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    UsesAndroidBackendAsMainBackendGetLoginsOperationsUserUnenrolledFromUPM) {
   base::test::ScopedFeatureList feature_list;
   // Enable UPM for syncing users only.
   feature_list.InitAndEnableFeatureWithParameters(
@@ -762,10 +763,32 @@ TEST_F(PasswordStoreProxyBackendTest,
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
 
-  // Verify that android backend is not used.
-  EXPECT_CALL(android_backend(), GetAllLoginsAsync).Times(0);
+  // Logins should be retrieved from the built-in backend.
   EXPECT_CALL(built_in_backend(), GetAllLoginsAsync);
+  // Shadow getAllLogins call should happen on the android backend.
+  EXPECT_CALL(android_backend(), GetAllLoginsAsync);
+
   proxy_backend().GetAllLoginsAsync(base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       UsesAndroidBackendAsMainBackendAddLoginUserUnenrolledFromUPM) {
+  base::test::ScopedFeatureList feature_list;
+  // Enable UPM for syncing users only.
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  // Logins should be added to the built-in backend.
+  EXPECT_CALL(built_in_backend(), AddLoginAsync);
+  // There should be no shadow traffic for modifying operations.
+  EXPECT_CALL(android_backend(), AddLoginAsync).Times(0);
+
+  proxy_backend().AddLoginAsync(CreateTestForm(), base::DoNothing());
 }
 
 TEST_F(PasswordStoreProxyBackendTest,

@@ -45,15 +45,25 @@ using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 
-const char kTestAccount[] = "test@gmail.com";
+constexpr char kTestAccount[] = "test@gmail.com";
 const std::u16string kTestUsername(u"Todd Tester");
 const std::u16string kTestPassword(u"S3cr3t");
 constexpr char kTestUrl[] = "https://example.com";
-const base::Time kTestDateCreated = base::Time::FromTimeT(1500);
+constexpr base::Time kTestDateCreated = base::Time::FromTimeT(1500);
+constexpr base::TimeDelta kTestLatencyDelta = base::Milliseconds(123u);
+constexpr char kBackendErrorCodeMetric[] =
+    "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
 constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
+constexpr AndroidBackendErrorType kExternalErrorType =
+    AndroidBackendErrorType::kExternalError;
+constexpr int kInternalApiErrorCode =
+    static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
+constexpr AndroidBackendErrorType kCleanedUpWithoutResponseErrorType =
+    AndroidBackendErrorType::kCleanedUpWithoutResponse;
+constexpr JobId kJobId{1337};
 
 MATCHER_P(ExpectError, expectation, "") {
   return absl::holds_alternative<PasswordStoreBackendError>(arg) &&
@@ -113,6 +123,29 @@ PasswordForm FormWithDisabledAutoSignIn(const PasswordForm& form_to_update) {
   PasswordForm result = form_to_update;
   result.skip_zero_click = 1;
   return result;
+}
+
+std::string DurationMetricName(const std::string& method_name) {
+  return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
+         ".Latency";
+}
+
+std::string SuccessMetricName(const std::string& method_name,
+                              bool for_unenrolled_clients = false) {
+  return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
+         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".Success";
+}
+
+std::string PerMethodErrorCodeMetricName(const std::string& method_name,
+                                         bool for_unenrolled_clients = false) {
+  return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
+         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".ErrorCode";
+}
+
+std::string ApiErrorMetricName(const std::string& method_name,
+                               bool for_unenrolled_clients = false) {
+  return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
+         (for_unenrolled_clients ? ".UnenrolledFromUPM" : "") + ".APIError";
 }
 
 class MockPasswordStoreAndroidBackendBridge
@@ -266,7 +299,6 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
 
   const JobId kFirstJobId{1337};
   EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
   std::string TestURL1("https://firstexample.com");
   std::string TestURL2("https://secondexample.com");
@@ -304,14 +336,12 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
       std::make_unique<PasswordForm>(matching_signon_realm));
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
 
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {matching_signon_realm});
   RunUntilIdle();
 
   histogram_tester.ExpectTimeBucketCount(
-      "PasswordManager.PasswordStoreAndroidBackend.FillMatchingLoginsAsync."
-      "Latency",
-      kLatencyDelta, 1);
+      DurationMetricName("FillMatchingLoginsAsync"), kTestLatencyDelta, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
@@ -322,7 +352,6 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
 
   const JobId kFirstJobId{1337};
   EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
   std::string TestURL1("https://firstexample.com");
   std::string TestURL2("https://secondexample.com");
@@ -360,13 +389,11 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
       std::make_unique<PasswordForm>(psl_matching_federated));
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
 
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {psl_matching, not_matching});
   RunUntilIdle();
   histogram_tester.ExpectTimeBucketCount(
-      "PasswordManager.PasswordStoreAndroidBackend.FillMatchingLoginsAsync."
-      "Latency",
-      kLatencyDelta, 1);
+      DurationMetricName("FillMatchingLoginsAsync"), kTestLatencyDelta, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
@@ -432,13 +459,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
       [](const GURL& url) { return url == GURL(kTestUrl); });
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "RemoveLoginsByURLAndTimeAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "RemoveLoginsByURLAndTimeAsync.Success";
+  const std::string kDurationMetric =
+      DurationMetricName("RemoveLoginsByURLAndTimeAsync");
+  const std::string kSuccessMetric =
+      SuccessMetricName("RemoveLoginsByURLAndTimeAsync");
 
   // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
   // first.
@@ -460,7 +484,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   // Verify that the callback is called.
   PasswordStoreChangeList expected_changes;
@@ -471,12 +495,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, 1, 1);
-
-  // Check that other values are not recorded.
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, 1, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -487,13 +508,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
   base::MockCallback<PasswordChangesOrErrorReply> mock_deletion_reply;
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "RemoveLoginsCreatedBetweenAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "RemoveLoginsCreatedBetweenAsync.Success";
+  const std::string kDurationMetric =
+      DurationMetricName("RemoveLoginsCreatedBetweenAsync");
+  const std::string kSuccessMetric =
+      SuccessMetricName("RemoveLoginsCreatedBetweenAsync");
 
   // Check that calling RemoveLoginsCreatedBetween triggers logins retrieval
   // first.
@@ -513,7 +531,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   // Verify that the callback is called.
   PasswordStoreChangeList expected_changes;
@@ -524,12 +542,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, 1, 1);
-
-  // Check that other values are not recorded.
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, 1, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
@@ -538,7 +553,6 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
                         base::RepeatingClosure(), base::DoNothing());
   const JobId kJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), AddLogin(form, ExpectSyncingAccount(kTestAccount)))
@@ -558,9 +572,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   DisableSyncFeature();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  const JobId kJobId{13388};
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
 
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), UpdateLogin(form, ExpectLocalAccount()))
@@ -840,7 +853,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
 TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
   EnableSyncForTestAccount();
   base::HistogramTester histogram_tester;
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -882,7 +894,7 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
   RunUntilIdle();
 
   // Fast forward to check latency metric recording.
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   // Receiving callback after updating the first login should trigger
   // updating of the second login.
@@ -908,21 +920,16 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
   RunUntilIdle();
 
   histogram_tester.ExpectTimeBucketCount(
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "DisableAutoSignInForOriginsAsync."
-      "Latency",
-      kLatencyDelta, 1);
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "DisableAutoSignInForOriginsAsync."
-      "Success",
+      DurationMetricName("DisableAutoSignInForOriginsAsync"), kTestLatencyDelta,
       1);
+
+  histogram_tester.ExpectUniqueSample(
+      SuccessMetricName("DisableAutoSignInForOriginsAsync"), 1, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
   base::HistogramTester histogram_tester;
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+
   EnableSyncForTestAccount();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -939,25 +946,19 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
   EXPECT_CALL(*bridge(), RemoveLogin(form_to_delete, ExpectLocalAccount()))
       .WillOnce(Return(kRemoveLoginJobId));
 
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kGetLoginsJobId, {form_to_delete});
   RunUntilIdle();
 
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnLoginsChanged(kRemoveLoginJobId, absl::nullopt);
   RunUntilIdle();
 
   histogram_tester.ExpectTimeBucketCount(
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "ClearAllLocalPasswords."
-      "Latency",
-      kLatencyDelta * 2, 1);
+      DurationMetricName("ClearAllLocalPasswords"), kTestLatencyDelta * 2, 1);
 
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordStoreAndroidBackend."
-      "ClearAllLocalPasswords."
-      "Success",
-      1);
+  histogram_tester.ExpectUniqueSample(
+      SuccessMetricName("ClearAllLocalPasswords"), true, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLoginsSuccessMetrics) {
@@ -1035,13 +1036,8 @@ TEST_F(PasswordStoreAndroidBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const std::string kDurationMetric = DurationMetricName("AddLoginAsync");
+  const std::string kSuccessMetric = SuccessMetricName("AddLoginAsync");
   base::HistogramTester histogram_tester;
   backend().InitBackend(/*stored_passwords_changed=*/base::DoNothing(),
                         /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
@@ -1060,15 +1056,15 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   lifecycle_helper()->OnForegroundSessionStart();
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
+  EXPECT_THAT(histogram_tester.GetAllSamples(kBackendErrorCodeMetric),
               testing::IsEmpty());  // No timeout yet.
 
   // If Chrome did not receive a response after 30s, the task times out.
   task_environment_.AdvanceClock(base::Seconds(29));
   lifecycle_helper()->OnForegroundSessionStart();
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
-              ElementsAre(base::Bucket(8, 1)));  // Timeout now!.
+  task_environment_.FastForwardBy(base::Seconds(1));  // Timeout now!.
+  histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                      kCleanedUpWithoutResponseErrorType, 1);
 
   // Clear the task queue to verify that a late answer doesn't record again.
   // Can be delayed or never happen.
@@ -1076,10 +1072,10 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   task_environment_.FastForwardUntilNoTasksRemain();  // For would-be response.
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 0);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetric),
-              ElementsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
-              ElementsAre(base::Bucket(8, 1)));  // Record only once.
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
+  histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                      kCleanedUpWithoutResponseErrorType,
+                                      1);  // Was recorded only once.
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -1116,69 +1112,113 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
       UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors, 1);
 }
 
+struct TestForMetricsParam {
+  // Whether the backend call should complete successfully.
+  bool should_succeed = false;
+  // Whether the user was unenrolled from the UPM experiment after experiencing
+  // errors.
+  bool is_unenrolled_from_upm = false;
+};
+
 class PasswordStoreAndroidBackendTestForMetrics
     : public PasswordStoreAndroidBackendTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<TestForMetricsParam> {
  public:
-  bool ShouldSucceed() const { return GetParam(); }
+  PasswordStoreAndroidBackendTestForMetrics() {
+    if (IsUnenrolledFromUPM()) {
+      prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                          true);
+    }
+  }
+  bool ShouldSucceed() const { return GetParam().should_succeed; }
+  bool IsUnenrolledFromUPM() const { return GetParam().is_unenrolled_from_upm; }
 };
 
 // Tests the PasswordManager.PasswordStore.GetAllLoginsAsync metric.
 TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kPerApiErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.ErrorCode";
-  base::HistogramTester histogram_tester;
+
+  const char kGetAllLoginsMethodName[] = "GetAllLoginsAsync";
+  const std::string kDurationMetric =
+      DurationMetricName(kGetAllLoginsMethodName);
+  const std::string kSuccessMetric = SuccessMetricName(kGetAllLoginsMethodName);
+  const std::string kPerMethodErrorCodeMetric =
+      PerMethodErrorCodeMetricName(kGetAllLoginsMethodName);
+  const std::string kApiErrorMetric =
+      ApiErrorMetricName(kGetAllLoginsMethodName);
+
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
   EXPECT_CALL(mock_reply, Run(_)).Times(1);
-  task_environment_.FastForwardBy(kLatencyDelta);
-  if (ShouldSucceed())
+  task_environment_.FastForwardBy(kTestLatencyDelta);
+
+  if (ShouldSucceed()) {
     consumer().OnCompleteWithLogins(kJobId, {});
-  else
-    consumer().OnError(
-        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  } else {
+    AndroidBackendError error{kExternalErrorType};
+    // Simulate receiving INTERNAL_ERROR code.
+    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    consumer().OnError(kJobId, std::move(error));
+  }
   RunUntilIdle();
+
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, ShouldSucceed(), 1);
   if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
+                                        1);
+  }
+
+  // Test metrics recorded specifically for users unenrolled from the UPM
+  // experiment after encountering backend errors.
+  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
+      kGetAllLoginsMethodName, /*for_unenrolled_clients=*/true);
+  const std::string kPerMethodErrorCodeMetricUnenrolled =
+      PerMethodErrorCodeMetricName(kGetAllLoginsMethodName,
+                                   /*for_unenrolled_clients=*/true);
+  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
+      kGetAllLoginsMethodName, /*for_unenrolled_clients=*/true);
+
+  if (IsUnenrolledFromUPM()) {
+    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
+                                        ShouldSucceed(), 1);
+    if (!ShouldSucceed()) {
+      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
+                                          kExternalErrorType, 1);
+      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
+                                          kInternalApiErrorCode, 1);
+    }
+  } else {
+    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
   }
 }
 
 // Tests the PasswordManager.PasswordStore.AddLoginAsync.* metric.
 TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kPerApiErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.ErrorCode";
-  base::HistogramTester histogram_tester;
+
+  const char kAddLoginMethodName[] = "AddLoginAsync";
+  const std::string kDurationMetric = DurationMetricName(kAddLoginMethodName);
+  const std::string kSuccessMetric = SuccessMetricName(kAddLoginMethodName);
+  const std::string kPerMethodErrorCodeMetric =
+      PerMethodErrorCodeMetricName(kAddLoginMethodName);
+  const std::string kApiErrorMetric = ApiErrorMetricName(kAddLoginMethodName);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
@@ -1186,44 +1226,47 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().AddLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
     consumer().OnLoginsChanged(kJobId, absl::nullopt);
   } else {
-    consumer().OnError(
-        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+    AndroidBackendError error{kExternalErrorType};
+    // Simulate receiving INTERNAL_ERROR code.
+    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, ShouldSucceed(), 1);
   if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
+                                        1);
   }
 }
 
 // Tests the PasswordManager.PasswordStore.UpdateLoginAsync metric.
 TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kPerApiErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.ErrorCode";
-  base::HistogramTester histogram_tester;
+
+  const char kUpdateLoginMethodName[] = "UpdateLoginAsync";
+  const std::string kDurationMetric =
+      DurationMetricName(kUpdateLoginMethodName);
+  const std::string kSuccessMetric = SuccessMetricName(kUpdateLoginMethodName);
+  const std::string kPerMethodErrorCodeMetric =
+      PerMethodErrorCodeMetricName(kUpdateLoginMethodName);
+  const std::string kApiErrorMetric =
+      ApiErrorMetricName(kUpdateLoginMethodName);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), UpdateLogin).WillOnce(Return(kJobId));
@@ -1231,44 +1274,47 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().UpdateLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
     consumer().OnLoginsChanged(kJobId, absl::nullopt);
   } else {
-    consumer().OnError(
-        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+    AndroidBackendError error{kExternalErrorType};
+    // Simulate receiving INTERNAL_ERROR code.
+    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, ShouldSucceed(), 1);
   if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
+                                        1);
   }
 }
 
 // Tests the PasswordManager.PasswordStore.RemoveLoginAsync metric.
 TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kPerApiErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.ErrorCode";
-  base::HistogramTester histogram_tester;
+
+  const char kRemoveLoginMethodName[] = "RemoveLoginAsync";
+  const std::string kDurationMetric =
+      DurationMetricName(kRemoveLoginMethodName);
+  const std::string kSuccessMetric = SuccessMetricName(kRemoveLoginMethodName);
+  const std::string kPerMethodErrorCodeMetric =
+      PerMethodErrorCodeMetricName(kRemoveLoginMethodName);
+  const std::string kApiErrorMetric =
+      ApiErrorMetricName(kRemoveLoginMethodName);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kJobId));
@@ -1276,24 +1322,53 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().RemoveLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
-  task_environment_.FastForwardBy(kLatencyDelta);
+  task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
     consumer().OnLoginsChanged(kJobId, absl::nullopt);
   } else {
-    consumer().OnError(
-        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+    AndroidBackendError error{kExternalErrorType};
+    // Simulate receiving INTERNAL_ERROR code.
+    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, ShouldSucceed(), 1);
   if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
+                                        1);
+  }
+
+  // Test metrics recorded specifically for users unenrolled from the UPM
+  // experiment after encountering backend errors.
+  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
+      kRemoveLoginMethodName, /*for_unenrolled_clients=*/true);
+  const std::string kPerMethodErrorCodeMetricUnenrolled =
+      PerMethodErrorCodeMetricName(kRemoveLoginMethodName,
+                                   /*for_unenrolled_clients=*/true);
+  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
+      kRemoveLoginMethodName, /*for_unenrolled_clients=*/true);
+
+  if (IsUnenrolledFromUPM()) {
+    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
+                                        ShouldSucceed(), 1);
+    if (!ShouldSucceed()) {
+      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
+                                          kExternalErrorType, 1);
+      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
+                                          kInternalApiErrorCode, 1);
+    }
+  } else {
+    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
   }
 }
 
@@ -1304,46 +1379,89 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics,
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::Milliseconds(123u);
-  constexpr JobId kJobId{1337};
-  const char kDurationMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
-      "Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
-      "Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kPerApiErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
-      "ErrorCode";
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
 
+  const char kGetAutofillableLoginsMethodName[] = "GetAutofillableLoginsAsync";
+  const std::string kDurationMetric =
+      DurationMetricName(kGetAutofillableLoginsMethodName);
+  const std::string kSuccessMetric =
+      SuccessMetricName(kGetAutofillableLoginsMethodName);
+  const std::string kPerMethodErrorCodeMetric =
+      PerMethodErrorCodeMetricName(kGetAutofillableLoginsMethodName);
+  const std::string kApiErrorMetric =
+      ApiErrorMetricName(kGetAutofillableLoginsMethodName);
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAutofillableLogins).WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
-
   EXPECT_CALL(mock_reply, Run(_)).Times(1);
-  task_environment_.FastForwardBy(kLatencyDelta);
-  if (ShouldSucceed())
+  task_environment_.FastForwardBy(kTestLatencyDelta);
+
+  if (ShouldSucceed()) {
     consumer().OnCompleteWithLogins(kJobId, {});
-  else
-    consumer().OnError(
-        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  } else {
+    AndroidBackendError error{kExternalErrorType};
+    // Simulate receiving INTERNAL_ERROR code.
+    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    consumer().OnError(kJobId, std::move(error));
+  }
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, ShouldSucceed(), 1);
   if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectUniqueSample(kBackendErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetric,
+                                        kExternalErrorType, 1);
+    histogram_tester.ExpectUniqueSample(kApiErrorMetric, kInternalApiErrorCode,
+                                        1);
+  }
+
+  // Test metrics recorded specifically for users unenrolled from the UPM
+  // experiment after encountering backend errors.
+  const std::string kSuccessMetricUnenrolled = SuccessMetricName(
+      kGetAutofillableLoginsMethodName, /*for_unenrolled_clients=*/true);
+  const std::string kPerMethodErrorCodeMetricUnenrolled =
+      PerMethodErrorCodeMetricName(kGetAutofillableLoginsMethodName,
+                                   /*for_unenrolled_clients=*/true);
+  const std::string kApiErrorMetricUnenrolled = ApiErrorMetricName(
+      kGetAutofillableLoginsMethodName, /*for_unenrolled_clients=*/true);
+
+  if (IsUnenrolledFromUPM()) {
+    histogram_tester.ExpectUniqueSample(kSuccessMetricUnenrolled,
+                                        ShouldSucceed(), 1);
+    if (!ShouldSucceed()) {
+      histogram_tester.ExpectUniqueSample(kPerMethodErrorCodeMetricUnenrolled,
+                                          kExternalErrorType, 1);
+      histogram_tester.ExpectUniqueSample(kApiErrorMetricUnenrolled,
+                                          kInternalApiErrorCode, 1);
+    }
+  } else {
+    histogram_tester.ExpectTotalCount(kSuccessMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kPerMethodErrorCodeMetricUnenrolled, 0);
+    histogram_tester.ExpectTotalCount(kApiErrorMetricUnenrolled, 0);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(,
                          PasswordStoreAndroidBackendTestForMetrics,
-                         testing::Bool());
+                         testing::Values(
+                             TestForMetricsParam{
+                                 .should_succeed = true,
+                                 .is_unenrolled_from_upm = true,
+                             },
+                             TestForMetricsParam{
+                                 .should_succeed = true,
+                                 .is_unenrolled_from_upm = false,
+                             },
+                             TestForMetricsParam{
+                                 .should_succeed = false,
+                                 .is_unenrolled_from_upm = true,
+                             },
+                             TestForMetricsParam{
+                                 .should_succeed = false,
+                                 .is_unenrolled_from_upm = false,
+                             }));
 
 }  // namespace password_manager
