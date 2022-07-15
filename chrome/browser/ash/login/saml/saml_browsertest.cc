@@ -1636,9 +1636,7 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, SAMLInterstitialChangeAccount) {
 // Tests that clicking back on the SAML page successfully closes the oobe
 // dialog. Reopens a dialog and checks that SAML IdP authentication page is
 // loaded and authenticating there is successful.
-// TODO(https://crbug.com/1102738) flaky test - partially fixed but keeping the
-// test disabled since there is still some instabillity observed under load.
-IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
+IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, SAMLInterstitialNext) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
       saml_test_users::kFirstUserCorpExampleComEmail, kTestAuthSIDCookie1,
