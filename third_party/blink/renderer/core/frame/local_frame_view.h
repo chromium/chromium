@@ -1178,7 +1178,7 @@ class CORE_EXPORT LocalFrameView final
   Member<LayoutShiftTracker> layout_shift_tracker_;
   Member<PaintTimingDetector> paint_timing_detector_;
 
-  // This will be nullptr iff !frame_->IsMainFrame().
+  // Non-null in the outermost main frame of an ordinary page only.
   Member<MobileFriendlinessChecker> mobile_friendliness_checker_;
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;

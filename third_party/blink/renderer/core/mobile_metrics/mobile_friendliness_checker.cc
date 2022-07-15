@@ -66,7 +66,7 @@ MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
 void MobileFriendlinessChecker::NotifyPaint() {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
-  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
   if (timer_.IsActive() ||
       base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
     return;
@@ -384,7 +384,7 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 // with region tracking by Fenwick tree. The detail of the algorithm is
 // go/bad-tap-target-ukm
 int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
-  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
   base::TimeTicks started = base::TimeTicks::Now();
   constexpr float kOneDipInMm = 0.15875;
 
@@ -451,6 +451,7 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 
 void MobileFriendlinessChecker::Activate(TimerBase*) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
   // If detached, there's no need to calculate any metrics.
   if (!frame_view_->GetChromeClient())
@@ -463,7 +464,7 @@ void MobileFriendlinessChecker::Activate(TimerBase*) {
 void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
     const LocalFrameView&) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
-  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
   frame_view_->UnregisterFromLifecycleNotifications(this);
   frame_view_->DidChangeMobileFriendliness(MobileFriendliness{
@@ -488,7 +489,7 @@ void MobileFriendlinessChecker::NotifyInitialScaleUpdated() {
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
-  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
   if (viewport.type != ViewportDescription::Type::kViewportMeta)
     return;
@@ -522,7 +523,7 @@ int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
 void MobileFriendlinessChecker::NotifyInvalidatePaint(
     const LayoutObject& object) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
-  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
   // Compute small text ratio.
   if (const auto* text = DynamicTo<LayoutText>(object)) {
