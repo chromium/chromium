@@ -23,14 +23,15 @@ namespace enterprise.remoteApps {
   // |folderId|: The ID of the app's parent folder. Has to be an ID of a folder
   //             added by $(ref:addFolder). If undefined or empty, the app
   //             will be added to the top-level.
-  // |iconUrl|: A URL pointing to an image which represents the app's icon.
+  // |iconUrl|: A URL pointing to an image which represents the app's icon. If
+  //            undefined, the app's icon will be the default placeholder.
   // |addToFront|: When true, the app is added to the front of the launcher.
   //               Defaults to false.
   dictionary AddAppOptions {
     DOMString name;
     boolean? addToFront;
     DOMString? folderId;
-    DOMString iconUrl;
+    DOMString? iconUrl;
   };
 
   interface Functions {

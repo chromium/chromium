@@ -96,11 +96,14 @@ ExtensionFunction::ResponseAction EnterpriseRemoteAppsAddAppFunction::Run() {
 
   const auto& options = parameters->options;
 
-  // Validate that `icon_url` is a valid URL.
-  const std::string& icon_url_string = options.icon_url;
-  GURL icon_url(icon_url_string);
-  if (!icon_url.is_valid()) {
-    return RespondNow(Error("Invalid iconUrl provided"));
+  // Checks that `icon_url` is a valid URL. If it is not valid, or it was not
+  // provided at all, we send an empty URL and the icon is replaced with the
+  // placeholder icon.
+  GURL icon_url;
+  if (options.icon_url) {
+    icon_url = GURL(*options.icon_url);
+    if (!icon_url.is_valid())
+      icon_url = GURL();
   }
 
   bool add_to_front = options.add_to_front ? *options.add_to_front : false;

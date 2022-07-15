@@ -203,6 +203,16 @@ IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddAppBadIconUrl) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddAppNoIconUrl) {
+  if (GetParam() != kApiExtensionRelativePath)
+    GTEST_SKIP() << "iconUrl validation not done for Mojo API";
+
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddAppNoIconUrl");
+
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
 IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddAppToFront) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("AddAppToFront");

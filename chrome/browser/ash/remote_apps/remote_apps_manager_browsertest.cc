@@ -311,23 +311,51 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
 
   // App has id kId1.
   AddAppAndWaitForIconChange(kExtensionId1, kId1, name, std::string(), icon_url,
-                             icon,
-                             /*add_to_front=*/false);
-
+                             icon, /*add_to_front=*/false);
   ash::AppListItem* item = GetAppListItem(kId1);
   EXPECT_FALSE(item->is_folder());
   EXPECT_EQ(name, item->name());
   EXPECT_TRUE(item->GetMetadata()->is_ephemeral);
-  // kShared uses size hint 64 dip.
-  apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   base::test::TestFuture<apps::IconValuePtr> future;
-  auto output_data = std::make_unique<apps::IconValue>();
   auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
+  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
+                         /*size_hint_in_dip=*/64, std::move(iv),
+                         future.GetCallback());
+
+  // App's icon is the downloaded icon.
+  CheckIconsEqual(future.Get()->uncompressed, item->GetDefaultIcon());
+}
+
+// Adds an app with an empty icon URL and checks if the app gets assigned the
+// default placeholder icon.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
+  // Show launcher UI so that app icons are loaded.
+  ShowLauncherAppsGrid();
+
+  const std::string name = "name";
+
+  // App has id kId1. The downloader returns an empty image that is replaced by
+  // a placeholder icon.
+  AddAppAndWaitForIconChange(kExtensionId1, kId1, name, std::string(), GURL(),
+                             gfx::ImageSkia(), /*add_to_front=*/false);
+  ash::AppListItem* item = GetAppListItem(kId1);
+  EXPECT_FALSE(item->is_folder());
+  EXPECT_EQ(name, item->name());
+
+  base::test::TestFuture<apps::IconValuePtr> future;
+  auto iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = apps::IconType::kStandard;
+  iv->uncompressed =
+      manager_->GetPlaceholderIcon(kId1, /*size_hint_in_dip=*/64);
   iv->is_placeholder_icon = true;
-  apps::ApplyIconEffects(icon_effects, 64, std::move(iv), future.GetCallback());
+  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
+                         /*size_hint_in_dip=*/64, std::move(iv),
+                         future.GetCallback());
+
+  // App's icon is placeholder.
   CheckIconsEqual(future.Get()->uncompressed, item->GetDefaultIcon());
 }
 

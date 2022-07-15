@@ -21,7 +21,14 @@ const testCases = [
   },
   async function AddAppBadIconUrl() {
     chrome.enterprise.remoteApps.addApp({name: 'App 1', iconUrl: ''}, () => {
-      chrome.test.assertLastError('Invalid iconUrl provided');
+      chrome.test.assertNoLastError();
+
+      chrome.test.succeed();
+    });
+  },
+  async function AddAppNoIconUrl() {
+    chrome.enterprise.remoteApps.addApp({name: 'App 1'}, () => {
+      chrome.test.assertNoLastError();
 
       chrome.test.succeed();
     });
