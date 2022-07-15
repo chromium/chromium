@@ -23,6 +23,7 @@ const char kExternalFileScheme[] = "externalfile";
 #if BUILDFLAG(IS_ANDROID)
 const char kAndroidAppScheme[] = "android-app";
 #endif
+const char kIsolatedAppScheme[] = "isolated-app";
 const char kGoogleChromeScheme[] = "googlechrome";
 
 const char kChromeUIAttributionInternalsHost[] = "attribution-internals";

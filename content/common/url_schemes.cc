@@ -63,7 +63,7 @@ void RegisterContentSchemes(bool should_lock_registry) {
   url::AddStandardScheme(kChromeUIUntrustedScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kGuestScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kChromeErrorScheme, url::SCHEME_WITH_HOST);
-
+  url::AddStandardScheme(kIsolatedAppScheme, url::SCHEME_WITH_HOST);
   for (auto& scheme : schemes.standard_schemes)
     url::AddStandardScheme(scheme.c_str(), url::SCHEME_WITH_HOST);
 
@@ -74,6 +74,7 @@ void RegisterContentSchemes(bool should_lock_registry) {
   schemes.secure_schemes.push_back(kChromeUIScheme);
   schemes.secure_schemes.push_back(kChromeUIUntrustedScheme);
   schemes.secure_schemes.push_back(kChromeErrorScheme);
+  schemes.secure_schemes.push_back(kIsolatedAppScheme);
   for (auto& scheme : schemes.secure_schemes)
     url::AddSecureScheme(scheme.c_str());
 
@@ -89,6 +90,7 @@ void RegisterContentSchemes(bool should_lock_registry) {
 
   schemes.cors_enabled_schemes.push_back(kChromeUIScheme);
   schemes.cors_enabled_schemes.push_back(kChromeUIUntrustedScheme);
+  schemes.cors_enabled_schemes.push_back(kIsolatedAppScheme);
   for (auto& scheme : schemes.cors_enabled_schemes)
     url::AddCorsEnabledScheme(scheme.c_str());
 
@@ -105,6 +107,7 @@ void RegisterContentSchemes(bool should_lock_registry) {
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif
 
+  schemes.service_worker_schemes.push_back(kIsolatedAppScheme);
   // This should only be registered if the
   // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking
   // it here causes a crash when --no-sandbox is enabled. See crbug.com/1313812
@@ -112,6 +115,8 @@ void RegisterContentSchemes(bool should_lock_registry) {
   // service workers don't work for chrome-untrusted:// when the flag is not
   // enabled.
   schemes.service_worker_schemes.push_back(kChromeUIUntrustedScheme);
+
+  url::AddWebStorageScheme(kIsolatedAppScheme);
 
   // Prevent future modification of the scheme lists. This is to prevent
   // accidental creation of data races in the program. Add*Scheme aren't
