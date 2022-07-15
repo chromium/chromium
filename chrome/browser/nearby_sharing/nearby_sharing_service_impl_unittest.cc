@@ -61,7 +61,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1059,11 +1059,11 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         TransferMetadata::Result result = TransferMetadata::ToResult(status);
         histogram_tester_.ExpectBucketCount(
             "ChromeOS.FeatureUsage.NearbyShare",
-            feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess,
+            ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess,
             result == TransferMetadata::Result::kSuccess ? 1 : 0);
         histogram_tester_.ExpectBucketCount(
             "ChromeOS.FeatureUsage.NearbyShare",
-            feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure,
+            ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure,
             result == TransferMetadata::Result::kFailure ? 1 : 0);
 
         barrier.Run();

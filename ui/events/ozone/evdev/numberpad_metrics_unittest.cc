@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -29,7 +30,11 @@
 #include "ui/events/ozone/evdev/testing/fake_cursor_delegate_evdev.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 
+namespace ui {
+
 namespace {
+
+using FeatureUsageEvent = ::ash::feature_usage::FeatureUsageMetrics::Event;
 
 // TODO(b/202039817): Should not need internal detail of feature_usage_metrics
 constexpr char kFeatureUsageMetricPrefix[] = "ChromeOS.FeatureUsage.";
@@ -48,10 +53,6 @@ constexpr char kFeatureUsageMetricPrefix[] = "ChromeOS.FeatureUsage.";
   } while (0)
 
 }  // namespace
-
-namespace ui {
-
-using FeatureUsageEvent = feature_usage::FeatureUsageMetrics::Event;
 
 class NumberpadMetricsTest : public ::testing::Test {
   // Structures for keyword parameters to check utilities.
@@ -287,7 +288,7 @@ class NumberpadMetricsTest : public ::testing::Test {
   // markers. Use is coupled with EXPECT_METRIC_*() above.
   void DelayForPeriodicMetrics() {
     task_environment_.AdvanceClock(
-        feature_usage::FeatureUsageMetrics::kRepeatedInterval +
+        ash::feature_usage::FeatureUsageMetrics::kRepeatedInterval +
         base::Seconds(30));
     base::RunLoop().RunUntilIdle();
   }

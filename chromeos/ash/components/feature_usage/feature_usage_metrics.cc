@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,7 +19,7 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace feature_usage {
+namespace ash::feature_usage {
 
 namespace {
 
@@ -201,4 +201,4 @@ base::Time FeatureUsageMetrics::Now() const {
   return clock_->Now();
 }
 
-}  // namespace feature_usage
+}  // namespace ash::feature_usage

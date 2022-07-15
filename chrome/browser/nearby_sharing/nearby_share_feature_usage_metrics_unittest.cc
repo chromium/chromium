@@ -9,7 +9,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,24 +114,24 @@ TEST_F(NearbyShareFeatureUsageMetricsTest, RecordUsage) {
   base::HistogramTester histograms;
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
 
   feature_usage_metrics.RecordUsage(/*success=*/true);
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
 
   feature_usage_metrics.RecordUsage(/*success=*/false);
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.NearbyShare",
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
 }

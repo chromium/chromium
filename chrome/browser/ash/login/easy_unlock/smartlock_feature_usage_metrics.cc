@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
 

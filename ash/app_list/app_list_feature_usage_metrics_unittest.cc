@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

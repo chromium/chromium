@@ -17,7 +17,7 @@
 #include "ash/wm/test_session_state_animator.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"

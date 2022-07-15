@@ -5,11 +5,12 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_FAKE_KEYBOARD_HEURISTIC_METRICS_H_
 #define UI_EVENTS_OZONE_EVDEV_FAKE_KEYBOARD_HEURISTIC_METRICS_H_
 
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ui {
+
 class FakeKeyboardHeuristicMetrics
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public ash::feature_usage::FeatureUsageMetrics::Delegate {
  public:
   explicit FakeKeyboardHeuristicMetrics();
   ~FakeKeyboardHeuristicMetrics() override;
@@ -19,8 +20,9 @@ class FakeKeyboardHeuristicMetrics
   void RecordUsage(bool success);
 
  private:
-  feature_usage::FeatureUsageMetrics feature_usage_metrics_;
+  ash::feature_usage::FeatureUsageMetrics feature_usage_metrics_;
 };
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_FAKE_KEYBOARD_HEURISTIC_METRICS_H_

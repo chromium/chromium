@@ -26,7 +26,7 @@ static_library("diagnostics_ui") {
     "//ash/webui/diagnostics_ui/backend",
     "//ash/webui/diagnostics_ui/mojom",
     "//ash/webui/resources:diagnostics_app_resources",
-    "//chromeos/components/feature_usage:feature_usage",
+    "//chromeos/ash/components/feature_usage",
     "//chromeos/login/login_state",
     "//chromeos/strings/",
     "//content/public/browser",

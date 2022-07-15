@@ -10,7 +10,4 @@ include_rules = [
   "+ui/resources",
   "+ui/shell_dialogs",
   "+ui/web_dialogs",
-
-  # SFUL Metrics DEPS
-  "+chromeos/components/feature_usage",
 ]

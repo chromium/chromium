@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
-#define CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
+#define CHROMEOS_ASH_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
 
 #include <memory>
 
@@ -20,7 +20,7 @@ class Clock;
 class TickClock;
 }  // namespace base
 
-namespace feature_usage {
+namespace ash::feature_usage {
 
 // Helper class to unify tracking features usage by users.
 // It provides unified naming for the tracked events. Which reduces effort on
@@ -113,6 +113,11 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace feature_usage
+}  // namespace ash::feature_usage
 
-#endif  // CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::feature_usage {
+using ::ash::feature_usage::FeatureUsageMetrics;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_

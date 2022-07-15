@@ -5,7 +5,7 @@
 #include "ash/webui/diagnostics_ui/diagnostics_metrics.h"
 
 #include "ash/constants/ash_features.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
 namespace diagnostics {

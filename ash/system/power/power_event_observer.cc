@@ -21,7 +21,7 @@
 #include "base/location.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"

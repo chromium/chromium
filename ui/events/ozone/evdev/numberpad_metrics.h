@@ -7,15 +7,16 @@
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ui {
+
 class NumberpadMetricsTest;
 
 // Combine delegate callbacks and FeatureUsageMetrics state for each metric.
 class COMPONENT_EXPORT(EVDEV) NumberpadMetricsDelegate final
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public ash::feature_usage::FeatureUsageMetrics::Delegate {
  public:
   explicit NumberpadMetricsDelegate(const std::string& feature_name);
   NumberpadMetricsDelegate(const NumberpadMetricsDelegate&) = delete;
@@ -26,14 +27,14 @@ class COMPONENT_EXPORT(EVDEV) NumberpadMetricsDelegate final
   void SetState(bool now_eligible, bool now_enabled);
   void SetState(bool now_eligible) { SetState(now_eligible, now_eligible); }
 
-  // feature_usage::NumberpadMetricsDelegate::Delegate:
+  // ash::feature_usage::NumberpadMetricsDelegate::Delegate:
   bool IsEligible() const final;
   bool IsEnabled() const final;
 
  private:
   bool eligible_ = false;
   bool enabled_ = false;
-  feature_usage::FeatureUsageMetrics metrics_;
+  ash::feature_usage::FeatureUsageMetrics metrics_;
 };
 
 // A class that records number-pad related metrics.

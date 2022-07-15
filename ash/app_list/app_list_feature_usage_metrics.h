@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace feature_usage {
+namespace ash::feature_usage {
 
 namespace {
 
@@ -276,4 +276,4 @@ TEST_F(FeatureUsageMetricsTest, SuspensionTimeNotReported) {
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 3);
 }
 
-}  // namespace feature_usage
+}  // namespace ash::feature_usage

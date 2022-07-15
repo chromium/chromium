@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

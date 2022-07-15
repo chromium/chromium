@@ -147,7 +147,7 @@ component("evdev") {
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
-    deps += [ "//chromeos/components/feature_usage" ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
   }
 
   public_configs = [ ":evdev_config" ]
@@ -284,7 +284,7 @@ source_set("unittests") {
 
   if (is_chromeos_ash) {
     sources += [ "numberpad_metrics_unittest.cc" ]
-    deps += [ "//chromeos/components/feature_usage" ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
   }
 
   visibility += [ "//ui/events/ozone:unittests" ]
