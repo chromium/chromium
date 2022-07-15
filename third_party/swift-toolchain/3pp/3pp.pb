@@ -13,6 +13,8 @@ create {
       download_url: "https://download.swift.org/swift-5.6.2-release/xcode/swift-5.6.2-RELEASE/swift-5.6.2-RELEASE-osx.pkg"
       version: "5.6.2"
     }
+    # Needed to re-trigger packaging for 5.6.2. Not normally necessary.
+    patch_version: "cr2"
   }
   build {
     install: "install-mac.sh"
