@@ -114,11 +114,11 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     const details = [
       [
         str('INSTALL_LINUX_PACKAGE_DETAILS_APPLICATION_LABEL'),
-        linux_package_info.name
+        linux_package_info.name,
       ],
       [
         str('INSTALL_LINUX_PACKAGE_DETAILS_VERSION_LABEL'),
-        linux_package_info.version
+        linux_package_info.version,
       ],
     ];
 
@@ -133,7 +133,8 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     }
     if (description) {
       details.push([
-        str('INSTALL_LINUX_PACKAGE_DETAILS_DESCRIPTION_LABEL'), description
+        str('INSTALL_LINUX_PACKAGE_DETAILS_DESCRIPTION_LABEL'),
+        description,
       ]);
     }
 

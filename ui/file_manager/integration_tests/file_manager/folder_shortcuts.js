@@ -38,40 +38,41 @@ const FOLDER_ENTRY_SET = [
 const DIRECTORY = {
   Drive: {
     contents: [
-      ENTRIES.directoryA.getExpectedRow(), ENTRIES.directoryD.getExpectedRow()
+      ENTRIES.directoryA.getExpectedRow(),
+      ENTRIES.directoryD.getExpectedRow(),
     ],
     name: 'Drive',
     navItem: '.tree-item[entry-label="My Drive"]',
-    treeItem: TREEITEM_DRIVE
+    treeItem: TREEITEM_DRIVE,
   },
   A: {
     contents: [ENTRIES.directoryB.getExpectedRow()],
     name: 'A',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="A"]',
-    treeItem: TREEITEM_A
+    treeItem: TREEITEM_A,
   },
   B: {
     contents: [ENTRIES.directoryC.getExpectedRow()],
     name: 'B',
-    treeItem: TREEITEM_B
+    treeItem: TREEITEM_B,
   },
   C: {
     contents: [],
     name: 'C',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="C"]',
-    treeItem: TREEITEM_C
+    treeItem: TREEITEM_C,
   },
   D: {
     contents: [ENTRIES.directoryE.getExpectedRow()],
     name: 'D',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="D"]',
-    treeItem: TREEITEM_D
+    treeItem: TREEITEM_D,
   },
   E: {
     contents: [ENTRIES.directoryF.getExpectedRow()],
     name: 'E',
-    treeItem: TREEITEM_E
-  }
+    treeItem: TREEITEM_E,
+  },
 };
 
 /**

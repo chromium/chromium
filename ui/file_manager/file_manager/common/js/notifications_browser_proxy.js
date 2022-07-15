@@ -53,7 +53,7 @@ export class NotificationsBrowserProxy {
 const NotificationEventTypes = {
   CLICKED: 'onClicked',
   BUTTON_CLICKED: 'onButtonClicked',
-  CLOSED: 'onClosed'
+  CLOSED: 'onClosed',
 };
 
 Object.freeze(NotificationEventTypes);

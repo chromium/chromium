@@ -442,7 +442,7 @@ ListThumbnailLoader.Task = class {
         .then(metadata => {
           const loadTargets = [
             ThumbnailLoader.LoadTarget.CONTENT_METADATA,
-            ThumbnailLoader.LoadTarget.EXTERNAL_METADATA
+            ThumbnailLoader.LoadTarget.EXTERNAL_METADATA,
           ];
 
           // If the file is on a network filesystem, don't generate thumbnails

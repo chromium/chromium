@@ -22,7 +22,7 @@ export function testInstallButtonHiddenUntilInfoReady() {
   chrome.fileManagerPrivate = {
     getLinuxPackageInfo: (entry, callback) => {
       getInfoCallback = callback;
-    }
+    },
   };
 
   const info = {name: 'n', version: 'v', info: 'i', summary: 's'};

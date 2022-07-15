@@ -254,7 +254,7 @@ VolumeManagerCommon.Source = {
   FILE: 'file',
   DEVICE: 'device',
   NETWORK: 'network',
-  SYSTEM: 'system'
+  SYSTEM: 'system',
 };
 
 /**

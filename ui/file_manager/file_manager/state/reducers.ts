@@ -21,7 +21,7 @@ export function rootReducer(currentState: State, action: Action): State {
     case Actions.CHANGE_DIRECTORY:
       return Object.assign(state, {
         currentDirectory:
-            changeDirectory(state, action as ChangeDirectoryAction)
+            changeDirectory(state, action as ChangeDirectoryAction),
       });
 
     default:
@@ -99,6 +99,6 @@ export function changeDirectory(
         label: c.name,
         key: c.url_,
       };
-    })
+    }),
   });
 }

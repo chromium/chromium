@@ -502,7 +502,7 @@ DeviceHandler.MountStatus = {
   // There is one child error.
   CHILD_ERROR: 'childError',
   // There is multiple child results and at least one is failure.
-  MULTIPART_ERROR: 'multipartError'
+  MULTIPART_ERROR: 'multipartError',
 };
 Object.freeze(DeviceHandler.MountStatus);
 
@@ -651,7 +651,7 @@ DeviceHandler.Notification = class {
           message: message || (str(this.message) + additionalMessage),
           iconUrl: getFilesAppIconURL().toString(),
           buttons: buttons,
-          isClickable: this.isClickable
+          isClickable: this.isClickable,
         },
         callback);
     metrics.recordEnum(

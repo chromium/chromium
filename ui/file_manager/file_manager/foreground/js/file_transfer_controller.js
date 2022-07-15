@@ -477,7 +477,7 @@ export class FileTransferController {
             callback: () => {
               util.visitURL(
                   'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
-            }
+            },
           });
       throw new Error('ABORT');
     }
@@ -1707,11 +1707,11 @@ FileTransferController.PastePlan = class {
     // Confirmation type for team drives.
     const source = {
       isTeamDrive: util.isSharedDriveEntry(this.sourceEntries[0]),
-      teamDriveName: util.getTeamDriveName(this.sourceEntries[0])
+      teamDriveName: util.getTeamDriveName(this.sourceEntries[0]),
     };
     const destination = {
       isTeamDrive: util.isSharedDriveEntry(this.destinationEntry),
-      teamDriveName: util.getTeamDriveName(this.destinationEntry)
+      teamDriveName: util.getTeamDriveName(this.destinationEntry),
     };
     if (this.isMove) {
       if (source.isTeamDrive) {
@@ -1768,14 +1768,14 @@ FileTransferController.PastePlan = class {
       case FileTransferController.ConfirmationType.MOVE_BETWEEN_SHARED_DRIVES:
         return [
           strf('DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS', sourceName),
-          strf('DRIVE_CONFIRM_TD_MEMBERS_GAIN_ACCESS_TO_COPY', destinationName)
+          strf('DRIVE_CONFIRM_TD_MEMBERS_GAIN_ACCESS_TO_COPY', destinationName),
         ];
       // TODO(yamaguchi): notify ownership transfer if the two Shared Drives
       // belong to different domains.
       case FileTransferController.ConfirmationType
           .MOVE_FROM_SHARED_DRIVE_TO_OTHER:
         return [
-          strf('DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS', sourceName)
+          strf('DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS', sourceName),
           // TODO(yamaguchi): Warn if the operation moves at least one
           // directory to My Drive, as it's no undoable.
         ];

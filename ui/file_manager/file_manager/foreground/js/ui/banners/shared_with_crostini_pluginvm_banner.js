@@ -51,7 +51,7 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
       {root: VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME},
       {root: VolumeManagerCommon.RootType.CROSTINI},
       {root: VolumeManagerCommon.RootType.ARCHIVE},
-      {root: VolumeManagerCommon.RootType.SMB}
+      {root: VolumeManagerCommon.RootType.SMB},
     ];
   }
 

@@ -1279,9 +1279,10 @@ util.delay = ms => {
  */
 util.timeoutPromise = (promise, ms, opt_message) => {
   return Promise.race([
-    promise, util.delay(ms).then(() => {
+    promise,
+    util.delay(ms).then(() => {
       throw new Error(opt_message || 'Operation timed out.');
-    })
+    }),
   ]);
 };
 

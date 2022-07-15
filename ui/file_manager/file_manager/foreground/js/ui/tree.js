@@ -269,7 +269,7 @@ Tree.prototype = {
       return this.selectedItem.rowElement.getBoundingClientRect();
     }
     return this.getBoundingClientRect();
-  }
+  },
 };
 
 /**
@@ -696,7 +696,7 @@ TreeItem.prototype = {
 
   get editing() {
     return this.hasAttribute('editing');
-  }
+  },
 };
 
 /**

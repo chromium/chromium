@@ -36,7 +36,7 @@ export async function testToast(done) {
     text: 'a1',
     callback: () => {
       a1Called = true;
-    }
+    },
   });
   await waitFor(() => getToastOpacity() === 1);
   assertTrue(toast.visible);
@@ -50,7 +50,7 @@ export async function testToast(done) {
     text: 'a2',
     callback: () => {
       a2Called = true;
-    }
+    },
   });
   toast.show('t3');
   assertEquals('t1', text.innerText);

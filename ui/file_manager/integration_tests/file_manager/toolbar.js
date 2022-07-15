@@ -318,7 +318,7 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
   // Check invoke sharesheet is called.
   chrome.test.assertEq(
       1, await remoteCall.callRemoteTestUtil('staticFakeCounter', appId, [
-        'chrome.fileManagerPrivate.invokeSharesheet'
+        'chrome.fileManagerPrivate.invokeSharesheet',
       ]));
 
   // Remove fakes.
@@ -369,7 +369,7 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
   // Check invoke sharesheet is called.
   chrome.test.assertEq(
       1, await remoteCall.callRemoteTestUtil('staticFakeCounter', appId, [
-        'chrome.fileManagerPrivate.invokeSharesheet'
+        'chrome.fileManagerPrivate.invokeSharesheet',
       ]));
 
   // Remove fakes.

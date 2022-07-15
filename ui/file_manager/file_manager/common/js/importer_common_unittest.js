@@ -144,7 +144,7 @@ export function testLocalStorageWrapper(callback) {
             return Promise.all([
               storage.get('lamb').then(assertEquals.bind(null, 'chop')),
               storage.get('isPoodle').then(assertEquals.bind(null, true)),
-              storage.get('age of grandma').then(assertEquals.bind(null, 103))
+              storage.get('age of grandma').then(assertEquals.bind(null, 103)),
             ]);
           });
 
@@ -249,7 +249,7 @@ function createFileEntry(volume, path) {
   const entry =
       MockFileEntry.create(volume.fileSystem, path, /** @type{Metadata} */ ({
                              size: 1234,
-                             modificationTime: new Date().toString()
+                             modificationTime: new Date().toString(),
                            }));
   // Ensure the file entry has a volumeID...necessary for lookups
   // via the VolumeManager.

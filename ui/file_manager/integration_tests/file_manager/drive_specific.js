@@ -434,7 +434,7 @@ testcase.drivePinFileMobileNetwork = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'disabled-mobile-sync',
-    index: 0
+    index: 0,
   });
   await repeatUntil(async () => {
     const preferences =
@@ -834,7 +834,9 @@ testcase.driveWelcomeBanner = async () => {
   await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
   const driveWelcomeBannerQuery = '#banners > drive-welcome-banner';
   const driveWelcomeBannerDismissButtonQuery = [
-    '#banners > drive-welcome-banner', 'educational-banner', '#dismiss-button'
+    '#banners > drive-welcome-banner',
+    'educational-banner',
+    '#dismiss-button',
   ];
 
   // Open the Drive volume in the files-list.
@@ -958,7 +960,7 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'enable-docs-offline',
-    index: 1
+    index: 1,
   });
 
   // Check: the last dialog result should be 1 (accept).
@@ -975,7 +977,7 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'enable-docs-offline',
-    index: 0
+    index: 0,
   });
 
   // Check: the last dialog result should be 2 (reject).

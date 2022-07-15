@@ -58,7 +58,7 @@ const MODULE_SETTINGS = {
   onAbort: (error) => {
     piexFailed = true;
     throw error;
-  }
+  },
 };
 
 /** @type {?Promise<undefined>} */
@@ -764,5 +764,5 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
 };
 
 export const PIEX_LOADER_TEST_ONLY = {
-  getModule: () => PiexModule
+  getModule: () => PiexModule,
 };

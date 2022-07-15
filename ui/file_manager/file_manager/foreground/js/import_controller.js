@@ -27,7 +27,7 @@ importer.ActivityState = {
   INSUFFICIENT_CLOUD_SPACE: 'insufficient-cloud-space',
   INSUFFICIENT_LOCAL_SPACE: 'insufficient-local-space',
   NO_MEDIA: 'no-media',
-  SCANNING: 'scanning'
+  SCANNING: 'scanning',
 };
 
 /**
@@ -543,7 +543,7 @@ importer.ClickSource = {
   DESTINATION: 'destination',
   IMPORT: 'import',
   MAIN: 'main',
-  SIDE: 'side'
+  SIDE: 'side',
 };
 
 /**

@@ -82,7 +82,7 @@ class MockUI {
     this.listContainer = /** @type {!ListContainer} */ ({
       currentView: {
         updateListItemsMetadata: function() {},
-      }
+      },
     });
 
     this.alertDialog = /** @type {!FilesAlertDialog} */ ({

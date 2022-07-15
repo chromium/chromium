@@ -45,7 +45,7 @@ export const DOWNLOADS_FAKE_TASKS = [
   new FakeTask(
       false,
       {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
-      'DummyTask2')
+      'DummyTask2'),
 ];
 
 /**
@@ -58,7 +58,7 @@ const DOWNLOADS_FAKE_TEXT = [
   new FakeTask(true, {
     appId: FILE_MANAGER_EXTENSIONS_ID,
     taskType: 'file',
-    actionId: 'view-in-browser'
+    actionId: 'view-in-browser',
   }),
 ];
 
@@ -72,7 +72,7 @@ const DOWNLOADS_FAKE_PDF = [
   new FakeTask(true, {
     appId: FILE_MANAGER_EXTENSIONS_ID,
     taskType: 'file',
-    actionId: 'view-as-pdf'
+    actionId: 'view-as-pdf',
   }),
 ];
 
@@ -88,7 +88,7 @@ const DRIVE_FAKE_TASKS = [
       'DummyTask1'),
   new FakeTask(
       false, {appId: 'dummytaskid-2', taskType: 'drive', actionId: 'open-with'},
-      'DummyTask2')
+      'DummyTask2'),
 ];
 
 /**
@@ -173,12 +173,14 @@ async function defaultTaskDialog(appId, descriptor) {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeEvent', appId, [
         '#default-task-dialog #default-tasks-list li:nth-of-type(2)',
-        'mousedown', {bubbles: true, button: 0}
+        'mousedown',
+        {bubbles: true, button: 0},
       ]));
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeEvent', appId, [
-        '#default-task-dialog #default-tasks-list li:nth-of-type(2)', 'click',
-        {bubbles: true}
+        '#default-task-dialog #default-tasks-list li:nth-of-type(2)',
+        'click',
+        {bubbles: true},
       ]));
 
   // Wait for the dialog hidden, and the task is executed.
@@ -314,7 +316,7 @@ testcase.genericTaskIsNotExecuted = async () => {
   await executeDefaultTask(appId, {
     appId: FILE_MANAGER_EXTENSIONS_ID,
     taskType: 'file',
-    actionId: 'view-in-browser'
+    actionId: 'view-in-browser',
   });
 };
 
@@ -331,7 +333,7 @@ testcase.genericTaskAndNonGenericTask = async () => {
     new FakeTask(
         false,
         {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
-        'DummyTask3', true /* isGenericFileHandler */)
+        'DummyTask3', true /* isGenericFileHandler */),
   ];
 
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);

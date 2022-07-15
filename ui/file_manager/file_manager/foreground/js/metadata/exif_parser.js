@@ -444,7 +444,7 @@ export class ExifParser extends ImageParser {
       return {
         scaleX: ExifParser.SCALEX[index],
         scaleY: ExifParser.SCALEY[index],
-        rotate90: ExifParser.ROTATE90[index]
+        rotate90: ExifParser.ROTATE90[index],
       };
     }
     return null;

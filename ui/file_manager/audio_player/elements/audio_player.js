@@ -33,7 +33,7 @@ Polymer({
       type: Boolean,
       observer: 'playingChanged',
       reflectToAttribute: true,
-      notify: true
+      notify: true,
     },
 
     /**

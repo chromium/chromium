@@ -130,9 +130,9 @@ metricsBase.recordValue = (name, type, min, max, buckets, value) => {
       'type': type,
       'min': min,
       'max': max,
-      'buckets': buckets
+      'buckets': buckets,
     },
-    value
+    value,
   ]);
 };
 
@@ -222,7 +222,7 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
     'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
     'min': 1,
     'max': boundaryValue - 1,
-    'buckets': boundaryValue
+    'buckets': boundaryValue,
   };
   metricsBase.call_('recordValue', [metricDescr, index]);
 };

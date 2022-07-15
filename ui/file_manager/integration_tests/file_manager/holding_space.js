@@ -21,8 +21,9 @@ testcase.holdingSpaceWelcomeBanner = async () => {
   const holdingSpaceBannerShown =
       '#banners > holding-space-welcome-banner:not([hidden])';
   const holdingSpaceBannerDismissButton = [
-    '#banners > holding-space-welcome-banner', 'educational-banner',
-    '#dismiss-button'
+    '#banners > holding-space-welcome-banner',
+    'educational-banner',
+    '#dismiss-button',
   ];
   const holdingSpaceBannerHidden =
       '#banners > holding-space-welcome-banner[hidden]';
@@ -93,11 +94,11 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
       appId, 'holding-space-welcome-banner');
   const text = [
     '#banners > holding-space-welcome-banner:not([hidden])',
-    'educational-banner > span[slot="subtitle"].tablet-mode-disabled'
+    'educational-banner > span[slot="subtitle"].tablet-mode-disabled',
   ];
   const textInTabletMode = [
     '#banners > holding-space-welcome-banner:not([hidden])',
-    'educational-banner > span[slot="subtitle"].tablet-mode-enabled'
+    'educational-banner > span[slot="subtitle"].tablet-mode-enabled',
   ];
   const expectedTextDisplayValue = 'inline';
   // Check: `text` should be displayed but `textInTabletMode` should not.

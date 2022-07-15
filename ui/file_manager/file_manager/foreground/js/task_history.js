@@ -122,7 +122,7 @@ export class TaskHistory extends EventTarget {
  * @enum {string}
  */
 TaskHistory.EventType = {
-  UPDATE: 'update'
+  UPDATE: 'update',
 };
 
 /**

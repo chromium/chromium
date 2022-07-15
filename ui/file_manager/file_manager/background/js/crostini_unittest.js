@@ -175,8 +175,13 @@ export function testCanSharePath() {
   // enforces allowed write paths.
 
   const allowed = [
-    'downloads', 'removable', 'android_files', 'drive',
-    'shared_drives_grand_root', 'team_drive', 'drive_shared_with_me'
+    'downloads',
+    'removable',
+    'android_files',
+    'drive',
+    'shared_drives_grand_root',
+    'team_drive',
+    'drive_shared_with_me',
   ];
   for (const type of allowed) {
     volumeManagerRootType = type;

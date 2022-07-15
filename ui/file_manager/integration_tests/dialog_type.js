@@ -18,5 +18,5 @@ export const DialogType = {
   SELECT_SAVEAS_FILE: 'saveas-file',
   SELECT_OPEN_FILE: 'open-file',
   SELECT_OPEN_MULTI_FILE: 'open-multi-file',
-  FULL_PAGE: 'full-page'
+  FULL_PAGE: 'full-page',
 };

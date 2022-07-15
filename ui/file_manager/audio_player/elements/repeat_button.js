@@ -33,7 +33,7 @@ Polymer({
       type: String,
       notify: true,
       reflectToAttribute: true,
-    }
+    },
   },
 
   listeners: {

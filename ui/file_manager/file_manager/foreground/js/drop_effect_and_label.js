@@ -10,7 +10,7 @@ export const DropEffectType = {
   NONE: 'none',
   COPY: 'copy',
   MOVE: 'move',
-  LINK: 'link'
+  LINK: 'link',
 };
 
 /**

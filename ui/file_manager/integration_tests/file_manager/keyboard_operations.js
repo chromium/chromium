@@ -345,8 +345,9 @@ testcase.renameRemovableWithKeyboardOnFileList = async () => {
 
   // Wait for partitions to show up.
   const expectedRows = [
-    ['partition-1', '--', 'ntfs', ''], ['partition-2', '--', 'ext4', ''],
-    ['partition-3', '--', 'vfat', '']
+    ['partition-1', '--', 'ntfs', ''],
+    ['partition-2', '--', 'ext4', ''],
+    ['partition-3', '--', 'vfat', ''],
   ];
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});

@@ -77,7 +77,7 @@ export function testMultipleAllowedVolumes() {
       createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
   allowedVolumes = [
     {type: VolumeManagerCommon.VolumeType.DOWNLOADS},
-    {type: VolumeManagerCommon.VolumeType.ANDROID_FILES}
+    {type: VolumeManagerCommon.VolumeType.ANDROID_FILES},
   ];
 
   assertTrue(isAllowedVolume(
@@ -92,7 +92,7 @@ export function testMultipleNoAllowedVolumes() {
       createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
   allowedVolumes = [
     {type: VolumeManagerCommon.VolumeType.ARCHIVE},
-    {type: VolumeManagerCommon.VolumeType.ANDROID_FILES}
+    {type: VolumeManagerCommon.VolumeType.ANDROID_FILES},
   ];
 
   assertFalse(isAllowedVolume(
@@ -110,7 +110,7 @@ export function testMultipleAllowedDocumentProviders() {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       id: 'provider_a',
     },
-    {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_b'}
+    {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_b'},
   ];
 
   assertTrue(isAllowedVolume(
@@ -128,7 +128,7 @@ export function testMultipleNoAllowedDocumentProviders() {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       id: 'provider_b',
     },
-    {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_c'}
+    {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_c'},
   ];
 
   assertFalse(isAllowedVolume(
@@ -160,7 +160,7 @@ export function testMultipleRootTypesNoVolumeTypeOrId() {
     },
     {
       root: VolumeManagerCommon.RootType.DRIVE,
-    }
+    },
   ];
   assertTrue(isAllowedVolume(
       /* currentVolume */ null, currentRootType, allowedVolumes));
@@ -178,7 +178,7 @@ export function testMultipleDisallowedRootTypesNoVolumeTypeOrId() {
     },
     {
       root: VolumeManagerCommon.RootType.DRIVE,
-    }
+    },
   ];
   assertFalse(isAllowedVolume(
       /* currentVolume */ null, currentRootType, allowedVolumes));
@@ -293,7 +293,7 @@ export function testMultipleDifferentIdsSameVolumeTypeAndRootTypeOneMatches() {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
       id: 'provider_a',
-    }
+    },
   ];
   assertTrue(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
 }
@@ -316,7 +316,7 @@ export function testMultipleDifferentIdsSameVolumeTypeAndRootTypeNoneMatches() {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
       id: 'provider_a',
-    }
+    },
   ];
   assertFalse(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
 }

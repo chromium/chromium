@@ -12,20 +12,20 @@ function mountFileSystem(onSuccess, onError) {
     const index = mounted.length + 1;
     chrome.fileSystemProvider.mount({
       fileSystemId: 'test-fs-' + index,
-      displayName: 'Test (' + index + ')'
+      displayName: 'Test (' + index + ')',
     });
   });
 }
 
-chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-    function(options, onSuccess, onError) {
-      onSuccess({
-        isDirectory: true,
-        name: '',
-        size: 0,
-        modificationTime: new Date()
-      });
-    });
+chrome.fileSystemProvider.onGetMetadataRequested.addListener(function(
+    options, onSuccess, onError) {
+  onSuccess({
+    isDirectory: true,
+    name: '',
+    size: 0,
+    modificationTime: new Date(),
+  });
+});
 
 chrome.fileSystemProvider.onReadDirectoryRequested.addListener(function(
     options, onSuccess, onError) {

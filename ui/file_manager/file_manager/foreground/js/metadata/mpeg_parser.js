@@ -115,9 +115,9 @@ export class MpegParser extends MetadataParser {
         '©nam': {data: parseDataString.bind(null, 'title')},
         '©alb': {data: parseDataString.bind(null, 'album')},
         '©art': {data: parseDataString.bind(null, 'artist')},
-        'covr': {data: parseCovr}
+        'covr': {data: parseCovr},
       },
-      versioned: true
+      versioned: true,
     };
 
     // main parser for the entire file structure.
@@ -132,14 +132,14 @@ export class MpegParser extends MetadataParser {
               stbl: {stsd: parseStsd},
             },
           },
-          meta: parseMeta
+          meta: parseMeta,
         },
         udta: {
           meta: parseMeta,
         },
-        meta: parseMeta
+        meta: parseMeta,
       },
-      meta: parseMeta
+      meta: parseMeta,
     };
   }
 
@@ -225,7 +225,7 @@ export class MpegParser extends MetadataParser {
             start: offset + MpegParser.HEADER_SIZE,
             end: offset + size,
             name: name,
-            parent: parentAtom
+            parent: parentAtom,
           },
           filePos);
 

@@ -39,7 +39,7 @@ const mountCompletedTestEvent = /** @type {!ChromeEvent} */ ({
   volumeMetadata: {
     volumeType: VolumeManagerCommon.VolumeType.PROVIDED,
     providerId: 'fubar',
-  }
+  },
 });
 
 // Set up the test components.
@@ -57,8 +57,8 @@ export function setUp() {
               listener => {
                 listener(event);
               });
-        }
-      }
+        },
+      },
     },
   };
   installMockChrome(mockChrome);

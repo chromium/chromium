@@ -84,7 +84,7 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
     // The hidden attribute is not in the element.attributes even if
     // element.hasAttribute('hidden') is true.
     hidden: !!element.hidden,
-    hasShadowRoot: !!element.shadowRoot
+    hasShadowRoot: !!element.shadowRoot,
   };
 
   const styleNames = opt_styleNames || [];
@@ -132,13 +132,13 @@ test.util.sync.getWindows = () => {
     const windowWrapper = window.appWindows[id];
     windows[id] = {
       outerWidth: windowWrapper.contentWindow.outerWidth,
-      outerHeight: windowWrapper.contentWindow.outerHeight
+      outerHeight: windowWrapper.contentWindow.outerHeight,
     };
   }
   for (const id in window.background.dialogs) {
     windows[id] = {
       outerWidth: window.background.dialogs[id].outerWidth,
-      outerHeight: window.background.dialogs[id].outerHeight
+      outerHeight: window.background.dialogs[id].outerHeight,
     };
   }
   return windows;

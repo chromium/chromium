@@ -35,7 +35,7 @@ export class FileMetadataFormatter extends EventTarget {
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: use12hourClock
+      hour12: use12hourClock,
     });
     dispatchSimpleEvent(this, 'date-time-format-changed');
   }

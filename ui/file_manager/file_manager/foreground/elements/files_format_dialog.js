@@ -47,7 +47,7 @@ Polymer({
     isErase_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   ready: function() {

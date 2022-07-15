@@ -119,7 +119,7 @@ export class EducationalBanner extends Banner {
               new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
                 bubbles: true,
                 composed: true,
-                detail: {banner: this.getBannerInstance_()}
+                detail: {banner: this.getBannerInstance_()},
               }));
         }
         e.preventDefault();
@@ -156,7 +156,7 @@ export class EducationalBanner extends Banner {
     this.dispatchEvent(new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
       bubbles: true,
       composed: true,
-      detail: {banner: this.getBannerInstance_()}
+      detail: {banner: this.getBannerInstance_()},
     }));
   }
 }

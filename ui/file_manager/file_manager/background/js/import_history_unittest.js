@@ -64,7 +64,7 @@ export function setUp() {
       testFileSystem, FILE_PATH,
       /** @type Metadata */ ({
         size: FILE_SIZE,
-        modificationTime: FILE_LAST_MODIFIED
+        modificationTime: FILE_LAST_MODIFIED,
       }));
 
   testFileSystem.entries[FILE_PATH] = testFileEntry;
@@ -251,7 +251,7 @@ export function testRecordStorage_LoadsRecordsFromMultipleHistoryFiles(
 export function testRecordStorage_SerializingOperations(callback) {
   const recorder = new TestCallRecorder();
   testPromise = createRealStorage([
-                  'recordStorageTestForSerializing.data'
+                  'recordStorageTestForSerializing.data',
                 ]).then(storage => {
     const writePromises = [];
     const WRITES_COUNT = 20;

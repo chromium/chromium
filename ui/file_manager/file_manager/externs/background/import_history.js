@@ -83,7 +83,7 @@ importerHistoryInterfaces.ImportHistory = class {
  */
 importerHistoryInterfaces.ImportHistoryState = {
   'COPIED': 'copied',
-  'IMPORTED': 'imported'
+  'IMPORTED': 'imported',
 };
 
 /**

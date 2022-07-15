@@ -40,7 +40,7 @@ const mockChrome = {
             /** @type {!FileEntry} */ ({name: '3.png'}),
           ];
           callback(entries);
-        }
+        },
   },
 };
 

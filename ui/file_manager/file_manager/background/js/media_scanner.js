@@ -503,7 +503,7 @@ mediaScanner.DefaultScanResult = class {
         total: this.candidateCount_,
         processed: this.candidatesProcessed_,
       },
-      progress: this.calculateProgress_()
+      progress: this.calculateProgress_(),
     };
   }
 

@@ -147,7 +147,7 @@ function setupFileManagerPrivate() {
           descriptor: {
             appId: 'handler-extension-id',
             taskType: 'file',
-            actionId: 'open'
+            actionId: 'open',
           },
           isDefault: false,
         }),
@@ -155,7 +155,7 @@ function setupFileManagerPrivate() {
           descriptor: {
             appId: 'handler-extension-id',
             taskType: 'file',
-            actionId: 'play'
+            actionId: 'play',
           },
           isDefault: true,
         }),

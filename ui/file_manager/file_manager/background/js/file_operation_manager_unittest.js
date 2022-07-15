@@ -24,7 +24,7 @@ import {volumeManagerFactory} from './volume_manager_factory.js';
 const mockChrome = {};
 
 mockChrome.runtime = {
-  lastError: null
+  lastError: null,
 };
 
 mockChrome.power = {
@@ -34,7 +34,7 @@ mockChrome.power = {
   releaseKeepAwake: function() {
     mockChrome.power.keepAwakeRequested = false;
   },
-  keepAwakeRequested: false
+  keepAwakeRequested: false,
 };
 
 mockChrome.fileManagerPrivate = {
@@ -45,7 +45,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onCopyProgress.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
 
 };
@@ -119,7 +119,7 @@ class BlockableFakeStartCopy {
       return {
         type: type,
         sourceUrl: source.toURL(),
-        destinationUrl: destination.toURL()
+        destinationUrl: destination.toURL(),
       };
     };
 
@@ -171,7 +171,7 @@ class FakeVolumeManager {
     return /** @type {!EntryLocation} */ ({
       rootType: 'downloads',
       volumeInfo:
-          {volumeType: 'downloads', label: 'Downloads', remoteMountPath: ''}
+          {volumeType: 'downloads', label: 'Downloads', remoteMountPath: ''},
     });
   }
 }
@@ -525,7 +525,7 @@ export function testCopy(callback) {
           return {
             type: type,
             sourceUrl: source.toURL(),
-            destinationUrl: destination.toURL()
+            destinationUrl: destination.toURL(),
           };
         };
         callback(1);
@@ -776,7 +776,7 @@ export function testCopyFails(callback) {
     },
     getLocationInfo: function() {
       return null;
-    }
+    },
   };
   fileOperationManager = new FileOperationManagerImpl();
 
@@ -975,7 +975,7 @@ export async function testMoveBetweenMyFilesDownloads(done) {
       return {
         type: type,
         sourceUrl: source.toURL(),
-        destinationUrl: destination.toURL()
+        destinationUrl: destination.toURL(),
       };
     };
 

@@ -497,7 +497,7 @@ export class FileOperationManagerImpl {
           processedBytes: 0,
           cancelRequested: false,
           trashedEntries: [],
-          permanentlyDelete
+          permanentlyDelete,
         }));
 
     // Obtains entry size and sum them up.

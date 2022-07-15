@@ -240,7 +240,7 @@ function getMockFileManager() {
       getCurrentRootType: function() {
         return null;
       },
-      changeDirectoryEntry: function(displayRoot) {}
+      changeDirectoryEntry: function(displayRoot) {},
     }),
     crostini: crostini,
     progressCenter: /** @type {!ProgressCenter} */ (new MockProgressCenter()),
@@ -541,7 +541,7 @@ function setUpInstallLinuxPackage() {
     descriptor: {
       appId: LEGACY_FILES_EXTENSION_ID,
       taskType: 'app',
-      actionId: 'install-linux-package'
+      actionId: 'install-linux-package',
     },
     isDefault: false,
     isGenericFileHandler: false,
@@ -598,7 +598,7 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
                 descriptor: {
                   appId: LEGACY_FILES_EXTENSION_ID,
                   taskType: 'app',
-                  actionId: 'import-crostini-image'
+                  actionId: 'import-crostini-image',
                 },
                 isDefault: false,
                 isGenericFileHandler: false,

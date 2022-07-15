@@ -78,8 +78,11 @@ export function AudioPlayer(container) {
   // if the states are changed.
   const STORAGE_PREFIX = 'audioplayer-';
   const KEYS_TO_SAVE_STATES = [
-    'shuffle', 'repeat-mode', 'volume', 'playlist-expanded',
-    'track-info-expanded'
+    'shuffle',
+    'repeat-mode',
+    'volume',
+    'playlist-expanded',
+    'track-info-expanded',
   ];
   const storageKeys = KEYS_TO_SAVE_STATES.map(a => STORAGE_PREFIX + a);
   chrome.storage.local.get(storageKeys, function(results) {
@@ -137,7 +140,7 @@ export function AudioPlayer(container) {
         seekSlider: strings['MEDIA_PLAYER_SEEK_SLIDER_LABEL'],
         mute: strings['MEDIA_PLAYER_MUTE_BUTTON_LABEL'],
         unmute: strings['MEDIA_PLAYER_UNMUTE_BUTTON_LABEL'],
-        volumeSlider: strings['MEDIA_PLAYER_VOLUME_SLIDER_LABEL']
+        volumeSlider: strings['MEDIA_PLAYER_VOLUME_SLIDER_LABEL'],
       };
       this.player_.ariaExpandArtworkLabel =
           strings['AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL'];

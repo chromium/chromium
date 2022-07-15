@@ -277,7 +277,7 @@ testcase.deduplicatedUmaMetricForFileSystemProviders = async () => {
   // Setup the FSP and wait for the volume to appear in the directory tree.
   await sendTestMessage({
     name: 'launchProviderExtension',
-    manifest: 'manifest_source_device.json'
+    manifest: 'manifest_source_device.json',
   });
   await confirmVolume(appId, true /* ejectExpected */);
 

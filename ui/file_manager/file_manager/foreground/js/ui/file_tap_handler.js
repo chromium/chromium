@@ -282,5 +282,5 @@ FileTapHandler.TapEvent = {
   TAP: 'tap',
   LONG_PRESS: 'longpress',
   LONG_TAP: 'longtap',
-  TWO_FINGER_TAP: 'twofingertap'
+  TWO_FINGER_TAP: 'twofingertap',
 };

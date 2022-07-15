@@ -74,7 +74,7 @@ export class DialogFooter {
         return this.getSelectValue();
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
     this.fileTypeSelector.getSelectValue = this.getSelectValue_.bind(this);
     this.fileTypeSelector.addEventListener(

@@ -55,7 +55,7 @@ export class MockFileOperationManager extends EventTarget {
         sourceEntries: sourceEntries,
         targetEntry: targetEntry,
         isMove: isMove,
-        opt_taskId: opt_taskId
+        opt_taskId: opt_taskId,
       });
       // Reset the resolver for the next paste call.
       this.pasteResolver = null;

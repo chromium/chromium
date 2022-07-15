@@ -123,9 +123,9 @@ export async function testGoodDevice(done) {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -151,9 +151,9 @@ export async function testGoodDeviceWithAllowPlayStoreMessage(done) {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -182,9 +182,9 @@ export async function testGoodDeviceWithPlayStoreAppsHaveAccessMessage(done) {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   // Since arcRemovableMediaAccessEnabled is true here, "Play Store apps have
@@ -221,7 +221,7 @@ export function testRemovableMediaDeviceWithImportEnabled(done) {
     eventType: 'mount',
     status: 'success',
     volumeMetadata: {volumeId: 'blabbity', deviceType: 'usb'},
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   reportPromise(
@@ -251,7 +251,7 @@ export function testMtpMediaDeviceWithImportEnabled(done) {
     eventType: 'mount',
     status: 'success',
     volumeMetadata: {volumeId: 'blabbity', deviceType: 'mtp'},
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   reportPromise(
@@ -269,9 +269,9 @@ export function testGoodDeviceNotNavigated() {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: false
+    shouldNotify: false,
   });
 
   assertEquals(0, Object.keys(mockChrome.notifications.items).length);
@@ -286,9 +286,9 @@ export async function testGoodDeviceWithBadParent(done) {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -306,9 +306,9 @@ export function testGoodDeviceWithBadParent_DuplicateMount(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   // Mounting the same device repeatedly should produce only
@@ -320,9 +320,9 @@ export function testGoodDeviceWithBadParent_DuplicateMount(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   reportPromise(
@@ -343,9 +343,9 @@ export function testUnsupportedDevice(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   reportPromise(
@@ -369,7 +369,7 @@ export async function testUnknownDevice(done) {
       deviceType: 'usb',
       devicePath: '/device/path',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -394,7 +394,7 @@ export async function testUnknownReadonlyDevice(done) {
       deviceType: 'sd',
       devicePath: '/device/path',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -417,9 +417,9 @@ export async function testUnsupportedWithUnknownParentReplacesNotification(
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -434,9 +434,9 @@ export async function testUnsupportedWithUnknownParentReplacesNotification(
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -454,9 +454,9 @@ export async function testMountPartialSuccess(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -472,9 +472,9 @@ export async function testMountPartialSuccess(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -493,9 +493,9 @@ export async function testUnknown(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -515,9 +515,9 @@ export function testNonASCIILabel(done) {
       deviceType: 'usb',
       devicePath: '/device/path',
       // "RA (U+30E9) BE (U+30D9) RU (U+30EB)" in Katakana letters.
-      deviceLabel: '\u30E9\u30D9\u30EB'
+      deviceLabel: '\u30E9\u30D9\u30EB',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   reportPromise(
@@ -539,9 +539,9 @@ export async function testMultipleFail(done) {
       isParentDevice: true,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -557,9 +557,9 @@ export async function testMultipleFail(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -575,9 +575,9 @@ export async function testMultipleFail(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -594,9 +594,9 @@ export async function testMultipleFail(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 
   await waitUntil(() => {
@@ -645,7 +645,7 @@ export async function testFormatSucceeded(done) {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'format_success',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
 
   await waitUntil(() => {
@@ -698,7 +698,7 @@ export function testPartitionSucceeded(done) {
     mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
       type: 'partition_success',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     });
     return Promise.resolve(true);
   };
@@ -706,7 +706,7 @@ export function testPartitionSucceeded(done) {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'partition_start',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
 }
 
@@ -739,7 +739,7 @@ export function testPartitionFailed(done) {
     mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
       type: 'partition_fail',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     });
     return Promise.resolve(true);
   };
@@ -748,7 +748,7 @@ export function testPartitionFailed(done) {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'partition_start',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
 }
 
@@ -853,9 +853,9 @@ export function testMountCompleteInIncognito(done) {
       isParentDevice: false,
       deviceType: 'usb',
       devicePath: '/device/path',
-      deviceLabel: 'label'
+      deviceLabel: 'label',
     },
-    shouldNotify: true
+    shouldNotify: true,
   });
 }
 
@@ -876,7 +876,7 @@ export function testIsSwaWindowTrueWithDisabledFlag() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'format_success',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
   assertEquals(0, progressCenter.getItemCount());
 }
@@ -898,7 +898,7 @@ export function testSwaWindowWithEnabledFlag() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'format_success',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
   assertEquals(0, progressCenter.getItemCount());
 }
@@ -920,7 +920,7 @@ export function testNoSwaWindowWithEnabledFlag() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'format_success',
     devicePath: '/device/path',
-    deviceLabel: 'label'
+    deviceLabel: 'label',
   });
   assertEquals(0, progressCenter.getItemCount());
 }
@@ -954,13 +954,13 @@ function setupChromeApis() {
         dispatch: null,
         addListener: function(listener) {
           mockChrome.fileManagerPrivate.onDeviceChanged.dispatch = listener;
-        }
+        },
       },
       onMountCompleted: {
         dispatch: null,
         addListener: function(listener) {
           mockChrome.fileManagerPrivate.onMountCompleted.dispatch = listener;
-        }
+        },
       },
       getProfiles: function(callback) {
         callback([{profileId: 'userid@xyz.domain.org'}]);
@@ -969,7 +969,7 @@ function setupChromeApis() {
         callback({
           arcEnabled: mockChrome.fileManagerPrivate.arcEnabledPref,
           arcRemovableMediaAccessEnabled:
-              mockChrome.fileManagerPrivate.arcRemovableMediaAccessEnabledPref
+              mockChrome.fileManagerPrivate.arcRemovableMediaAccessEnabledPref,
         });
       },
       arcEnabledPref: false,
@@ -978,7 +978,7 @@ function setupChromeApis() {
     i18n: {
       getUILanguage: function() {
         return 'en-US';
-      }
+      },
     },
     notifications: {
       resolver: new importer.Resolver(),
@@ -1002,24 +1002,24 @@ function setupChromeApis() {
         dispatch: null,
         addListener: function(listener) {
           mockChrome.notifications.onButtonClicked.dispatch = listener;
-        }
+        },
       },
       onClicked: {
         dispatch: null,
         addListener: function(listener) {
           mockChrome.notifications.onClicked.dispatch = listener;
-        }
+        },
       },
       getAll: function(callback) {
         callback([]);
-      }
+      },
     },
     runtime: {
       getURL: function(path) {
         return path;
       },
-      onStartup: {addListener: function() {}}
-    }
+      onStartup: {addListener: function() {}},
+    },
   };
 
   installMockChrome(mockChrome);

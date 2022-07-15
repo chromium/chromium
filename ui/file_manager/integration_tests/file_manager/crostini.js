@@ -112,7 +112,7 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
           descriptor: pluginVmAppDescriptor,
           title: 'App (Windows)',
           verb: 'open_with',
-        }
+        },
       ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.
@@ -187,7 +187,7 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
           descriptor: pluginVmAppDescriptor,
           title: 'App (Windows)',
           verb: 'open_with',
-        }
+        },
       ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.

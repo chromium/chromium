@@ -14,7 +14,7 @@ export function setUp() {
     MetricTypeType:
         {HISTOGRAM_LOG: 'histogram-log', HISTOGRAM_LINEAR: 'histogram-linear'},
     recordPercentage: function() {},
-    recordValue: function() {}
+    recordValue: function() {},
   };
 
   chrome.i18n = {

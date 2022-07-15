@@ -658,7 +658,7 @@ export class FileTasks {
       const descriptor = {
         appId: LEGACY_FILES_EXTENSION_ID,
         taskType: 'file',
-        actionId: 'view-in-browser'
+        actionId: 'view-in-browser',
       };
       chrome.fileManagerPrivate.executeTask(
           descriptor, this.entries_, onViewFiles);
@@ -1077,7 +1077,7 @@ export class FileTasks {
     } else {
       combobutton.defaultItem = {
         type: FileTasks.TaskMenuButtonItemType.ShowMenu,
-        label: str('OPEN_WITH_BUTTON_LABEL')
+        label: str('OPEN_WITH_BUTTON_LABEL'),
       };
     }
 
@@ -1097,7 +1097,7 @@ export class FileTasks {
         combobutton.addSeparator();
         const changeDefaultMenuItem = combobutton.addDropDownItem({
           type: FileTasks.TaskMenuButtonItemType.ChangeDefaultTask,
-          label: loadTimeData.getString('CHANGE_DEFAULT_MENU_ITEM')
+          label: loadTimeData.getString('CHANGE_DEFAULT_MENU_ITEM'),
         });
         changeDefaultMenuItem.classList.add('change-default');
       }
@@ -1169,7 +1169,7 @@ export class FileTasks {
       task: task,
       bold: opt_bold || false,
       isDefault: opt_isDefault || false,
-      isGenericFileHandler: /** @type {boolean} */ (task.isGenericFileHandler)
+      isGenericFileHandler: /** @type {boolean} */ (task.isGenericFileHandler),
     };
   }
 
@@ -1265,7 +1265,7 @@ export class FileTasks {
 FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
   appId: LEGACY_FILES_EXTENSION_ID,
   taskType: 'app',
-  actionId: 'install-linux-package'
+  actionId: 'install-linux-package',
 };
 
 /**
@@ -1275,7 +1275,7 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
 FileTasks.TaskMenuButtonItemType = {
   ShowMenu: 'ShowMenu',
   RunTask: 'RunTask',
-  ChangeDefaultTask: 'ChangeDefaultTask'
+  ChangeDefaultTask: 'ChangeDefaultTask',
 };
 
 /**
@@ -1323,7 +1323,7 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   '.gslides',  '.arw',         '.cr2',
   '.dng',      '.nef',         '.nrw',
   '.orf',      '.raf',         '.rw2',
-  '.tini'
+  '.tini',
 ]);
 
 /**

@@ -147,7 +147,7 @@ testcase.openOfficeWordFile = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.smallDocxHosted.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   let histogramCount = await getHistogramCount(

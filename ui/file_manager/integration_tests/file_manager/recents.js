@@ -406,8 +406,9 @@ testcase.recentsPlayFiles = async () => {
   // Verifies file list in Recents. Audio files from Play Files folder are
   // not supported in Recents.
   await verifyRecents(appId, [
-    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
-    RECENT_MODIFIED_ANDROID_VIDEO
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
 };
 
@@ -461,8 +462,9 @@ testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
 
   await verifyRecents(appId, RECENT_ENTRY_SET.concat([
-    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
-    RECENT_MODIFIED_ANDROID_VIDEO
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]));
 };
 
@@ -634,8 +636,9 @@ testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
       BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]),
       BASIC_DRIVE_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]));
   await verifyRecentVideos(appId, [
-    RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_VIDEO,
-    RECENT_MODIFIED_ANDROID_VIDEO
+    RECENTLY_MODIFIED_VIDEO,
+    RECENTLY_MODIFIED_VIDEO,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
 };
 
@@ -676,8 +679,9 @@ testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
       [RECENTLY_MODIFIED_DOCUMENT]);
   await verifyRecentDocuments(appId, [
-    RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_DOCUMENT
+    RECENTLY_MODIFIED_DOCUMENT,
+    RECENTLY_MODIFIED_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
   ]);
 };
 
@@ -758,24 +762,30 @@ testcase.recentsAllowDeletion = async () => {
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
-    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+    ENTRIES.beautiful,
+    ENTRIES.desktop,
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   await remoteCall.waitForFiles(appId, files);
 
   // Delete a file originated from Downloads.
   await deleteFile(appId, ENTRIES.beautiful.nameText);
   const files1 = TestEntryInfo.getExpectedRows([
-    ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+    ENTRIES.desktop,
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   await remoteCall.waitForFiles(appId, files1);
 
   // Delete a file originated from Drive.
   await deleteFile(appId, ENTRIES.desktop.nameText);
   const files2 = TestEntryInfo.getExpectedRows([
-    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
-    RECENT_MODIFIED_ANDROID_VIDEO
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   await remoteCall.waitForFiles(appId, files2);
 
@@ -796,8 +806,11 @@ testcase.recentsAllowMultipleFilesDeletion = async () => {
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
-    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+    ENTRIES.beautiful,
+    ENTRIES.desktop,
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   await remoteCall.waitForFiles(appId, files);
 
@@ -874,8 +887,10 @@ testcase.recentsNoRenameForPlayFiles = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
-    ENTRIES.beautiful, RECENT_MODIFIED_ANDROID_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+    ENTRIES.beautiful,
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   await remoteCall.waitForFiles(appId, files);
 
@@ -958,8 +973,9 @@ testcase.recentsAllowCutForPlayFiles = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
   const files = TestEntryInfo.getExpectedRows([
-    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
-    RECENT_MODIFIED_ANDROID_VIDEO
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
   const newFolderBreadcrumb =
       `/My files/Downloads/${ENTRIES.directoryA.nameText}`;

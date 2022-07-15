@@ -42,7 +42,7 @@ Polymer({
       value: false,
       notify: true,
       reflectToAttribute: true,
-      observer: 'playingChanged_'
+      observer: 'playingChanged_',
     },
 
     /**

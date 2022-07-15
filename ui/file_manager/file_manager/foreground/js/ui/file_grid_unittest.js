@@ -164,19 +164,19 @@ function groupByModificationTime(fileListModel) {
         startIndex: 5,
         endIndex: 9,
         label: 'earlier_this_week',
-        group: 'earlier_this_week'
+        group: 'earlier_this_week',
       },
       {
         startIndex: 10,
         endIndex: 15,
         label: 'earlier_this_month',
-        group: 'earlier_this_month'
+        group: 'earlier_this_month',
       },
       {
         startIndex: 16,
         endIndex: 16,
         label: 'earlier_this_year',
-        group: 'earlier_this_year'
+        group: 'earlier_this_year',
       },
       {startIndex: 17, endIndex: 19, label: 'older', group: 'older'},
     ];

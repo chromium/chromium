@@ -30,7 +30,7 @@ const i18nLabelReplacements = {
       'Some activities are not supported.',
   'CANCEL_SELECTION_BUTTON_LABEL': 'Cancel selection',
   'CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL': 'Switch to thumbnail view',
-  'CHANGE_TO_LISTVIEW_BUTTON_LABEL': 'Switch to list view'
+  'CHANGE_TO_LISTVIEW_BUTTON_LABEL': 'Switch to list view',
 };
 
 /**

@@ -331,7 +331,7 @@ FileSelectionHandler.EventType = {
    * If multiple changes are happened during the term, only one CHANGE_THROTTLED
    * event is dispatched.
    */
-  CHANGE_THROTTLED: 'changethrottled'
+  CHANGE_THROTTLED: 'changethrottled',
 };
 
 /**

@@ -26,7 +26,7 @@ export const FilesTooltip = Polymer({
     showTimeout: {
       type: Number,
       value: 500,  // ms
-      readOnly: true
+      readOnly: true,
     },
 
     /**
@@ -35,8 +35,8 @@ export const FilesTooltip = Polymer({
     hideTimeout: {
       type: Number,
       value: 250,  // ms
-      readOnly: true
-    }
+      readOnly: true,
+    },
   },
 
   /**
@@ -337,7 +337,7 @@ export const FilesTooltip = Polymer({
   cleanupCardTooltip_: function() {
     this.className = '';
     this.$.label.className = '';
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js

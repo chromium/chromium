@@ -27,7 +27,7 @@ function makeFileEntryFromDataURL(name, dataUrl) {
     },
     toURL: function() {
       return dataUrl;
-    }
+    },
   };
 }
 // clang-format off
@@ -75,16 +75,17 @@ export function testExternalMetadataProviderBasic(callback) {
           data: {
             verb: 'result',
             arguments: [
-              message.arguments[0], {
+              message.arguments[0],
+              {
                 thumbnailURL: message.arguments[0] + ',url',
-                thumbnailTransform: message.arguments[0] + ',transform'
-              }
-            ]
-          }
+                thumbnailTransform: message.arguments[0] + ',transform',
+              },
+            ],
+          },
         }));
       }
     },
-    start: function() {}
+    start: function() {},
   });
 
   // TODO(ryoh): chrome.mediaGalleries API is not available in unit tests.

@@ -33,7 +33,7 @@ export function testNormalImage() {
   const options = {
     maxWidth: 100,
     maxHeight: 100,
-    orientation: ImageOrientation.fromClockwiseRotation(0)
+    orientation: ImageOrientation.fromClockwiseRotation(0),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(0, result.source.x);
@@ -60,7 +60,7 @@ export function testRotatedImage() {
   const options = {
     maxWidth: 100,
     maxHeight: 100,
-    orientation: ImageOrientation.fromClockwiseRotation(1)
+    orientation: ImageOrientation.fromClockwiseRotation(1),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(0, result.source.x);
@@ -88,7 +88,7 @@ export function testCroppedImage() {
     width: 50,
     height: 50,
     crop: true,
-    orientation: ImageOrientation.fromClockwiseRotation(0)
+    orientation: ImageOrientation.fromClockwiseRotation(0),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(350, result.source.x);
@@ -116,7 +116,7 @@ export function testCroppedImageWithResize() {
     width: 50,
     height: 50,
     crop: true,
-    orientation: ImageOrientation.fromClockwiseRotation(0)
+    orientation: ImageOrientation.fromClockwiseRotation(0),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(87, result.source.x);
@@ -144,7 +144,7 @@ export function testCroppedTinyImage() {
     width: 50,
     height: 50,
     crop: true,
-    orientation: ImageOrientation.fromClockwiseRotation(0)
+    orientation: ImageOrientation.fromClockwiseRotation(0),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(5, result.source.x);
@@ -172,7 +172,7 @@ export function testCroppedRotatedImage() {
     width: 50,
     height: 50,
     crop: true,
-    orientation: ImageOrientation.fromClockwiseRotation(1)
+    orientation: ImageOrientation.fromClockwiseRotation(1),
   };
   const result = calculateCopyParametersFromOptions(source, options);
   assertEquals(0, result.source.x);

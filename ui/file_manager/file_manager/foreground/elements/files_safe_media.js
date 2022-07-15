@@ -26,7 +26,7 @@ const FilesSafeMedia = Polymer({
     type: {
       type: String,
       readonly: true,
-    }
+    },
   },
 
   listeners: {
@@ -148,7 +148,7 @@ const FilesSafeMedia = Polymer({
         this.fire('files-safe-media-load-error');
       }
     });
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media.js

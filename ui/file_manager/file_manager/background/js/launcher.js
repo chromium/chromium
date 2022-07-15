@@ -21,7 +21,7 @@ const launcher = {};
 export const LaunchType = {
   ALWAYS_CREATE: 0,
   FOCUS_ANY_OR_CREATE: 1,
-  FOCUS_SAME_OR_CREATE: 2
+  FOCUS_SAME_OR_CREATE: 2,
 };
 
 /**
@@ -47,11 +47,11 @@ const FILE_MANAGER_WINDOW_CREATE_OPTIONS = {
     // We choose 1000px as default window width to fit 4 columns in grid view,
     // as long as the width doesn't exceed 80% of the screen width.
     width: Math.min(Math.round(window.screen.availWidth * 0.8), 1000),
-    height: Math.min(Math.round(window.screen.availHeight * 0.8), 600)
+    height: Math.min(Math.round(window.screen.availHeight * 0.8), 600),
   },
   frame: {color: '#ffffff'},
   minWidth: 480,
-  minHeight: 300
+  minHeight: 300,
 };
 
 /**

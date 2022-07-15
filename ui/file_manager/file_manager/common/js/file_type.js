@@ -29,7 +29,7 @@ FileType.DIRECTORY = {
   translationKey: 'FOLDER',
   type: '.folder',
   icon: 'folder',
-  subtype: ''
+  subtype: '',
 };
 
 /**
@@ -41,7 +41,7 @@ FileType.PLACEHOLDER = {
   translationKey: 'NO_EXTENSION_FILE_TYPE',
   type: 'UNKNOWN',
   icon: '',
-  subtype: ''
+  subtype: '',
 };
 
 /**
@@ -115,7 +115,7 @@ FileType.getTypeForName = name => {
     translationKey: 'GENERIC_FILE_TYPE',
     type: 'UNKNOWN',
     subtype: extension.substr(1).toUpperCase(),
-    icon: ''
+    icon: '',
   };
 };
 

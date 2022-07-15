@@ -1295,7 +1295,7 @@ export class DirectoryModel extends EventTarget {
       onDirectoryChange_: function(event) {
         tracker.stop();
         tracker.hasChanged = true;
-      }
+      },
     };
     return tracker;
   }

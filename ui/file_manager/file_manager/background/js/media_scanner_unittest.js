@@ -20,7 +20,7 @@ import {importerTestHistory} from './test_import_history.js';
  */
 const metrics = {
   recordTime: function() {},
-  recordValue: function() {}
+  recordValue: function() {},
 };
 
 /** @type {!mediaScanner.DefaultMediaScanner} */
@@ -180,7 +180,7 @@ export function testScanFilesIgnoresPreviousImports(callback) {
   const expectedFiles = [
     '/testScanFilesIgnoresPreviousImports/foo.jpg',
     '/testScanFilesIgnoresPreviousImports/bar.gif',
-    '/testScanFilesIgnoresPreviousImports/baz.avi'
+    '/testScanFilesIgnoresPreviousImports/baz.avi',
   ];
   reportPromise(
       makeTestFileSystemRoot('testScanFilesIgnoresPreviousImports')
@@ -380,7 +380,8 @@ export function testTracksDuplicates(callback) {
 
 export function testMultiLevel(callback) {
   const filenames = [
-    'foo.jpg', 'bar',
+    'foo.jpg',
+    'bar',
     [
       'dir1',
       'bar.0.jpg',
@@ -392,7 +393,7 @@ export function testMultiLevel(callback) {
         'dir3',
         'bar.1.0.avi',
       ],
-    ]
+    ],
   ];
   const expectedFiles = [
     '/testMultiLevel/foo.jpg',
@@ -418,7 +419,8 @@ export function testMultiLevel(callback) {
 
 export function testDedupesFilesInScanResult(callback) {
   const filenames = [
-    'foo.jpg', 'bar.jpg',
+    'foo.jpg',
+    'bar.jpg',
     [
       'dir1',
       'foo.jpg',
@@ -433,7 +435,7 @@ export function testDedupesFilesInScanResult(callback) {
         'foo.jpg',
         'bar.jpg',
       ],
-    ]
+    ],
   ];
   const expectedFiles = [
     '/testDedupesFilesInScanResult/foo.jpg',

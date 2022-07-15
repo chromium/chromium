@@ -39,11 +39,14 @@ testcase.androidPhotosBanner = async () => {
   const photosBannerShownQuery =
       '#banners > photos-welcome-banner:not([hidden])';
   const photosBannerTextQuery = [
-    '#banners > photos-welcome-banner', 'educational-banner',
-    '#educational-text-group'
+    '#banners > photos-welcome-banner',
+    'educational-banner',
+    '#educational-text-group',
   ];
   const photosBannerDismissButton = [
-    '#banners > photos-welcome-banner', 'educational-banner', '#dismiss-button'
+    '#banners > photos-welcome-banner',
+    'educational-banner',
+    '#dismiss-button',
   ];
 
   // Initial state: In the new framework banner is lazily loaded so will not be

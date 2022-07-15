@@ -14,14 +14,14 @@ const imageEntry = {
   name: 'image.jpg',
   toURL: function() {
     return 'filesystem://A';
-  }
+  },
 };
 
 const nonImageEntry = {
   name: 'note.txt',
   toURL: function() {
     return 'filesystem://B';
-  }
+  },
 };
 
 const contentThumbnailTransform = {
@@ -58,7 +58,7 @@ export function setUp() {
         result[name] = metadata[name];
       }
       return Promise.resolve([result]);
-    }
+    },
   }));
 }
 

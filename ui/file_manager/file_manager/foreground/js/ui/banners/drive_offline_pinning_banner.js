@@ -52,7 +52,7 @@ export class DriveOfflinePinningBanner extends EducationalBanner {
     if (util.isDriveDssPinEnabled()) {
       return [{
         type: VolumeManagerCommon.VolumeType.DRIVE,
-        root: VolumeManagerCommon.RootType.DRIVE
+        root: VolumeManagerCommon.RootType.DRIVE,
       }];
     }
     return [];

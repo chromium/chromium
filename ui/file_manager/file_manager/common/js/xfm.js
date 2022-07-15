@@ -26,5 +26,5 @@ export const xfm = {
         window.focus();
       },
     });
-  }
+  },
 };

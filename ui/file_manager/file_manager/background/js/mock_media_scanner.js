@@ -239,7 +239,7 @@ export class TestScanResult {
       scanDuration: this.scanDuration,
       newFileCount: this.fileEntries.length,
       duplicates: duplicates,
-      sizeBytes: this.totalBytes
+      sizeBytes: this.totalBytes,
     });
   }
 

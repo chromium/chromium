@@ -20,7 +20,7 @@ async function sniffedFileOpen(path, entry) {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [entry.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
   // Open Files.App on |path|, add imgpdf to Downloads and Drive.
   const appId = await setupAndWaitUntilReady(path, [entry], [entry]);

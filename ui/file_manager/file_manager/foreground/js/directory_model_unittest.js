@@ -60,7 +60,7 @@ export function setUp() {
          */
         addListener(callback) {
           onIOTaskProgressStatusCallback = callback;
-        }
+        },
       },
       IOTaskType: {
         DELETE: 'delete',

@@ -13,5 +13,5 @@
 export const MediaSessionPlaybackState = {
   NONE: 'none',
   PAUSED: 'paused',
-  PLAYING: 'playing'
+  PLAYING: 'playing',
 };

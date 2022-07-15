@@ -307,8 +307,8 @@ export class BannerController extends EventTarget {
         shouldShow: () => !!this.volumeSizeStats_[this.currentVolume_.volumeId],
         context: () => ({
           remainingSize:
-              this.volumeSizeStats_[this.currentVolume_.volumeId].remainingSize
-        })
+              this.volumeSizeStats_[this.currentVolume_.volumeId].remainingSize,
+        }),
       });
 
       // Register a custom filter that checks if the removable device has an

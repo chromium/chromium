@@ -36,7 +36,7 @@ export class MockThumbnailLoader {
     return Promise.resolve({
       data: MockThumbnailLoader.testImageDataUrl,
       width: MockThumbnailLoader.testImageWidth,
-      height: MockThumbnailLoader.testImageHeight
+      height: MockThumbnailLoader.testImageHeight,
     });
   }
 }

@@ -32,7 +32,7 @@ function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
   const fakeVolumeInfo = {
     displayRoot: displayRoot,
     label: kLabel,
-    volumeType: volumeType
+    volumeType: volumeType,
   };
   Object.assign(fakeVolumeInfo, additionalProperties || {});
   // Create the VolumeEntry via casting (duck typing).
@@ -127,7 +127,7 @@ export function testEntryFindIndex() {
     name: 'Linux files',
     toURL: function() {
       return 'fake-entry://linux-files';
-    }
+    },
   });
 
   entryList.addEntry(downloads);
@@ -178,7 +178,7 @@ export function testVolumeEntryFindIndex() {
     name: 'Linux files',
     toURL: function() {
       return 'fake-entry://linux-files';
-    }
+    },
   });
 
   volumeEntry.addEntry(crostini);
@@ -500,7 +500,7 @@ export function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
         successCallback(fakeRootEntry);
         callbackTriggered = true;
       }, 0);
-    }
+    },
   });
 
   // rootEntry_ starts as null.

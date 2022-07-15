@@ -129,7 +129,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
           {single: 'SYNC_FILE_NAME', plural: 'SYNC_FILE_NUMBER'},
       [this.pinItem_.id]: {
         single: 'OFFLINE_PROGRESS_MESSAGE',
-        plural: 'OFFLINE_PROGRESS_MESSAGE_PLURAL'
+        plural: 'OFFLINE_PROGRESS_MESSAGE_PLURAL',
       },
     };
     Object.freeze(this.statusMessages_);
@@ -216,7 +216,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
           message: str('DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE'),
           iconUrl: getFilesAppIconURL().toString(),
           buttons:
-              [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}]
+              [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}],
         },
         () => {});
   }
@@ -437,7 +437,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
             buttons: [
               {title: str('OFFLINE_ENABLE_REJECT')},
               {title: str('OFFLINE_ENABLE_ACCEPT')},
-            ]
+            ],
           },
           () => {});
       this.savedDialogEvent_ = event;

@@ -57,7 +57,7 @@ export function setUp() {
         const event = {
           eventType: 'unmount',
           status: 'success',
-          volumeMetadata: {volumeId: volumeId}
+          volumeMetadata: {volumeId: volumeId},
         };
         mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent(event);
         callback();
@@ -72,7 +72,7 @@ export function setUp() {
               .forEach(listener => {
                 listener(event);
               });
-        }
+        },
       },
       onMountCompleted: {
         addListener: function(listener) {
@@ -84,7 +84,7 @@ export function setUp() {
               listener => {
                 listener(event);
               });
-        }
+        },
       },
       getDriveConnectionState: function(callback) {
         callback(mockChrome.fileManagerPrivate.driveConnectionState_);
@@ -97,7 +97,7 @@ export function setUp() {
         mockChrome.fileManagerPrivate.onDriveConnectionStatusChanged
             .dispatchEvent(null);
       },
-    }
+    },
   };
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
@@ -110,7 +110,7 @@ export function setUp() {
       profile: getMockProfile(),
       configurable: false,
       watchable: true,
-      source: VolumeManagerCommon.Source.SYSTEM
+      source: VolumeManagerCommon.Source.SYSTEM,
     },
     {
       volumeId: 'drive:drive-foobar%40chromium.org-hash',
@@ -120,7 +120,7 @@ export function setUp() {
       profile: getMockProfile(),
       configurable: false,
       watchable: true,
-      source: VolumeManagerCommon.Source.NETWORK
+      source: VolumeManagerCommon.Source.NETWORK,
     },
     {
       volumeId: 'android_files:0',
@@ -130,14 +130,14 @@ export function setUp() {
       provile: getMockProfile(),
       configurable: false,
       watchable: true,
-      source: VolumeManagerCommon.Source.SYSTEM
-    }
+      source: VolumeManagerCommon.Source.SYSTEM,
+    },
   ];
   chrome.fileManagerPrivate.fileSystemMap_ = {
     'download:Downloads': new MockFileSystem('download:Downloads'),
     'drive:drive-foobar%40chromium.org-hash':
         new MockFileSystem('drive:drive-foobar%40chromium.org-hash'),
-    'android_files:0': new MockFileSystem('android_files:0')
+    'android_files:0': new MockFileSystem('android_files:0'),
   };
 
   createVolumeInfoOriginal = volumeManagerUtil.createVolumeInfo;
@@ -167,7 +167,7 @@ function getMockProfile() {
   return {
     displayName: 'foobar@chromium.org',
     isCurrentProfile: true,
-    profileId: ''
+    profileId: '',
   };
 }
 
@@ -543,8 +543,8 @@ export function testDriveMountedDuringInitialization(callback) {
         volumeId: 'drive:drive-foobar%40chromium.org-hash',
         volumeType: VolumeManagerCommon.VolumeType.DRIVE,
         sourcePath: '/drive',
-        profile: getMockProfile()
-      }
+        profile: getMockProfile(),
+      },
     });
 
     // Wait until volume manager initialization calls getVolumeMetadataList().

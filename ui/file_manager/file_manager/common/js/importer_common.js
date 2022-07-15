@@ -21,14 +21,14 @@ importer.UpdateType = {
   PROGRESS: 'PROGRESS',
   COMPLETE: 'COMPLETE',
   ERROR: 'ERROR',
-  CANCELED: 'CANCELED'
+  CANCELED: 'CANCELED',
 };
 
 /** @enum {string} */
 importer.ScanEvent = {
   FINALIZED: 'finalized',
   INVALIDATED: 'invalidated',
-  UPDATED: 'updated'
+  UPDATED: 'updated',
 };
 
 /**
@@ -53,7 +53,7 @@ importer.Disposition = {
   CONTENT_DUPLICATE: 'content-dupe',
   HISTORY_DUPLICATE: 'history-dupe',
   ORIGINAL: 'original',
-  SCAN_DUPLICATE: 'scan-dupe'
+  SCAN_DUPLICATE: 'scan-dupe',
 };
 
 /**
@@ -63,7 +63,7 @@ importer.Disposition = {
 importer.Setting = {
   HAS_COMPLETED_IMPORT: 'importer-has-completed-import',
   MACHINE_ID: 'importer-machine-id',
-  LAST_KNOWN_LOG_ID: 'importer-last-known-log-id'
+  LAST_KNOWN_LOG_ID: 'importer-last-known-log-id',
 };
 
 /**
@@ -81,7 +81,7 @@ importer.ELIGIBLE_VOLUME_TYPES_ = [
  */
 importer.ValidImportRoots_ = {
   DCIM: 'DCIM',
-  MP_ROOT: 'MP_ROOT'  // MP_ROOT is a Sony thing.
+  MP_ROOT: 'MP_ROOT',  // MP_ROOT is a Sony thing.
 };
 
 /**
@@ -90,7 +90,7 @@ importer.ValidImportRoots_ = {
 importer.Destination = {
   // locally copied, but not imported to cloud as of yet.
   DEVICE: 'device',
-  GOOGLE_DRIVE: 'google-drive'
+  GOOGLE_DRIVE: 'google-drive',
 };
 
 /**
@@ -383,7 +383,7 @@ importer.getHistoryFiles = () => {
   return Promise
       .all([
         importer.getOrCreateHistoryFile(),
-        importer.getMachineId().then(importer.getUnownedHistoryFiles_)
+        importer.getMachineId().then(importer.getUnownedHistoryFiles_),
       ])
       .then(
           /** @param {!Array<!FileEntry|!Array<!FileEntry>>} entries */

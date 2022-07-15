@@ -27,8 +27,10 @@ const ExtractArchiveStatusHistogramName = 'FileBrowser.ExtractTask.Status';
 function getUnzippedFileListRowEntries() {
   return [
     [
-      'SUCCESSFULLY_PERFORMED_FAKE_MOUNT.txt', '21 bytes', 'Plain text',
-      'Dec 31, 1980, 12:00 AM'
+      'SUCCESSFULLY_PERFORMED_FAKE_MOUNT.txt',
+      '21 bytes',
+      'Plain text',
+      'Dec 31, 1980, 12:00 AM',
     ],
   ];
 }
@@ -40,7 +42,7 @@ testcase.zipFileOpenDownloads = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open Files app on Downloads containing a zip file.
@@ -71,7 +73,7 @@ testcase.zipNotifyFileTasks = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open Files app on Downloads containing a zip file.
@@ -94,7 +96,7 @@ testcase.zipFileOpenDrive = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open Files app on Drive containing a zip file.
@@ -125,7 +127,7 @@ testcase.zipFileOpenUsb = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
@@ -175,7 +177,7 @@ testcase.zipFileOpenUsb = async () => {
 function getZipSelectionFileListRowEntries() {
   return [
     ['photos', '--', 'Folder', 'Jan 1, 1980, 11:59 PM'],
-    ['photos.zip', '134 bytes', 'ZIP archive', 'Oct 21, 1983, 11:55 AM']
+    ['photos.zip', '134 bytes', 'ZIP archive', 'Oct 21, 1983, 11:55 AM'],
   ];
 }
 
@@ -317,7 +319,7 @@ testcase.zipExtractShowPanel = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open files app.
@@ -381,14 +383,14 @@ testcase.zipExtractShowMultiPanel = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
   entry = entries[3];  // ENTRIES.zipSJISArchive.
   targetDirectoryName = entry.nameText.split('.')[0];
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open files app.
@@ -565,7 +567,7 @@ testcase.zipExtractCheckContent = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open files app.
@@ -694,7 +696,7 @@ testcase.zipExtractCheckEncodings = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open files app.
@@ -826,7 +828,7 @@ testcase.zipExtractFromReadOnly = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [targetDirectoryName],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open files app.

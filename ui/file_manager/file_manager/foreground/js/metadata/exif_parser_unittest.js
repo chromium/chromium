@@ -185,7 +185,7 @@ ByteWriter.ByteOrder = {
   // Little endian byte order.
   LITTLE_ENDIAN: 0,
   // Big endian byte order.
-  BIG_ENDIAN: 1
+  BIG_ENDIAN: 1,
 };
 
 /**

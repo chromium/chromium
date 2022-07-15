@@ -165,7 +165,7 @@ ImageRequestTask.ExtensionContentTypeMap = {
   svg: 'image/svg',
   bmp: 'image/bmp',
   jpg: 'image/jpeg',
-  jpeg: 'image/jpeg'
+  jpeg: 'image/jpeg',
 };
 
 /**
@@ -472,7 +472,7 @@ ImageRequestTask.prototype.createVideoThumbnailUrl_ = function(url) {
           video.src =
               '';  // Make sure to stop loading remaining part of the video.
           throw new Error('Seeking video failed.');
-        })
+        }),
       ])
       .then(() => {
         const canvas = assertInstanceof(

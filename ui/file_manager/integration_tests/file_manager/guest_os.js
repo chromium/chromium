@@ -104,7 +104,7 @@ testcase.mountGuestSuccess = async () => {
     name: 'registerMountableGuest',
     displayName: guestName,
     canMount: true,
-    vmType: 'bruschetta'
+    vmType: 'bruschetta',
   });
   // Open the files app.
   const appId =

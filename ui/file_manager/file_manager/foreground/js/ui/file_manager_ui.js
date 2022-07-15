@@ -702,7 +702,7 @@ export class FileManagerUI {
       handleSplitterDragEnd: function(e) {
         FileSplitter.prototype.handleSplitterDragEnd.apply(this, arguments);
         this.ownerDocument.documentElement.classList.remove('col-resize');
-      }
+      },
     };
 
     /** @type Object */ (customSplitter).decorate(splitterElement);

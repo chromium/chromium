@@ -17,7 +17,7 @@ const entryA = /** @type {!Entry} */ ({
   getMetadata: function(fulfill, reject) {
     Promise.resolve({modificationTime: new Date(2015, 1, 1), size: 1024})
         .then(fulfill, reject);
-  }
+  },
 });
 
 /** @const {!Entry} */
@@ -28,19 +28,23 @@ const entryB = /** @type {!Entry} */ ({
   getMetadata: function(fulfill, reject) {
     Promise.resolve({modificationTime: new Date(2015, 2, 2), size: 2048})
         .then(fulfill, reject);
-  }
+  },
 });
 
 export function testFileSystemMetadataProviderBasic(callback) {
   const provider = new FileSystemMetadataProvider();
   const names = [
-    'modificationTime', 'size', 'contentMimeType', 'present', 'availableOffline'
+    'modificationTime',
+    'size',
+    'contentMimeType',
+    'present',
+    'availableOffline',
   ];
   reportPromise(
       provider
           .get([
             new MetadataRequest(entryA, names),
-            new MetadataRequest(entryB, names)
+            new MetadataRequest(entryB, names),
           ])
           .then(results => {
             assertEquals(2, results.length);

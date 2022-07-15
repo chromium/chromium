@@ -24,7 +24,7 @@ export function setUp() {
         EARLIER_THIS_YEAR: 'earlier_this_year',
         OLDER: 'older',
       },
-    }
+    },
   };
   installMockChrome(mockChrome);
 }
@@ -53,7 +53,7 @@ export function testGetRecentDateBucket() {
         {
           // May 9, 2022, Monday, 08:30am Local time.
           date: new Date(2022, 4, 9, 8, 30, 0),
-          bucket: chrome.fileManagerPrivate.RecentDateBucket.TODAY
+          bucket: chrome.fileManagerPrivate.RecentDateBucket.TODAY,
         },
         {
           // May 8, 2022, Sunday, 10:30am Local time.
@@ -75,7 +75,7 @@ export function testGetRecentDateBucket() {
           date: new Date(2022, 3, 28, 10, 30, 0),
           bucket: chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_YEAR,
         },
-      ]
+      ],
     },
 
     {
@@ -105,8 +105,8 @@ export function testGetRecentDateBucket() {
           // Feb 10, 2022, Thursday, 10:30am Local time.
           date: new Date(2022, 1, 10, 10, 30, 0),
           bucket: chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_YEAR,
-        }
-      ]
+        },
+      ],
     },
 
     {
@@ -142,9 +142,9 @@ export function testGetRecentDateBucket() {
           // Nov 28, 2021, Sunday, 10:30am Local time.
           date: new Date(2021, 10, 28, 10, 30, 0),
           bucket: chrome.fileManagerPrivate.RecentDateBucket.OLDER,
-        }
-      ]
-    }
+        },
+      ],
+    },
 
   ];
 

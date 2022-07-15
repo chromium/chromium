@@ -34,7 +34,7 @@ Polymer({
     } else {
       this.classList.remove('keyboard-focus');
     }
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_icon_button.js

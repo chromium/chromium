@@ -385,7 +385,7 @@ export function testOrderAndNestItems() {
 
   const shortcutListModel = new MockFolderShortcutDataModel([
     MockFileEntry.create(drive, '/root/shortcut'),
-    MockFileEntry.create(drive, '/root/shortcut2')
+    MockFileEntry.create(drive, '/root/shortcut2'),
   ]);
 
   const recentItem = new NavigationModelFakeItem(
@@ -542,7 +542,7 @@ export function testMyFilesVolumeEnabled(callback) {
   // Create a downloads folder inside the item.
   const downloadsVolume = volumeManager.volumeInfoList.item(1);
   /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
-    '/Downloads/'
+    '/Downloads/',
   ]);
 
   const shortcutListModel = new MockFolderShortcutDataModel([]);

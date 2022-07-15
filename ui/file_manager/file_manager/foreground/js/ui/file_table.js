@@ -210,7 +210,7 @@ export class FileTableColumnModel extends TableColumnModel {
     const config = {};
     for (let i = 0; i < this.columns_.length; i++) {
       config[this.columns_[i].id] = {
-        width: snapshot.newPos[i + 1] - snapshot.newPos[i]
+        width: snapshot.newPos[i + 1] - snapshot.newPos[i],
       };
     }
     return config;
@@ -983,7 +983,7 @@ export class FileTable extends Table {
             history => {
               return Promise.all([
                 history.wasImported(fileEntry, destination),
-                history.wasCopied(fileEntry, destination)
+                history.wasCopied(fileEntry, destination),
               ]);
             })
         .then(
@@ -1120,8 +1120,13 @@ export class FileTable extends Table {
             this.metadataModel_.getCache(
                 [entry],
                 [
-                  'availableOffline', 'customIconUrl', 'shared',
-                  'isMachineRoot', 'isExternalMedia', 'hosted', 'pinned'
+                  'availableOffline',
+                  'customIconUrl',
+                  'shared',
+                  'isMachineRoot',
+                  'isExternalMedia',
+                  'hosted',
+                  'pinned',
                 ])[0],
             util.isTeamDriveRoot(entry));
       });

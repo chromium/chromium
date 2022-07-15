@@ -74,7 +74,7 @@ export class DragSelector {
     const rect = element.cachedBounds;
     return {
       x: event.clientX - rect.left + element.scrollLeft,
-      y: event.clientY - rect.top + element.scrollTop
+      y: event.clientY - rect.top + element.scrollTop,
     };
   }
 
@@ -137,7 +137,8 @@ export class DragSelector {
       left: Math.max(Math.min(this.startX_, pos.x), 0),
       top: Math.max(Math.min(this.startY_, pos.y), 0),
       right: Math.min(Math.max(this.startX_, pos.x), this.target_.scrollWidth),
-      bottom: Math.min(Math.max(this.startY_, pos.y), this.target_.scrollHeight)
+      bottom:
+          Math.min(Math.max(this.startY_, pos.y), this.target_.scrollHeight),
     };
     borderBounds.width = borderBounds.right - borderBounds.left;
     borderBounds.height = borderBounds.bottom - borderBounds.top;
@@ -236,5 +237,5 @@ export class DragSelector {
  */
 DragSelector.SelectionFlag_ = {
   IN_LAST_SELECTION: 1 << 0,
-  IN_CURRENT_SELECTION: 1 << 1
+  IN_CURRENT_SELECTION: 1 << 1,
 };

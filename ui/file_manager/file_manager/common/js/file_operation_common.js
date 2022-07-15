@@ -46,7 +46,7 @@ FileOperationProgressEvent.EventType = {
   CANCELED: 'CANCELED',
   ERROR: 'ERROR',
   PROGRESS: 'PROGRESS',
-  SUCCESS: 'SUCCESS'
+  SUCCESS: 'SUCCESS',
 };
 
 /**

@@ -57,9 +57,9 @@ export function testExternalMetadataProviderBasic(callback) {
             isMachineRoot: false,
             isExternalMedia: false,
             isArbitrarySyncFolder: false,
-          }
+          },
         ]);
-      }
+      },
     },
     runtime: {
       lastError: null,

@@ -45,7 +45,7 @@ export class ThumbnailLoader {
     const loadTargets = opt_loadTargets || [
       ThumbnailLoader.LoadTarget.CONTENT_METADATA,
       ThumbnailLoader.LoadTarget.EXTERNAL_METADATA,
-      ThumbnailLoader.LoadTarget.FILE_ENTRY
+      ThumbnailLoader.LoadTarget.FILE_ENTRY,
     ];
 
     /** @private @const {!Entry} */
@@ -200,7 +200,7 @@ export class ThumbnailLoader {
           cache: true,
           priority: this.priority_,
           timestamp: modificationTime,
-          orientation: this.transform_
+          orientation: this.transform_,
         }),
         this.image_, () => {}, () => {
           this.image_.onerror(new Event('load-error'));
@@ -253,7 +253,7 @@ export class ThumbnailLoader {
         cache: true,
         priority: this.priority_,
         timestamp: modificationTime,
-        orientation: this.transform_
+        orientation: this.transform_,
       });
 
       if (fillMode === ThumbnailLoader.FillMode.OVER_FILL) {
@@ -337,7 +337,7 @@ export class ThumbnailLoader {
           cache: true,
           priority: this.priority_,
           timestamp: modificationTime,
-          orientation: this.transform_
+          orientation: this.transform_,
         }),
         this.image_, () => {}, () => {
           this.image_.onerror(new Event('load-error'));
@@ -516,7 +516,7 @@ ThumbnailLoader.FillMode = {
   FILL: 0,       // Fill whole box. Image may be cropped.
   FIT: 1,        // Keep aspect ratio, do not crop.
   OVER_FILL: 2,  // Fill whole box with possible stretching.
-  AUTO: 3        // Try to fill, but if incompatible aspect ratio, then fit.
+  AUTO: 3,       // Try to fill, but if incompatible aspect ratio, then fit.
 };
 
 /**
@@ -525,7 +525,7 @@ ThumbnailLoader.FillMode = {
  */
 ThumbnailLoader.LoaderType = {
   IMAGE: 0,
-  CANVAS: 1
+  CANVAS: 1,
 };
 
 /**
@@ -538,7 +538,7 @@ ThumbnailLoader.LoadTarget = {
   // e.g. EXIF thumbnail.
   CONTENT_METADATA: 'contentMetadata',
   // Image file itself.
-  FILE_ENTRY: 'fileEntry'
+  FILE_ENTRY: 'fileEntry',
 };
 
 /**

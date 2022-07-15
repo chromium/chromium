@@ -165,35 +165,41 @@ testcase.mediaKeyNative = function() {
 testcase.changeVolumeLevel = function() {
   var openAudio = launch('local', 'downloads', [ENTRIES.beautiful]);
   var appId;
-  return openAudio.then(function(args) {
-    appId = args[0];
-  }).then(function() {
-    // The Audio Player default volume level should be 50.
-    return remoteCallAudioPlayer.waitForElement(
-        appId, [['audio-player', 'control-panel[volume="50"]']]);
-  }).then(function() {
-    // Clicking the volume button should mute the player.
-    return remoteCallAudioPlayer.callRemoteTestUtil(
-        'fakeMouseClick', appId, ['#volumeButton']);
-  }).then(function() {
-    return Promise.all([
-      remoteCallAudioPlayer.waitForElement(
-          appId, [['audio-player', 'control-panel[volume="0"]']]),
-      remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#volumeButton[aria-label="Unmute"]')])
-    ]);
-  }).then(function() {
-    // Clicking it again should unmute and restore the volume.
-    return remoteCallAudioPlayer.callRemoteTestUtil(
-        'fakeMouseClick', appId, ['#volumeButton']);
-  }).then(function() {
-    return Promise.all([
-      remoteCallAudioPlayer.waitForElement(
-          appId, [['audio-player', 'control-panel[volume="50"]']]),
-      remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#volumeButton[aria-label="Mute"]')])
-    ]);
-  });
+  return openAudio
+      .then(function(args) {
+        appId = args[0];
+      })
+      .then(function() {
+        // The Audio Player default volume level should be 50.
+        return remoteCallAudioPlayer.waitForElement(
+            appId, [['audio-player', 'control-panel[volume="50"]']]);
+      })
+      .then(function() {
+        // Clicking the volume button should mute the player.
+        return remoteCallAudioPlayer.callRemoteTestUtil(
+            'fakeMouseClick', appId, ['#volumeButton']);
+      })
+      .then(function() {
+        return Promise.all([
+          remoteCallAudioPlayer.waitForElement(
+              appId, [['audio-player', 'control-panel[volume="0"]']]),
+          remoteCallAudioPlayer.waitForElement(
+              appId, [controlPanelQuery('#volumeButton[aria-label="Unmute"]')]),
+        ]);
+      })
+      .then(function() {
+        // Clicking it again should unmute and restore the volume.
+        return remoteCallAudioPlayer.callRemoteTestUtil(
+            'fakeMouseClick', appId, ['#volumeButton']);
+      })
+      .then(function() {
+        return Promise.all([
+          remoteCallAudioPlayer.waitForElement(
+              appId, [['audio-player', 'control-panel[volume="50"]']]),
+          remoteCallAudioPlayer.waitForElement(
+              appId, [controlPanelQuery('#volumeButton[aria-label="Mute"]')]),
+        ]);
+      });
 };
 
 /**
@@ -210,10 +216,9 @@ testcase.changeTracks = function() {
   }).then(function() {
     // Audio player starts playing automatically
     return Promise.all([
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
       remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]'),
-      remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Pause"]')])
+          appId, [controlPanelQuery('#play[aria-label="Pause"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should be active.
@@ -230,7 +235,7 @@ testcase.changeTracks = function() {
       remoteCallAudioPlayer.waitForElement(
           appId, 'audio-player:not([playing])'),
       remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Play"]')])
+          appId, [controlPanelQuery('#play[aria-label="Play"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should still be active.
@@ -246,8 +251,7 @@ testcase.changeTracks = function() {
     return Promise.all([
       remoteCallAudioPlayer.waitForElement(
           appId, [trackListQuery('.track[index="1"][active]')]),
-      remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]')
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
     ]);
   });
 };
@@ -266,10 +270,9 @@ testcase.changeTracksPlayList = function() {
   }).then(function() {
     // Audio player starts playing automatically
     return Promise.all([
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
       remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]'),
-      remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Pause"]')])
+          appId, [controlPanelQuery('#play[aria-label="Pause"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should be active.
@@ -285,7 +288,7 @@ testcase.changeTracksPlayList = function() {
       remoteCallAudioPlayer.waitForElement(
           appId, 'audio-player:not([playing])'),
       remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Play"]')])
+          appId, [controlPanelQuery('#play[aria-label="Play"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should still be active.
@@ -308,8 +311,7 @@ testcase.changeTracksPlayList = function() {
     return Promise.all([
       remoteCallAudioPlayer.waitForElement(
           appId, trackListQuery('.track[index="0"][active]')),
-      remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]')
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
     ]);
   });
 };
@@ -328,10 +330,9 @@ testcase.changeTracksPlayListIcon = function() {
   }).then(function() {
     // Audio player starts playing automatically
     return Promise.all([
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
       remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]'),
-      remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Pause"]')])
+          appId, [controlPanelQuery('#play[aria-label="Pause"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should be active.
@@ -347,7 +348,7 @@ testcase.changeTracksPlayListIcon = function() {
       remoteCallAudioPlayer.waitForElement(
           appId, 'audio-player:not([playing])'),
       remoteCallAudioPlayer.waitForElement(
-          appId, [controlPanelQuery('#play[aria-label="Play"]')])
+          appId, [controlPanelQuery('#play[aria-label="Play"]')]),
     ]);
   }).then(function() {
     // ... and track 0 should still be active.
@@ -371,8 +372,7 @@ testcase.changeTracksPlayListIcon = function() {
     return Promise.all([
       remoteCallAudioPlayer.waitForElement(
           appId, trackListQuery('.track[index="1"][active]')),
-      remoteCallAudioPlayer.waitForElement(
-          appId, 'audio-player[playing]')
+      remoteCallAudioPlayer.waitForElement(appId, 'audio-player[playing]'),
     ]);
   });
 };

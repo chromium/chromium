@@ -10,7 +10,7 @@ export const ProgressItemState = {
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',
-  CANCELED: 'canceled'
+  CANCELED: 'canceled',
 };
 Object.freeze(ProgressItemState);
 
@@ -43,7 +43,7 @@ export const ProgressItemType = {
   // The item is archive operation.
   MOUNT_ARCHIVE: 'mount_archive',
   // The item is external drive partitioning operation.
-  PARTITION: 'partition'
+  PARTITION: 'partition',
 };
 Object.freeze(ProgressItemType);
 

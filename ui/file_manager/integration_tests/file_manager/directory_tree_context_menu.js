@@ -26,7 +26,7 @@ async function setupForDirectoryTreeContextMenuTest() {
                      lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
                      nameText: 'destination',
                      sizeText: '--',
-                     typeText: 'Folder'
+                     typeText: 'Folder',
                    })]);
   return appId;
 }
@@ -46,7 +46,7 @@ const ITEMS_IN_DEST_DIR_AFTER_PASTE =
       lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
       nameText: 'photos',
       sizeText: '--',
-      typeText: 'Folder'
+      typeText: 'Folder',
     })]);
 
 /**
@@ -452,7 +452,7 @@ testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
                      lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
                      nameText: 'child-folder',
                      sizeText: '--',
-                     typeText: 'Folder'
+                     typeText: 'Folder',
                    })]);
 
   // Navigate to child folder.
@@ -826,7 +826,7 @@ testcase.dirContextMenuZip = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   const zipMenus = [
@@ -870,7 +870,7 @@ testcase.dirContextMenuZipEject = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open Files app on Downloads containing a zip file.
@@ -978,7 +978,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     lastModifiedTime: 'Jan 1, 1990, 11:59 PM',
     nameText: 'photosTwo',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 
   const photosT = new TestEntryInfo({
@@ -989,7 +989,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     lastModifiedTime: 'Jan 1, 1993, 11:59 PM',
     nameText: 'photosT',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   });
 
   // Open Files app on local Downloads.

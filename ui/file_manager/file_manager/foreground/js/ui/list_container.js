@@ -382,7 +382,7 @@ export class ListContainer {
  * @const
  */
 ListContainer.EventType = {
-  TEXT_SEARCH: 'textsearch'
+  TEXT_SEARCH: 'textsearch',
 };
 
 /**
@@ -392,7 +392,7 @@ ListContainer.EventType = {
 ListContainer.ListType = {
   UNINITIALIZED: 'uninitialized',
   DETAIL: 'detail',
-  THUMBNAIL: 'thumb'
+  THUMBNAIL: 'thumb',
 };
 
 /**

@@ -35,8 +35,12 @@ export class ThumbnailModel {
         .get(
             entries,
             [
-              'modificationTime', 'customIconUrl', 'contentMimeType',
-              'thumbnailUrl', 'croppedThumbnailUrl', 'present'
+              'modificationTime',
+              'customIconUrl',
+              'contentMimeType',
+              'thumbnailUrl',
+              'croppedThumbnailUrl',
+              'present',
             ])
         .then(metadataList => {
           const contentRequestEntries = [];
@@ -47,7 +51,7 @@ export class ThumbnailModel {
             results[url] = {
               filesystem: {
                 modificationTime: metadataList[i].modificationTime,
-                modificationTimeError: metadataList[i].modificationTimeError
+                modificationTimeError: metadataList[i].modificationTimeError,
               },
               external: {
                 thumbnailUrl: metadataList[i].thumbnailUrl,
@@ -58,10 +62,10 @@ export class ThumbnailModel {
                 customIconUrl: metadataList[i].customIconUrl,
                 customIconUrlError: metadataList[i].customIconUrlError,
                 present: metadataList[i].present,
-                presentError: metadataList[i].presentError
+                presentError: metadataList[i].presentError,
               },
               thumbnail: {},
-              media: {}
+              media: {},
             };
             const canUseContentThumbnail = metadataList[i].present &&
                 (FileType.isImage(

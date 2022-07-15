@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 module.exports = {
-  'rules': {
-    'no-console': 'off',
+  'rules' : {
+    'comma-dangle' : ['error', 'always-multiline'],
+    'no-console' : 'off',
   },
 };

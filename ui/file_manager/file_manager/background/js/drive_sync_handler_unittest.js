@@ -44,7 +44,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onPinTransfersUpdated: {
     addListener: function(callback) {
@@ -53,7 +53,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onDriveSyncError: {
     addListener: function(callback) {
@@ -62,7 +62,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onDriveSyncError.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onDriveConfirmDialog: {
     addListener: function(callback) {
@@ -71,7 +71,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onDriveConfirmDialog.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onPreferencesChanged: {
     addListener: function(callback) {
@@ -80,7 +80,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onPreferencesChanged.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onDriveConnectionStatusChanged: {
     addListener: function(callback) {
@@ -91,7 +91,7 @@ mockChrome.fileManagerPrivate = {
       mockChrome.fileManagerPrivate.onDriveConnectionStatusChanged.listener_ =
           null;
     },
-    listener_: null
+    listener_: null,
   },
   onMountCompleted: {
     addListener: function(callback) {
@@ -100,7 +100,7 @@ mockChrome.fileManagerPrivate = {
     removeListener: function() {
       mockChrome.fileManagerPrivate.onMountCompleted.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   getPreferences: function() {},
   setPreferences: function() {},
@@ -118,7 +118,7 @@ mockChrome.notifications = {
     removeListener: function() {
       mockChrome.notifications.onButtonClicked.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
   onClosed: {
     addListener: function(callback) {
@@ -127,7 +127,7 @@ mockChrome.notifications = {
     removeListener: function() {
       mockChrome.notifications.onClosed.listener_ = null;
     },
-    listener_: null
+    listener_: null,
   },
 };
 

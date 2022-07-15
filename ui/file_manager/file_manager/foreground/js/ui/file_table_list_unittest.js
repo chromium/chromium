@@ -369,19 +369,19 @@ function enableGroupByForDataModel(fileListModel) {
         startIndex: 3,
         endIndex: 4,
         label: 'earlier_this_week',
-        group: 'earlier_this_week'
+        group: 'earlier_this_week',
       },
       {
         startIndex: 5,
         endIndex: 6,
         label: 'earlier_this_month',
-        group: 'earlier_this_month'
+        group: 'earlier_this_month',
       },
       {
         startIndex: 7,
         endIndex: 8,
         label: 'earlier_this_year',
-        group: 'earlier_this_year'
+        group: 'earlier_this_year',
       },
       {startIndex: 9, endIndex: 9, label: 'older', group: 'older'},
     ];

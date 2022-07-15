@@ -365,7 +365,7 @@ export function setUp() {
   const volumeManager = /** @type{!VolumeManager} */ ({
     getVolumeInfo: (entry) => {
       return volumeManagerGetVolumeInfoType;
-    }
+    },
   });
   const crostini = /** @type {!Crostini} */ ({});
   controller = new BannerController(directoryModel, volumeManager, crostini);
@@ -1095,8 +1095,9 @@ export async function testEducationalBannerDismissedForever() {
 export async function testBannersAreUpdatedOnDismissClick() {
   // Add 3 educational banner and 1 warning banner.
   controller.setEducationalBannersInOrder([
-    testEducationalBanners[0].tagName, testEducationalBanners[1].tagName,
-    testEducationalBanners[2].tagName
+    testEducationalBanners[0].tagName,
+    testEducationalBanners[1].tagName,
+    testEducationalBanners[2].tagName,
   ]);
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
 

@@ -131,7 +131,7 @@ export const FilesToast = Polymer({
     if (this.visible) {
       this.$.container.hide();
     }
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_toast.js

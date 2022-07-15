@@ -45,7 +45,7 @@ function createTestFolder(path) {
     type: EntryType.DIRECTORY,
     lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 }
 

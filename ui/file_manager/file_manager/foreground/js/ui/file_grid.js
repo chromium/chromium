@@ -514,7 +514,7 @@ export class FileGrid extends Grid {
       // consumed in redraw() method in the parent class.
       first: beginIndex + 1,
       length: endIndex - beginIndex - 1,
-      last: endIndex - 1
+      last: endIndex - 1,
     };
     return result;
   }

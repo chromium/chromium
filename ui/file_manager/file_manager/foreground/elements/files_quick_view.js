@@ -382,7 +382,7 @@ export const FilesQuickView = Polymer({
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
     this.fire('close');
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_quick_view.js

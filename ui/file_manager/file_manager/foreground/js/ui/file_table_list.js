@@ -297,8 +297,13 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
   // updated when the metadata is ready via updateListItemsMetadata. For files
   // not on an external backend, externalProps is not available.
   const externalProps = metadataModel.getCache([entry], [
-    'hosted', 'availableOffline', 'customIconUrl', 'shared', 'isMachineRoot',
-    'isExternalMedia', 'pinned'
+    'hosted',
+    'availableOffline',
+    'customIconUrl',
+    'shared',
+    'isMachineRoot',
+    'isExternalMedia',
+    'pinned',
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -325,7 +330,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
       } else {
         this.removeAttribute('selected');
       }
-    }
+    },
   });
 };
 

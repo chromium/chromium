@@ -61,7 +61,7 @@ class MetadataDispatcher {
 
     this.messageHandlers_ = {
       init: this.init_.bind(this),
-      request: this.request_.bind(this)
+      request: this.request_.bind(this),
     };
   }
 
@@ -212,7 +212,7 @@ class MetadataDispatcher {
         } catch (e) {
           onError(e.stack);
         }
-      }
+      },
     ];
 
     nextStep();

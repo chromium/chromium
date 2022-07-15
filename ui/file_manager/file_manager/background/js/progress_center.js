@@ -298,7 +298,7 @@ ProgressCenterImpl.Notifications_ = class {
             item.progressRateInPercent :
             undefined,
         priority: (item.state === ProgressItemState.ERROR || !item.quiet) ? 0 :
-                                                                            -1
+                                                                            -1,
       };
 
       if (newlyAdded) {
@@ -356,5 +356,5 @@ ProgressCenterImpl.Notifications_ = class {
  */
 ProgressCenterImpl.Notifications_.NotificationState_ = {
   VISIBLE: 'visible',
-  DISMISSED: 'dismissed'
+  DISMISSED: 'dismissed',
 };

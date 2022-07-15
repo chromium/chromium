@@ -278,7 +278,7 @@ export const EntryType = {
   DIRECTORY: 'directory',
   LINK: 'link',
   SHARED_DRIVE: 'team_drive',
-  COMPUTER: 'Computer'
+  COMPUTER: 'Computer',
 };
 Object.freeze(EntryType);
 
@@ -508,7 +508,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: 'hello.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 
   world: new TestEntryInfo({
@@ -520,7 +520,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'world.ogv',
     sizeText: '59 KB',
-    typeText: 'OGG video'
+    typeText: 'OGG video',
   }),
 
   webm: new TestEntryInfo({
@@ -531,7 +531,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'world.webm',
     sizeText: '17 KB',
-    typeText: 'WebM video'
+    typeText: 'WebM video',
   }),
 
   video: new TestEntryInfo({
@@ -542,7 +542,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 14, 2019, 16:01 PM',
     nameText: 'video_long.ogv',
     sizeText: '166 KB',
-    typeText: 'OGG video'
+    typeText: 'OGG video',
   }),
 
   subtitle: new TestEntryInfo({
@@ -553,7 +553,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Feb 7, 2019, 15:03 PM',
     nameText: 'world.vtt',
     sizeText: '46 bytes',
-    typeText: 'VTT text'
+    typeText: 'VTT text',
   }),
 
   unsupported: new TestEntryInfo({
@@ -564,7 +564,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:36 AM',
     nameText: 'unsupported.foo',
     sizeText: '8 KB',
-    typeText: 'FOO file'
+    typeText: 'FOO file',
   }),
 
   desktop: new TestEntryInfo({
@@ -576,7 +576,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'My Desktop Background.png',
     sizeText: '272 bytes',
-    typeText: 'PNG image'
+    typeText: 'PNG image',
   }),
 
   image2: new TestEntryInfo({
@@ -588,7 +588,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'image2',
     sizeText: '4 KB',
-    typeText: 'PNG image'
+    typeText: 'PNG image',
   }),
 
   image3: new TestEntryInfo({
@@ -599,7 +599,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'image3.jpg',
     sizeText: '3 KB',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   smallJpeg: new TestEntryInfo({
@@ -610,7 +610,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'small.jpg',
     sizeText: '1 KB',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   // Used to differentiate between .jpg and .jpeg handling.
@@ -622,7 +622,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'sample.jpeg',
     sizeText: '1 KB',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   brokenJpeg: new TestEntryInfo({
@@ -633,7 +633,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'broken.jpg',
     sizeText: '1 byte',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   exifImage: new TestEntryInfo({
@@ -644,7 +644,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'exif.jpg',
     sizeText: '31 KB',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   webpImage: new TestEntryInfo({
@@ -655,7 +655,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 19, 2021, 1:10 PM',
     nameText: 'image.webp',
     sizeText: '5 KB',
-    typeText: 'WebP image'
+    typeText: 'WebP image',
   }),
 
   rawImage: new TestEntryInfo({
@@ -666,7 +666,7 @@ export const ENTRIES = {
     lastModifiedTime: 'May 20, 2019, 10:10 AM',
     nameText: 'raw.orf',
     sizeText: '214 KB',
-    typeText: 'ORF image'
+    typeText: 'ORF image',
   }),
 
   nefImage: new TestEntryInfo({
@@ -677,7 +677,7 @@ export const ENTRIES = {
     lastModifiedTime: 'May 9, 2015, 11:16 PM',
     nameText: 'raw.nef',
     sizeText: '92 KB',
-    typeText: 'NEF image'
+    typeText: 'NEF image',
   }),
 
   beautiful: new TestEntryInfo({
@@ -688,7 +688,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Nov 12, 2086, 12:00 PM',
     nameText: 'Beautiful Song.ogg',
     sizeText: '14 KB',
-    typeText: 'OGG audio'
+    typeText: 'OGG audio',
   }),
 
   movFile: new TestEntryInfo({
@@ -698,7 +698,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'mac.mov',
     sizeText: '875 bytes',
-    typeText: 'QuickTime video'
+    typeText: 'QuickTime video',
   }),
 
   docxFile: new TestEntryInfo({
@@ -710,7 +710,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
     nameText: 'word.docx',
     sizeText: '9 KB',
-    typeText: 'Word document'
+    typeText: 'Word document',
   }),
 
   photos: new TestEntryInfo({
@@ -719,7 +719,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
     nameText: 'photos',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   testDocument: new TestEntryInfo({
@@ -729,7 +729,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 10, 2013, 4:20 PM',
     nameText: 'Test Document.gdoc',
     sizeText: '--',
-    typeText: 'Google document'
+    typeText: 'Google document',
   }),
 
   testSharedDocument: new TestEntryInfo({
@@ -740,7 +740,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Mar 20, 2013, 10:40 PM',
     nameText: 'Test Shared Document.gdoc',
     sizeText: '--',
-    typeText: 'Google document'
+    typeText: 'Google document',
   }),
 
   testSharedFile: new TestEntryInfo({
@@ -753,7 +753,7 @@ export const ENTRIES = {
     nameText: 'test.txt',
     sizeText: '51 bytes',
     typeText: 'Plain text',
-    pinned: true
+    pinned: true,
   }),
 
   sharedDirectory: new TestEntryInfo({
@@ -763,7 +763,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'Shared',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   sharedDirectoryFile: new TestEntryInfo({
@@ -775,7 +775,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'file.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 
   newlyAdded: new TestEntryInfo({
@@ -786,7 +786,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:00 AM',
     nameText: 'newly added file.ogg',
     sizeText: '14 KB',
-    typeText: 'OGG audio'
+    typeText: 'OGG audio',
   }),
 
   tallText: new TestEntryInfo({
@@ -874,7 +874,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'imgpdf',
     sizeText: '1608 bytes',
-    typeText: 'PDF document'
+    typeText: 'PDF document',
   }),
 
   smallDocx: new TestEntryInfo({
@@ -967,7 +967,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'A',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   directoryB: new TestEntryInfo({
@@ -976,7 +976,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'B',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   directoryC: new TestEntryInfo({
@@ -985,7 +985,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'C',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   directoryD: new TestEntryInfo({
@@ -994,7 +994,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'D',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   directoryE: new TestEntryInfo({
@@ -1003,7 +1003,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'E',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   directoryF: new TestEntryInfo({
@@ -1012,7 +1012,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'F',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   dotTrash: new TestEntryInfo({
@@ -1021,7 +1021,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: '.Trash',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   deeplyBurriedSmallJpeg: new TestEntryInfo({
@@ -1032,7 +1032,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'deep.jpg',
     sizeText: '886 bytes',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   linkGtoB: new TestEntryInfo({
@@ -1042,7 +1042,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'G',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   linkHtoFile: new TestEntryInfo({
@@ -1053,7 +1053,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
     nameText: 'H.jpg',
     sizeText: '886 bytes',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   linkTtoTransitiveDirectory: new TestEntryInfo({
@@ -1063,7 +1063,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'T',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   zipArchive: new TestEntryInfo({
@@ -1074,7 +1074,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '743 bytes',
-    typeText: 'ZIP archive'
+    typeText: 'ZIP archive',
   }),
 
   zipSJISArchive: new TestEntryInfo({
@@ -1085,7 +1085,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
     nameText: 'sjis.zip',
     sizeText: '479 bytes',
-    typeText: 'ZIP archive'
+    typeText: 'ZIP archive',
   }),
 
   zipExtArchive: new TestEntryInfo({
@@ -1096,7 +1096,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
     nameText: 'tera.zip',
     sizeText: '250 bytes',
-    typeText: 'ZIP archive'
+    typeText: 'ZIP archive',
   }),
 
   debPackage: new TestEntryInfo({
@@ -1107,7 +1107,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'package.deb',
     sizeText: '724 bytes',
-    typeText: 'DEB file'
+    typeText: 'DEB file',
   }),
 
   tiniFile: new TestEntryInfo({
@@ -1118,7 +1118,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'test.tini',
     sizeText: '439 bytes',
-    typeText: 'Crostini image file'
+    typeText: 'Crostini image file',
   }),
 
   hiddenFile: new TestEntryInfo({
@@ -1129,7 +1129,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 30, 2014, 3:30 PM',
     nameText: '.hiddenfile.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 
   // Team-drive entries.
@@ -1275,7 +1275,7 @@ export const ENTRIES = {
     computerName: 'Computer A',
     nameText: 'A',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   // Read-only and write-restricted entries.
@@ -1296,7 +1296,7 @@ export const ENTRIES = {
       canAddChildren: false,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1315,7 +1315,7 @@ export const ENTRIES = {
       canAddChildren: false,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1333,7 +1333,7 @@ export const ENTRIES = {
       canAddChildren: false,
       canRename: false,
       canDelete: false,
-      canShare: false
+      canShare: false,
     },
   }),
 
@@ -1353,7 +1353,7 @@ export const ENTRIES = {
       canAddChildren: false,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1374,7 +1374,7 @@ export const ENTRIES = {
       canAddChildren: false,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1392,7 +1392,7 @@ export const ENTRIES = {
       canCopy: true,
       canAddChildren: false,
       canRename: false,
-      canDelete: true
+      canDelete: true,
     },
   }),
 
@@ -1410,7 +1410,7 @@ export const ENTRIES = {
       canCopy: true,
       canAddChildren: false,
       canRename: true,
-      canDelete: false
+      canDelete: false,
     },
   }),
 
@@ -1427,7 +1427,7 @@ export const ENTRIES = {
       canAddChildren: true,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1443,7 +1443,7 @@ export const ENTRIES = {
       canAddChildren: true,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1459,7 +1459,7 @@ export const ENTRIES = {
       canAddChildren: true,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1475,7 +1475,7 @@ export const ENTRIES = {
       canAddChildren: true,
       canRename: false,
       canDelete: false,
-      canShare: true
+      canShare: true,
     },
   }),
 
@@ -1499,7 +1499,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'android.webm',
     sizeText: '17 KB',
-    typeText: 'WebM video'
+    typeText: 'WebM video',
   }),
 
   musicAudio: new TestEntryInfo({
@@ -1510,7 +1510,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:00 AM',
     nameText: 'android.ogg',
     sizeText: '14 KB',
-    typeText: 'OGG audio'
+    typeText: 'OGG audio',
   }),
 
   picturesImage: new TestEntryInfo({
@@ -1521,7 +1521,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 18, 2012, 1:02 AM',
     nameText: 'android.jpg',
     sizeText: '3 KB',
-    typeText: 'JPEG image'
+    typeText: 'JPEG image',
   }),
 
   neverSync: new TestEntryInfo({
@@ -1532,7 +1532,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: 'never-sync.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 
   sharedWithMeDirectory: new TestEntryInfo({
@@ -1542,7 +1542,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'Shared Directory',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   sharedWithMeDirectoryFile: new TestEntryInfo({
@@ -1554,7 +1554,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'file.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 
   crdownload: new TestEntryInfo({
@@ -1565,7 +1565,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: 'hello.crdownload',
     sizeText: '51 bytes',
-    typeText: 'CRDOWNLOAD file'
+    typeText: 'CRDOWNLOAD file',
   }),
 
   pluginVm: new TestEntryInfo({
@@ -1574,7 +1574,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
     nameText: 'Windows Files',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   }),
 
   invalidLastModifiedDate: new TestEntryInfo({
@@ -1584,7 +1584,7 @@ export const ENTRIES = {
     mimeType: 'text/plain',
     nameText: 'invalidLastModifiedDate.txt',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   }),
 };
 
@@ -1605,7 +1605,7 @@ export function createTestFile(path) {
     sizeText: '51 bytes',
     typeText: 'Plain text',
     sourceFileName: 'text.txt',
-    mimeType: 'text/plain'
+    mimeType: 'text/plain',
   });
 }
 

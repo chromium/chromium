@@ -60,7 +60,7 @@ Polymer({
       type: Boolean,
       value: false,
       observer: 'expandedChanged',
-    }
+    },
   },
 
   /**

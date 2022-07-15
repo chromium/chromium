@@ -368,7 +368,7 @@ window.addEventListener('load', () => {
       };
       // Run the test.
       chrome.test.runTests([testCase[testCaseSymbol]]);
-    }
+    },
   ];
   steps.shift()();
 });

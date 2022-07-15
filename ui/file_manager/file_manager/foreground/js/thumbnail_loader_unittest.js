@@ -125,7 +125,7 @@ export function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(
       status: 'success',
       data: generateSampleImageDataUrl(32, 64),
       width: 32,
-      height: 64
+      height: 64,
     });
   });
 
@@ -136,8 +136,8 @@ export function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(
         rotate90: 1,
         scaleX: 1,
         scaleY: -1,
-      }
-    }
+      },
+    },
   };
 
   const fileSystem = new MockFileSystem('volume-id');
@@ -164,15 +164,15 @@ export function testLoadAsDataUrlFromExternal(callback) {
       status: 'success',
       data: externalThumbnailDataUrl,
       width: 32,
-      height: 32
+      height: 32,
     });
   });
 
   const metadata = {
     external: {
       thumbnailUrl: externalThumbnailUrl,
-      croppedThumbnailUrl: externalCroppedThumbnailUrl
-    }
+      croppedThumbnailUrl: externalCroppedThumbnailUrl,
+    },
   };
 
   const fileSystem = new MockFileSystem('volume-id');
@@ -198,7 +198,7 @@ export function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(
       status: 'success',
       data: generateSampleImageDataUrl(32, 64),
       width: 32,
-      height: 64
+      height: 64,
     });
   });
 
@@ -209,8 +209,8 @@ export function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(
         rotate90: 1,
         scaleX: 1,
         scaleY: -1,
-      }
-    }
+      },
+    },
   };
 
   const fileSystem = new MockFileSystem('volume-id');

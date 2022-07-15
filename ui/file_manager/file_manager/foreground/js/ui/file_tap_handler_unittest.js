@@ -39,7 +39,7 @@ function createTouch(identifier, clientX, clientY) {
     identifier: identifier,
     clientX: clientX,
     clientY: clientY,
-    target: dummyTarget
+    target: dummyTarget,
   });
 }
 
@@ -117,7 +117,7 @@ export function testLongTap(callback) {
         cancelable: true,
         changedTouches: [touch0],
         targetTouches: [touch0],
-        touches: [touch0]
+        touches: [touch0],
       }),
       0, handleTap);
   assertEquals(0, events.length);
@@ -220,7 +220,7 @@ export function testTwoFingerTap() {
         cancelable: true,
         changedTouches: [touch1_1],
         targetTouches: [touch0_0],
-        touches: [touch0_0]
+        touches: [touch0_0],
       }),
       1, handleTap);
   handler.handleTouchEvents(

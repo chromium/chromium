@@ -177,8 +177,11 @@ export class MultiMetadataProvider extends MetadataProvider {
     // Merge results.
     return Promise
         .all([
-          fileSystemPromise, externalPromise, contentPromise,
-          fallbackContentPromise, dlpPromise
+          fileSystemPromise,
+          externalPromise,
+          contentPromise,
+          fallbackContentPromise,
+          dlpPromise,
         ])
         .then(resultsList => {
           const integratedResults = {};

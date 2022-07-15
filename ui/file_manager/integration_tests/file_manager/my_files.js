@@ -147,7 +147,7 @@ testcase.myFilesUpdatesChildren = async () => {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: '.hidden-folder',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 
   // Add a hidden folder.

@@ -106,7 +106,7 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
             chrome.fileManagerPrivate.getVolumeRoot(
                 {
                   volumeId: volumeMetadata.volumeId,
-                  writable: !volumeMetadata.isReadOnly
+                  writable: !volumeMetadata.isReadOnly,
                 },
                 rootDirectoryEntry => {
                   if (chrome.runtime.lastError) {

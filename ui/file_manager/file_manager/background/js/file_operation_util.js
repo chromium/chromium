@@ -674,7 +674,7 @@ fileOperationUtil.Task = class {
       processedBytes: this.processedBytes,
       processingEntryName: processingEntry ? processingEntry.name : '',
       targetDirEntryName: this.targetDirEntry.name,
-      remainingTime: this.speedometer_.getRemainingTime()
+      remainingTime: this.speedometer_.getRemainingTime(),
     };
   }
 

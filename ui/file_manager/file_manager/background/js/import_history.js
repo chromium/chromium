@@ -19,7 +19,7 @@ const importerHistory = {};
  */
 importerHistory.ImportHistoryState = {
   'COPIED': 'copied',
-  'IMPORTED': 'imported'
+  'IMPORTED': 'imported',
 };
 
 /**
@@ -27,7 +27,7 @@ importerHistory.ImportHistoryState = {
  */
 importerHistory.RecordType_ = {
   COPY: 0,
-  IMPORT: 1
+  IMPORT: 1,
 };
 
 /**
@@ -192,7 +192,7 @@ importerHistory.PersistentImportHistory = class {
     if (!this.copiedEntries_[key].hasOwnProperty(destination)) {
       this.copiedEntries_[key][destination] = {
         sourceUrl: sourceUrl,
-        destinationUrl: destinationUrl
+        destinationUrl: destinationUrl,
       };
       return true;
     }
@@ -238,9 +238,11 @@ importerHistory.PersistentImportHistory = class {
              */
             key => {
               return this.storeRecord_([
-                importerHistory.RecordType_.COPY, key, destination,
+                importerHistory.RecordType_.COPY,
+                key,
+                destination,
                 importer.deflateAppUrl(entry.toURL()),
-                importer.deflateAppUrl(destinationUrl)
+                importer.deflateAppUrl(destinationUrl),
               ]);
             })
         .then(this.notifyObservers_.bind(

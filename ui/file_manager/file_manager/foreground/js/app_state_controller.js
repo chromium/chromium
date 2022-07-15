@@ -132,7 +132,7 @@ export class AppStateController {
       columnConfig: {},
       listType: this.ui_.listContainer.currentListType,
       isAllAndroidFoldersVisible:
-          this.directoryModel_.getFileFilter().isAllAndroidFoldersVisible()
+          this.directoryModel_.getFileFilter().isAllAndroidFoldersVisible(),
     };
     const cm = this.ui_.listContainer.table.columnModel;
     prefs.columnConfig = cm.exportColumnConfig();

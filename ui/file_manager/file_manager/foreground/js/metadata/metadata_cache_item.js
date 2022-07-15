@@ -165,7 +165,7 @@ export class MetadataCacheItem {
 const MetadataCacheItemPropertyState = {
   INVALIDATED: 'invalidated',
   LOADING: 'loading',
-  FULFILLED: 'fulfilled'
+  FULFILLED: 'fulfilled',
 };
 
 /**

@@ -59,7 +59,7 @@ const volumeManager = /** @type {!VolumeManager} */ ({
       };
     }
     assertNotReached();
-  }
+  },
 });
 
 export function testMultiMetadataProviderBasic(callback) {
@@ -71,7 +71,7 @@ export function testMultiMetadataProviderBasic(callback) {
           assertArrayEquals(['size', 'modificationTime'], requests[0].names);
           return Promise.resolve(
               [{modificationTime: new Date(2015, 0, 1), size: 1024}]);
-        }
+        },
       }),
       /** @type {!ExternalMetadataProvider} */ ({
         get: function(requests) {
@@ -80,7 +80,7 @@ export function testMultiMetadataProviderBasic(callback) {
           assertArrayEquals(['size', 'modificationTime'], requests[0].names);
           return Promise.resolve(
               [{modificationTime: new Date(2015, 1, 2), size: 2048}]);
-        }
+        },
       }),
       /** @type {!ContentMetadataProvider} */ ({
         get: function(requests) {
@@ -94,15 +94,15 @@ export function testMultiMetadataProviderBasic(callback) {
           assertArrayEquals(['contentThumbnailUrl'], requests[1].names);
           return Promise.resolve([
             {contentThumbnailUrl: 'THUMBNAIL_URL_A'},
-            {contentThumbnailUrl: 'THUMBNAIL_URL_B'}
+            {contentThumbnailUrl: 'THUMBNAIL_URL_B'},
           ]);
-        }
+        },
       }),
       /** @type {!DlpMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       volumeManager);
 
@@ -112,7 +112,7 @@ export function testMultiMetadataProviderBasic(callback) {
             new MetadataRequest(
                 entryA, ['size', 'modificationTime', 'contentThumbnailUrl']),
             new MetadataRequest(
-                entryB, ['size', 'modificationTime', 'contentThumbnailUrl'])
+                entryB, ['size', 'modificationTime', 'contentThumbnailUrl']),
           ])
           .then(results => {
             assertEquals(2, results.length);
@@ -136,7 +136,7 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       /** @type {!ExternalMetadataProvider} */ ({
         get: function(requests) {
@@ -149,7 +149,7 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
             {present: false, imageWidth: 200},
             {present: true, imageWidth: 400},
           ]);
-        }
+        },
       }),
       /** @type {!ContentMetadataProvider} */ ({
         get: function(requests) {
@@ -166,7 +166,7 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       volumeManager);
 
@@ -175,7 +175,7 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
           .get([
             new MetadataRequest(entryA, ['imageWidth']),
             new MetadataRequest(entryB, ['imageWidth']),
-            new MetadataRequest(entryC, ['imageWidth'])
+            new MetadataRequest(entryC, ['imageWidth']),
           ])
           .then(results => {
             assertEquals(3, results.length);
@@ -195,7 +195,7 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       /** @type {!ExternalMetadataProvider} */ ({
         get: function(requests) {
@@ -203,8 +203,12 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
           assertEquals('filesystem://D', requests[0].entry.toURL());
           assertArrayEquals(
               [
-                'canCopy', 'canDelete', 'canRename', 'canAddChildren',
-                'modificationTime', 'size'
+                'canCopy',
+                'canDelete',
+                'canRename',
+                'canAddChildren',
+                'modificationTime',
+                'size',
               ],
               requests[0].names);
           return Promise.resolve([
@@ -217,7 +221,7 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
               modificationTime: new Date(2015, 1, 2),
             },
           ]);
-        }
+        },
       }),
       /** @type {!ContentMetadataProvider} */ ({
         get: function(requests) {
@@ -229,7 +233,7 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       volumeManager);
 
@@ -239,7 +243,11 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
             new MetadataRequest(
                 entryD,
                 [
-                  'size', 'canCopy', 'canDelete', 'canRename', 'canAddChildren'
+                  'size',
+                  'canCopy',
+                  'canDelete',
+                  'canRename',
+                  'canAddChildren',
                 ]),
           ])
           .then(results => {
@@ -262,13 +270,13 @@ export function testDlpMetadataProvider(callback) {
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       /** @type {!ExternalMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(0, requests.length);
           return Promise.resolve([]);
-        }
+        },
       }),
       /** @type {!ContentMetadataProvider} */ ({
         get: function(requests) {
@@ -283,7 +291,7 @@ export function testDlpMetadataProvider(callback) {
             sourceUrl: 'url',
             isDlpRestricted: true,
           }]);
-        }
+        },
       }),
       volumeManager);
 

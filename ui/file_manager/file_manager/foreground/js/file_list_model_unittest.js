@@ -358,19 +358,19 @@ export function testGroupByModificationTime() {
           startIndex: 3,
           endIndex: 4,
           label: 'earlier_this_week',
-          group: 'earlier_this_week'
+          group: 'earlier_this_week',
         },
         {
           startIndex: 5,
           endIndex: 5,
           label: 'earlier_this_month',
-          group: 'earlier_this_month'
+          group: 'earlier_this_month',
         },
         {
           startIndex: 6,
           endIndex: 6,
           label: 'earlier_this_year',
-          group: 'earlier_this_year'
+          group: 'earlier_this_year',
         },
       ],
       expectedReversedGroups: [
@@ -378,19 +378,19 @@ export function testGroupByModificationTime() {
           startIndex: 0,
           endIndex: 0,
           label: 'earlier_this_year',
-          group: 'earlier_this_year'
+          group: 'earlier_this_year',
         },
         {
           startIndex: 1,
           endIndex: 1,
           label: 'earlier_this_month',
-          group: 'earlier_this_month'
+          group: 'earlier_this_month',
         },
         {
           startIndex: 2,
           endIndex: 3,
           label: 'earlier_this_week',
-          group: 'earlier_this_week'
+          group: 'earlier_this_week',
         },
         {startIndex: 4, endIndex: 4, label: 'yesterday', group: 'yesterday'},
         {startIndex: 5, endIndex: 6, label: 'today', group: 'today'},
@@ -481,7 +481,7 @@ export function testGroupByDirectory() {
     const files = Object.keys(test.metadataMap).map(fileName => {
       return {
         name: fileName,
-        isDirectory: test.metadataMap[fileName].isDirectory
+        isDirectory: test.metadataMap[fileName].isDirectory,
       };
     });
     fileListModel.push(...files);

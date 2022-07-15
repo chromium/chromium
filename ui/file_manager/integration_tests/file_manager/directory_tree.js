@@ -102,7 +102,7 @@ testcase.directoryTreeVerticalScroll = async () => {
       lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
       nameText: '' + i,
       sizeText: '--',
-      typeText: 'Folder'
+      typeText: 'Folder',
     }));
   }
 

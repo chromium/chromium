@@ -260,7 +260,7 @@ duplicateFinder.DispositionCheckerImpl = class {
           return Promise
               .all([
                 history.wasCopied(entry, destination),
-                history.wasImported(entry, destination)
+                history.wasImported(entry, destination),
               ])
               .then(
                   /**

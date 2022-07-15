@@ -37,14 +37,14 @@ export async function testComputeComponentsFromEntry() {
   await validate('/.files-by-id/1234/file', [
     [
       'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
-      'fake-entry://drive_shared_with_me'
+      'fake-entry://drive_shared_with_me',
     ],
     ['file', 'filesystem:drive/.files-by-id/1234/file'],
   ]);
   await validate('/.files-by-id/1234/a/file', [
     [
       'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
-      'fake-entry://drive_shared_with_me'
+      'fake-entry://drive_shared_with_me',
     ],
     ['a', 'filesystem:drive/.files-by-id/1234/a'],
     ['file', 'filesystem:drive/.files-by-id/1234/a/file'],
@@ -53,14 +53,14 @@ export async function testComputeComponentsFromEntry() {
   await validate('/.shortcut-targets-by-id/1-abc-xyz/file', [
     [
       'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
-      'fake-entry://drive_shared_with_me'
+      'fake-entry://drive_shared_with_me',
     ],
     ['file', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/file'],
   ]);
   await validate('/.shortcut-targets-by-id/1-abc-xyz/a/file', [
     [
       'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
-      'fake-entry://drive_shared_with_me'
+      'fake-entry://drive_shared_with_me',
     ],
     ['a', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/a'],
     ['file', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/a/file'],

@@ -619,5 +619,5 @@ mediaImport.ImportTaskImpl = class extends taskQueue.BaseTaskImpl {
  * @enum {string}
  */
 mediaImport.UpdateType = {
-  ENTRY_CHANGED: 'ENTRY_CHANGED'
+  ENTRY_CHANGED: 'ENTRY_CHANGED',
 };

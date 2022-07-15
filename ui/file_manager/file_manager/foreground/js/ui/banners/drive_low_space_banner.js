@@ -53,7 +53,7 @@ export class DriveLowSpaceBanner extends WarningBanner {
   allowedVolumes() {
     return [{
       type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE
+      root: VolumeManagerCommon.RootType.DRIVE,
     }];
   }
 

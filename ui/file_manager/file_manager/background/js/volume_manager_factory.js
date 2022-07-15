@@ -56,7 +56,7 @@ const volumeManagerFactory = (() => {
   return {
     getInstance: getInstance,
     getInstanceForDebug: getInstanceForDebug,
-    revokeInstanceForTesting: revokeInstanceForTesting
+    revokeInstanceForTesting: revokeInstanceForTesting,
   };
 })();
 

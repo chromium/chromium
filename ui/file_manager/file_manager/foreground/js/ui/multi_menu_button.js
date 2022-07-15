@@ -75,7 +75,7 @@ export class MultiMenuButton {
         this.setMenu_(menu);
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
     element = /** @type {!MultiMenuButton} */ (element);
     element.decorate();

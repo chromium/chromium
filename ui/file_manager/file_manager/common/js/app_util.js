@@ -91,7 +91,7 @@ appUtil.AppCache.update = (key, value, opt_lifetime) => {
     if (value != null) {
       map[key] = {
         value: value,
-        expire: Date.now() + (opt_lifetime || appUtil.AppCache.LIFETIME)
+        expire: Date.now() + (opt_lifetime || appUtil.AppCache.LIFETIME),
       };
     } else if (key in map) {
       delete map[key];

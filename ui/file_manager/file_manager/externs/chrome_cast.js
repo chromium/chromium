@@ -15,7 +15,7 @@ chrome.cast = {};
 chrome.cast.AutoJoinPolicy = {
   TAB_AND_ORIGIN_SCOPED: 'tab_and_origin_scoped',
   ORIGIN_SCOPED: 'origin_scoped',
-  PAGE_SCOPED: 'page_scoped'
+  PAGE_SCOPED: 'page_scoped',
 };
 
 
@@ -25,7 +25,7 @@ chrome.cast.AutoJoinPolicy = {
  */
 chrome.cast.DefaultActionPolicy = {
   CREATE_SESSION: 'create_session',
-  CAST_THIS_TAB: 'cast_this_tab'
+  CAST_THIS_TAB: 'cast_this_tab',
 };
 
 
@@ -37,7 +37,7 @@ chrome.cast.Capability = {
   VIDEO_OUT: 'video_out',
   AUDIO_OUT: 'audio_out',
   VIDEO_IN: 'video_in',
-  AUDIO_IN: 'audio_in'
+  AUDIO_IN: 'audio_in',
 };
 
 
@@ -55,7 +55,7 @@ chrome.cast.ErrorCode = {
   RECEIVER_UNAVAILABLE: 'receiver_unavailable',
   SESSION_ERROR: 'session_error',
   CHANNEL_ERROR: 'channel_error',
-  LOAD_MEDIA_FAILED: 'load_media_failed'
+  LOAD_MEDIA_FAILED: 'load_media_failed',
 };
 
 
@@ -65,7 +65,7 @@ chrome.cast.ErrorCode = {
  */
 chrome.cast.ReceiverAvailability = {
   AVAILABLE: 'available',
-  UNAVAILABLE: 'unavailable'
+  UNAVAILABLE: 'unavailable',
 };
 
 
@@ -76,7 +76,7 @@ chrome.cast.ReceiverAvailability = {
 chrome.cast.SenderPlatform = {
   CHROME: 'chrome',
   IOS: 'ios',
-  ANDROID: 'android'
+  ANDROID: 'android',
 };
 
 
@@ -87,7 +87,7 @@ chrome.cast.SenderPlatform = {
 chrome.cast.ReceiverType = {
   CAST: 'cast',
   HANGOUT: 'hangout',
-  CUSTOM: 'custom'
+  CUSTOM: 'custom',
 };
 
 
@@ -97,7 +97,7 @@ chrome.cast.ReceiverType = {
  */
 chrome.cast.ReceiverAction = {
   CAST: 'cast',
-  STOP: 'stop'
+  STOP: 'stop',
 };
 
 
@@ -108,7 +108,7 @@ chrome.cast.ReceiverAction = {
 chrome.cast.SessionStatus = {
   CONNECTED: 'connected',
   DISCONNECTED: 'disconnected',
-  STOPPED: 'stopped'
+  STOPPED: 'stopped',
 };
 
 
@@ -126,7 +126,7 @@ chrome.cast.media.MediaCommand = {
   PAUSE: 'pause',
   SEEK: 'seek',
   STREAM_VOLUME: 'stream_volume',
-  STREAM_MUTE: 'stream_mute'
+  STREAM_MUTE: 'stream_mute',
 };
 
 
@@ -139,7 +139,7 @@ chrome.cast.media.MetadataType = {
   TV_SHOW: 1,
   MOVIE: 2,
   MUSIC_TRACK: 3,
-  PHOTO: 4
+  PHOTO: 4,
 };
 
 
@@ -151,7 +151,7 @@ chrome.cast.media.PlayerState = {
   IDLE: 'IDLE',
   PLAYING: 'PLAYING',
   PAUSED: 'PAUSED',
-  BUFFERING: 'BUFFERING'
+  BUFFERING: 'BUFFERING',
 };
 
 
@@ -161,7 +161,7 @@ chrome.cast.media.PlayerState = {
  */
 chrome.cast.media.ResumeState = {
   PLAYBACK_START: 'PLAYBACK_START',
-  PLAYBACK_PAUSE: 'PLAYBACK_PAUSE'
+  PLAYBACK_PAUSE: 'PLAYBACK_PAUSE',
 };
 
 
@@ -172,7 +172,7 @@ chrome.cast.media.ResumeState = {
 chrome.cast.media.StreamType = {
   BUFFERED: 'BUFFERED',
   LIVE: 'LIVE',
-  OTHER: 'OTHER'
+  OTHER: 'OTHER',
 };
 
 
@@ -184,7 +184,7 @@ chrome.cast.media.IdleReason = {
   CANCELLED: 'CANCELLED',
   INTERRUPTED: 'INTERRUPTED',
   FINISHED: 'FINISHED',
-  ERROR: 'ERROR'
+  ERROR: 'ERROR',
 };
 
 
@@ -195,7 +195,7 @@ chrome.cast.media.IdleReason = {
 chrome.cast.media.TrackType = {
   TEXT: 'TEXT',
   AUDIO: 'AUDIO',
-  VIDEO: 'VIDEO'
+  VIDEO: 'VIDEO',
 };
 
 
@@ -208,7 +208,7 @@ chrome.cast.media.TextTrackType = {
   CAPTIONS: 'CAPTIONS',
   DESCRIPTIONS: 'DESCRIPTIONS',
   CHAPTERS: 'CHAPTERS',
-  METADATA: 'METADATA'
+  METADATA: 'METADATA',
 };
 
 
@@ -221,7 +221,7 @@ chrome.cast.media.TextTrackEdgeType = {
   OUTLINE: 'OUTLINE',
   DROP_SHADOW: 'DROP_SHADOW',
   RAISED: 'RAISED',
-  DEPRESSED: 'DEPRESSED'
+  DEPRESSED: 'DEPRESSED',
 };
 
 
@@ -232,7 +232,7 @@ chrome.cast.media.TextTrackEdgeType = {
 chrome.cast.media.TextTrackWindowType = {
   NONE: 'NONE',
   NORMAL: 'NORMAL',
-  ROUNDED_CORNERS: 'ROUNDED_CORNERS'
+  ROUNDED_CORNERS: 'ROUNDED_CORNERS',
 };
 
 
@@ -247,7 +247,7 @@ chrome.cast.media.TextTrackFontGenericFamily = {
   MONOSPACED_SERIF: 'MONOSPACED_SERIF',
   CASUAL: 'CASUAL',
   CURSIVE: 'CURSIVE',
-  SMALL_CAPITALS: 'SMALL_CAPITALS'
+  SMALL_CAPITALS: 'SMALL_CAPITALS',
 };
 
 
@@ -259,7 +259,7 @@ chrome.cast.media.TextTrackFontStyle = {
   NORMAL: 'NORMAL',
   BOLD: 'BOLD',
   BOLD_ITALIC: 'BOLD_ITALIC',
-  ITALIC: 'ITALIC'
+  ITALIC: 'ITALIC',
 };
 
 

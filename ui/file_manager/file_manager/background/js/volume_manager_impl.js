@@ -571,7 +571,7 @@ export class VolumeManagerImpl extends EventTarget {
           errorCallbacks: [errorCallback],
 
           timeout: setTimeout(
-              this.onTimeout_.bind(this, key), volumeManagerUtil.TIMEOUT)
+              this.onTimeout_.bind(this, key), volumeManagerUtil.TIMEOUT),
         };
       }
     });

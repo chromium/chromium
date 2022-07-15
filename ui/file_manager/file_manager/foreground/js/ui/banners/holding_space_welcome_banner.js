@@ -42,7 +42,7 @@ export class HoldingSpaceWelcomeBanner extends EducationalBanner {
       if (type === VolumeManagerCommon.VolumeType.DRIVE) {
         return {
           type: VolumeManagerCommon.VolumeType.DRIVE,
-          root: VolumeManagerCommon.RootType.DRIVE
+          root: VolumeManagerCommon.RootType.DRIVE,
         };
       }
       return {type};

@@ -329,7 +329,7 @@ SearchBox.EventType = {
   // Dispatched when the text in the search box is changed.
   TEXT_CHANGE: 'textchange',
   // Dispatched when the item in the auto complete list is selected.
-  ITEM_SELECT: 'itemselect'
+  ITEM_SELECT: 'itemselect',
 };
 
 /**

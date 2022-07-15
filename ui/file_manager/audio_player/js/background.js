@@ -34,7 +34,7 @@ const audioPlayerCreateOptions = {
   minWidth: 320,
   height: 4 + 48 + 96,  // collapsed
   width: 320,
-  frame: {color: '#fafafa'}
+  frame: {color: '#fafafa'},
 };
 
 class AudioPlayerBackground extends BackgroundBaseImpl {

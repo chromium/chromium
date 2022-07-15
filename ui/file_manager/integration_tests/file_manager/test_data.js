@@ -135,8 +135,12 @@ export const COMPLEX_ZIP_ENTRY_SET = [
  * @const
  */
 export const COMPLEX_DRIVE_ENTRY_SET = [
-  ENTRIES.hello, ENTRIES.photos, ENTRIES.readOnlyFolder,
-  ENTRIES.readOnlyDocument, ENTRIES.readOnlyStrictDocument, ENTRIES.readOnlyFile
+  ENTRIES.hello,
+  ENTRIES.photos,
+  ENTRIES.readOnlyFolder,
+  ENTRIES.readOnlyDocument,
+  ENTRIES.readOnlyStrictDocument,
+  ENTRIES.readOnlyFile,
 ];
 
 /**
@@ -147,8 +151,12 @@ export const COMPLEX_DRIVE_ENTRY_SET = [
  * @const
  */
 export const COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET = [
-  ENTRIES.hello, ENTRIES.photos, ENTRIES.readOnlyFolder, ENTRIES.readOnlyFile,
-  ENTRIES.deletableFile, ENTRIES.renamableFile
+  ENTRIES.hello,
+  ENTRIES.photos,
+  ENTRIES.readOnlyFolder,
+  ENTRIES.readOnlyFile,
+  ENTRIES.deletableFile,
+  ENTRIES.renamableFile,
 ];
 
 /**

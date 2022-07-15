@@ -296,7 +296,7 @@ class DriveToggleOfflineAction {
         this.ui_.alertDialog.show(
             strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)), null,
             null, null);
-      }
+      },
     };
     steps.start();
 
@@ -894,7 +894,7 @@ export class ActionsModel extends EventTarget {
 ActionsModel.CommonActionId = {
   SHARE: 'SHARE',
   SAVE_FOR_OFFLINE: 'SAVE_FOR_OFFLINE',
-  OFFLINE_NOT_NECESSARY: 'OFFLINE_NOT_NECESSARY'
+  OFFLINE_NOT_NECESSARY: 'OFFLINE_NOT_NECESSARY',
 };
 
 /**
@@ -903,5 +903,5 @@ ActionsModel.CommonActionId = {
 ActionsModel.InternalActionId = {
   CREATE_FOLDER_SHORTCUT: 'pin-folder',
   REMOVE_FOLDER_SHORTCUT: 'unpin-folder',
-  MANAGE_IN_DRIVE: 'manage-in-drive'
+  MANAGE_IN_DRIVE: 'manage-in-drive',
 };

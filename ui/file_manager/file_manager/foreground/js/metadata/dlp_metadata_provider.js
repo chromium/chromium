@@ -58,5 +58,6 @@ export class DlpMetadataProvider extends MetadataProvider {
 /** @const {!Array<string>} */
 DlpMetadataProvider.PROPERTY_NAMES = [
   // TODO(crbug.com/1329770): Consider using an enum for this property.
-  'isDlpRestricted', 'sourceUrl'
+  'isDlpRestricted',
+  'sourceUrl',
 ];

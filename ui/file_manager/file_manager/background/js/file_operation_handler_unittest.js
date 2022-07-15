@@ -79,7 +79,7 @@ export function setUp() {
     COPY_TARGET_EXISTS_ERROR: '$1 is already exists.',
     COPY_FILESYSTEM_ERROR: 'Copy filesystem error: $1',
     FILE_ERROR_GENERIC: 'File error generic.',
-    COPY_UNEXPECTED_ERROR: 'Copy unexpected error: $1'
+    COPY_UNEXPECTED_ERROR: 'Copy unexpected error: $1',
   });
 
   // Install mock chrome APIs.

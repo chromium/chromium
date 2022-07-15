@@ -13,7 +13,7 @@ import {ImageOrientation, ImageTransformParam} from './image_orientation.js';
  */
 export const LoadImageResponseStatus = {
   SUCCESS: 'success',
-  ERROR: 'error'
+  ERROR: 'error',
 };
 
 /**
@@ -154,7 +154,7 @@ export class LoadImageRequest {
       width: request.width,
       height: request.height,
       maxWidth: request.maxWidth,
-      maxHeight: request.maxHeight
+      maxHeight: request.maxHeight,
     });
   }
 

@@ -460,7 +460,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
               // Do not clone the selection url, only the current directory.
               currentDirectoryURL:
                   window.appWindows[key]
-                      .contentWindow.appState.currentDirectoryURL
+                      .contentWindow.appState.currentDirectoryURL,
             };
             launcher.launchFileManager(appState);
           })
@@ -553,7 +553,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     chrome.contextMenus.create({
       id: 'new-window',
       contexts: ['launcher'],
-      title: str('NEW_WINDOW_BUTTON_LABEL')
+      title: str('NEW_WINDOW_BUTTON_LABEL'),
     });
   }
 }

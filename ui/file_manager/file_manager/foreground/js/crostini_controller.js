@@ -95,13 +95,13 @@ export class CrostiniController {
         callback: () => {
           chrome.fileManagerPrivate.openSettingsSubpage(subPage);
           CommandHandler.recordMenuItemSelected(umaItem);
-        }
+        },
       });
     };
 
     const [crostiniShareCount, pluginVmShareCount] = await Promise.all([
       getSharedPaths(constants.DEFAULT_CROSTINI_VM),
-      getSharedPaths(constants.PLUGIN_VM)
+      getSharedPaths(constants.PLUGIN_VM),
     ]);
 
     toast(

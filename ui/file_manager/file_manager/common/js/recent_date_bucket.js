@@ -56,27 +56,27 @@ export function getTranslationKeyForDateBucket(dateBucket) {
   const DATE_BUCKET_TO_TRANSLATION_KEY_MAP = new Map([
     [
       chrome.fileManagerPrivate.RecentDateBucket.TODAY,
-      'RECENT_TIME_HEADING_TODAY'
+      'RECENT_TIME_HEADING_TODAY',
     ],
     [
       chrome.fileManagerPrivate.RecentDateBucket.YESTERDAY,
-      'RECENT_TIME_HEADING_YESTERDAY'
+      'RECENT_TIME_HEADING_YESTERDAY',
     ],
     [
       chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_WEEK,
-      'RECENT_TIME_HEADING_THIS_WEEK'
+      'RECENT_TIME_HEADING_THIS_WEEK',
     ],
     [
       chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_MONTH,
-      'RECENT_TIME_HEADING_THIS_MONTH'
+      'RECENT_TIME_HEADING_THIS_MONTH',
     ],
     [
       chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_YEAR,
-      'RECENT_TIME_HEADING_THIS_YEAR'
+      'RECENT_TIME_HEADING_THIS_YEAR',
     ],
     [
       chrome.fileManagerPrivate.RecentDateBucket.OLDER,
-      'RECENT_TIME_HEADING_OLDER'
+      'RECENT_TIME_HEADING_OLDER',
     ],
   ]);
   return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket);
