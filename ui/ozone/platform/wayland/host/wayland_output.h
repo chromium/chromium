@@ -16,6 +16,8 @@
 namespace ui {
 
 class XDGOutput;
+class WaylandZcrColorManager;
+class WaylandZcrColorManagementOutput;
 class WaylandConnection;
 class WaylandZAuraOutput;
 
@@ -59,6 +61,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void Initialize(Delegate* delegate);
   void InitializeXdgOutput(struct zxdg_output_manager_v1* manager);
   void InitializeZAuraOutput(zaura_shell* aura_shell);
+  void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
   float GetUIScaleFactor() const;
 
   uint32_t output_id() const { return output_id_; }
@@ -71,6 +74,9 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Size physical_size() const { return physical_size_; }
   gfx::Insets insets() const;
   const std::string& label() const;
+  WaylandZcrColorManagementOutput* color_management_output() const {
+    return color_management_output_.get();
+  }
 
   // Tells if the output has already received physical screen dimensions in the
   // global compositor space.
@@ -112,6 +118,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
   std::unique_ptr<WaylandZAuraOutput> aura_output_;
+  std::unique_ptr<WaylandZcrColorManagementOutput> color_management_output_;
   float scale_factor_ = kDefaultScaleFactor;
   int32_t panel_transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   // Origin of the output in DIP screen coordinate.

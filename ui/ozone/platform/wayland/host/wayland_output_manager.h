@@ -40,6 +40,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
 
   void InitializeAllXdgOutputs();
   void InitializeAllZAuraOutputs();
+  void InitializeAllColorManagementOutputs();
 
   // Creates a platform screen.
   std::unique_ptr<WaylandScreen> CreateWaylandScreen();

@@ -6,6 +6,7 @@
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
+#include <chrome-color-management-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
@@ -183,6 +184,11 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_popup)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_surface_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_space_creator_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_space_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_keyboard_extension_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_keyboard_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_v1)

@@ -50,6 +50,10 @@ void WaylandOutputManager::AddWaylandOutput(uint32_t output_id,
     wayland_output->InitializeZAuraOutput(
         connection_->zaura_shell()->wl_object());
   }
+  if (connection_->zcr_color_manager()) {
+    wayland_output->InitializeColorManagementOutput(
+        connection_->zcr_color_manager());
+  }
   DCHECK(!wayland_output->is_ready());
 
   output_list_[output_id] = std::move(wayland_output);
@@ -85,6 +89,13 @@ void WaylandOutputManager::InitializeAllZAuraOutputs() {
     output.second->InitializeZAuraOutput(
         connection_->zaura_shell()->wl_object());
   }
+}
+
+void WaylandOutputManager::InitializeAllColorManagementOutputs() {
+  DCHECK(connection_->zcr_color_manager());
+  for (const auto& output : output_list_)
+    output.second->InitializeColorManagementOutput(
+        connection_->zcr_color_manager());
 }
 
 std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {

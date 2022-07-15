@@ -10,6 +10,9 @@
 
 namespace ui {
 
+#define PARAM_TO_FLOAT(x) (x / 10000.f)
+#define FLOAT_TO_PARAM(x) static_cast<uint32_t>(x * 10000)
+
 class WaylandConnection;
 
 class WaylandUtils : public PlatformUtils {
