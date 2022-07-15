@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
@@ -375,10 +376,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   syncer::SyncService* syncService = self.syncService;
-  const BOOL isSyncEnabled = syncService && syncService->IsSyncFeatureEnabled();
-  self.faviconLoader->FaviconForPageUrl(URL.gurl, kDesiredMediumFaviconSizePt,
-                                        kMinFaviconSizePt, isSyncEnabled,
-                                        completion);
+  BOOL isPasswordSyncEnabled =
+      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(syncService);
+  self.faviconLoader->FaviconForPageUrl(
+      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

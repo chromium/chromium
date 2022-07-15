@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue_with_form.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -129,10 +130,11 @@
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   syncer::SyncService* syncService = self.syncService;
-  const BOOL isSyncEnabled = syncService && syncService->IsSyncFeatureEnabled();
-  self.faviconLoader->FaviconForPageUrl(URL.gurl, kDesiredMediumFaviconSizePt,
-                                        kMinFaviconSizePt, isSyncEnabled,
-                                        completion);
+  BOOL isPasswordSyncEnabled =
+      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(syncService);
+  self.faviconLoader->FaviconForPageUrl(
+      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
 }
 
 @end
