@@ -47,7 +47,7 @@ public class SearchResumptionTileBuilder {
      * number of available suggestions to build on the parent ViewGroup.
      */
     void buildSuggestionTile(
-            List<AutocompleteMatch> suggestions, SearchResumptionContainerView parent) {
+            List<AutocompleteMatch> suggestions, SearchResumptionTileContainerView parent) {
         try (TraceEvent e = TraceEvent.scoped("SearchSuggestionTileProvider.addTileSection")) {
             assert parent.getChildCount() == 0;
 
@@ -78,7 +78,7 @@ public class SearchResumptionTileBuilder {
      * Builds a {@link SearchResumptionTileView} based on the given suggestion.
      */
     SearchResumptionTileView buildTileView(
-            AutocompleteMatch suggestion, SearchResumptionContainerView parent) {
+            AutocompleteMatch suggestion, SearchResumptionTileContainerView parent) {
         SearchResumptionTileView tileView = parent.buildTileView();
         tileView.updateSuggestionData(suggestion);
         tileView.addOnSuggestionClickCallback(mCallback);

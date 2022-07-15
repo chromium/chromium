@@ -722,6 +722,12 @@ public final class ChromePreferenceKeys {
     public static final String IS_LAST_VISITED_TAB_SRP = "Chrome.StartSurface.IsLastVisitedTabSRP";
 
     /**
+     * Key used to store user actions for collapsing search resumption module on NTP.
+     */
+    public static final String SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP =
+            "Chrome.SearchResumptionModule.Collapse";
+
+    /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
      * enabled.
      */
@@ -1091,6 +1097,7 @@ public final class ChromePreferenceKeys {
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 SYNC_PROMO_TOTAL_SHOW_COUNT,
                 START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                 START_SHOW_ON_STARTUP,
                 TAP_FEED_CARDS_COUNT,
                 TAP_MV_TILES_COUNT,

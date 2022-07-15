@@ -95,9 +95,9 @@ public class SearchResumptionModuleMediatorUnitTest {
     @Mock
     private ViewStub mParent;
     @Mock
-    private View mModuleLayoutView;
+    private SearchResumptionModuleView mModuleLayoutView;
     @Mock
-    private SearchResumptionContainerView mSuggestionTilesContainerView;
+    private SearchResumptionTileContainerView mSuggestionTilesContainerView;
     @Mock
     private AutocompleteController mAutocompleteController;
     @Mock
@@ -135,7 +135,9 @@ public class SearchResumptionModuleMediatorUnitTest {
         GURL url = createMockGurl(URL_TO_TRACK);
         doReturn(url).when(mTabToTrack).getUrl();
         doReturn(mModuleLayoutView).when(mParent).inflate();
-        doReturn(mSuggestionTilesContainerView).when(mModuleLayoutView).findViewById(anyInt());
+        doReturn(mSuggestionTilesContainerView)
+                .when(mModuleLayoutView)
+                .findViewById(R.id.search_resumption_module_tiles_container);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isSearchResultsPageFromDefaultSearchProvider(any()))
                 .thenReturn(false);
@@ -197,13 +199,11 @@ public class SearchResumptionModuleMediatorUnitTest {
     @MediumTest
     public void testModuleVisibility() {
         testShowModuleWithEnoughResults();
-        verify(mModuleLayoutView, times(1)).setVisibility(View.VISIBLE);
-
         mMediator.onSignedOut();
         verify(mModuleLayoutView, times(1)).setVisibility(View.GONE);
 
         mMediator.onSignedIn();
-        verify(mModuleLayoutView, times(2)).setVisibility(View.VISIBLE);
+        verify(mModuleLayoutView, times(1)).setVisibility(View.VISIBLE);
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mMediator.onTemplateURLServiceChanged();
@@ -211,7 +211,16 @@ public class SearchResumptionModuleMediatorUnitTest {
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mMediator.onTemplateURLServiceChanged();
-        verify(mModuleLayoutView, times(3)).setVisibility(View.VISIBLE);
+        verify(mModuleLayoutView, times(2)).setVisibility(View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    public void testDestroy() {
+        testShowModuleWithEnoughResults();
+        mMediator.destroy();
+
+        verify(mModuleLayoutView, times(1)).destroy();
     }
 
     private static GURL createMockGurl(String url) {

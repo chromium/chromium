@@ -6,17 +6,21 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionContainerView.java",
     "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleProperties.java",
     "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleUtils.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleView.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileBuilder.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileContainerView.java",
     "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileView.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
@@ -30,6 +34,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/metrics_proto:metrics_proto_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.search_resumption"
@@ -56,6 +61,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileBuilderUnitTest.java",
   ]
 
@@ -65,6 +71,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
@@ -76,9 +83,11 @@ robolectric_library("junit") {
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
 }

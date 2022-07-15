@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
-import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
@@ -14,6 +13,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -23,6 +24,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.List;
 
@@ -39,9 +42,9 @@ public class SearchResumptionModuleMediator
     private final SearchResumptionTileBuilder mTileBuilder;
     private final SigninManager mSignInManager;
     private AutocompleteController mAutoComplete;
-    private SearchResumptionContainerView mSuggestionTilesContainerView;
+    private PropertyModel mModel;
 
-    private @Nullable View mModuleLayoutView;
+    private @Nullable SearchResumptionModuleView mModuleLayoutView;
 
     SearchResumptionModuleMediator(ViewStub moduleStub, Tab tabToTrack, Profile profile,
             SearchResumptionTileBuilder tileBuilder) {
@@ -57,7 +60,7 @@ public class SearchResumptionModuleMediator
     @Override
     public void onSuggestionsReceived(
             AutocompleteResult autocompleteResult, String inlineAutocompleteText, boolean isFinal) {
-        if (!isFinal || mModuleLayoutView != null
+        if (!isFinal || mModel != null
                 || !shouldShowSuggestionModule(autocompleteResult.getSuggestionsList())) {
             return;
         }
@@ -79,22 +82,26 @@ public class SearchResumptionModuleMediator
      * @param autocompleteResult The suggestions to show on the module.
      */
     void showSearchSuggestionModule(AutocompleteResult autocompleteResult) {
-        if (mModuleLayoutView != null) return;
+        if (mModel != null) return;
 
-        mModuleLayoutView = mStub.inflate();
-        mSuggestionTilesContainerView =
-                mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container);
-        mTileBuilder.buildSuggestionTile(
-                autocompleteResult.getSuggestionsList(), mSuggestionTilesContainerView);
+        mModuleLayoutView = (SearchResumptionModuleView) mStub.inflate();
+        mModel = new PropertyModel(SearchResumptionModuleProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mModel, mModuleLayoutView, new SearchResumptionModuleViewBinder());
 
-        mModuleLayoutView.setVisibility(View.VISIBLE);
+        mTileBuilder.buildSuggestionTile(autocompleteResult.getSuggestionsList(),
+                mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container));
+        mModel.set(SearchResumptionModuleProperties.EXPAND_COLLAPSE_CLICK_CALLBACK,
+                this::onExpandedOrCollapsed);
         RecordUserAction.record(ACTION_SHOW);
     }
 
     void destroy() {
-        mAutoComplete.removeOnSuggestionsReceivedListener(this);
-        if (mSuggestionTilesContainerView != null) {
-            mSuggestionTilesContainerView.destroy();
+        if (mAutoComplete != null) {
+            mAutoComplete.removeOnSuggestionsReceivedListener(this);
+        }
+        if (mModuleLayoutView != null) {
+            mModuleLayoutView.destroy();
         }
         TemplateUrlServiceFactory.get().removeObserver(this::onTemplateURLServiceChanged);
         mSignInManager.removeSignInStateObserver(this);
@@ -150,9 +157,17 @@ public class SearchResumptionModuleMediator
     }
 
     private void setVisibility(boolean isVisible) {
-        if (mModuleLayoutView == null) return;
+        if (mModel != null) {
+            mModel.set(SearchResumptionModuleProperties.IS_VISIBLE, isVisible);
+        }
+    }
 
-        mModuleLayoutView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    /**
+     * Saves the user's choice of expanding/collapsing of the suggestions in the SharedPreference.
+     */
+    private void onExpandedOrCollapsed(Boolean expanded) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, !expanded);
     }
 
     @VisibleForTesting

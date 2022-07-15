@@ -13,4 +13,5 @@
     <dimen name="search_resumption_module_margin_bottom" tools:ignore="UnusedResources">30dp</dimen>
     <dimen name="search_resumption_module_rounded_corner_radius_small" tools:ignore="UnusedResources">2dp</dimen>
     <dimen name="search_resumption_module_rounded_corner_radius_big" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="search_resumption_module_option_button_height" tools:ignore="UnusedResources">20dp</dimen>
 </resources>

@@ -62,4 +62,8 @@ public class SearchResumptionTileView extends RelativeLayout {
     void destroy() {
         setOnClickListener(null);
     }
+
+    String getTextForTesting() {
+        return mTileContent.getText().toString();
+    }
 }

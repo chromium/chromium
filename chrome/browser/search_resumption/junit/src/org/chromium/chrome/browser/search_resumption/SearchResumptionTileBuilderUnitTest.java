@@ -48,7 +48,7 @@ public class SearchResumptionTileBuilderUnitTest {
     @Mock
     private Tab mTab;
     @Mock
-    private SearchResumptionContainerView mSuggestionTilesContainerView;
+    private SearchResumptionTileContainerView mSuggestionTilesContainerView;
     @Mock
     SearchResumptionTileView mTileView1;
     @Mock
