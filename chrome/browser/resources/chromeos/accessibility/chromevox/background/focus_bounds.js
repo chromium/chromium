@@ -7,9 +7,7 @@
  * ring location.
  */
 
-goog.provide('FocusBounds');
-
-FocusBounds = {
+export const FocusBounds = {
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   get() {
     return FocusBounds.current_;

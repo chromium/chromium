@@ -100,6 +100,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+    await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');

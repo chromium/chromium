@@ -22,7 +22,6 @@ goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('BridgeHelper');
 goog.require('ChromeVox');
-goog.require('FocusBounds');
 goog.require('JaPhoneticData');
 goog.require('KeyCode');
 goog.require('LibLouis');

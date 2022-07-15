@@ -21,6 +21,7 @@ import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
 import {FindHandler} from './find_handler.js';
 import {FocusAutomationHandler} from './focus_automation_handler.js';
+import {FocusBounds} from './focus_bounds.js';
 import {GestureCommandHandler} from './gesture_command_handler.js';
 import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {LiveRegions} from './live_regions.js';
@@ -32,7 +33,6 @@ import {PageLoadSoundHandler} from './page_load_sound_handler.js';
 import {PanelBackground} from './panel/panel_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
-
 
 /**
  * @fileoverview The entry point for all ChromeVox related code for the

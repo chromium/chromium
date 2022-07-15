@@ -15,12 +15,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    window.doGesture = this.doGesture;
-    window.simulateHitTestResult = this.simulateHitTestResult;
-    window.press = this.press;
-    window.Mod = constants.ModifierFlag;
-    window.ActionType = chrome.automation.ActionType;
-
     await importModule(
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
@@ -45,6 +39,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
     await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
@@ -57,6 +52,12 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule('Cursor', '/common/cursors/cursor.js');
     await importModule(
         'OutputAction', '/chromevox/background/output/output_types.js');
+
+    window.doGesture = this.doGesture;
+    window.simulateHitTestResult = this.simulateHitTestResult;
+    window.press = this.press;
+    window.Mod = constants.ModifierFlag;
+    window.ActionType = chrome.automation.ActionType;
 
     this.forceContextualLastOutput();
   }

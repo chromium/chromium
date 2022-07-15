@@ -11,6 +11,7 @@ import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
+import {FocusBounds} from './focus_bounds.js';
 import {Output} from './output/output.js';
 import {OutputEventType} from './output/output_types.js';
 

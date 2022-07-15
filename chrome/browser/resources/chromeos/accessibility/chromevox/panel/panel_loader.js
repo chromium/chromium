@@ -13,7 +13,6 @@ goog.require('AutomationUtil');
 goog.require('BackgroundBridge');
 goog.require('BridgeHelper');
 goog.require('EarconDescription');
-goog.require('FocusBounds');
 goog.require('KeyCode');
 goog.require('LogStore');
 goog.require('Msgs');

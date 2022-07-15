@@ -11,6 +11,7 @@ import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {EventSourceState} from '../event_source.js';
+import {FocusBounds} from '../focus_bounds.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
