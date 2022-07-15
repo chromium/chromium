@@ -57,12 +57,9 @@ void CrostiniMountProvider::OnRestarted(PrepareCallback callback,
     container_shutdown_observer_.Observe(manager);
   }
 
-  std::move(callback).Run(
-      true, vm_info->info.cid(),
-      1234,  // TODO(b/217469540): Once the sftp changes in garcon land, change
-             // this to get the port from Garcon instead of being hardcoded for
-             // testing.
-      container_info->homedir);
+  std::move(callback).Run(true, vm_info->info.cid(),
+                          container_info->sftp_vsock_port,
+                          container_info->homedir);
 }
 
 std::unique_ptr<guest_os::GuestOsFileWatcher>

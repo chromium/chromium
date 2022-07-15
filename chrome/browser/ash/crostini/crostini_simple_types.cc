@@ -96,11 +96,13 @@ LinuxPackageInfo::~LinuxPackageInfo() = default;
 ContainerInfo::ContainerInfo(std::string container_name,
                              std::string container_username,
                              std::string container_homedir,
-                             std::string ipv4_address)
+                             std::string ipv4_address,
+                             uint32_t sftp_vsock_port)
     : name(std::move(container_name)),
       username(std::move(container_username)),
       homedir(std::move(container_homedir)),
-      ipv4_address(std::move(ipv4_address)) {}
+      ipv4_address(std::move(ipv4_address)),
+      sftp_vsock_port(sftp_vsock_port) {}
 ContainerInfo::~ContainerInfo() = default;
 ContainerInfo::ContainerInfo(ContainerInfo&&) = default;
 ContainerInfo::ContainerInfo(const ContainerInfo&) = default;

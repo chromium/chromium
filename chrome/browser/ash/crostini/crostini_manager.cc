@@ -2678,8 +2678,8 @@ void CrostiniManager::OnContainerStarted(
   running_containers_.emplace(
       signal.vm_name(),
       ContainerInfo(signal.container_name(), signal.container_username(),
-                    signal.container_homedir(), signal.ipv4_address()));
-
+                    signal.container_homedir(), signal.ipv4_address(),
+                    signal.sftp_vsock_port()));
   InvokeAndErasePendingContainerCallbacks(
       &start_container_callbacks_, container_id, CrostiniResult::SUCCESS);
 

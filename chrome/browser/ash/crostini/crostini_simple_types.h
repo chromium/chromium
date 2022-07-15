@@ -183,7 +183,8 @@ struct ContainerInfo {
   ContainerInfo(std::string name,
                 std::string username,
                 std::string homedir,
-                std::string ipv4_address);
+                std::string ipv4_address,
+                uint32_t sftp_vsock_port = 0);
   ~ContainerInfo();
   ContainerInfo(ContainerInfo&&);
   ContainerInfo(const ContainerInfo&);
@@ -194,6 +195,7 @@ struct ContainerInfo {
   std::string username;
   base::FilePath homedir;
   std::string ipv4_address;
+  uint32_t sftp_vsock_port;
 };
 
 // Return type when getting app icons from within a container.
