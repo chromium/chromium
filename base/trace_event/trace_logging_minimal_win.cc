@@ -7,6 +7,7 @@
 #include <evntrace.h>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
 /*
@@ -74,7 +75,7 @@ TlmProvider::TlmProvider(const char* provider_name,
                          void* enable_callback_context) noexcept {
   ULONG status = Register(provider_name, provider_guid, enable_callback,
                           enable_callback_context);
-  DCHECK_EQ(status, ULONG{ERROR_SUCCESS});
+  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider resistration failure";
 }
 
 // Appends a nul-terminated string to a metadata block.
@@ -100,7 +101,7 @@ void TlmProvider::Unregister() noexcept {
     return;
 
   ULONG status = EventUnregister(reg_handle_);
-  DCHECK_EQ(status, ULONG{ERROR_SUCCESS});
+  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider unregistration failure";
   reg_handle_ = 0;
   level_plus1_ = 0;
 }
