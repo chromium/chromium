@@ -14,7 +14,7 @@ export const MAX_STATS_DATA_POINT_BUFFER_SIZE = 1000;
  * points will be dropped when it reaches this size.
  */
 export class TimelineDataSeries {
-  constructor() {
+  constructor(statsType) {
     // List of DataPoints in chronological order.
     this.dataPoints_ = [];
 
@@ -26,6 +26,7 @@ export class TimelineDataSeries {
     this.cacheStartTime_ = null;
     this.cacheStepSize_ = 0;
     this.cacheValues_ = [];
+    this.statsType_ = statsType;
   }
 
   /**
@@ -43,6 +44,7 @@ export class TimelineDataSeries {
     return {
       startTime: this.dataPoints_[0].time,
       endTime: this.dataPoints_[this.dataPoints_.length - 1].time,
+      statsType: this.statsType_,
       values: JSON.stringify(values),
     };
   }

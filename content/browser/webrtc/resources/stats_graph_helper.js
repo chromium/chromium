@@ -201,8 +201,8 @@ export function drawSingleReport(
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
       addDataSeriesPoints(
-          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
-          [stats.values[i + 1]]);
+          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
+          [stats.timestamp], [stats.values[i + 1]]);
       continue;
     }
     let finalDataSeriesId = rawDataSeriesId;
@@ -212,8 +212,8 @@ export function drawSingleReport(
     if (isLegacyReport && dataConversionConfig[rawLabel]) {
       // Updates the original dataSeries before the conversion.
       addDataSeriesPoints(
-          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
-          [rawValue]);
+          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
+          [stats.timestamp], [rawValue]);
 
       // Convert to another value to draw on graph, using the original
       // dataSeries as input.
@@ -226,8 +226,8 @@ export function drawSingleReport(
 
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
-        peerConnectionElement, finalDataSeriesId, finalLabel, [stats.timestamp],
-        [finalValue]);
+        peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
+        [stats.timestamp], [finalValue]);
 
     if (!isLegacyReport &&
         (isStandardReportBlocklisted(report) ||
@@ -297,12 +297,12 @@ export function removeStatsReportGraphs(peerConnectionElement) {
 // and adds the new data points to it. |times| is the list of timestamps for
 // each data point, and |values| is the list of the data point values.
 function addDataSeriesPoints(
-    peerConnectionElement, dataSeriesId, label, times, values) {
+    peerConnectionElement, reportType, dataSeriesId, label, times, values) {
   let dataSeries =
       peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
           dataSeriesId);
   if (!dataSeries) {
-    dataSeries = new TimelineDataSeries();
+    dataSeries = new TimelineDataSeries(reportType);
     peerConnectionDataStore[peerConnectionElement.id].setDataSeries(
         dataSeriesId, dataSeries);
     if (bweCompoundGraphConfig[label]) {
@@ -346,8 +346,8 @@ function drawReceivedPropagationDelta(peerConnectionElement, report, deltas) {
   // Update the data series.
   const dataSeriesId = reportId + '-' + RECEIVED_PROPAGATION_DELTA_LABEL;
   addDataSeriesPoints(
-      peerConnectionElement, dataSeriesId, RECEIVED_PROPAGATION_DELTA_LABEL,
-      times, deltas);
+      peerConnectionElement, 'test type', dataSeriesId,
+      RECEIVED_PROPAGATION_DELTA_LABEL, times, deltas);
   // Update the graph.
   const graphViewId = peerConnectionElement.id + '-' + reportId + '-' +
       RECEIVED_PROPAGATION_DELTA_LABEL;
