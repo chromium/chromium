@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
@@ -38,7 +39,7 @@ LensSidePanelCoordinator::~LensSidePanelCoordinator() {
         ->side_panel_coordinator()
         ->RemoveSidePanelViewStateObserver(this);
   }
-};
+}
 
 void LensSidePanelCoordinator::OnSidePanelDidClose() {
   lens_side_panel_view_ = nullptr;
@@ -79,9 +80,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens,
         l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMBO_BOX_GOOGLE_LENS_LABEL),
-        // leaving the star icon for this CL, will change this to lens icon in a
-        // different CL.
-        ui::ImageModel::FromVectorIcon(omnibox::kStarIcon, ui::kColorIcon),
+        ui::ImageModel::FromVectorIcon(kGoogleLensLogoIcon, ui::kColorIcon),
         base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
                             base::Unretained(this), params));
     entry->AddObserver(this);
