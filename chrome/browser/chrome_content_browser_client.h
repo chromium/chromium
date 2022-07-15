@@ -33,7 +33,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class ChromeContentBrowserClientParts;
@@ -737,12 +736,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                               const GURL& url,
                               size_t data_size_in_bytes,
                               std::u16string& replacement_data) override;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  bool ShouldAllowPluginCreation(
-      const url::Origin& embedder_origin,
-      const content::PepperPluginInfo& plugin_info) override;
-#endif
 
 #if BUILDFLAG(ENABLE_VR)
   content::XrIntegrationClient* GetXrIntegrationClient() override;

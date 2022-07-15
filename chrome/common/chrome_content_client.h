@@ -19,9 +19,9 @@
 #include "content/public/common/content_client.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/public/common/pepper_plugin_info.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 namespace embedder_support {
 class OriginTrialPolicyImpl;
@@ -58,7 +58,7 @@ class ChromeContentClient : public content::ContentClient {
       content::PepperPluginInfo::PPP_ShutdownModuleFunc shutdown_module);
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // This returns the most recent plugin based on the plugin versions. In the
   // event of a tie, a debug plugin will be considered more recent than a
   // non-debug plugin.
@@ -67,7 +67,7 @@ class ChromeContentClient : public content::ContentClient {
   // The method is only visible for testing purposes.
   static content::PepperPluginInfo* FindMostRecentPlugin(
       const std::vector<std::unique_ptr<content::PepperPluginInfo>>& plugins);
-#endif
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   void SetActiveURL(const GURL& url, std::string top_origin) override;
   void SetGpuInfo(const gpu::GPUInfo& gpu_info) override;

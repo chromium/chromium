@@ -316,9 +316,8 @@ bool PdfViewWebPlugin::InitializeCommon() {
   // the plugin to be loaded in the extension and print preview to avoid
   // exposing sensitive APIs directly to external websites.
   //
-  // This is enforced before launching the plugin process (see
-  // `ChromeContentBrowserClient::ShouldAllowPluginCreation()`), so below we
-  // just do a CHECK as a defense-in-depth.
+  // This is enforced before creating the plugin (see
+  // `pdf::CreateInternalPlugin()`), so we just `CHECK` for defense-in-depth.
   const std::string& embedder_origin = client_->GetEmbedderOriginString();
   is_print_preview_ = (embedder_origin == kChromePrintHost);
   CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
