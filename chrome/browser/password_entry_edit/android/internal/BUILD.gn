@@ -44,6 +44,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/password_entry_edit/android:java",
     "//chrome/browser/password_manager/android:java",

@@ -55,6 +55,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.CredentialEntryAction;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
@@ -198,6 +199,7 @@ public class CredentialEditControllerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1344781")
     public void testCanCopyPasswordIfReauthSucceeds() {
         mModel.set(PASSWORD, TEST_PASSWORD);
         when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
