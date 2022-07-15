@@ -380,9 +380,9 @@ void SharesheetClient::ShowSharesheet(
 
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
-  sharesheet_service->ShowBubble(
-      web_contents, apps::ConvertIntentToMojomIntent(intent),
-      sharesheet::LaunchSource::kWebShare, std::move(delivered_callback));
+  sharesheet_service->ShowBubble(web_contents, std::move(intent),
+                                 sharesheet::LaunchSource::kWebShare,
+                                 std::move(delivered_callback));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

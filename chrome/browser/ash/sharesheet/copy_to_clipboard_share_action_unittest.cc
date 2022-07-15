@@ -110,8 +110,8 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardOneFile) {
       profile(), base::FilePath(::sharesheet::kTestTextFile));
   copy_action->LaunchAction(
       /*controller=*/nullptr, /*root_view=*/nullptr,
-      apps_util::CreateShareIntentFromFiles({url.ToGURL()},
-                                            {::sharesheet::kMimeTypeText}));
+      apps_util::MakeShareIntent({url.ToGURL()},
+                                 {::sharesheet::kMimeTypeText}));
 
   // Check filenames copied correctly.
   std::vector<ui::FileInfo> filenames;
@@ -135,7 +135,7 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
       profile(), base::FilePath(::sharesheet::kTestTextFile));
   copy_action->LaunchAction(
       /*controller=*/nullptr, /*root_view=*/nullptr,
-      apps_util::CreateShareIntentFromFiles(
+      apps_util::MakeShareIntent(
           {url1.ToGURL(), url2.ToGURL()},
           {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
 
@@ -162,8 +162,7 @@ TEST_F(CopyToClipboardShareActionTest,
   storage::FileSystemURL url1 = ::sharesheet::FileInNonNativeFileSystemType(
       profile(), base::FilePath(::sharesheet::kTestPdfFile));
   EXPECT_FALSE(copy_action->ShouldShowAction(
-      apps_util::CreateShareIntentFromFiles({url1.ToGURL()},
-                                            {::sharesheet::kMimeTypePdf}),
+      apps_util::MakeShareIntent({url1.ToGURL()}, {::sharesheet::kMimeTypePdf}),
       /* contains_hosted_document= */ false));
 }
 
@@ -175,8 +174,7 @@ TEST_F(CopyToClipboardShareActionTest,
   storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
       profile(), base::FilePath(::sharesheet::kTestPdfFile));
   EXPECT_TRUE(copy_action->ShouldShowAction(
-      apps_util::CreateShareIntentFromFiles({url1.ToGURL()},
-                                            {::sharesheet::kMimeTypePdf}),
+      apps_util::MakeShareIntent({url1.ToGURL()}, {::sharesheet::kMimeTypePdf}),
       /* contains_hosted_document= */ false));
 }
 
@@ -198,8 +196,8 @@ TEST_F(CopyToClipboardShareActionTest, CopyTextShowsToast) {
       profile(), base::FilePath(::sharesheet::kTestTextFile));
   copy_action.LaunchAction(
       /*controller=*/nullptr, /*root_view=*/nullptr,
-      apps_util::CreateShareIntentFromFiles({url.ToGURL()},
-                                            {::sharesheet::kMimeTypeText}));
+      apps_util::MakeShareIntent({url.ToGURL()},
+                                 {::sharesheet::kMimeTypeText}));
 }
 
 TEST_F(CopyToClipboardShareActionTest, CopyFilesShowsToast) {
@@ -212,7 +210,7 @@ TEST_F(CopyToClipboardShareActionTest, CopyFilesShowsToast) {
       profile(), base::FilePath(::sharesheet::kTestTextFile));
   copy_action.LaunchAction(
       /*controller=*/nullptr, /*root_view=*/nullptr,
-      apps_util::CreateShareIntentFromFiles(
+      apps_util::MakeShareIntent(
           {url1.ToGURL(), url2.ToGURL()},
           {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
 }
@@ -228,8 +226,8 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleImageFiles) {
       profile(), base::FilePath("path/to/image2.jpg"));
   copy_action->LaunchAction(
       /*controller=*/nullptr, /*root_view=*/nullptr,
-      apps_util::CreateShareIntentFromFiles({url1.ToGURL(), url2.ToGURL()},
-                                            {"image/png", "image/jpg"}));
+      apps_util::MakeShareIntent({url1.ToGURL(), url2.ToGURL()},
+                                 {"image/png", "image/jpg"}));
 
   // Check filenames copied correctly.
   std::vector<ui::FileInfo> filenames;

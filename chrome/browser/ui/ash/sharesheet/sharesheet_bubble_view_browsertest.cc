@@ -51,7 +51,7 @@ class SharesheetBubbleViewBrowserTest
         ::sharesheet::SharesheetServiceFactory::GetForProfile(
             browser()->profile());
 
-    auto intent = apps_util::CreateShareIntentFromText("text", "");
+    auto intent = apps_util::MakeShareIntent("text", "");
     intent->action = apps_util::kIntentActionSend;
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),

@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/label.h"
@@ -29,7 +29,7 @@ class SharesheetHeaderView : public views::View {
  public:
   METADATA_HEADER(SharesheetHeaderView);
 
-  explicit SharesheetHeaderView(apps::mojom::IntentPtr intent,
+  explicit SharesheetHeaderView(apps::IntentPtr intent,
                                 Profile* profile,
                                 bool show_content_previews);
   ~SharesheetHeaderView() override;
@@ -73,7 +73,7 @@ class SharesheetHeaderView : public views::View {
   TextPlaceholderIcon text_icon_ = TextPlaceholderIcon::kGenericText;
 
   raw_ptr<Profile> profile_;
-  apps::mojom::IntentPtr intent_;
+  apps::IntentPtr intent_;
 
   ThumbnailLoader thumbnail_loader_;
   std::vector<base::CallbackListSubscription> image_subscription_;

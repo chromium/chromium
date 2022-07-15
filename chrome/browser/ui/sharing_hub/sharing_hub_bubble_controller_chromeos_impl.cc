@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/button/button.h"
@@ -199,7 +200,7 @@ void SharingHubBubbleControllerChromeOsImpl::ShowSharesheetAsh() {
   if (!sharesheet_service)
     return;
 
-  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromText(
+  apps::IntentPtr intent = apps_util::MakeShareIntent(
       GetWebContents().GetLastCommittedURL().spec(),
       base::UTF16ToUTF8(GetWebContents().GetTitle()));
   sharesheet_service->ShowBubble(

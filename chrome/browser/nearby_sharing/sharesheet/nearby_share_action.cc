@@ -37,7 +37,7 @@ namespace {
 
 std::vector<base::FilePath> ResolveFileUrls(
     Profile* profile,
-    const std::vector<apps::mojom::IntentFilePtr>& files) {
+    const std::vector<apps::IntentFilePtr>& files) {
   std::vector<base::FilePath> file_paths;
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
@@ -57,19 +57,19 @@ std::vector<base::FilePath> ResolveFileUrls(
 
 std::string GetFirstFilenameFromFileUrls(
     Profile* profile,
-    const absl::optional<std::vector<apps::mojom::IntentFilePtr>>& file_urls) {
-  if (!file_urls) {
+    const std::vector<apps::IntentFilePtr>& file_urls) {
+  if (file_urls.empty()) {
     return std::string();
   }
 
-  auto file_paths = ResolveFileUrls(profile, *file_urls);
+  auto file_paths = ResolveFileUrls(profile, file_urls);
   return file_paths.size() == 1u ? file_paths[0].BaseName().AsUTF8Unsafe()
                                  : std::string();
 }
 
 std::vector<std::unique_ptr<Attachment>> CreateTextAttachmentFromIntent(
     Profile* profile,
-    const apps::mojom::IntentPtr& intent) {
+    const apps::IntentPtr& intent) {
   // TODO(crbug.com/1186730): Detect address and phone number text shares and
   // apply the correct |TextAttachment::Type|.
   TextAttachment::Type type = intent->share_text ? TextAttachment::Type::kText
@@ -99,9 +99,9 @@ std::vector<std::unique_ptr<Attachment>> CreateTextAttachmentFromIntent(
 
 std::vector<std::unique_ptr<Attachment>> CreateFileAttachmentsFromIntent(
     Profile* profile,
-    const apps::mojom::IntentPtr& intent) {
+    const apps::IntentPtr& intent) {
   std::vector<base::FilePath> file_paths =
-      ResolveFileUrls(profile, *intent->files);
+      ResolveFileUrls(profile, intent->files);
 
   std::vector<std::unique_ptr<Attachment>> attachments;
   for (auto& file_path : file_paths) {
@@ -139,7 +139,7 @@ const gfx::VectorIcon& NearbyShareAction::GetActionIcon() {
 void NearbyShareAction::LaunchAction(
     sharesheet::SharesheetController* controller,
     views::View* root_view,
-    apps::mojom::IntentPtr intent) {
+    apps::IntentPtr intent) {
   gfx::Size size = ComputeSize();
   controller->SetBubbleSize(size.width(), size.height());
 
@@ -175,15 +175,15 @@ bool NearbyShareAction::HasActionView() {
   return true;
 }
 
-bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
+bool NearbyShareAction::ShouldShowAction(const apps::IntentPtr& intent,
                                          bool contains_hosted_document) {
-  bool valid_file_share = apps_util::IsShareIntent(intent) && intent->files &&
-                          !intent->files->empty() && !intent->share_text &&
+  bool valid_file_share = intent && intent->IsShareIntent() &&
+                          !intent->files.empty() && !intent->share_text &&
                           !intent->url && !intent->drive_share_url &&
                           !contains_hosted_document;
 
   bool valid_text_share = intent->action == apps_util::kIntentActionSend &&
-                          intent->share_text && !intent->files;
+                          intent->share_text && intent->files.empty();
 
   bool valid_url_share = intent->action == apps_util::kIntentActionView &&
                          intent->url && intent->url->is_valid() &&
@@ -191,10 +191,10 @@ bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
 
   // Disallow sharing multiple drive files at once. There isn't a valid
   // |drive_share_url| in this case.
-  bool valid_drive_share =
-      intent->action == apps_util::kIntentActionSend &&
-      intent->drive_share_url && intent->drive_share_url->is_valid() &&
-      intent->files && intent->files->size() == 1u && !intent->share_text;
+  bool valid_drive_share = intent->action == apps_util::kIntentActionSend &&
+                           intent->drive_share_url &&
+                           intent->drive_share_url->is_valid() &&
+                           intent->files.size() == 1u && !intent->share_text;
 
   return (valid_file_share || valid_text_share || valid_url_share ||
           valid_drive_share) &&
@@ -215,7 +215,7 @@ bool NearbyShareAction::IsNearbyShareDisabledByPolicy() {
 
 std::vector<std::unique_ptr<Attachment>>
 NearbyShareAction::CreateAttachmentsFromIntent(Profile* profile,
-                                               apps::mojom::IntentPtr intent) {
+                                               apps::IntentPtr intent) {
   if (intent->share_text || intent->url || intent->drive_share_url) {
     return CreateTextAttachmentFromIntent(profile, intent);
   } else {

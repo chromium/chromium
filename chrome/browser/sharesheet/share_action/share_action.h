@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
 
@@ -44,7 +44,7 @@ class ShareAction {
   // to parse and interpret if needed for its UI and functionality.
   virtual void LaunchAction(SharesheetController* controller,
                             views::View* root_view,
-                            apps::mojom::IntentPtr intent) = 0;
+                            apps::IntentPtr intent) = 0;
 
   // OnClosing informs the ShareAction when the sharesheet with |controller| is
   // closed. This occurs when the user presses the back button out of the share
@@ -60,7 +60,7 @@ class ShareAction {
   // Return true if the action should be shown on the sharesheet. By default,
   // the actions are only visible if the files don't contain a Google Drive
   // hosted document.
-  virtual bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+  virtual bool ShouldShowAction(const apps::IntentPtr& intent,
                                 bool contains_hosted_document);
 
   // Invoked when the accelerator has been pressed.

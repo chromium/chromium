@@ -14,7 +14,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 #include "chromeos/components/sharesheet/constants.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -62,14 +62,14 @@ class SharesheetServiceDelegator {
 
   // The following are called by the ShareService to communicate with the UI.
   void ShowBubble(std::vector<TargetInfo> targets,
-                  apps::mojom::IntentPtr intent,
+                  apps::IntentPtr intent,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
-  void ShowNearbyShareBubbleForArc(apps::mojom::IntentPtr intent,
+  void ShowNearbyShareBubbleForArc(apps::IntentPtr intent,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -87,7 +87,7 @@ class SharesheetServiceDelegator {
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
                         const TargetType type,
-                        apps::mojom::IntentPtr intent,
+                        apps::IntentPtr intent,
                         views::View* share_action_view);
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
                             const std::u16string& active_action);

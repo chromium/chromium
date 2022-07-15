@@ -36,7 +36,7 @@ const gfx::VectorIcon& DriveShareAction::GetActionIcon() {
 void DriveShareAction::LaunchAction(
     ::sharesheet::SharesheetController* controller,
     views::View* root_view,
-    apps::mojom::IntentPtr intent) {
+    apps::IntentPtr intent) {
   controller_ = controller;
   DCHECK(intent->drive_share_url.has_value());
   if (!ash::NewWindowDelegate::GetPrimary()) {
@@ -53,7 +53,7 @@ void DriveShareAction::OnClosing(
   controller_ = nullptr;
 }
 
-bool DriveShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
+bool DriveShareAction::ShouldShowAction(const apps::IntentPtr& intent,
                                         bool contains_hosted_document) {
   return intent->drive_share_url.has_value() &&
          !intent->drive_share_url->is_empty();

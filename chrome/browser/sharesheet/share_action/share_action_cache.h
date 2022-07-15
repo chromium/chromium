@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 class Profile;
 
@@ -35,7 +35,7 @@ class ShareActionCache {
 
   const std::vector<std::unique_ptr<ShareAction>>& GetShareActions();
 
-  bool HasVisibleActions(const apps::mojom::IntentPtr& intent,
+  bool HasVisibleActions(const apps::IntentPtr& intent,
                          bool contains_google_document);
 
   // Returns null if |display_name| is not a valid ShareAction.

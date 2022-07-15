@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 namespace sharesheet {
 
@@ -22,7 +23,7 @@ class ExampleAction : public ShareAction {
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(SharesheetController* controller,
                     views::View* root_view,
-                    apps::mojom::IntentPtr intent) override;
+                    apps::IntentPtr intent) override;
   void OnClosing(SharesheetController* controller) override;
   bool HasActionView() override;
 

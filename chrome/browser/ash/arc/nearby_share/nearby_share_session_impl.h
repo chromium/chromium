@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chromeos/components/sharesheet/constants.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -64,8 +65,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // either prepare files or directly show the Nearby Share bubble.
   void OnArcWindowFound(aura::Window* const arc_window);
 
-  // Converts |share_info_| to |apps::mojom::IntentPtr| type.
-  apps::mojom::IntentPtr ConvertShareIntentInfoToIntent() const;
+  // Converts |share_info_| to |apps::IntentPtr| type.
+  apps::IntentPtr ConvertShareIntentInfoToIntent() const;
 
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 

@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -36,7 +37,7 @@ const char kUrl[] = "https://google.com";
 const char kDriveShareUrl[] = "https://docs.google.com";
 
 struct IntentTestCase {
-  apps::mojom::IntentPtr intent;
+  apps::IntentPtr intent;
   bool contains_hosted_document;
   bool should_show_action;
   absl::optional<TextAttachment::Type> text_attachment_type;
@@ -95,36 +96,36 @@ class NearbyShareActionTest : public testing::Test {
   std::vector<IntentTestCase> GetIntentTestCases() {
     std::vector<IntentTestCase> test_cases;
     // Simple text share, no title
-    test_cases.push_back(
-        {apps_util::CreateShareIntentFromText(kMessage, kEmpty),
-         /*contains_hosted_document=*/false, /*should_show_action=*/true,
-         TextAttachment::Type::kText, /*file_count=*/0});
+    test_cases.push_back({apps_util::MakeShareIntent(kMessage, kEmpty),
+                          /*contains_hosted_document=*/false,
+                          /*should_show_action=*/true,
+                          TextAttachment::Type::kText, /*file_count=*/0});
     // Text share with title
-    test_cases.push_back(
-        {apps_util::CreateShareIntentFromText(kMessage, kTitle),
-         /*contains_hosted_document=*/false, /*should_show_action=*/true,
-         TextAttachment::Type::kText, /*file_count=*/0});
+    test_cases.push_back({apps_util::MakeShareIntent(kMessage, kTitle),
+                          /*contains_hosted_document=*/false,
+                          /*should_show_action=*/true,
+                          TextAttachment::Type::kText, /*file_count=*/0});
     // URL share
-    test_cases.push_back({apps_util::CreateIntentFromUrl(GURL(kUrl)),
+    test_cases.push_back({std::make_unique<apps::Intent>(
+                              apps_util::kIntentActionView, GURL(kUrl)),
                           /*contains_hosted_document=*/false,
                           /*should_show_action=*/true,
                           TextAttachment::Type::kUrl, /*file_count=*/0});
     // Drive share, one file
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromDriveFile(GetFileSystemUrl(kTextFile1),
-                                                   kMimeTypeText,
-                                                   GURL(kDriveShareUrl), false),
+        {apps_util::MakeShareIntent(GetFileSystemUrl(kTextFile1), kMimeTypeText,
+                                    GURL(kDriveShareUrl), false),
          /*contains_hosted_document=*/true, /*should_show_action=*/true,
          TextAttachment::Type::kUrl, /*file_count=*/0});
     // File share, one file
-    test_cases.push_back({apps_util::CreateShareIntentFromFiles(
+    test_cases.push_back({apps_util::MakeShareIntent(
                               {GetFileSystemUrl(kImageFile)}, {kMimeTypeJPG}),
                           /*contains_hosted_document=*/false,
                           /*should_show_action=*/true, absl::nullopt,
                           /*file_count=*/1});
     // File share, two text files
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromFiles(
+        {apps_util::MakeShareIntent(
              {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kTextFile2)},
              {kMimeTypeText, kMimeTypeText}),
          /*contains_hosted_document=*/false,
@@ -132,7 +133,7 @@ class NearbyShareActionTest : public testing::Test {
          /*file_count=*/2});
     // File share, two mixed files
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromFiles(
+        {apps_util::MakeShareIntent(
              {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kImageFile)},
              {kMimeTypeText, kMimeTypeJPG}),
          /*contains_hosted_document=*/false,
@@ -140,13 +141,13 @@ class NearbyShareActionTest : public testing::Test {
          /*file_count=*/2});
     // File share, one file with title
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromFiles({GetFileSystemUrl(kImageFile)},
-                                               {kMimeTypeJPG}, kEmpty, kTitle),
+        {apps_util::MakeShareIntent({GetFileSystemUrl(kImageFile)},
+                                    {kMimeTypeJPG}, kEmpty, kTitle),
          /*contains_hosted_document=*/false, /*should_show_action=*/true,
          absl::nullopt, /*file_count=*/1});
     // Invalid: File share with text body
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromFiles(
+        {apps_util::MakeShareIntent(
              {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kTextFile2)},
              {kMimeTypeText, kMimeTypeText}, kMessage, kTitle),
          /*contains_hosted_document=*/false,

@@ -109,7 +109,7 @@ void RecordFormFactorMetric() {
   ::sharesheet::SharesheetMetrics::RecordSharesheetFormFactor(form_factor);
 }
 
-void RecordMimeTypeMetric(const apps::mojom::IntentPtr& intent) {
+void RecordMimeTypeMetric(const apps::IntentPtr& intent) {
   auto mime_types_to_record =
       ::sharesheet::SharesheetMetrics::GetMimeTypesFromIntentForMetrics(intent);
   for (auto& mime_type : mime_types_to_record) {
@@ -187,7 +187,7 @@ SharesheetBubbleView::~SharesheetBubbleView() {
 
 void SharesheetBubbleView::ShowBubble(
     std::vector<TargetInfo> targets,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
   intent_ = std::move(intent);
@@ -277,7 +277,7 @@ void SharesheetBubbleView::ShowBubble(
 }
 
 void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
   // Disable close when clicking outside bubble for Nearby Share.

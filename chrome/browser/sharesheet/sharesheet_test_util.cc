@@ -16,23 +16,21 @@
 
 namespace sharesheet {
 
-apps::mojom::IntentPtr CreateValidTextIntent() {
-  return apps_util::CreateShareIntentFromText(kTestText, kTestTitle);
+apps::IntentPtr CreateValidTextIntent() {
+  return apps_util::MakeShareIntent(kTestText, kTestTitle);
 }
 
-apps::mojom::IntentPtr CreateValidUrlIntent() {
-  return apps_util::CreateShareIntentFromText(kTestUrl, kTestTitle);
+apps::IntentPtr CreateValidUrlIntent() {
+  return apps_util::MakeShareIntent(kTestUrl, kTestTitle);
 }
 
-apps::mojom::IntentPtr CreateInvalidIntent() {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = apps_util::kIntentActionSend;
-  return intent;
+apps::IntentPtr CreateInvalidIntent() {
+  return std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
 }
 
-apps::mojom::IntentPtr CreateDriveIntent() {
-  return apps_util::CreateShareIntentFromDriveFile(GURL(kTestUrl), "image/",
-                                                   GURL(kTestUrl), false);
+apps::IntentPtr CreateDriveIntent() {
+  return apps_util::MakeShareIntent(GURL(kTestUrl), "image/", GURL(kTestUrl),
+                                    false);
 }
 
 storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file) {

@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "chromeos/components/sharesheet/constants.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 namespace sharesheet {
 
@@ -96,7 +96,7 @@ class SharesheetMetrics {
   // Utility Functions
   static MimeType ConvertMimeTypeForMetrics(std::string mime_type);
   static base::flat_set<MimeType> GetMimeTypesFromIntentForMetrics(
-      const apps::mojom::IntentPtr& intent);
+      const apps::IntentPtr& intent);
   static FormFactor GetFormFactorForMetrics();
 };
 

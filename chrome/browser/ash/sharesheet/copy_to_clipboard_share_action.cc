@@ -69,7 +69,7 @@ const gfx::VectorIcon& CopyToClipboardShareAction::GetActionIcon() {
 void CopyToClipboardShareAction::LaunchAction(
     ::sharesheet::SharesheetController* controller,
     views::View* root_view,
-    apps::mojom::IntentPtr intent) {
+    apps::IntentPtr intent) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
 
   if (intent->share_text.has_value()) {
@@ -90,11 +90,9 @@ void CopyToClipboardShareAction::LaunchAction(
     }
   }
 
-  const bool has_files =
-      (intent->files.has_value() && !intent->files.value().empty());
-  if (has_files) {
+  if (!intent->files.empty()) {
     std::vector<ui::FileInfo> file_infos;
-    for (const auto& file : intent->files.value()) {
+    for (const auto& file : intent->files) {
       auto file_url = apps::GetFileSystemURL(profile_, file->url);
       // TODO(crbug.com/1274983) : Add support for copying from MTP and
       // FileSystemProviders.
@@ -125,13 +123,11 @@ void CopyToClipboardShareAction::OnClosing(
     ::sharesheet::SharesheetController* controller) {}
 
 bool CopyToClipboardShareAction::ShouldShowAction(
-    const apps::mojom::IntentPtr& intent,
+    const apps::IntentPtr& intent,
     bool contains_hosted_document) {
   bool contains_uncopyable_file = false;
-  const bool has_files =
-      (intent->files.has_value() && !intent->files.value().empty());
-  if (has_files) {
-    for (const auto& file : intent->files.value()) {
+  if (!intent->files.empty()) {
+    for (const auto& file : intent->files) {
       auto file_url = apps::GetFileSystemURL(profile_, file->url);
       contains_uncopyable_file =
           file_manager::util::IsNonNativeFileSystemType(file_url.type());

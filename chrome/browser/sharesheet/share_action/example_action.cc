@@ -29,7 +29,7 @@ const gfx::VectorIcon& ExampleAction::GetActionIcon() {
 
 void ExampleAction::LaunchAction(SharesheetController* controller,
                                  views::View* root_view,
-                                 apps::mojom::IntentPtr intent) {
+                                 apps::IntentPtr intent) {
   LOG(ERROR) << "ExampleAction launches.";
   controller_ = controller;
 }

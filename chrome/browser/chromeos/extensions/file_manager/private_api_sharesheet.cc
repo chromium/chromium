@@ -123,7 +123,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     }
   }
   result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -167,8 +167,8 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
           ? GURL(*properties->share_url)
           : GURL();
   bool result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -249,8 +249,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   }
 
   sharesheet_service->ShowBubble(
-      GetSenderWebContents(),
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      GetSenderWebContents(), apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }
@@ -299,8 +298,8 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
           : GURL();
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }

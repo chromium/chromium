@@ -10,7 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace sharesheet {
@@ -23,13 +23,13 @@ class SharesheetUiDelegate : public SharesheetController {
   ~SharesheetUiDelegate() override = default;
 
   virtual void ShowBubble(std::vector<TargetInfo> targets,
-                          apps::mojom::IntentPtr intent,
+                          apps::IntentPtr intent,
                           DeliveredCallback delivered_callback,
                           CloseCallback close_callback) = 0;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
-  virtual void ShowNearbyShareBubbleForArc(apps::mojom::IntentPtr intent,
+  virtual void ShowNearbyShareBubbleForArc(apps::IntentPtr intent,
                                            DeliveredCallback delivered_callback,
                                            CloseCallback close_callback) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

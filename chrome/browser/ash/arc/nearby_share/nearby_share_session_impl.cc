@@ -228,8 +228,7 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
   }
 }
 
-apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
-    const {
+apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() const {
   DCHECK(share_info_);
 
   DVLOG(1) << __func__;
@@ -247,16 +246,15 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
           << expected_total_files;
       return nullptr;
     }
-    return apps::ConvertIntentToMojomIntent(
-        apps_util::CreateShareIntentFromFiles(
-            profile_, share_file_paths, share_file_mime_types, std::string(),
-            share_info_->title));
+    return apps_util::CreateShareIntentFromFiles(
+        profile_, share_file_paths, share_file_mime_types, std::string(),
+        share_info_->title);
   }
 
   // Sharing text
   if (share_info_->extras.has_value() &&
       share_info_->extras->contains(kIntentExtraText)) {
-    apps::mojom::IntentPtr share_intent = apps_util::CreateShareIntentFromText(
+    apps::IntentPtr share_intent = apps_util::MakeShareIntent(
         share_info_->extras->at(kIntentExtraText), share_info_->title);
     share_intent->mime_type = share_info_->mime_type;
     return share_intent;

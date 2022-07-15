@@ -59,7 +59,7 @@ SharesheetService::SharesheetService(Profile* profile)
 SharesheetService::~SharesheetService() = default;
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
-                                   apps::mojom::IntentPtr intent,
+                                   apps::IntentPtr intent,
                                    LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
@@ -71,7 +71,7 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
 }
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
-                                   apps::mojom::IntentPtr intent,
+                                   apps::IntentPtr intent,
                                    bool contains_hosted_document,
                                    LaunchSource source,
                                    DeliveredCallback delivered_callback,
@@ -83,13 +83,14 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
 }
 
 void SharesheetService::ShowBubble(
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     bool contains_hosted_document,
     LaunchSource source,
     GetNativeWindowCallback get_native_window_callback,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
-  DCHECK(apps_util::IsShareIntent(intent));
+  DCHECK(intent);
+  DCHECK(intent->IsShareIntent());
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   PrepareToShowBubble(std::move(intent), contains_hosted_document,
                       std::move(get_native_window_callback),
@@ -107,13 +108,13 @@ SharesheetController* SharesheetService::GetSharesheetController(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharesheetService::ShowNearbyShareBubbleForArc(
     gfx::NativeWindow native_window,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     ActionCleanupCallback action_cleanup_callback) {
   DCHECK(intent);
-  DCHECK(apps_util::IsShareIntent(intent));
+  DCHECK(intent->IsShareIntent());
 
   ShareAction* share_action = share_action_cache_->GetActionFromName(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
@@ -155,7 +156,7 @@ void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
 void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
                                          const std::u16string& target_name,
                                          const TargetType type,
-                                         apps::mojom::IntentPtr intent,
+                                         apps::IntentPtr intent,
                                          views::View* share_action_view) {
   SharesheetServiceDelegator* delegator = GetDelegator(native_window);
   if (!delegator)
@@ -192,11 +193,10 @@ bool SharesheetService::OnAcceleratorPressed(
              : share_action->OnAcceleratorPressed(accelerator);
 }
 
-bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent,
+bool SharesheetService::HasShareTargets(const apps::IntentPtr& intent,
                                         bool contains_hosted_document) {
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
-      app_service_proxy_->GetAppsForIntent(
-          apps::ConvertMojomIntentToIntent(intent));
+      app_service_proxy_->GetAppsForIntent(intent);
 
   return share_action_cache_->HasVisibleActions(intent,
                                                 contains_hosted_document) ||
@@ -214,7 +214,7 @@ const gfx::VectorIcon* SharesheetService::GetVectorIcon(
 
 void SharesheetService::ShowBubbleForTesting(
     gfx::NativeWindow native_window,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     bool contains_hosted_document,
     LaunchSource source,
     DeliveredCallback delivered_callback,
@@ -243,7 +243,7 @@ void SharesheetService::SetSelectedAppForTesting(
 }
 
 void SharesheetService::PrepareToShowBubble(
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     bool contains_hosted_document,
     GetNativeWindowCallback get_native_window_callback,
     DeliveredCallback delivered_callback,
@@ -252,8 +252,7 @@ void SharesheetService::PrepareToShowBubble(
 
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       contains_hosted_document ? std::vector<apps::IntentLaunchInfo>()
-                               : app_service_proxy_->GetAppsForIntent(
-                                     apps::ConvertMojomIntentToIntent(intent));
+                               : app_service_proxy_->GetAppsForIntent(intent);
   SharesheetMetrics::RecordSharesheetAppCount(intent_launch_info.size());
   LoadAppIcons(
       std::move(intent_launch_info), std::move(targets), 0,
@@ -264,7 +263,7 @@ void SharesheetService::PrepareToShowBubble(
 }
 
 std::vector<TargetInfo> SharesheetService::GetActionsForIntent(
-    const apps::mojom::IntentPtr& intent,
+    const apps::IntentPtr& intent,
     bool contains_hosted_document) {
   std::vector<TargetInfo> targets;
   auto& actions = share_action_cache_->GetShareActions();
@@ -337,7 +336,7 @@ void SharesheetService::OnIconLoaded(
 }
 
 void SharesheetService::OnAppIconsLoaded(
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     GetNativeWindowCallback get_native_window_callback,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
@@ -355,7 +354,7 @@ void SharesheetService::OnAppIconsLoaded(
 
 void SharesheetService::OnReadyToShowBubble(
     gfx::NativeWindow native_window,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
@@ -390,13 +389,13 @@ void SharesheetService::OnReadyToShowBubble(
 }
 
 void SharesheetService::LaunchApp(const std::u16string& target_name,
-                                  apps::mojom::IntentPtr intent) {
+                                  apps::IntentPtr intent) {
   auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
   app_service_proxy_->LaunchAppWithIntent(
       base::UTF16ToUTF8(target_name),
       apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),
-      std::move(intent), launch_source,
+      apps::ConvertIntentToMojomIntent(intent), launch_source,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
@@ -525,8 +524,7 @@ void SharesheetService::RecordShareActionMetrics(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void SharesheetService::RecordShareDataMetrics(
-    const apps::mojom::IntentPtr& intent) {
+void SharesheetService::RecordShareDataMetrics(const apps::IntentPtr& intent) {
   // Record whether or not we're sharing a drive folder.
 
   // If |intent| has a |drive_share_url| but does not contain |share_text|,
@@ -537,9 +535,7 @@ void SharesheetService::RecordShareDataMetrics(
   SharesheetMetrics::RecordSharesheetIsDriveFolder(is_drive_folder);
 
   // Record file count.
-  const size_t file_count =
-      intent->files.has_value() ? intent->files->size() : 0;
-  SharesheetMetrics::RecordSharesheetFilesSharedCount(file_count);
+  SharesheetMetrics::RecordSharesheetFilesSharedCount(intent->files.size());
 }
 
 }  // namespace sharesheet

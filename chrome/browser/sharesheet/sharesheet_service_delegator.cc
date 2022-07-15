@@ -51,7 +51,7 @@ SharesheetUiDelegate* SharesheetServiceDelegator::GetUiDelegateForTesting() {
 
 void SharesheetServiceDelegator::ShowBubble(
     std::vector<TargetInfo> targets,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
   if (sharesheet_controller_) {
@@ -67,7 +67,7 @@ void SharesheetServiceDelegator::ShowBubble(
 // Skips the generic Sharesheet bubble and directly displays the
 // NearbyShare bubble dialog.
 void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
   DCHECK(sharesheet_controller_);
@@ -105,7 +105,7 @@ void SharesheetServiceDelegator::OnBubbleClosed(
 void SharesheetServiceDelegator::OnTargetSelected(
     const std::u16string& target_name,
     const TargetType type,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     views::View* share_action_view) {
   DCHECK(sharesheet_service_);
   sharesheet_service_->OnTargetSelected(native_window_, target_name, type,
