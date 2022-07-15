@@ -81,6 +81,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
@@ -1021,10 +1022,27 @@ void BrowserTestBase::InitializeNetworkProcess() {
   // pick up the host resolver rules, but it will not automatically see
   // `replace_system_dns_config_` and `test_doh_config_`.
   //
-  // TODO(https://crbug.com/1295732) Always send `replace_system_dns_config_`
-  // and `test_doh_config_` to the network process, regardless of where it's
-  // running.
+  // TODO(https://crbug.com/1295732): Can the Mojo interface also be used in
+  // this case?
   if (IsInProcessNetworkService()) {
+    if (replace_system_dns_config_ || test_doh_config_) {
+      base::RunLoop run_loop;
+      content::GetNetworkTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::BindLambdaForTesting([&] {
+            network::NetworkService* network_service =
+                network::NetworkService::GetNetworkServiceForTesting();
+            ASSERT_TRUE(network_service);
+            if (replace_system_dns_config_) {
+              network_service->ReplaceSystemDnsConfigForTesting();
+            }
+            if (test_doh_config_) {
+              network_service->SetTestDohConfigForTesting(
+                  test_doh_config_->first, test_doh_config_->second);
+            }
+          }),
+          run_loop.QuitClosure());
+      run_loop.Run();
+    }
     return;
   }
 

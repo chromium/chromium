@@ -55,36 +55,9 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
     absl::optional<net::DnsOverHttpsConfig> doh_config =
         net::DnsOverHttpsConfig::FromString(doh_server_->GetTemplate());
     ASSERT_TRUE(doh_config.has_value());
-
-    // When the network service runs out-of-process, use `BrowserTestBase`
-    // methods to poke the DNS configuration.
-    if (content::IsOutOfProcessNetworkService()) {
-      SetTestDohConfig(net::SecureDnsMode::kSecure,
-                       std::move(doh_config).value());
-      SetReplaceSystemDnsConfig();
-      return;
-    }
-    // When the network service runs in-process, we can talk to it directly.
-    // Ideally, we would use Mojo to communicate with the network process
-    // regardless of where it's running, but for reasons I do not understand,
-    // Mojo messages seem to cause a deadlock when the network service is
-    // in-process.
-    //
-    // TODO(https://crbug.com/1295732) Rely on `BrowserTestBase` to pass this
-    // info to the network service via Mojo, regardless of where the network
-    // service is running.
-    base::RunLoop run_loop;
-    content::GetNetworkTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::BindLambdaForTesting([&] {
-          network::NetworkService* network_service =
-              network::NetworkService::GetNetworkServiceForTesting();
-          ASSERT_TRUE(network_service);
-          network_service->SetTestDohConfigForTesting(
-              net::SecureDnsMode::kSecure, doh_config.value());
-          network_service->ReplaceSystemDnsConfigForTesting();
-        }),
-        run_loop.QuitClosure());
-    run_loop.Run();
+    SetTestDohConfig(net::SecureDnsMode::kSecure,
+                     std::move(doh_config).value());
+    SetReplaceSystemDnsConfig();
   }
 
   std::unique_ptr<net::TestDohServer> doh_server_;
