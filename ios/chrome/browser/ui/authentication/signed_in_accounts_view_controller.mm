@@ -280,7 +280,10 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_TITLE);
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  _titleLabel.font = [MDCTypography headlineFont];
+  const CGFloat kHeadlineFontSize = 24.0;
+  const UIFontWeight kHeadlineFontWeight = UIFontWeightRegular;
+  _titleLabel.font = [UIFont systemFontOfSize:kHeadlineFontSize
+                                       weight:kHeadlineFontWeight];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_titleLabel];
 
@@ -296,7 +299,10 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_INFO);
   _infoLabel.numberOfLines = 0;
   _infoLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  _infoLabel.font = [MDCTypography body1Font];
+  const CGFloat kBody1FontSize = 14.0;
+  const UIFontWeight kBody1FontWeight = UIFontWeightRegular;
+  _infoLabel.font = [UIFont systemFontOfSize:kBody1FontSize
+                                      weight:kBody1FontWeight];
   _infoLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_infoLabel];
 
