@@ -2031,8 +2031,8 @@
   <message name="IDS_SETTINGS_CONTENT_SETTINGS" desc="Text of the button that takes a user to settings page thats allows users to modify site settings. Also the title of that settings page.">
     Content settings
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS" desc="Text of the button that takes a user to the enhanced settings page thats allows users to modify site settings. Also the title of that settings page.">
-    Site Settings
+  <message name="IDS_SETTINGS_SITE_SETTINGS" desc="Text of the button that takes a user to the enhanced settings page thats allows users to modify site settings. Also the title of that settings page. It follows sentence case.">
+    Site settings
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DESCRIPTION" desc="Secondary, continued explanation of what content settings in Chrome do">
     Control what information websites can use and what content they can show you
