@@ -64,6 +64,24 @@ void SplashScreen::Show() {
 
 void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // After the splash screen is dismissed, but before the progress UI is shown,
+  // there is a brief period of time when there are no windows for the current
+  // process.
+  //
+  // By default, Windows gives the previous foreground process (say the command
+  // line window) the foreground window at this point.
+  //
+  // To allow the subsequent progress UI to get foreground, the following call
+  // to `::LockSetForegroundWindow(LSFW_LOCK)` is made before closing the splash
+  // screen to prevent other applications from making a foreground change in
+  // between.
+  //
+  // To complete the cycle, the progress UI calls
+  // `::LockSetForegroundWindow(LSFW_UNLOCK)` before it calls
+  // `::SetForegroundWindow`.
+  ::LockSetForegroundWindow(LSFW_LOCK);
+
   on_close_closure_ = std::move(on_close_closure);
   switch (state_) {
     case WindowState::STATE_CREATED:

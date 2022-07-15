@@ -172,7 +172,16 @@ void OmahaWnd::Show() {
   CenterWindow(nullptr);
   SetVisible(true);
 
-  ::SetForegroundWindow(*this);
+  // To allow the progress UI to get foreground, the splash screen calls
+  // `::LockSetForegroundWindow(LSFW_LOCK)` before closing the splash screen to
+  // prevent other applications from making a foreground change in between. The
+  // following call completes the cycle with LSFW_UNLOCK.
+  ::LockSetForegroundWindow(LSFW_UNLOCK);
+
+  if (!::SetForegroundWindow(*this)) {
+    LOG(WARNING) << __func__
+                 << ": ::SetForegroundWindow failed: " << ::GetLastError();
+  }
 }
 
 bool OmahaWnd::OnComplete() {
