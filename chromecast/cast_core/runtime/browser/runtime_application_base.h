@@ -10,11 +10,13 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
 #include "third_party/cast_core/public/src/proto/common/value.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
@@ -27,7 +29,8 @@ class CastWebService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
 // implementations, including Load and Launch behavior.
-class RuntimeApplicationBase : public RuntimeApplication {
+class RuntimeApplicationBase : public RuntimeApplication,
+                               public CastContentWindow::Observer {
  public:
   ~RuntimeApplicationBase() override;
 
@@ -105,14 +108,29 @@ class RuntimeApplicationBase : public RuntimeApplication {
       cast::v2::SetUrlRewriteRulesRequest request,
       cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
           reactor);
+  void HandleSetMediaState(
+      cast::v2::SetMediaStateRequest request,
+      cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
+          reactor);
+  void HandleSetVisibility(
+      cast::v2::SetVisibilityRequest request,
+      cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
+          reactor);
 
   // RuntimeMessagePortApplicationService handlers:
   void HandlePostMessage(cast::web::Message request,
                          cast::v2::RuntimeMessagePortApplicationServiceHandler::
                              PostMessage::Reactor* reactor);
 
+  // CastContentWindow::Observer implementation:
+  void OnVisibilityChange(VisibilityType visibility_type) override;
+
   // Creates the root CastWebView for this Cast session.
   CastWebView::Scoped CreateCastWebView();
+
+  // Sets content window state.
+  void SetMediaState(cast::common::MediaState::Type media_state);
+  void SetVisibility(cast::common::Visibility::Type visibility);
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
@@ -136,6 +154,10 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;
+
+  cast::common::MediaState::Type media_state_ =
+      cast::common::MediaState::LOAD_BLOCKED;
+  cast::common::Visibility::Type visibility_ = cast::common::Visibility::HIDDEN;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};

@@ -57,6 +57,7 @@ extern const char kCastCoreEnforceFeaturePermissions[];
 extern const char kCastCoreFeaturePermissions[];
 extern const char kCastCoreFeaturePermissionOrigins[];
 extern const char kCastCoreIsAudioOnly[];
+extern const char kCastCoreIsRemoteControlMode[];
 
 }  // namespace feature
 }  // namespace chromecast

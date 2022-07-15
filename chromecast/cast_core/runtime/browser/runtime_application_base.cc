@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
+#include "chromecast/browser/visibility_types.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
@@ -94,6 +96,18 @@ void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
           task_runner_,
           base::BindRepeating(&RuntimeApplicationBase::HandleSetUrlRewriteRules,
                               weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetMediaState>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(&RuntimeApplicationBase::HandleSetMediaState,
+                                  weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetVisibility>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(&RuntimeApplicationBase::HandleSetVisibility,
+                                  weak_factory_.GetWeakPtr())));
   grpc_server_->SetHandler<
       cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
       base::BindPostTask(
@@ -147,11 +161,18 @@ void RuntimeApplicationBase::Launch(
   cast_media_service_grpc_endpoint_.emplace(
       request.cast_media_service_info().grpc_endpoint());
 
+  // Fallback to UNBLOCK if media_state is not defined.
+  SetMediaState(request.media_state() == cast::common::MediaState::UNDEFINED
+                    ? cast::common::MediaState::UNBLOCKED
+                    : request.media_state());
+  // Fallback to FULL_SCREEN if visibility is not defined.
+  SetVisibility(request.visibility() == cast::common::Visibility::UNDEFINED
+                    ? cast::common::Visibility::FULL_SCREEN
+                    : request.visibility());
+
   // Report that Cast application launch is initiated.
   std::move(callback).Run(grpc::Status::OK);
 
-  // Initiate application initialization flow where bindings and any extra setup
-  // happens.
   LaunchApplication();
 }
 
@@ -192,53 +213,65 @@ base::Value RuntimeApplicationBase::GetRendererFeatures() const {
 }
 
 bool RuntimeApplicationBase::GetIsAudioOnly() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry =
       FindEntry(feature::kCastCoreIsAudioOnly, GetAppConfig().extra_features());
-  if (entry && entry->value().value_case() == cast::common::Value::kFlag) {
-    return entry->value().flag();
+  if (!entry) {
+    return false;
   }
-  return false;
+
+  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
+  return entry->value().flag();
 }
 
 bool RuntimeApplicationBase::GetEnforceFeaturePermissions() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
                                 GetAppConfig().extra_features());
-  if (entry && entry->value().value_case() == cast::common::Value::kFlag) {
-    return entry->value().flag();
+  if (!entry) {
+    return false;
   }
-  return false;
+
+  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
+  return entry->value().flag();
 }
 
 std::vector<int> RuntimeApplicationBase::GetFeaturePermissions() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<int> feature_permissions;
   const auto* entry = FindEntry(feature::kCastCoreFeaturePermissions,
                                 GetAppConfig().extra_features());
-  if (entry) {
-    DCHECK(entry->value().value_case() == cast::common::Value::kArray);
-    base::ranges::for_each(
-        entry->value().array().values(),
-        [&feature_permissions](const cast::common::Value& value) {
-          DCHECK(value.value_case() == cast::common::Value::kNumber);
-          feature_permissions.push_back(value.number());
-        });
+  if (!entry) {
+    return feature_permissions;
   }
+
+  DCHECK(entry->value().value_case() == cast::common::Value::kArray);
+  base::ranges::for_each(
+      entry->value().array().values(),
+      [&feature_permissions](const cast::common::Value& value) {
+        DCHECK(value.value_case() == cast::common::Value::kNumber);
+        feature_permissions.push_back(value.number());
+      });
   return feature_permissions;
 }
 
 std::vector<std::string>
 RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> feature_permission_origins;
   const auto* entry = FindEntry(feature::kCastCoreFeaturePermissionOrigins,
                                 GetAppConfig().extra_features());
-  if (entry) {
-    DCHECK(entry->value().value_case() == cast::common::Value::kArray);
-    base::ranges::for_each(
-        entry->value().array().values(),
-        [&feature_permission_origins](const cast::common::Value& value) {
-          DCHECK(value.value_case() == cast::common::Value::kText);
-          feature_permission_origins.push_back(value.text());
-        });
+  if (!entry) {
+    return feature_permission_origins;
   }
+
+  DCHECK(entry->value().value_case() == cast::common::Value::kArray);
+  base::ranges::for_each(
+      entry->value().array().values(),
+      [&feature_permission_origins](const cast::common::Value& value) {
+        DCHECK(value.value_case() == cast::common::Value::kText);
+        feature_permission_origins.push_back(value.text());
+      });
   return feature_permission_origins;
 }
 
@@ -301,16 +334,40 @@ void RuntimeApplicationBase::HandleSetUrlRewriteRules(
   reactor->Write(cast::v2::SetUrlRewriteRulesResponse());
 }
 
+void RuntimeApplicationBase::HandleSetMediaState(
+    cast::v2::SetMediaStateRequest request,
+    cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetMediaState(request.media_state());
+  reactor->Write(cast::v2::SetMediaStateResponse());
+}
+
+void RuntimeApplicationBase::HandleSetVisibility(
+    cast::v2::SetVisibilityRequest request,
+    cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetVisibility(request.visibility());
+  reactor->Write(cast::v2::SetVisibilityResponse());
+}
+
 void RuntimeApplicationBase::OnApplicationLaunched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Application is launched: " << *this;
 
   // Create the window and show the web view.
-  cast_web_view_->window()->GrantScreenAccess();
-  cast_web_view_->window()->CreateWindow(
-      ::chromecast::mojom::ZOrder::APP,
-      chromecast::VisibilityPriority::STICKY_ACTIVITY);
-  GetCastWebContents()->SetWebVisibilityAndPaint(true);
+  cast_web_view_->window()->AddObserver(this);
+  if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
+    LOG(INFO) << "Loading application in full screen: " << *this;
+    cast_web_view_->window()->GrantScreenAccess();
+    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
+                                           VisibilityPriority::STICKY_ACTIVITY);
+  } else {
+    LOG(INFO) << "Loading application in background: " << *this;
+    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
+                                           VisibilityPriority::HIDDEN);
+  }
 
   // Notify Cast Core.
   auto call = core_app_stub_->CreateCall<
@@ -333,6 +390,76 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
       web_service_->CreateWebViewInternal(std::move(params));
   DCHECK(cast_web_view);
   return cast_web_view;
+}
+
+void RuntimeApplicationBase::SetMediaState(
+    cast::common::MediaState::Type media_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!cast_web_view_) {
+    return;
+  }
+
+  if (media_state == media_state_) {
+    // No actual update happened.
+    return;
+  }
+
+  media_state_ = media_state;
+  LOG(INFO) << "Media state updated: state="
+            << cast::common::MediaState::Type_Name(media_state_) << ", "
+            << *this;
+  switch (media_state_) {
+    case cast::common::MediaState::LOAD_BLOCKED:
+      GetCastWebContents()->BlockMediaLoading(true);
+      GetCastWebContents()->BlockMediaStarting(true);
+      break;
+
+    case cast::common::MediaState::START_BLOCKED:
+      GetCastWebContents()->BlockMediaLoading(false);
+      GetCastWebContents()->BlockMediaStarting(true);
+      break;
+
+    case cast::common::MediaState::UNBLOCKED:
+      GetCastWebContents()->BlockMediaLoading(false);
+      GetCastWebContents()->BlockMediaStarting(false);
+      break;
+
+    default:
+      NOTREACHED();
+  }
+}
+
+void RuntimeApplicationBase::SetVisibility(
+    cast::common::Visibility::Type visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!cast_web_view_) {
+    return;
+  }
+
+  if (visibility == visibility_) {
+    // No actual update happened.
+    return;
+  }
+  visibility_ = visibility;
+
+  LOG(INFO) << "Visibility updated: state="
+            << cast::common::Visibility::Type_Name(visibility_) << ", "
+            << *this;
+  switch (visibility_) {
+    case cast::common::Visibility::FULL_SCREEN:
+      cast_web_view_->window()->RequestVisibility(
+          VisibilityPriority::STICKY_ACTIVITY);
+      cast_web_view_->window()->GrantScreenAccess();
+      break;
+
+    case cast::common::Visibility::HIDDEN:
+      cast_web_view_->window()->RequestVisibility(VisibilityPriority::HIDDEN);
+      cast_web_view_->window()->RevokeScreenAccess();
+      break;
+
+    default:
+      NOTREACHED();
+  }
 }
 
 void RuntimeApplicationBase::StopApplication(
@@ -359,11 +486,34 @@ void RuntimeApplicationBase::StopApplication(
 
   if (cast_web_view_) {
     GetCastWebContents()->ClosePage();
+    // Check if window is still available as page might have been closed before.
+    if (cast_web_view_->window()) {
+      cast_web_view_->window()->RemoveObserver(this);
+    }
   }
 
   grpc_server_->Stop();
   grpc_server_.reset();
   LOG(INFO) << "Application is stopped: " << *this;
+}
+
+void RuntimeApplicationBase::OnVisibilityChange(
+    VisibilityType visibility_type) {
+  switch (visibility_type) {
+    case VisibilityType::FULL_SCREEN:
+    case VisibilityType::PARTIAL_OUT:
+    case VisibilityType::TRANSIENTLY_HIDDEN:
+      LOG(INFO) << "Application is visible now: " << *this;
+      GetCastWebContents()->SetWebVisibilityAndPaint(true);
+      break;
+    default:
+      LOG(INFO) << "Application is hidden now: " << *this;
+      GetCastWebContents()->SetWebVisibilityAndPaint(false);
+      break;
+  }
+
+  // TODO(vigeni): Record the metrics?
+  // RecordAppEvent(is_visible_ ? "AppShown" : "AppHidden");
 }
 
 }  // namespace chromecast

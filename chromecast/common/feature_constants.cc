@@ -32,6 +32,7 @@ const char kCastCoreFeaturePermissions[] = "cast_core_feature_permissions";
 const char kCastCoreFeaturePermissionOrigins[] =
     "cast_core_feature_permission_origins";
 const char kCastCoreIsAudioOnly[] = "cast_core_is_audio_only";
+const char kCastCoreIsRemoteControlMode[] = "cast_core_is_remote_control_mode";
 
 }  // namespace feature
 }  // namespace chromecast
