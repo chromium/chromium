@@ -170,7 +170,7 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
         run_ffx_command([
             'component', 'create', f'/core/ffx-laboratory:{package}',
-            f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cmx'
+            f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
         ], target_id)
         run_ffx_command(
             ['component', 'resolve', f'/core/ffx-laboratory:{package}'],
