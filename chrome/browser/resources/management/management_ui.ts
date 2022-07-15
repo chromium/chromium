@@ -165,7 +165,7 @@ class ManagementUiElement extends ManagementUiElementBase {
     const reportingInfoMap = reportingInfo.reduce((info, response) => {
       info[response.reportingType] = info[response.reportingType] || {
         icon: this.getIconForReportingType_(response.reportingType),
-        messageIds: []
+        messageIds: [],
       };
       info[response.reportingType].messageIds.push(response.messageId);
       return info;

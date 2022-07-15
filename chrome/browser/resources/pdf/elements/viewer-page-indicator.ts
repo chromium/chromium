@@ -25,7 +25,7 @@ export class ViewerPageIndicatorElement extends PolymerElement {
 
       index: {type: Number, observer: 'indexChanged'},
 
-      pageLabels: {type: Array, value: null, observer: 'pageLabelsChanged'}
+      pageLabels: {type: Array, value: null, observer: 'pageLabelsChanged'},
     };
   }
 

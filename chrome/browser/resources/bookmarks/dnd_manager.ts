@@ -80,7 +80,7 @@ export class DragInfo {
   setNativeDragData(newDragData: DragData) {
     this.dragData = {
       sameProfile: newDragData.sameProfile,
-      elements: newDragData.elements!.map((x) => normalizeNode(x))
+      elements: newDragData.elements!.map((x) => normalizeNode(x)),
     };
   }
 

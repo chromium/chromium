@@ -83,7 +83,7 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('delete-activity-log-item', {
       bubbles: true,
       composed: true,
-      detail: Array.from(this.data.activityIds.values())
+      detail: Array.from(this.data.activityIds.values()),
     }));
   }
 

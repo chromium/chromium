@@ -48,7 +48,7 @@ export class BookmarkFolderElement extends PolymerElement {
       open_: {
         type: Boolean,
         value: false,
-        computed: 'computeIsOpen_(openFolders, folder.id)'
+        computed: 'computeIsOpen_(openFolders, folder.id)',
       },
 
       openFolders: Array,
@@ -158,7 +158,7 @@ export class BookmarkFolderElement extends PolymerElement {
       detail: {
         id: this.folder.id,
         open: !this.open_,
-      }
+      },
     }));
 
     chrome.metricsPrivate.recordUserAction(

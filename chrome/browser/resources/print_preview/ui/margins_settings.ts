@@ -46,7 +46,7 @@ export class PrintPreviewMarginsSettingsElement extends
       marginsTypeEnum_: {
         type: Object,
         value: MarginsType,
-      }
+      },
     };
   }
 
@@ -55,7 +55,7 @@ export class PrintPreviewMarginsSettingsElement extends
       'onMarginsSettingChange_(settings.margins.value)',
       'onMediaSizeOrLayoutChange_(' +
           'settings.mediaSize.value, settings.layout.value)',
-      'onPagesPerSheetSettingChange_(settings.pagesPerSheet.value)'
+      'onPagesPerSheetSettingChange_(settings.pagesPerSheet.value)',
 
     ];
   }

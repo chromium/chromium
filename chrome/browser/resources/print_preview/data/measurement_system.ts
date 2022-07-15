@@ -98,15 +98,16 @@ export class MeasurementSystem {
 const measurementSystemPrefs:
     Map<MeasurementSystemUnitType, MeasurementSystemPrefs> = new Map([
       [
-        MeasurementSystemUnitType.METRIC, {
+        MeasurementSystemUnitType.METRIC,
+        {
           precision: 0.5,
           decimalPlaces: 1,
           ptsPerUnit: 72.0 / 25.4,
-          unitSymbol: 'mm'
-        }
+          unitSymbol: 'mm',
+        },
       ],
       [
         MeasurementSystemUnitType.IMPERIAL,
-        {precision: 0.01, decimalPlaces: 2, ptsPerUnit: 72.0, unitSymbol: '"'}
-      ]
+        {precision: 0.01, decimalPlaces: 2, ptsPerUnit: 72.0, unitSymbol: '"'},
+      ],
     ]);

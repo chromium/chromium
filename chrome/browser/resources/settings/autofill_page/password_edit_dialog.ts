@@ -256,7 +256,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enablePasswordNotes');
-        }
+        },
       },
 
       /* If true, change event will be dispatched. */
@@ -264,7 +264,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enablePasswordViewPage');
-        }
+        },
       },
     };
   }
@@ -500,7 +500,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           username: this.username_,
           password: this.password_,
           note: this.note_,
-          useAccountStore: useAccountStore
+          useAccountStore: useAccountStore,
         })
         .finally(() => {
           this.close();

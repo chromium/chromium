@@ -28,7 +28,7 @@ export const InputMixin = dedupingMixin(
             lastValue_: {
               type: String,
               value: '',
-            }
+            },
           };
         }
 

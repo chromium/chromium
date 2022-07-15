@@ -50,7 +50,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.PRESENT,
         value: present,
-      }
+      },
     }));
   }
 
@@ -59,7 +59,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.POWERED,
         value: powered,
-      }
+      },
     }));
   }
 
@@ -68,7 +68,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.DISCOVERABLE,
         value: discoverable,
-      }
+      },
     }));
   }
 
@@ -77,7 +77,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.DISCOVERING,
         value: discovering,
-      }
+      },
     }));
   }
 

@@ -397,7 +397,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.FEDERATED_IDENTITY_API,
             ]),
           };
-        }
+        },
       },
 
       focusConfig: {

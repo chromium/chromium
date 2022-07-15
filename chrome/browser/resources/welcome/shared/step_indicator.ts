@@ -34,7 +34,7 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
       dots_: {
         type: Array,
         computed: 'computeDots_(model.total)',
-      }
+      },
     };
   }
 

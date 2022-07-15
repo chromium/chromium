@@ -71,7 +71,7 @@ export class SettingsAutofillPageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enablePasswordViewPage');
-        }
+        },
       },
 
       // The credential is only used to pass the credential from password-view

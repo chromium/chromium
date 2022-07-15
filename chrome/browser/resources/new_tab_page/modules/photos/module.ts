@@ -68,14 +68,14 @@ export class PhotosModuleElement extends I18nMixin
         value: () => {
           return `chrome://new-tab-page/modules/photos/images/img0${
               loadTimeData.getString('photosModuleCustomArtWork')}_240x236.svg`;
-        }
+        },
       },
 
       customArtworkIndex_: {
         type: String,
         value: () => {
           return loadTimeData.getString('photosModuleCustomArtWork');
-        }
+        },
       },
 
       // If true, the artwork shown in opt-in screen will be one single svg
@@ -85,7 +85,7 @@ export class PhotosModuleElement extends I18nMixin
         value: () => {
           return loadTimeData.getString('photosModuleCustomArtWork') !== '' &&
               !loadTimeData.getBoolean('photosModuleSplitSvgCustomArtWork');
-        }
+        },
       },
 
       // If true, the artwork shown in opt-in screen will be a composite image
@@ -100,7 +100,7 @@ export class PhotosModuleElement extends I18nMixin
               (loadTimeData.getString('photosModuleCustomArtWork') === '1' ||
                loadTimeData.getString('photosModuleCustomArtWork') === '2' ||
                loadTimeData.getString('photosModuleCustomArtWork') === '3');
-        }
+        },
       },
 
       showSoftOptOutButton: Boolean,

@@ -89,7 +89,8 @@ export class BrowserProxy {
     }
 
     chrome.send('metricsHandler:recordMediumTime', [
-      HISTOGRAM_ACCESS_CODE_INPUT_TIME, time
+      HISTOGRAM_ACCESS_CODE_INPUT_TIME,
+      time,
     ]);
   }
 
@@ -99,13 +100,16 @@ export class BrowserProxy {
     }
 
     chrome.send('metricsHandler:recordMediumTime', [
-      HISTOGRAM_CAST_ATTEMPT_LENGTH, time
+      HISTOGRAM_CAST_ATTEMPT_LENGTH,
+      time,
     ]);
   }
 
   static recordDialogCloseReason(reason: DialogCloseReason) {
     chrome.send('metricsHandler:recordInHistogram', [
-      HISTOGRAM_DIALOG_CLOSE_REASON, reason, DialogCloseReason.COUNT
+      HISTOGRAM_DIALOG_CLOSE_REASON,
+      reason,
+      DialogCloseReason.COUNT,
     ]);
   }
 

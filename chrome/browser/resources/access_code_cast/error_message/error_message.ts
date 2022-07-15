@@ -34,15 +34,15 @@ export class ErrorMessageElement extends PolymerElement {
             // TODO(b/216529759): Make a new ErrorMessage for profile sync
             // error.
             AddSinkResultCode.PROFILE_SYNC_ERROR,
-            AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR
-          ]
+            AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR,
+          ],
         ],
         [
           ErrorMessage.ACCESS_CODE,
           [
             AddSinkResultCode.INVALID_ACCESS_CODE,
-            AddSinkResultCode.ACCESS_CODE_NOT_FOUND
-          ]
+            AddSinkResultCode.ACCESS_CODE_NOT_FOUND,
+          ],
         ],
         [
           ErrorMessage.NETWORK,
@@ -51,8 +51,8 @@ export class ErrorMessageElement extends PolymerElement {
             AddSinkResultCode.RESPONSE_MALFORMED,
             AddSinkResultCode.EMPTY_RESPONSE,
             AddSinkResultCode.SERVICE_NOT_PRESENT,
-            AddSinkResultCode.SERVER_ERROR
-          ]
+            AddSinkResultCode.SERVER_ERROR,
+          ],
         ],
         [ErrorMessage.PERMISSION, [AddSinkResultCode.AUTH_ERROR]],
         [ErrorMessage.TOO_MANY_REQUESTS, [AddSinkResultCode.TOO_MANY_REQUESTS]],
@@ -71,16 +71,16 @@ export class ErrorMessageElement extends PolymerElement {
             RouteRequestResultCode.CANCELLED,
             RouteRequestResultCode.ROUTE_ALREADY_EXISTS,
             RouteRequestResultCode.DESKTOP_PICKER_FAILED,
-            RouteRequestResultCode.ROUTE_ALREADY_TERMINATED
-          ]
+            RouteRequestResultCode.ROUTE_ALREADY_TERMINATED,
+          ],
         ],
         [
           ErrorMessage.NETWORK,
           [
             RouteRequestResultCode.TIMED_OUT,
             RouteRequestResultCode.ROUTE_NOT_FOUND,
-            RouteRequestResultCode.SINK_NOT_FOUND
-          ]
+            RouteRequestResultCode.SINK_NOT_FOUND,
+          ],
         ],
       ];
 

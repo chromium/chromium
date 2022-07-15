@@ -18,7 +18,7 @@ var ErrorCodes = {
   'BAD_REQUEST': 2,
   'CONFIGURATION_UNSUPPORTED': 3,
   'DEVICE_INELIGIBLE': 4,
-  'TIMEOUT': 5
+  'TIMEOUT': 5,
 };
 
 /**

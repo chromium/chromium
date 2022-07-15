@@ -240,7 +240,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         'blockAllPref_',
         Object.assign(this.getPref('generated.cookie_primary_setting'), {
           controlledBy: sessionOnlyPref.controlledBy,
-          controlledByName: sessionOnlyPref.controlledByName
+          controlledByName: sessionOnlyPref.controlledByName,
         }));
   }
 

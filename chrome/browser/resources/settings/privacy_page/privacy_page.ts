@@ -89,7 +89,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isGuest');
-        }
+        },
       },
 
       showClearBrowsingDataDialog_: Boolean,
@@ -99,7 +99,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
-        }
+        },
       },
 
       cookieSettingDescription_: String,
@@ -108,21 +108,21 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
-        }
+        },
       },
 
       blockAutoplayStatus_: {
         type: Object,
         value() {
           return {};
-        }
+        },
       },
 
       enablePaymentHandlerContentSetting_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
-        }
+        },
       },
 
       enableFederatedIdentityApiContentSetting_: {
@@ -130,7 +130,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value() {
           return loadTimeData.getBoolean(
               'enableFederatedIdentityApiContentSetting');
-        }
+        },
       },
 
       enableExperimentalWebPlatformFeatures_: {
@@ -146,7 +146,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        }
+        },
       },
 
       enableQuietNotificationPromptsSetting_: {
@@ -268,7 +268,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
-      enabled: false
+      enabled: false,
     });
 
     this.addWebUIListener(

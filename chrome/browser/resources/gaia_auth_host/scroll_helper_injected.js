@@ -38,7 +38,7 @@
       this.channel_.send({
         name: 'scrollInfo',
         scrollTop: window.scrollY,
-        scrollHeight: document.body.scrollHeight
+        scrollHeight: document.body.scrollHeight,
       });
     },
   };

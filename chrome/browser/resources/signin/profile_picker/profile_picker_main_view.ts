@@ -73,7 +73,7 @@ export class ProfilePickerMainViewElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('askOnStartup');
-        }
+        },
       },
     };
   }

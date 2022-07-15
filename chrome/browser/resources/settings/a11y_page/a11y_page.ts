@@ -83,7 +83,7 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('showFocusHighlightOption');
-        }
+        },
       },
       // </if>
 

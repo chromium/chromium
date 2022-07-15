@@ -79,7 +79,7 @@ export class PrintServerStore extends EventTarget {
     this.updatePrintServersConfig_(printServersConfig);
     const eventData = {
       printServerNames: Array.from(this.printServersByName_.keys()),
-      isSingleServerFetchingMode: this.isSingleServerFetchingMode_
+      isSingleServerFetchingMode: this.isSingleServerFetchingMode_,
     };
     this.dispatchEvent(new CustomEvent(
         PrintServerStoreEventType.PRINT_SERVERS_CHANGED, {detail: eventData}));

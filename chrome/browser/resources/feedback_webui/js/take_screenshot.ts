@@ -44,8 +44,8 @@ export function takeScreenshot(
       {
         video: {
           mandatory:
-              {chromeMediaSource: 'screen', maxWidth: 4096, maxHeight: 2560}
-        }
+              {chromeMediaSource: 'screen', maxWidth: 4096, maxHeight: 2560},
+        },
       },
       function(stream) {
         if (stream) {

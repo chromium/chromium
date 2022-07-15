@@ -298,7 +298,7 @@ export class RealboxElement extends PolymerElement {
       this.updateInput_({
         text: decodeString16(this.selectedMatch_!.fillIntoEdit),
         inline: '',
-        moveCursorToEnd: true
+        moveCursorToEnd: true,
       });
     } else {
       this.$.matches.unselect();
@@ -317,17 +317,17 @@ export class RealboxElement extends PolymerElement {
     if (variant === 0) {
       this.updateStyles({
         '--search-box-bg': skColorToRgba(assert(this.theme.bg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered))
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered)),
       });
     } else if (variant === 1) {
       this.updateStyles({
         '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered))
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered)),
       });
     } else if (variant === 2) {
       this.updateStyles({
         '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.resultsBg))
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.resultsBg)),
       });
     }
 
@@ -622,7 +622,7 @@ export class RealboxElement extends PolymerElement {
     this.updateInput_({
       text: decodeString16(this.selectedMatch_!.fillIntoEdit),
       inline: '',
-      moveCursorToEnd: true
+      moveCursorToEnd: true,
     });
   }
 

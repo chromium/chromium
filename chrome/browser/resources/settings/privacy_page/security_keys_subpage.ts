@@ -46,7 +46,7 @@ class SecurityKeysSubpageElement extends PolymerElement {
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
-        }
+        },
       },
 
       showSetPINDialog_: {

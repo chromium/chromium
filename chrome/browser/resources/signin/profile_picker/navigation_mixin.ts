@@ -90,7 +90,7 @@ if (!history.state || !history.state.route || !history.state.step) {
           {
             route: Routes.PROFILE_SWITCH,
             step: computeStep(Routes.PROFILE_SWITCH),
-            isFirst: true
+            isFirst: true,
           },
           '', path);
       break;
@@ -100,7 +100,7 @@ if (!history.state || !history.state.route || !history.state.step) {
           {
             route: Routes.ACCOUNT_SELECTION_LACROS,
             step: computeStep(Routes.ACCOUNT_SELECTION_LACROS),
-            isFirst: true
+            isFirst: true,
           },
           '', path);
       break;
@@ -164,7 +164,9 @@ export function navigateTo(route: Routes) {
     // <if expr="chromeos_lacros">
     Routes.ACCOUNT_SELECTION_LACROS,
     // </if>
-    Routes.MAIN, Routes.NEW_PROFILE, Routes.PROFILE_SWITCH
+    Routes.MAIN,
+    Routes.NEW_PROFILE,
+    Routes.PROFILE_SWITCH,
   ].includes(route));
   navigateToStep(route, computeStep(route));
 }

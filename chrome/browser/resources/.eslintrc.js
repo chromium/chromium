@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 module.exports = {
-  'env': {
-    'browser': true,
-    'es6': true,
+  'env' : {
+    'browser' : true,
+    'es6' : true,
   },
-  'rules': {'eqeqeq': ['error', 'always', {'null': 'ignore'}]},
+  'rules' : {
+    'comma-dangle' : ['error', 'always-multiline'],
+    'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
+  },
 };

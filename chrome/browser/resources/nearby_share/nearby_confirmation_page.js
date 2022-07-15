@@ -109,7 +109,7 @@ export class NearbyConfirmationPageElement extends
       transferUpdateListener: {
         type: Object,
         value: null,
-        observer: 'onTransferUpdateListenerChanged_'
+        observer: 'onTransferUpdateListenerChanged_',
       },
 
       /**

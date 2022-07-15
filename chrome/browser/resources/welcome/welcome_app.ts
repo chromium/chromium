@@ -37,7 +37,10 @@ type NuxOnboardingModules = {
  * onboarding flow.
  */
 const MODULES_WHITELIST: Set<string> = new Set([
-  'nux-google-apps', 'nux-ntp-background', 'nux-set-as-default', 'signin-view'
+  'nux-google-apps',
+  'nux-ntp-background',
+  'nux-set-as-default',
+  'signin-view',
 ]);
 
 /**
@@ -82,7 +85,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     this.modules_ = {
       'new-user': loadTimeData.getString('newUserModules').split(','),
       'returning-user':
-          loadTimeData.getString('returningUserModules').split(',')
+          loadTimeData.getString('returningUserModules').split(','),
     };
   }
 
@@ -188,7 +191,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
             if (MODULES_NEEDING_INDICATOR.has(elementTagName)) {
               element.set('indicatorModel', {
                 total: indicatorElementCount,
-                active: indicatorActiveCount++
+                active: indicatorActiveCount++,
               });
             }
           });

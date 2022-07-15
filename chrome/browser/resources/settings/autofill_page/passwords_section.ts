@@ -253,7 +253,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value() {
           return loadTimeData.getBoolean(
               'enableAutomaticPasswordChangeInSettings');
-        }
+        },
       },
 
       isPasswordViewPageEnabled_: {
@@ -276,7 +276,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value() {
           return loadTimeData.valueExists('showImportPasswords') &&
               loadTimeData.getBoolean('showImportPasswords');
-        }
+        },
       },
 
       /** An array of blocked sites to display. */

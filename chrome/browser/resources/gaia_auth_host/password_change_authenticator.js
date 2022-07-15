@@ -209,7 +209,7 @@ cr.define('cr.samlPasswordChange', function() {
         matches: ['*://*.okta.com/*'],
         js: {code: oktaInjectedJs},
         all_frames: true,
-        run_at: 'document_start'
+        run_at: 'document_start',
       }]);
 
       // Connect to the script running in Okta web pages once it loads.
@@ -313,7 +313,7 @@ cr.define('cr.samlPasswordChange', function() {
         detail: {
           old_passwords: passwordsOnce,
           new_passwords: passwordsTwice,
-        }
+        },
       }));
       this.resetStates();
     }
@@ -336,7 +336,7 @@ cr.define('cr.samlPasswordChange', function() {
         const message = {
           name: 'detectPasswordChangeSuccess',
           url: details.url,
-          redirectUrl: details.redirectUrl
+          redirectUrl: details.redirectUrl,
         };
         sendMessage_(extensionId, message, (passwordChangeSuccess) => {
           // SAML change password extension will be used to detect the password

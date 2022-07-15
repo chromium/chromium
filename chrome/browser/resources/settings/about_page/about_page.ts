@@ -59,7 +59,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
           message: '',
           progress: 0,
           rollback: false,
-          status: UpdateStatus.DISABLED
+          status: UpdateStatus.DISABLED,
         },
       },
 

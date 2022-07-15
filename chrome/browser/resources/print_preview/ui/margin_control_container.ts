@@ -22,7 +22,7 @@ export const MARGIN_KEY_MAP: Map<CustomMarginsOrientation, string> = new Map([
   [CustomMarginsOrientation.TOP, 'marginTop'],
   [CustomMarginsOrientation.RIGHT, 'marginRight'],
   [CustomMarginsOrientation.BOTTOM, 'marginBottom'],
-  [CustomMarginsOrientation.LEFT, 'marginLeft']
+  [CustomMarginsOrientation.LEFT, 'marginLeft'],
 ]);
 
 export type MarginObject = {

@@ -77,7 +77,7 @@ class SettingsSiteSettingsListElement extends
       // The prefs object is only populated for the instance of this element
       // which contains the notifications link row, avoiding non-actionable
       // firing of the observer.
-      'updateNotificationsLabel_(prefs.generated.notification.*)'
+      'updateNotificationsLabel_(prefs.generated.notification.*)',
     ];
   }
 

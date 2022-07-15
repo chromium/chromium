@@ -141,7 +141,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
         y: e.clientY,
         source: MenuSource.ITEM,
         targetId: this.itemId,
-      }
+      },
     }));
   }
 
@@ -161,7 +161,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
         targetElement: e.target,
         source: MenuSource.ITEM,
         targetId: this.itemId,
-      }
+      },
     }));
   }
 

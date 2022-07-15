@@ -32,7 +32,7 @@ export class PasscodeInputElement extends PolymerElement {
       },
       disabled: {
         type: Boolean,
-        observer: 'disabledChange'
+        observer: 'disabledChange',
       },
       length: Number,
       value: {
@@ -41,7 +41,7 @@ export class PasscodeInputElement extends PolymerElement {
         observer: 'valueChange',
         notify: true,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 

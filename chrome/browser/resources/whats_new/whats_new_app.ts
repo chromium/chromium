@@ -39,7 +39,7 @@ export class WhatsNewAppElement extends PolymerElement {
       url_: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 

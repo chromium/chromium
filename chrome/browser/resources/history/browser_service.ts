@@ -65,8 +65,14 @@ export class BrowserServiceImpl implements BrowserService {
   openForeignSessionTab(
       sessionTag: string, windowId: number, tabId: number, e: MouseEvent) {
     chrome.send('openForeignSession', [
-      sessionTag, String(windowId), String(tabId), e.button || 0, e.altKey,
-      e.ctrlKey, e.metaKey, e.shiftKey
+      sessionTag,
+      String(windowId),
+      String(tabId),
+      e.button || 0,
+      e.altKey,
+      e.ctrlKey,
+      e.metaKey,
+      e.shiftKey,
     ]);
   }
 

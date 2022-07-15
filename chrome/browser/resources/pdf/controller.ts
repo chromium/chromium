@@ -194,7 +194,7 @@ export class PluginController implements ContentController {
         layoutOptions: layoutOptions,
         xOffset: position.x,
         yOffset: position.y,
-        pinchPhase: pinchPhase
+        pinchPhase: pinchPhase,
       });
     }
   }
@@ -222,7 +222,7 @@ export class PluginController implements ContentController {
       pinchX: pinchCenter.x,
       pinchY: pinchCenter.y,
       pinchVectorX: pinchVector.x,
-      pinchVectorY: pinchVector.y
+      pinchVectorY: pinchVector.y,
     });
   }
 
@@ -304,7 +304,7 @@ export class PluginController implements ContentController {
       pageCount:
           (printPreviewParams.modifiable ?
                printPreviewParams.pageNumbers.length :
-               0)
+               0),
     });
   }
 

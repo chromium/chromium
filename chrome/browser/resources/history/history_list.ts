@@ -330,7 +330,7 @@ export class HistoryListElement extends HistoryListElementBase {
         removed: [item],
         addedCount: 0,
         object: this.historyData_,
-        type: 'splice'
+        type: 'splice',
       });
     });
     this.notifySplices('historyData_', splices);

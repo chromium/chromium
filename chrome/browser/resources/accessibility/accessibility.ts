@@ -104,7 +104,7 @@ class BrowserProxy {
       processId: number, routingId: number, requestType: RequestType,
       allow: string, allowEmpty: string, deny: string) {
     chrome.send('requestWebContentsTree', [
-      {processId, routingId, requestType, filters: {allow, allowEmpty, deny}}
+      {processId, routingId, requestType, filters: {allow, allowEmpty, deny}},
     ]);
   }
 

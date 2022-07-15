@@ -28,7 +28,7 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
       dataCollectors_: {
         type: Array,
         value: () => [],
-      }
+      },
     };
   }
 

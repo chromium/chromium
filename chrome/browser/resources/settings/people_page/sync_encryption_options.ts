@@ -188,7 +188,7 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
           this.dispatchEvent(new CustomEvent('passphrase-changed', {
             bubbles: true,
             composed: true,
-            detail: {didChange: successfullySet}
+            detail: {didChange: successfullySet},
           }));
           this.isSettingEncryptionPassphrase_ = false;
         });

@@ -41,7 +41,7 @@ function getContextMenuPosition(element: Element): {x: number, y: number} {
   const rect = element.getBoundingClientRect();
   return {
     x: rect.left + TOUCH_CONTEXT_MENU_OFFSET_X,
-    y: rect.bottom + TOUCH_CONTEXT_MENU_OFFSET_Y
+    y: rect.bottom + TOUCH_CONTEXT_MENU_OFFSET_Y,
   };
 }
 

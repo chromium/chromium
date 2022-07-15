@@ -130,7 +130,7 @@ function exactSearch<T extends ItemData>(
     if (matchFound) {
       exactMatches.push({
         tab: matchedRecord,
-        score: scoringFunction(matchedRecord, distance, searchFieldWeights)
+        score: scoringFunction(matchedRecord, distance, searchFieldWeights),
       });
     }
   }

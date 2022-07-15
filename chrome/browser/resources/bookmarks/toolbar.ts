@@ -89,7 +89,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
       detail: {
         targetElement: e.target,
         source: MenuSource.TOOLBAR,
-      }
+      },
     }));
   }
 

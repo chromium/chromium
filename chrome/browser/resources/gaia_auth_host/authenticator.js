@@ -223,8 +223,8 @@ cr.define('cr.login', function() {
     'isDeviceOwner',     // True if the user is device owner.
     'doSamlRedirect',    // True if the authentication is done via external IdP.
     'rart',              // Encrypted reauth request token.
-    'enableAzureADIntegration'  // True if features specific to Azure AD are
-                                // enabled
+    'enableAzureADIntegration',  // True if features specific to Azure AD are
+                                 // enabled
   ];
 
   // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -360,7 +360,7 @@ cr.define('cr.login', function() {
       if (this.email_ && this.gaiaId_ && this.sessionIndex_) {
         this.maybeCompleteAuth_();
       }
-    }
+    },
   };
 
   /**
@@ -1215,7 +1215,7 @@ cr.define('cr.login', function() {
               servicesProvided: this.servicesProvided_,
               passwordAttributes: passwordAttributes,
               syncTrustedVaultKeys: this.syncTrustedVaultKeys_ || {},
-            }
+            },
           }));
       this.resetStates();
       this.authCompletedFired_ = true;

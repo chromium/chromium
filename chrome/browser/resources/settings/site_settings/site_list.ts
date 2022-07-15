@@ -141,7 +141,7 @@ export class SiteListElement extends SiteListElementBase {
           BLOCK: 'Block',
           RESET: 'Reset',
           SESSION_ONLY: 'SessionOnly',
-        }
+        },
       },
 
       lastFocused_: Object,

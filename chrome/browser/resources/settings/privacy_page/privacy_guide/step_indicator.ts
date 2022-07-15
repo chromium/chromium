@@ -38,7 +38,7 @@ export class StepIndicator extends StepIndicatorBase {
       dots_: {
         type: Array,
         computed: 'computeDots_(model.total)',
-      }
+      },
     };
   }
 

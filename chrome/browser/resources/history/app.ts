@@ -219,7 +219,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         value: () => {
           return [
             loadTimeData.getString('historyListTabLabel'),
-            loadTimeData.getString('historyClustersTabLabel')
+            loadTimeData.getString('historyClustersTabLabel'),
           ];
         },
       },

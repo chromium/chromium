@@ -232,7 +232,7 @@ export class DeviceDetailsPage extends Page {
       detail: {
         address: this.deviceInfo.address,
         status: status,
-      }
+      },
     }));
   }
 }

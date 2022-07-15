@@ -61,7 +61,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
-        }
+        },
       },
 
       /**

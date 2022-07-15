@@ -53,7 +53,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return {
       fontName_: {
         type: String,
-      }
+      },
     };
   }
 
@@ -65,9 +65,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // the names set in read_anything_font_model.cc.
   private defaultFontName: string = 'Standard font';
   private validFontNames: Array<{name: string}> = [
-    {name: 'Standard font'}, {name: 'Sans'}, {name: 'Serif'}, {name: 'Arial'},
-    {name: 'Roboto'}, {name: 'Courier New'}, {name: 'Comic Sans MS'},
-    {name: 'Webdings'}, {name: 'Impact'}
+    {name: 'Standard font'},
+    {name: 'Sans'},
+    {name: 'Serif'},
+    {name: 'Arial'},
+    {name: 'Roboto'},
+    {name: 'Courier New'},
+    {name: 'Comic Sans MS'},
+    {name: 'Webdings'},
+    {name: 'Impact'},
   ];
 
   override connectedCallback() {

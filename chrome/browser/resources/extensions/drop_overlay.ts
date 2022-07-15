@@ -27,7 +27,7 @@ class ExtensionsDropOverlayElement extends PolymerElement {
       dragEnabled: {
         type: Boolean,
         observer: 'dragEnabledChanged_',
-      }
+      },
     };
   }
 

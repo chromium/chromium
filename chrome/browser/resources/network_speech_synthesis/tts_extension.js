@@ -82,7 +82,7 @@ TtsExtension.prototype = {
     for (let i = 0; i < voices.length; i++) {
       this.voiceNameToLangAndGender_[voices[i].voice_name] = {
         lang: voices[i].lang,
-        gender: voices[i].gender
+        gender: voices[i].gender,
       };
     }
 
@@ -133,7 +133,7 @@ TtsExtension.prototype = {
       this.currentUtterance_ = {
         utterance: utterance,
         options: options,
-        callback: callback
+        callback: callback,
       };
 
       let lang = options.lang;
@@ -207,7 +207,7 @@ TtsExtension.prototype = {
       this.audioElement_.pause();
       this.currentUtterance_.callback({
         'type': 'end',
-        'charIndex': this.currentUtterance_.utterance.length
+        'charIndex': this.currentUtterance_.utterance.length,
       });
     }
     this.currentUtterance_ = null;
@@ -251,7 +251,7 @@ TtsExtension.prototype = {
     if (this.currentUtterance_) {
       this.audioElement_.play();
     }
-  }
+  },
 
 };
 

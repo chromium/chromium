@@ -215,7 +215,7 @@ export class SettingsPrefsElement extends PolymerElement {
       this.dispatchEvent(new CustomEvent('user-action-setting-change', {
         bubbles: true,
         composed: true,
-        detail: {prefKey: key, prefValue: prefObj.value}
+        detail: {prefKey: key, prefValue: prefObj.value},
       }));
       // </if>
 

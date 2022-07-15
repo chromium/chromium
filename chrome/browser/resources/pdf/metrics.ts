@@ -31,7 +31,7 @@ export function record(action: UserAction) {
       'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
       'min': 1,
       'max': UserAction.NUMBER_OF_ACTIONS,
-      'buckets': UserAction.NUMBER_OF_ACTIONS + 1
+      'buckets': UserAction.NUMBER_OF_ACTIONS + 1,
     };
   }
   chrome.metricsPrivate.recordValue(actionsMetric, action);

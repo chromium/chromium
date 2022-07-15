@@ -181,7 +181,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       this.dispatchEvent(new CustomEvent('iron-announce', {
         bubbles: true,
         composed: true,
-        detail: {text: loadTimeData.getString('searchCleared')}
+        detail: {text: loadTimeData.getString('searchCleared')},
       }));
     }
 
@@ -200,8 +200,8 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
         detail: {
           text: ids.length > 0 ?
               loadTimeData.getStringF('searchResults', this.searchTerm_) :
-              loadTimeData.getString('noSearchResults')
-        }
+              loadTimeData.getString('noSearchResults'),
+        },
       }));
     });
   }

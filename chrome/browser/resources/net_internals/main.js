@@ -110,9 +110,18 @@ export class MainView extends WindowView {
     // Redirect deleted pages to #events page, which contains instructions
     // about migrating to using net-export and the external netlog_viewer.
     if ([
-          '#capture', '#import', '#export', '#timeline', '#alt-svc', '#http2',
-          '#quic', '#reporting', '#httpCache', '#modules', '#bandwidth',
-          '#prerender'
+          '#capture',
+          '#import',
+          '#export',
+          '#timeline',
+          '#alt-svc',
+          '#http2',
+          '#quic',
+          '#reporting',
+          '#httpCache',
+          '#modules',
+          '#bandwidth',
+          '#prerender',
         ].includes(parsed.tabHash)) {
       parsed.tabHash = EventsView.TAB_HASH;
     }

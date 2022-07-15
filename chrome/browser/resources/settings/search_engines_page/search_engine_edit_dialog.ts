@@ -175,7 +175,9 @@ export class SettingsSearchEngineEditDialogElement extends
 
   private updateActionButtonState_() {
     const allValid = [
-      this.$.searchEngine, this.$.keyword, this.$.queryUrl
+      this.$.searchEngine,
+      this.$.keyword,
+      this.$.queryUrl,
     ].every(function(inputElement) {
       return !inputElement.invalid && inputElement.value.length > 0;
     });

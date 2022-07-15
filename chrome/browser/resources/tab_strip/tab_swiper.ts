@@ -83,13 +83,13 @@ export class TabSwiper {
             opacity: 1,
             maxWidth: 'var(--tabstrip-tab-width)',
             [paddingInlineEnd]: 'var(--tabstrip-tab-spacing)',
-            transform: `translateY(0)`
+            transform: `translateY(0)`,
           },
           {
             // Start of transform animation swiping up.
             offset:
                 TRANSLATE_ANIMATION_THRESHOLD_PX / SWIPE_FINISH_THRESHOLD_PX,
-            transform: `translateY(0)`
+            transform: `translateY(0)`,
           },
           {
             // Start of max-width and opacity animation swiping up.
@@ -103,7 +103,7 @@ export class TabSwiper {
             maxWidth: '0px',
             opacity: 0,
             [paddingInlineEnd]: 0,
-            transform: `translateY(-${SWIPE_FINISH_THRESHOLD_PX}px)`
+            transform: `translateY(-${SWIPE_FINISH_THRESHOLD_PX}px)`,
           },
         ],
         {

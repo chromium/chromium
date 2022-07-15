@@ -477,8 +477,12 @@ function addRowForProcess(
   if (policy) {
     // Text-only items.
     const entries = [
-      String(pid), type, name, sandbox, policy.lockdownLevel,
-      policy.desiredIntegrityLevel
+      String(pid),
+      type,
+      name,
+      sandbox,
+      policy.lockdownLevel,
+      policy.desiredIntegrityLevel,
     ].map(makeTextEntry);
     entries.push(makeMitigationEntry(policy.platformMitigations));
     entries.push(makeComponentFilterEntry(policy));
@@ -499,8 +503,15 @@ function onGetSandboxDiagnostics(results: SandboxDiagnostics) {
 
   // Titles.
   addRow([
-    'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity',
-    'Mitigations', 'Component Filter', 'Lowbox/AppContainer'
+    'Process',
+    'Type',
+    'Name',
+    'Sandbox',
+    'Lockdown',
+    'Integrity',
+    'Mitigations',
+    'Component Filter',
+    'Lowbox/AppContainer',
   ].map(makeTextEntry));
 
   // Browser Processes.
@@ -508,7 +519,11 @@ function onGetSandboxDiagnostics(results: SandboxDiagnostics) {
     const pid = process.processId;
     const name = process.name || process.metricsName;
     addRowForProcess(
-        pid, process.processType, name, process.sandboxType, policies.get(pid)!
+        pid,
+        process.processType,
+        name,
+        process.sandboxType,
+        policies.get(pid)!,
     );
   }
 

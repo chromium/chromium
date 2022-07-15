@@ -67,7 +67,7 @@ export const SiteSettingsMixin = dedupingMixin(
 
         private onUserSiteSettingsChanged_({
           permittedSites,
-          restrictedSites
+          restrictedSites,
         }: chrome.developerPrivate.UserSiteSettings) {
           this.permittedSites = permittedSites;
           this.restrictedSites = restrictedSites;

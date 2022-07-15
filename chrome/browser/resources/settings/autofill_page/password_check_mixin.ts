@@ -87,8 +87,8 @@ export const PasswordCheckMixin = dedupingMixin(
               value() {
                 return loadTimeData.getBoolean(
                     'showDismissCompromisedPasswordOption');
-              }
-            }
+              },
+            },
           };
         }
 

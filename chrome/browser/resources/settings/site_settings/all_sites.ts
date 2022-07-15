@@ -467,7 +467,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
-      origins: []
+      origins: [],
     };
 
     if (actionScope === 'origin') {
@@ -903,7 +903,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
-      origins: []
+      origins: [],
     };
 
     this.browserProxy.clearEtldPlus1DataAndCookies(siteGroupToUpdate.etldPlus1);

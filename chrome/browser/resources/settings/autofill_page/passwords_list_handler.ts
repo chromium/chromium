@@ -120,7 +120,7 @@ export class PasswordsListHandlerElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enableSendPasswords');
-        }
+        },
       },
 
       /**

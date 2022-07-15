@@ -243,7 +243,8 @@ export class DestinationStore extends EventTarget {
 
     this.destinationSearchStatus_ = new Map([
       [
-        PrinterType.EXTENSION_PRINTER, DestinationStorePrinterSearchStatus.START
+        PrinterType.EXTENSION_PRINTER,
+        DestinationStorePrinterSearchStatus.START,
       ],
       [PrinterType.LOCAL_PRINTER, DestinationStorePrinterSearchStatus.START],
     ]);

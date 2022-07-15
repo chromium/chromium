@@ -350,7 +350,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         x: e.clientX,
         y: e.clientY,
         source: MenuSource.LIST,
-      }
+      },
     }));
   }
 

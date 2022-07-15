@@ -146,9 +146,10 @@ const wifiRegEx: RegExp =
  * Regular expression to check for cellular-related keywords.
  */
 const cellularRegEx: RegExp = buildWordMatcher([
-  '2G',     '3G',      '4G',  '5G',   'LTE',  'UMTS',     'SIM',     'eSIM',
-  'mmWave', 'mobile',  'APN', 'IMEI', 'IMSI', 'eUICC',    'carrier', 'T.Mobile',
-  'TMO',    'Verizon', 'VZW', 'AT&T', 'MVNO', 'pin.lock', 'cellular'
+  '2G',   '3G',    '4G',      '5G',       'LTE',      'UMTS',
+  'SIM',  'eSIM',  'mmWave',  'mobile',   'APN',      'IMEI',
+  'IMSI', 'eUICC', 'carrier', 'T.Mobile', 'TMO',      'Verizon',
+  'VZW',  'AT&T',  'MVNO',    'pin.lock', 'cellular',
 ]);
 
 /**

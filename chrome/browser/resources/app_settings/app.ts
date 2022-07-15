@@ -39,7 +39,7 @@ export class WebAppSettingsAppElement extends PolymerElement {
       hidden: {
         type: Boolean,
         computed: 'appUnready_(app_)',
-        reflectToAttribute: true
+        reflectToAttribute: true,
       },
       iconUrl_: {type: String, computed: 'getAppIcon_(app_)'},
       showSearch_: {type: Boolean, value: false, readonly: true},
@@ -58,7 +58,8 @@ export class WebAppSettingsAppElement extends PolymerElement {
     }
 
     window.CrPolicyStrings = {
-      controlledSettingPolicy: loadTimeData.getString('controlledSettingPolicy')
+      controlledSettingPolicy:
+          loadTimeData.getString('controlledSettingPolicy'),
     };
 
     const appId = urlPath.substring(1);

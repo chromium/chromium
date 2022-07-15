@@ -138,7 +138,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       dataEncrypted_: {
         type: Boolean,
-        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)'
+        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)',
       },
 
       encryptionExpanded_: {
@@ -550,8 +550,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       tags: ['a'],
       substitutions: [
         loadTimeData.getString('syncErrorsHelpUrl'),
-        this.syncPrefs.explicitPassphraseTime
-      ]
+        this.syncPrefs.explicitPassphraseTime,
+      ],
     });
   }
 

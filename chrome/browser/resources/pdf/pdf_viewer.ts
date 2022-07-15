@@ -993,7 +993,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         {
           type: 'saveFile',
           accepts: [{description: '*.pdf', extensions: ['pdf']}],
-          suggestedName: fileName
+          suggestedName: fileName,
         },
         (entry?: FileSystemFileEntry) => {
           if (chrome.runtime.lastError) {

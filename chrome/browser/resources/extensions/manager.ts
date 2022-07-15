@@ -587,7 +587,8 @@ export class ExtensionsManagerElement extends PolymerElement {
       assert(newPage.extensionId);
       this.showOptionsDialog_ = true;
       setTimeout(() => {
-        this.shadowRoot!.querySelector('extensions-options-dialog')!.show(data!
+        this.shadowRoot!.querySelector('extensions-options-dialog')!.show(
+            data!,
         );
       }, 0);
     }

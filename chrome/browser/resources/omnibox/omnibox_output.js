@@ -1045,8 +1045,12 @@ const COLUMNS = [
           'blue.\nMATCH classifications are styled bold.\nDIM ' +
           'classifications are styled with a gray background.',
       [
-        'image', 'contents', 'description', 'answer', 'contentsClass',
-        'descriptionClass'
+        'image',
+        'contents',
+        'description',
+        'answer',
+        'contentsClass',
+        'descriptionClass',
       ],
       OutputAnswerProperty),
   new Column(
@@ -1128,7 +1132,7 @@ const COLUMNS = [
   new Column(
       ['Additional Info'], '', 'additionalInfo', true,
       'Additional Info\nProvider-specific information about the result.',
-      ['additionalInfo'], OutputAdditionalInfoProperty)
+      ['additionalInfo'], OutputAdditionalInfoProperty),
 ];
 
 /** @type {!Column} */

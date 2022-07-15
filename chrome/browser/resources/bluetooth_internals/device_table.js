@@ -90,7 +90,7 @@ DeviceTable.prototype = {
       bubbles: true,
       detail: {
         address: this.devices_.item(index).address,
-      }
+      },
     });
     this.dispatchEvent(event);
   },
@@ -116,7 +116,7 @@ DeviceTable.prototype = {
       bubbles: true,
       detail: {
         address: this.devices_.item(index).address,
-      }
+      },
     });
     this.dispatchEvent(event);
   },

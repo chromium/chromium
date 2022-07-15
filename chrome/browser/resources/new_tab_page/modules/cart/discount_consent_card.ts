@@ -80,21 +80,21 @@ export class DiscountConsentCard extends I18nMixin
       currentStep: {type: Number, value: 0},
       steps_: {
         type: Array,
-        computed: 'computeSteps_(showCloseButton_, stepOneContent_)'
+        computed: 'computeSteps_(showCloseButton_, stepOneContent_)',
       },
       colorConsentContainer_: {
         type: Boolean,
         computed: 'computeColorConsentContainer_(currentStep)',
-        reflectToAttribute: true
+        reflectToAttribute: true,
       },
       showCloseButton_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
-            'modulesCartDiscountInlineCardShowCloseButton')
+            'modulesCartDiscountInlineCardShowCloseButton'),
       },
       stepOneContent_:
           {type: String, computed: 'computeStepOneContent_(merchants)'},
-      showDiscountConsentDialog_: {type: Boolean, value: false}
+      showDiscountConsentDialog_: {type: Boolean, value: false},
     };
   }
 
@@ -155,7 +155,7 @@ export class DiscountConsentCard extends I18nMixin
             this.showDiscountConsentDialog_ = true;
           }
         },
-      }
+      },
     });
 
     if (this.getTotalStep_() === 1) {
@@ -171,7 +171,7 @@ export class DiscountConsentCard extends I18nMixin
           this.dispatchEvent(
               new CustomEvent('discount-consent-accepted', {composed: true}));
         },
-      }
+      },
     };
     if (showCloseButton) {
       step2.hasOneButton = true;
@@ -182,7 +182,7 @@ export class DiscountConsentCard extends I18nMixin
         onClickHandler: () => {
           this.dispatchEvent(
               new CustomEvent('discount-consent-rejected', {composed: true}));
-        }
+        },
       };
     }
     steps.push(step2);

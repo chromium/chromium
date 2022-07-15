@@ -397,7 +397,7 @@ export class BookmarksCommandManagerElement extends
         this.dispatchEvent(new CustomEvent('iron-announce', {
           bubbles: true,
           composed: true,
-          detail: {text: loadTimeData.getString('itemsUnselected')}
+          detail: {text: loadTimeData.getString('itemsUnselected')},
         }));
         break;
       case Command.CUT:

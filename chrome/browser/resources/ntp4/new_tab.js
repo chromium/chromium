@@ -69,7 +69,7 @@ function NewTabView() {
 // TODO(dbeam): NewTabView is now the only extender of PageListView; these
 // classes should be merged.
 NewTabView.prototype = {
-  __proto__: PageListView.prototype
+  __proto__: PageListView.prototype,
 };
 
 /**

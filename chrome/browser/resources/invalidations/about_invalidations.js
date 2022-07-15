@@ -122,7 +122,7 @@ function logToTable(oId, isInvalidation) {
       time: '',
       version: '',
       payload: '',
-      type: 'content'
+      type: 'content',
     };
   }
   // Refresh the type to be a content because it might have been

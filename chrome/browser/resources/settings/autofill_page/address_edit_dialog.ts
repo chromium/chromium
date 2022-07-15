@@ -77,8 +77,8 @@ export class SettingsAddressEditDialogElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showHonorific');
-        }
-      }
+        },
+      },
     };
   }
 

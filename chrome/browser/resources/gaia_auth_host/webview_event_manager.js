@@ -55,7 +55,7 @@ WebviewEventManager.prototype = {
       this.unbindWebviewCleanupFunctions_[i]();
     }
     this.unbindWebviewCleanupFunctions_ = [];
-  }
+  },
 };
 
 /**

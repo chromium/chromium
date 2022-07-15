@@ -54,7 +54,7 @@ export class SettingsTextareaElement extends PolymerElement {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-        observer: 'onDisabledChanged_'
+        observer: 'onDisabledChanged_',
       },
 
       /** Maximum length (in characters) of the text area. */

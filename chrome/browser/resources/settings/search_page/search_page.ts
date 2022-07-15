@@ -52,7 +52,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** Filter applied to search engines. */
@@ -109,7 +109,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     this.dispatchEvent(new CustomEvent('refresh-pref', {
       bubbles: true,
       composed: true,
-      detail: 'default_search_provider.enabled'
+      detail: 'default_search_provider.enabled',
     }));
   }
 

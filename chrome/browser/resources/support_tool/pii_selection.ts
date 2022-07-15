@@ -57,7 +57,7 @@ export class PIISelectionElement extends PIISelectionElementBase {
       showPIISelection_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

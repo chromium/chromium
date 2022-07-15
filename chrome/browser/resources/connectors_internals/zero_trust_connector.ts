@@ -10,13 +10,13 @@ import {getTemplate} from './zero_trust_connector.html.js';
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
   [KeyTrustLevel.HW]: 'HW',
-  [KeyTrustLevel.OS]: 'OS'
+  [KeyTrustLevel.OS]: 'OS',
 };
 
 const KeyTypeStringMap = {
   [KeyType.UNKNOWN]: 'Unknown',
   [KeyType.RSA]: 'RSA',
-  [KeyType.EC]: 'EC'
+  [KeyType.EC]: 'EC',
 };
 
 export class ZeroTrustConnectorElement extends CustomElement {

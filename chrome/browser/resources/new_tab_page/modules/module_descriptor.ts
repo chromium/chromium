@@ -56,11 +56,12 @@ export class ModuleDescriptor {
   async initialize(timeout: number): Promise<HTMLElement|null> {
     const loadStartTime = WindowProxy.getInstance().now();
     const element = await Promise.race([
-      this.initializeCallback_(), new Promise<null>(resolve => {
+      this.initializeCallback_(),
+      new Promise<null>(resolve => {
         WindowProxy.getInstance().setTimeout(() => {
           resolve(null);
         }, timeout);
-      })
+      }),
     ]);
     if (!element) {
       return null;

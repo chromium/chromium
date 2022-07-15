@@ -541,7 +541,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         type: Number,
         value: 0,
         notify: true,
-      }
+      },
     };
   }
 
@@ -1651,7 +1651,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         width_microns: mediaValue.width_microns,
         height_microns: mediaValue.height_microns,
         is_continuous_feed: mediaValue.is_continuous_feed,
-        vendor_id: mediaValue.vendor_id
+        vendor_id: mediaValue.vendor_id,
       };
     }
     if (!this.settings.layout.available) {
@@ -1667,7 +1667,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     } else {
       cjt.print.page_orientation = {
-        type: this.settings.layout.value ? 'LANDSCAPE' : 'PORTRAIT'
+        type: this.settings.layout.value ? 'LANDSCAPE' : 'PORTRAIT',
       };
     }
     if (this.settings.dpi.available) {
@@ -1675,7 +1675,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       cjt.print.dpi = {
         horizontal_dpi: dpiValue.horizontal_dpi,
         vertical_dpi: dpiValue.vertical_dpi,
-        vendor_id: dpiValue.vendor_id
+        vendor_id: dpiValue.vendor_id,
       };
     }
     if (this.settings.vendorItems.available) {

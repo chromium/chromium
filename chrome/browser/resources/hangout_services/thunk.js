@@ -297,7 +297,7 @@ function onProcessCpu(port) {
       'tabNetworkUsage': tabProcess.network,
       'tabPrivateMemory': tabProcess.privateMemory,
       'tabJsMemoryAllocated': tabProcess.jsMemoryAllocated,
-      'tabJsMemoryUsed': tabProcess.jsMemoryUsed
+      'tabJsMemoryUsed': tabProcess.jsMemoryUsed,
     });
   }
 

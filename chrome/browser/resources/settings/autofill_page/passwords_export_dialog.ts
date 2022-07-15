@@ -69,7 +69,7 @@ export class PasswordsExportDialogElement extends
       showErrorDialog_: Boolean,
 
       // <if expr="chromeos_ash or chromeos_lacros">
-      tokenRequestManager: Object
+      tokenRequestManager: Object,
       // </if>
     };
   }

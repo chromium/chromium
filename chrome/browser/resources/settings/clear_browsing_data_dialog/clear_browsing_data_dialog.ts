@@ -129,7 +129,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         // Will be filled as results are reported.
         value() {
           return {};
-        }
+        },
       },
 
       /**
@@ -437,7 +437,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
     const haveInstalledApps = this.installedApps_.length > 0;
     chrome.send('metricsHandler:recordBooleanHistogram', [
-      'History.ClearBrowsingData.InstalledAppsDialogShown', haveInstalledApps
+      'History.ClearBrowsingData.InstalledAppsDialogShown',
+      haveInstalledApps,
     ]);
     return haveInstalledApps;
   }

@@ -541,7 +541,7 @@ export class ModulesElement extends PolymerElement {
         ...this.shadowRoot!.querySelectorAll<HTMLElement>(
             '.module-container:not([hidden])'),
         ...this.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.module-container[hidden]')
+            '.module-container[hidden]'),
       ];
       const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
       const dropIndex =

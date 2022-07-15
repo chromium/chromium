@@ -376,7 +376,7 @@ export class Service implements ServiceInterface {
       chrome.activityLogPrivate.getExtensionActivities(
           {
             activityType: chrome.activityLogPrivate.ExtensionActivityFilter.ANY,
-            extensionId: extensionId
+            extensionId: extensionId,
           },
           resolve);
     });
@@ -402,8 +402,8 @@ export class Service implements ServiceInterface {
       {
         activityType: anyType,
         extensionId: extensionId,
-        argUrl: `%${searchTerm}%`
-      }
+        argUrl: `%${searchTerm}%`,
+      },
     ];
 
     const promises:

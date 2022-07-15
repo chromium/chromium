@@ -133,7 +133,7 @@ export class SettingsSecurityPageElement extends
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        }
+        },
       },
 
       // <if expr="is_win">
@@ -145,7 +145,7 @@ export class SettingsSecurityPageElement extends
           // it exists. Thus the phones subpage is only linked from this page
           // if the security keys subpage is disabled.
           return !loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        }
+        },
       },
       // </if>
 

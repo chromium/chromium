@@ -43,7 +43,7 @@ function configureJavaScriptContentSetting(browserApi: BrowserApi):
     chrome.contentSettings.javascript.get(
         {
           'primaryUrl': browserApi.getStreamInfo().originalUrl,
-          'secondaryUrl': window.location.origin
+          'secondaryUrl': window.location.origin,
         },
         (result) => {
           browserApi.getStreamInfo().javascript = result.setting;

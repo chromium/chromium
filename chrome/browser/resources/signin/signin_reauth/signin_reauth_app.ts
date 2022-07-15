@@ -46,7 +46,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
 
       confirmButtonHidden_: {type: Boolean, value: true},
 
-      cancelButtonHidden_: {type: Boolean, value: true}
+      cancelButtonHidden_: {type: Boolean, value: true},
     };
   }
 

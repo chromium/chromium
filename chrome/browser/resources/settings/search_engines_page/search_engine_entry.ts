@@ -50,13 +50,13 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeIsDefault_(engine)'
+        computed: 'computeIsDefault_(engine)',
       },
 
       disableMenuButton: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeDisableMenuButton_(engine)'
+        computed: 'computeDisableMenuButton_(engine)',
       },
 
     };

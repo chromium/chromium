@@ -160,7 +160,7 @@ export class SettingsPasswordCheckElement extends
 
       showMutedPasswordsSection_: {
         type: Boolean,
-        computed: 'computeShowMutedLeakedCredentials_(mutedPasswords)'
+        computed: 'computeShowMutedLeakedCredentials_(mutedPasswords)',
       },
 
       showNoCompromisedPasswordsLabel_: {

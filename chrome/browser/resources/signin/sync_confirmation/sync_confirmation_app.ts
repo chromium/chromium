@@ -54,7 +54,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isModalDialog');
-        }
+        },
       },
 
       showEnterpriseBadge_: {

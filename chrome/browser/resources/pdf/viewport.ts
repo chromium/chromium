@@ -317,7 +317,7 @@ export class Viewport implements ViewportInterface {
     }
     return {
       width: Math.round(this.documentDimensions_.width * zoom),
-      height: Math.round(this.documentDimensions_.height * zoom)
+      height: Math.round(this.documentDimensions_.height * zoom),
     };
   }
 
@@ -325,7 +325,7 @@ export class Viewport implements ViewportInterface {
   getDocumentDimensions(): Size {
     return {
       width: this.documentDimensions_!.width,
-      height: this.documentDimensions_!.height
+      height: this.documentDimensions_!.height,
     };
   }
 
@@ -352,7 +352,7 @@ export class Viewport implements ViewportInterface {
       x: this.position.x / zoom,
       y: this.position.y / zoom,
       width: this.size.width / zoom,
-      height: this.size.height / zoom
+      height: this.size.height / zoom,
     };
   }
 
@@ -370,7 +370,7 @@ export class Viewport implements ViewportInterface {
 
     return {
       horizontal: zoomedDimensions.width > this.window_.offsetWidth,
-      vertical: zoomedDimensions.height > this.window_.offsetHeight
+      vertical: zoomedDimensions.height > this.window_.offsetHeight,
     };
   }
 
@@ -525,7 +525,7 @@ export class Viewport implements ViewportInterface {
     let zoom = this.getZoom();
     const currentScrollPos = {
       x: this.position.x / zoom,
-      y: this.position.y / zoom
+      y: this.position.y / zoom,
     };
 
     this.internalZoom_ = newZoom;
@@ -559,7 +559,7 @@ export class Viewport implements ViewportInterface {
     const zoom = this.getZoom();
     const currentScrollPos = {
       x: this.position.x - delta.x * zoom,
-      y: this.position.y - delta.y * zoom
+      y: this.position.y - delta.y * zoom,
     };
 
     this.contentSizeChanged_();
@@ -578,7 +578,7 @@ export class Viewport implements ViewportInterface {
     const zoom = this.getZoom();
     return {
       x: (pluginPoint.x + this.position.x) / zoom,
-      y: (pluginPoint.y + this.position.y) / zoom
+      y: (pluginPoint.y + this.position.y) / zoom,
     };
   }
 
@@ -599,7 +599,7 @@ export class Viewport implements ViewportInterface {
       const oldZoom = oldBrowserZoom * this.internalZoom_;
       const currentScrollPos = {
         x: this.position.x / oldZoom,
-        y: this.position.y / oldZoom
+        y: this.position.y / oldZoom,
       };
       this.contentSizeChanged_();
       const newZoom = this.getZoom();
@@ -1248,7 +1248,7 @@ export class Viewport implements ViewportInterface {
       x: x * zoom + spaceOnLeft - this.scrollContent_.scrollLeft,
       y: insetDimensions.y * zoom - this.scrollContent_.scrollTop,
       width: insetDimensions.width * zoom,
-      height: insetDimensions.height * zoom
+      height: insetDimensions.height * zoom,
     };
   }
 
@@ -1381,7 +1381,7 @@ export class Viewport implements ViewportInterface {
         if (!needsScrollbars.horizontal) {
           this.pinchCenter_ = {
             x: this.window_.offsetWidth / 2,
-            y: this.window_.offsetHeight / 2
+            y: this.window_.offsetHeight / 2,
           };
         } else if (this.keepContentCentered_) {
           this.oldCenterInContent_ = this.pluginToContent_(this.pinchCenter_);

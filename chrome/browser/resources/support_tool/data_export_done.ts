@@ -30,7 +30,7 @@ export class DataExportDoneElement extends DataExportDoneElementBase {
       path_: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 

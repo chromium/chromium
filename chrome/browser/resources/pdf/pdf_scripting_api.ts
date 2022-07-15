@@ -60,7 +60,7 @@ export function serializeKeyEvent(event: KeyboardEvent): SerializedKeyEvent {
     shiftKey: event.shiftKey,
     ctrlKey: event.ctrlKey,
     altKey: event.altKey,
-    metaKey: event.metaKey
+    metaKey: event.metaKey,
   };
 }
 
@@ -209,7 +209,7 @@ export class PDFScriptingAPI {
       url: url,
       grayscale: grayscale,
       pageNumbers: pageNumbers,
-      modifiable: modifiable
+      modifiable: modifiable,
     });
   }
 

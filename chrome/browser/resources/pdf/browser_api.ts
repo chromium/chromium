@@ -200,7 +200,7 @@ function createBrowserApiForMimeHandlerView(): Promise<BrowserApi> {
             chrome.tabs.setZoomSettings(
                 streamInfo.tabId, {
                   mode: chrome.tabs.ZoomSettingsMode.MANUAL,
-                  scope: chrome.tabs.ZoomSettingsScope.PER_TAB
+                  scope: chrome.tabs.ZoomSettingsScope.PER_TAB,
                 },
                 resolve);
           }));

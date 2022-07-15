@@ -87,7 +87,7 @@ export class ChromeCartModuleElement extends I18nMixin
         type: Boolean,
         value: () =>
             loadTimeData.getInteger('modulesCartDiscountConsentVariation') >
-            DiscountConsentVariation.STRING_CHANGE
+            DiscountConsentVariation.STRING_CHANGE,
       },
       firstThreeCartItems_:
           {type: Array, computed: 'computeFirstThreeCartItems_(cartItems)'},
@@ -96,7 +96,7 @@ export class ChromeCartModuleElement extends I18nMixin
       discountConsentVisible: {
         type: Boolean,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 

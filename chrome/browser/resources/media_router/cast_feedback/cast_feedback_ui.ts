@@ -136,14 +136,14 @@ export class FeedbackUiElement extends PolymerElement {
         type: String,
         value() {
           return loadTimeData.getString('logData');
-        }
+        },
       },
 
       categoryTag_: {
         type: String,
         value() {
           return loadTimeData.getString('categoryTag');
-        }
+        },
       },
 
       projectedContentUrl_: String,
@@ -358,7 +358,7 @@ export class FeedbackUiElement extends PolymerElement {
       {
         key: 'feedbackUserCtlConsent',
         value: String(!!this.allowContactByEmail_),
-      }
+      },
     ];
     return data;
   }

@@ -46,7 +46,7 @@ export class SecureDnsInputElement extends PolymerElement {
        * The error text to display beneath the input field when |showError_| is
        * true.
        */
-      errorText_: {type: String, value: ''}
+      errorText_: {type: String, value: ''},
     };
   }
 
@@ -96,7 +96,7 @@ export class SecureDnsInputElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('value-update', {
       bubbles: true,
       composed: true,
-      detail: {isValid: valid, text: valueToValidate}
+      detail: {isValid: valid, text: valueToValidate},
     }));
   }
 

@@ -28,7 +28,7 @@ interface ConnectorTab {
 const connectorTabs: ConnectorTab[] = [{
   title: 'Zero Trust',
   directive: ZeroTrustConnectorElement.is,
-  isEnabled: loadTimeData.getBoolean('zeroTrustConnectorEnabled')
+  isEnabled: loadTimeData.getBoolean('zeroTrustConnectorEnabled'),
 }];
 
 export class ConnectorsTabsElement extends CustomElement {

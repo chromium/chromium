@@ -96,7 +96,7 @@ export class SettingsDownloadsPageElement extends
   // <if expr="chromeos_ash">
   static get observers() {
     return [
-      'handleDownloadLocationChanged_(prefs.download.default_directory.value)'
+      'handleDownloadLocationChanged_(prefs.download.default_directory.value)',
     ];
   }
   // </if>

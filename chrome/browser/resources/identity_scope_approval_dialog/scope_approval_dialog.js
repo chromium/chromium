@@ -25,7 +25,7 @@ function loadAuthUrlAndShowWindow(url, win, partition) {
     name: 'injectRule',
     matches: ['https://accounts.google.com/*'],
     js: {files: ['inject.js']},
-    run_at: 'document_start'
+    run_at: 'document_start',
   }]);
 
   // Request a customized view from GAIA.

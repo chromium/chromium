@@ -113,7 +113,7 @@ export class TabSearchAppElement extends PolymerElement {
             loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
       },
 
-      searchResultText_: {type: String, value: ''}
+      searchResultText_: {type: String, value: ''},
     };
   }
 

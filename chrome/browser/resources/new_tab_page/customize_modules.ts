@@ -85,7 +85,7 @@ export class CustomizeModulesElement extends I18nMixin
       discountToggleEligible_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

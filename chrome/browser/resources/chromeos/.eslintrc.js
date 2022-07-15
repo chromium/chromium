@@ -4,7 +4,6 @@
 
 module.exports = {
   'rules' : {
-    'comma-dangle' : ['error', 'always-multiline'],
     'eqeqeq' : 'off',
     'no-var' : 'off',
   },

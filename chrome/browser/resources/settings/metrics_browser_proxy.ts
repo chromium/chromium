@@ -196,15 +196,17 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.Interactions', interaction,
-      SafetyCheckInteractions.COUNT
+      'Settings.SafetyCheck.Interactions',
+      interaction,
+      SafetyCheckInteractions.COUNT,
     ]);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.PrivacyElementInteractions', interaction,
-      PrivacyElementInteractions.COUNT
+      'Settings.PrivacyElementInteractions',
+      interaction,
+      PrivacyElementInteractions.COUNT,
     ]);
   }
 
@@ -213,30 +215,34 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     // TODO(crbug.com/1124491): Set the correct suffix for
     // SafeBrowsing.Settings.UserAction. Use the .Default suffix for now.
     chrome.send('metricsHandler:recordInHistogram', [
-      'SafeBrowsing.Settings.UserAction.Default', interaction,
-      SafeBrowsingInteractions.COUNT
+      'SafeBrowsing.Settings.UserAction.Default',
+      interaction,
+      SafeBrowsingInteractions.COUNT,
     ]);
   }
 
   recordPrivacyGuideNextNavigationHistogram(interaction:
                                                 PrivacyGuideInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.PrivacyGuide.NextNavigation', interaction,
-      PrivacyGuideInteractions.COUNT
+      'Settings.PrivacyGuide.NextNavigation',
+      interaction,
+      PrivacyGuideInteractions.COUNT,
     ]);
   }
 
   recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.PrivacyGuide.EntryExit', interaction,
-      PrivacyGuideInteractions.COUNT
+      'Settings.PrivacyGuide.EntryExit',
+      interaction,
+      PrivacyGuideInteractions.COUNT,
     ]);
   }
 
   recordPrivacyGuideSettingsStatesHistogram(state: PrivacyGuideSettingsStates) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.PrivacyGuide.SettingsStates', state,
-      PrivacyGuideSettingsStates.COUNT
+      'Settings.PrivacyGuide.SettingsStates',
+      state,
+      PrivacyGuideSettingsStates.COUNT,
     ]);
   }
 

@@ -129,7 +129,7 @@ export class GestureDetector {
       // TODO(dhoss): Handle case where `scaleRatio` is null?
       direction: scaleRatio! > 1.0 ? 'in' : 'out',
       startScaleRatio: startScaleRatio,
-      center: center(event)
+      center: center(event),
     });
 
     this.lastEvent_ = event;
@@ -248,6 +248,6 @@ function center(event: TouchEvent): Point {
   const touch2 = event.touches[1];
   return {
     x: (touch1.clientX + touch2.clientX) / 2,
-    y: (touch1.clientY + touch2.clientY) / 2
+    y: (touch1.clientY + touch2.clientY) / 2,
   };
 }

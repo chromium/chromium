@@ -74,7 +74,7 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
       emailAddress: (this.selectedEmail_ === DONT_INCLUDE_EMAIL) ?
           '' :
           this.selectedEmail_,
-      issueDescription: this.issueDescription_
+      issueDescription: this.issueDescription_,
     };
   }
 }

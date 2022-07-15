@@ -128,7 +128,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         reflectToAttribute: true,
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

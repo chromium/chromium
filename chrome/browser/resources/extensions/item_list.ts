@@ -138,7 +138,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
                      this.i18n('searchResultsSingular', this.filter) :
                      this.i18n(
                          'searchResultsPlural', total.toString(), this.filter)),
-          }
+          },
         }));
       }, 0);
     }

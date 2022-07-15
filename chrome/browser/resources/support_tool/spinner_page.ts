@@ -28,7 +28,7 @@ export class SpinnerPageElement extends SpinnerPageElementBase {
       pageTitle: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 

@@ -407,7 +407,8 @@ class FrameNode extends GraphNode {
   override get linkTargets() {
     // Only link to the page if there isn't a parent frame.
     return [
-      this.frame.parentFrameId || this.frame.pageId, this.frame.processId
+      this.frame.parentFrameId || this.frame.pageId,
+      this.frame.processId,
     ];
   }
 }
@@ -470,7 +471,8 @@ class WorkerNode extends GraphNode {
 
   override allowedYRange(graphHeight: number): [number, number] {
     return [
-      graphHeight - kWorkerNodesYRange, graphHeight - kProcessNodesYRange
+      graphHeight - kWorkerNodesYRange,
+      graphHeight - kProcessNodesYRange,
     ];
   }
 
@@ -481,8 +483,10 @@ class WorkerNode extends GraphNode {
   override get linkTargets() {
     // Link the process, in addition to all the client and child workers.
     return [
-      this.worker.processId, ...this.worker.clientFrameIds,
-      ...this.worker.clientWorkerIds, ...this.worker.childWorkerIds
+      this.worker.processId,
+      ...this.worker.clientFrameIds,
+      ...this.worker.clientWorkerIds,
+      ...this.worker.childWorkerIds,
     ];
   }
 }

@@ -74,5 +74,5 @@ DotList.prototype = {
 
     e.stopPropagation();
     e.preventDefault();
-  }
+  },
 };

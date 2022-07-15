@@ -111,7 +111,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
       loadingAnyDestinations_: {
         type: Boolean,
         computed: 'computeLoadingDestinations_(' +
-            'loadingDestinations_, loadingServerPrinters_)'
+            'loadingDestinations_, loadingServerPrinters_)',
       },
     };
   }

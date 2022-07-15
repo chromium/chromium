@@ -120,7 +120,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
     const attributesForLoading:
         chrome.mimeHandlerPrivate.PdfPluginAttributes = {
       backgroundColor: this.getBackgroundColor(),
-      allowJavascript: javascript === 'allow'
+      allowJavascript: javascript === 'allow',
     };
     if (chrome.mimeHandlerPrivate &&
         chrome.mimeHandlerPrivate.setPdfPluginAttributes) {
@@ -291,7 +291,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
       pageY: visiblePageDimensions.y,
       pageWidth: visiblePageDimensions.width,
       viewportWidth: size.width,
-      viewportHeight: size.height
+      viewportHeight: size.height,
     });
   }
 

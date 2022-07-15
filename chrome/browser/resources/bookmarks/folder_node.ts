@@ -68,7 +68,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       isSelectedFolder_: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: 'computeIsSelected_(itemId, selectedFolder_, searchActive_)'
+        computed: 'computeIsSelected_(itemId, selectedFolder_, searchActive_)',
       },
 
       hasChildFolder_: {

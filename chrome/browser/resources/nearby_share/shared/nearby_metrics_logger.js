@@ -95,7 +95,8 @@ export function processOnboardingInitiatedMetrics(url) {
 
   chrome.send('metricsHandler:recordInHistogram', [
     NearbyShareOnboardingEntryPointHistogramName,
-    nearbyShareOnboardingEntryPoint, NearbyShareOnboardingEntryPoint.MAX
+    nearbyShareOnboardingEntryPoint,
+    NearbyShareOnboardingEntryPoint.MAX,
   ]);
   // Set time at which onboarding was initiated to track duration.
   onboardingInitiatedTimestamp = window.performance.now();
@@ -124,12 +125,13 @@ export function processOnePageOnboardingInitiatedMetrics(url) {
 
   chrome.send('metricsHandler:recordInHistogram', [
     NearbyShareOnboardingEntryPointHistogramName,
-    nearbyShareOnboardingEntryPoint, NearbyShareOnboardingEntryPoint.MAX
+    nearbyShareOnboardingEntryPoint,
+    NearbyShareOnboardingEntryPoint.MAX,
   ]);
 
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    NearbyShareOnboardingFlowEvent.ONBOARDING_SHOWN
+    NearbyShareOnboardingFlowEvent.ONBOARDING_SHOWN,
   ]);
 
   // Set time at which onboarding was initiated to track duration.
@@ -166,8 +168,9 @@ export function processOnboardingCancelledMetrics(
     return;
   }
   chrome.send('metricsHandler:recordInHistogram', [
-    NearbyShareOnboardingResultHistogramName, nearbyShareOnboardingFinalState,
-    NearbyShareOnboardingFinalState.MAX
+    NearbyShareOnboardingResultHistogramName,
+    nearbyShareOnboardingFinalState,
+    NearbyShareOnboardingFinalState.MAX,
   ]);
   onboardingInitiatedTimestamp = null;
 }
@@ -184,13 +187,14 @@ export function processOnePageOnboardingCancelledMetrics(
     return;
   }
   chrome.send('metricsHandler:recordInHistogram', [
-    NearbyShareOnboardingResultHistogramName, nearbyShareOnboardingFinalState,
-    NearbyShareOnboardingFinalState.MAX
+    NearbyShareOnboardingResultHistogramName,
+    nearbyShareOnboardingFinalState,
+    NearbyShareOnboardingFinalState.MAX,
   ]);
 
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState)
+    getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState),
   ]);
   onboardingInitiatedTimestamp = null;
 }
@@ -225,12 +229,12 @@ export function processOnboardingCompleteMetrics() {
   chrome.send('metricsHandler:recordInHistogram', [
     NearbyShareOnboardingResultHistogramName,
     NearbyShareOnboardingFinalState.COMPLETE,
-    NearbyShareOnboardingFinalState.MAX
+    NearbyShareOnboardingFinalState.MAX,
   ]);
 
   chrome.send('metricsHandler:recordMediumTime', [
     NearbyShareOnboardingDurationHistogramName,
-    window.performance.now() - onboardingInitiatedTimestamp
+    window.performance.now() - onboardingInitiatedTimestamp,
   ]);
 
   onboardingInitiatedTimestamp = null;
@@ -251,18 +255,19 @@ export function processOnePageOnboardingCompleteMetrics(
 
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    getOnboardingCompleteFlowEvent_(nearbyShareOnboardingFinalState, visibility)
+    getOnboardingCompleteFlowEvent_(
+        nearbyShareOnboardingFinalState, visibility),
   ]);
 
   chrome.send('metricsHandler:recordInHistogram', [
     NearbyShareOnboardingResultHistogramName,
     NearbyShareOnboardingFinalState.COMPLETE,
-    NearbyShareOnboardingFinalState.MAX
+    NearbyShareOnboardingFinalState.MAX,
   ]);
 
   chrome.send('metricsHandler:recordMediumTime', [
     NearbyShareOnboardingDurationHistogramName,
-    window.performance.now() - onboardingInitiatedTimestamp
+    window.performance.now() - onboardingInitiatedTimestamp,
   ]);
 
   onboardingInitiatedTimestamp = null;
@@ -321,7 +326,7 @@ export function
 processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    NearbyShareOnboardingFlowEvent.VISIBILITY_CLICKED_ON_INITIAL_PAGE
+    NearbyShareOnboardingFlowEvent.VISIBILITY_CLICKED_ON_INITIAL_PAGE,
   ]);
 }
 
@@ -331,7 +336,7 @@ processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
 export function processOnePageOnboardingVisibilityPageShownMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    NearbyShareOnboardingFlowEvent.DEVICE_VISIBILITY_PAGE_SHOWN
+    NearbyShareOnboardingFlowEvent.DEVICE_VISIBILITY_PAGE_SHOWN,
   ]);
 }
 
@@ -342,6 +347,6 @@ export function processOnePageOnboardingVisibilityPageShownMetrics() {
 export function processOnePageOnboardingManageContactsMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    NearbyShareOnboardingFlowEvent.MANAGE_CONTACTS_SELECTED
+    NearbyShareOnboardingFlowEvent.MANAGE_CONTACTS_SELECTED,
   ]);
 }

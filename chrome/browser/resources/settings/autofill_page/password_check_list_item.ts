@@ -83,8 +83,8 @@ export class PasswordCheckListItemElement extends
         value() {
           return loadTimeData.getBoolean(
               'showDismissCompromisedPasswordOption');
-        }
-      }
+        },
+      },
     };
   }
 

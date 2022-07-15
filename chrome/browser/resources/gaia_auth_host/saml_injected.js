@@ -53,7 +53,7 @@ APICallForwarder.prototype = {
     // Forward API responses to the SAML page.
     window.postMessage(
         {type: 'gaia_saml_api_reply', response: msg.response}, '/');
-  }
+  },
 };
 
 /**
@@ -176,7 +176,7 @@ PasswordInputScraper.prototype = {
    */
   onPasswordChanged_(index, fieldId) {
     this.maybeSendUpdatedPassword(index, fieldId);
-  }
+  },
 };
 
 function onGetSAMLFlag(channel, isSAMLPage) {

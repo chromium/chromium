@@ -239,7 +239,7 @@ export class ExtensionsShortcutInputElement extends
       composed: true,
       detail: {
         text: this.i18n('shortcutSet', this.computeText_()),
-      }
+      },
     }));
 
     this.commitPending_();

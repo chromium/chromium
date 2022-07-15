@@ -53,7 +53,7 @@ export class UrlGeneratorElement extends PolymerElement {
       buttonDisabled_: {
         type: Boolean,
         value: true,
-      }
+      },
     };
   }
 

@@ -66,13 +66,13 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
       accessCode: {
         type: String,
         value: '',
-        observer: 'castStateChange'
+        observer: 'castStateChange',
       },
       canCast: {
         type: Boolean,
         value: true,
-        observer: 'castStateChange'
-      }
+        observer: 'castStateChange',
+      },
     };
   }
 

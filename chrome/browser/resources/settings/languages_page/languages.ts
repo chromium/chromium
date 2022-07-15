@@ -430,7 +430,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
           isManaged: blockedCodesSet.has(language.code),
           spellCheckEnabled: false,
           downloadDictionaryStatus: null,
-          downloadDictionaryFailureCount: 0
+          downloadDictionaryFailureCount: 0,
         });
       }
     }

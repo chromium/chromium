@@ -123,7 +123,7 @@ TouchHandler.EventType = {
 
   // Fired whenever the element is tapped in a short time and no dragging is
   // detected.
-  TAP: 'touchHandler:tap'
+  TAP: 'touchHandler:tap',
 };
 
 
@@ -187,7 +187,7 @@ TouchHandler.Event.prototype = {
    * drag delta.
    * @type {number|undefined}
    */
-  dragDeltaY: undefined
+  dragDeltaY: undefined,
 };
 
 /**
@@ -392,7 +392,7 @@ TouchHandler.prototype = {
         identifier: 0,
         clientX: e.clientX,
         clientY: e.clientY,
-        target: e.target
+        target: e.target,
       };
       e.touches = [];
       e.targetTouches = [];
@@ -873,5 +873,5 @@ TouchHandler.prototype = {
 
     this.element_.dispatchEvent(event);
     return event.enableDrag;
-  }
+  },
 };

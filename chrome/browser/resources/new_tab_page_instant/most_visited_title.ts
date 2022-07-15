@@ -229,7 +229,7 @@ function getMostVisitedStyles(
   const styles: MostVisitedStyles = {
     color: getTextColor(params, isTitle),  // Handles 'c' in params.
     fontFamily: '',
-    fontSize: 11
+    fontSize: 11,
   };
   if ('f' in params && /^[-0-9a-zA-Z ,]+$/.test(params.f!)) {
     styles.fontFamily = params.f!;

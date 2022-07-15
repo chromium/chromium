@@ -89,7 +89,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         // Will be filled as results are reported.
         value() {
           return {};
-        }
+        },
       },
 
       /**
@@ -98,8 +98,10 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
       profileStatistics_: {
         type: Array,
         value: [
-          ProfileStatistics.BROWSING_HISTORY, ProfileStatistics.PASSWORDS,
-          ProfileStatistics.BOOKMARKS, ProfileStatistics.AUTOFILL
+          ProfileStatistics.BROWSING_HISTORY,
+          ProfileStatistics.PASSWORDS,
+          ProfileStatistics.BOOKMARKS,
+          ProfileStatistics.AUTOFILL,
         ],
       },
 

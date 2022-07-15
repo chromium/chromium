@@ -94,11 +94,12 @@ export const MainPageMixin = dedupingMixin(
             return new Map([
               [RouteState.INITIAL, allStates],
               [
-                RouteState.DIALOG, new Set([
+                RouteState.DIALOG,
+                new Set([
                   RouteState.SECTION,
                   RouteState.SUBPAGE,
                   RouteState.TOP_LEVEL,
-                ])
+                ]),
               ],
               [RouteState.SECTION, allStates],
               [RouteState.SUBPAGE, allStates],

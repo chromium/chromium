@@ -161,7 +161,7 @@ export class SettingsAppearancePageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showSidePanelOptions');
-        }
+        },
       },
 
       showManagedThemeDialog_: Boolean,

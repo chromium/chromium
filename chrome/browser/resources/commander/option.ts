@@ -47,7 +47,7 @@ export class CommanderOptionElement extends PolymerElement {
       if (start !== 0) {
         result.push({
           text: this.model.title.substring(firstNonmatch, start),
-          isMatch: false
+          isMatch: false,
         });
       }
       result.push(

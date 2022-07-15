@@ -178,7 +178,7 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('change-page', {
       detail: {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL},
       bubbles: true,
-      composed: true
+      composed: true,
     }));
   }
 

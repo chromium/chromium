@@ -88,7 +88,7 @@ export class ExtensionsActivityLogElement extends
           loadTimeData.getString('activityLogHistoryTabHeading'),
           loadTimeData.getString('activityLogStreamTabHeading'),
         ]),
-      }
+      },
     };
   }
 

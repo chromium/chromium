@@ -76,7 +76,7 @@ export class OpenPdfParamsParser {
     // Handle #zoom=scale,left,top.
     const position = {
       x: parseFloat(paramValueSplit[1]),
-      y: parseFloat(paramValueSplit[2])
+      y: parseFloat(paramValueSplit[2]),
     };
     return {'position': position, 'zoom': zoomFactor};
   }

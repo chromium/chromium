@@ -58,7 +58,9 @@ function onProcessListReceived(data: ProcessList) {
 
   // Heading.
   addListRow(table, 'th', [
-    null, document.createTextNode('Process ID'), document.createTextNode('Name')
+    null,
+    document.createTextNode('Process ID'),
+    document.createTextNode('Name'),
   ]);
 
   for (const proc of processes) {

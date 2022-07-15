@@ -207,7 +207,7 @@ export class PasswordsDeviceSectionElement extends
 
   static get observers() {
     return [
-      'maybeRedirectToPasswordsPage_(isUserAllowedToAccessPage_, currentRoute_)'
+      'maybeRedirectToPasswordsPage_(isUserAllowedToAccessPage_, currentRoute_)',
     ];
   }
 

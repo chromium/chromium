@@ -313,7 +313,7 @@ cr.define('cr.login', function() {
         matches: ['http://*/*', 'https://*/*'],
         js: {files: [injectedJs]},
         all_frames: true,
-        run_at: 'document_start'
+        run_at: 'document_start',
       }]);
 
       PostMessageChannel.runAsDaemon(this.onConnected_.bind(this));
@@ -644,8 +644,8 @@ cr.define('cr.login', function() {
           detail: {
             url: details.url,
             challenge: this.verifiedAccessChallenge_,
-            callback: this.continueDelayedRedirect_.bind(this, details.url)
-          }
+            callback: this.continueDelayedRedirect_.bind(this, details.url),
+          },
         }));
 
         this.verifiedAccessChallenge_ = null;
@@ -690,7 +690,7 @@ cr.define('cr.login', function() {
 
         details.requestHeaders.push({
           'name': SAML_VERIFIED_ACCESS_RESPONSE_HEADER,
-          'value': this.verifiedAccessChallengeResponse_
+          'value': this.verifiedAccessChallengeResponse_,
         });
 
         this.verifiedAccessChallengeResponse_ = null;
@@ -772,8 +772,8 @@ cr.define('cr.login', function() {
         response: {
           result: 'initialized',
           version: this.apiVersion_,
-          keyTypes: API_KEY_TYPES
-        }
+          keyTypes: API_KEY_TYPES,
+        },
       });
     }
 

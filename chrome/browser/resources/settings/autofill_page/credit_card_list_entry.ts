@@ -63,7 +63,7 @@ class SettingsCreditCardListEntryElement extends
       detail: {
         creditCard: this.creditCard,
         anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
-      }
+      },
     }));
   }
 

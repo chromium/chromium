@@ -34,7 +34,7 @@ const DRAG_SOURCE = {
   OTHER_APPS_PANE: 1,
   MOST_VISITED_PANE: 2,  // Deprecated.
   BOOKMARKS_PANE: 3,     // Deprecated.
-  OUTSIDE_NTP: 4
+  OUTSIDE_NTP: 4,
 };
 const DRAG_SOURCE_LIMIT = DRAG_SOURCE.OUTSIDE_NTP + 1;
 
@@ -42,7 +42,7 @@ const DRAG_SOURCE_LIMIT = DRAG_SOURCE.OUTSIDE_NTP + 1;
 const RUN_ON_OS_LOGIN_MODE = {
   NOT_RUN: 'run_on_os_login_mode_not_run',
   WINDOWED: 'run_on_os_login_mode_windowed',
-  MINIMIZED: 'run_on_os_login_mode_minimized'
+  MINIMIZED: 'run_on_os_login_mode_minimized',
 };
 
 // The fraction of the app tile size that the icon uses.
@@ -154,8 +154,10 @@ AppContextMenu.prototype = {
   forAllLaunchTypes_(f) {
     // Order matters: index matches launchType id.
     const launchTypes = [
-      this.launchPinnedTab_, this.launchRegularTab_, this.launchFullscreen_,
-      this.launchNewWindow_
+      this.launchPinnedTab_,
+      this.launchRegularTab_,
+      this.launchFullscreen_,
+      this.launchNewWindow_,
     ];
 
     for (let i = 0; i < launchTypes.length; ++i) {
@@ -297,7 +299,7 @@ AppContextMenu.prototype = {
     }
 
     chrome.send('runOnOsLogin', [app.appData.id, mode]);
-  }
+  },
 };
 
 /**
@@ -498,8 +500,14 @@ App.prototype = {
     }
 
     chrome.send('launchApp', [
-      this.appId, APP_LAUNCH.NTP_APPS_MAXIMIZED, 'chrome-ntp-icon', e.button,
-      e.altKey, e.ctrlKey, e.metaKey, e.shiftKey
+      this.appId,
+      APP_LAUNCH.NTP_APPS_MAXIMIZED,
+      'chrome-ntp-icon',
+      e.button,
+      e.altKey,
+      e.ctrlKey,
+      e.metaKey,
+      e.shiftKey,
     ]);
 
     // Don't allow the click to trigger a link or anything
@@ -518,8 +526,14 @@ App.prototype = {
       e.stopPropagation();
     } else if (e.key === 'Enter') {
       chrome.send('launchApp', [
-        this.appId, APP_LAUNCH.NTP_APPS_MAXIMIZED, '', 0, e.altKey, e.ctrlKey,
-        e.metaKey, e.shiftKey
+        this.appId,
+        APP_LAUNCH.NTP_APPS_MAXIMIZED,
+        '',
+        0,
+        e.altKey,
+        e.ctrlKey,
+        e.metaKey,
+        e.shiftKey,
       ]);
       e.preventDefault();
       e.stopPropagation();

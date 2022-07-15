@@ -58,7 +58,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
       subtitle: {
         type: String,
         value: loadTimeData.getString('ntpBackgroundDescription'),
-      }
+      },
     };
   }
 

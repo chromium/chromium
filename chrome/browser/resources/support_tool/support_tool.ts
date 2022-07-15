@@ -78,7 +78,7 @@ export class SupportToolElement extends SupportToolElementBase {
       errorMessage_: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 
