@@ -7177,10 +7177,16 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
     URLLoaderTest::SetUp();
 
     pervasive_payload_url_ = test_server()->GetURL(kPervasivePayload);
+    const GURL redirect_url = test_server()->GetURL(kRedirect301);
     base::FieldTrialParams params;
     params["pervasive-payloads"] = base::StrCat(
         {"1,", pervasive_payload_url_.spec(),
-         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"});
+         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3,",
+         redirect_url.spec(),
+         // This is actually the checksum for /cacheable.js, the target of the
+         // redirect, which shouldn't be considered a candidate for cache
+         // transparency.
+         ",A791EB1175734A7D8AFC7B78ABA52C537D656D6C4885BAC4B9EE7D377EA090F0"});
     pervasive_payloads_feature_.InitAndEnableFeatureWithParameters(
         features::kPervasivePayloadsList, params);
     cache_transparency_feature_.InitAndEnableFeature(
@@ -7233,6 +7239,11 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         third_party_cookies_enabled_);
 
+    if (expect_redirect_) {
+      client->RunUntilRedirectReceived();
+      loader->FollowRedirect({}, {}, {}, absl::nullopt);
+    }
+
     client->RunUntilComplete();
     delete_run_loop.Run();
 
@@ -7276,6 +7287,13 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
 
   void set_headers(ExtraHeaders headers) { headers_ = std::move(headers); }
 
+  void set_expect_redirect(bool value) { expect_redirect_ = value; }
+
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ protected:
+  static constexpr char kRedirect301[] = "/redirect301-to-cacheable";
+
  private:
   static constexpr char kPervasivePayload[] = "/pervasive.js";
   static constexpr char kNotUsedHistogram[] =
@@ -7287,6 +7305,7 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
   GURL pervasive_payload_url_;
   int network_request_count_ = 0;
   bool third_party_cookies_enabled_ = true;
+  bool expect_redirect_ = false;
   std::string method_ = "GET";
   int load_flags_ = net::LOAD_NORMAL;
   ExtraHeaders headers_;
@@ -7336,6 +7355,41 @@ TEST_F(URLLoaderCacheTransparencyTest, IncompatibleHeaders) {
   EXPECT_EQ(2, network_request_count());
   ExpectNotUsedReason(
       CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders);
+}
+
+// Do an end-to-end test of redirects, since their behaviour spans multiple
+// layers.
+TEST_F(URLLoaderCacheTransparencyTest, Redirect) {
+  // This use of this histogram is a layering violation. It is not strictly
+  // necessary to the test, but helps ensure it is passing for the right reason.
+  // TODO(ricea): Stop checking this histogram if it is removed.
+  static constexpr char kMarkedUnusableHistogram[] =
+      "Network.CacheTransparency.MarkedUnusable";
+
+  set_expect_redirect(true);
+
+  SetOrigin("https://a.com/");
+  auto client1 = SendRequest(kRedirect301);
+  EXPECT_EQ(client1->redirect_info().status_code, 301);
+  histogram_tester().ExpectTotalCount(kMarkedUnusableHistogram, 0);
+
+  SetOrigin("https://b.com/");
+  auto client2 = SendRequest(kRedirect301);
+  EXPECT_EQ(client2->redirect_info().status_code, 301);
+  histogram_tester().ExpectUniqueSample(
+      kMarkedUnusableHistogram,
+      1,  // index of the URL in the pervasive payloads list
+      1   // number of samples
+  );
+
+  // TODO(ricea): Stop checking this histogram if it is removed.
+  histogram_tester().ExpectTotalCount(
+      "Network.CacheTransparency.SingleKeyedCacheIsUsed", 0);
+
+  // The count includes the target of the redirects.
+  EXPECT_EQ(4, network_request_count());
+  ExpectNotUsedReason(
+      CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache);
 }
 
 }  // namespace network

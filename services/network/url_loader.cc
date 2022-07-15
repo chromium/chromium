@@ -1429,6 +1429,10 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
+
+  // Ensure that the redirect target is not treated as a pervasive payload.
+  url_request_->set_expected_response_checksum(std::string());
+
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
                                               std::move(response));
 }

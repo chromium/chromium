@@ -13642,6 +13642,38 @@ TEST_F(HttpCacheSingleKeyedCacheTest, GETWithBadResponseCode) {
   }
 }
 
+// This is identical to GETWithBadResponseCode but with a different response
+// code. It's not very realistic as it doesn't call DoneReading(), but it covers
+// the relevant code path.
+TEST_F(HttpCacheSingleKeyedCacheTest, RedirectUnusable) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  transaction.status = "HTTP/1.1 301 Moved Permanently";
+  const auto site_a = SchemefulSite(GURL("https://a.com/"));
+  // The first request adds the item to the single-keyed cache.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request verifies that the cache entry is not re-used
+  // but a new one is created in the split cache.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
+}
+
 TEST_F(HttpCacheSingleKeyedCacheTest, SuccessfulRevalidation) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
