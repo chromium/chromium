@@ -91,6 +91,8 @@ class RuntimeApplicationBase : public RuntimeApplication,
   base::Value GetRendererFeatures() const;
   // Returns if app is audio only.
   bool GetIsAudioOnly() const;
+  // Returns if remote control mode is enabled.
+  bool GetIsRemoteControlMode() const;
   // Returns if feature permissions are enforced.
   bool GetEnforceFeaturePermissions() const;
   // Returns feature permissions.

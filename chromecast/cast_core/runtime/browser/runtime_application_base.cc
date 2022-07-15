@@ -224,6 +224,18 @@ bool RuntimeApplicationBase::GetIsAudioOnly() const {
   return entry->value().flag();
 }
 
+bool RuntimeApplicationBase::GetIsRemoteControlMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto* entry = FindEntry(feature::kCastCoreIsRemoteControlMode,
+                                GetAppConfig().extra_features());
+  if (!entry) {
+    return false;
+  }
+
+  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
+  return entry->value().flag();
+}
+
 bool RuntimeApplicationBase::GetEnforceFeaturePermissions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
@@ -383,6 +395,10 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   params->renderer_type = renderer_type_;
   params->handle_inner_contents = true;
   params->session_id = GetCastSessionId();
+  params->is_remote_control_mode = GetIsRemoteControlMode();
+  params->activity_id = params->is_remote_control_mode
+                            ? params->session_id
+                            : GetAppConfig().app_id();
 #if DCHECK_IS_ON()
   params->enabled_for_dev = true;
 #endif
