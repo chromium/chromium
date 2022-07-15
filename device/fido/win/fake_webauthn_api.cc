@@ -4,6 +4,7 @@
 
 #include "device/fido/win/fake_webauthn_api.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -25,10 +26,17 @@ namespace device {
 struct FakeWinWebAuthnApi::CredentialInfoList {
   WEBAUTHN_CREDENTIAL_DETAILS_LIST credential_details_list;
   std::vector<WEBAUTHN_CREDENTIAL_DETAILS*> win_credentials;
-  std::vector<CredentialInfo> credentials;
+  std::vector<std::unique_ptr<CredentialInfo>> credentials;
 };
 
 struct FakeWinWebAuthnApi::CredentialInfo {
+  // This structure contains pointers to itself and thus
+  // must not be moved in memory.
+  CredentialInfo() = default;
+  CredentialInfo(CredentialInfo&&) = delete;
+  CredentialInfo& operator=(CredentialInfo&&) = delete;
+  CredentialInfo& operator=(const CredentialInfo&) = delete;
+
   WEBAUTHN_CREDENTIAL_DETAILS details;
   std::vector<uint8_t> credential_id;
 
@@ -45,6 +53,13 @@ struct FakeWinWebAuthnApi::CredentialInfo {
 };
 
 struct FakeWinWebAuthnApi::WebAuthnAssertionEx {
+  // This structure contains pointers to itself and thus
+  // must not be moved in memory.
+  WebAuthnAssertionEx() = default;
+  WebAuthnAssertionEx(WebAuthnAssertionEx&&) = delete;
+  WebAuthnAssertionEx& operator=(WebAuthnAssertionEx&&) = delete;
+  WebAuthnAssertionEx& operator=(const WebAuthnAssertionEx&) = delete;
+
   std::vector<uint8_t> credential_id;
   std::vector<uint8_t> authenticator_data;
   std::vector<uint8_t> signature;
@@ -177,9 +192,9 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
   }
   DCHECK(!credential_id.empty());
 
-  WebAuthnAssertionEx result;
-  result.credential_id = fido_parsing_utils::Materialize(credential_id);
-  result.authenticator_data =
+  auto result = std::make_unique<WebAuthnAssertionEx>();
+  result->credential_id = fido_parsing_utils::Materialize(credential_id);
+  result->authenticator_data =
       AuthenticatorData(
           registration->application_parameter,
           /*user_present=*/true,
@@ -192,39 +207,39 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
   // Create the assertion signature.
   std::vector<uint8_t> sign_data;
-  fido_parsing_utils::Append(&sign_data, result.authenticator_data);
+  fido_parsing_utils::Append(&sign_data, result->authenticator_data);
   fido_parsing_utils::Append(
       &sign_data, crypto::SHA256Hash({client_data->pbClientDataJSON,
                                       client_data->cbClientDataJSON}));
-  result.signature =
+  result->signature =
       registration->private_key->Sign({sign_data.data(), sign_data.size()});
 
   // Fill in the WEBAUTHN_ASSERTION struct returned to the caller.
-  result.assertion = {};
-  result.assertion.dwVersion = 1;
-  result.assertion.cbAuthenticatorData = result.authenticator_data.size();
-  result.assertion.pbAuthenticatorData = reinterpret_cast<PBYTE>(
-      const_cast<uint8_t*>(result.authenticator_data.data()));
+  result->assertion = {};
+  result->assertion.dwVersion = 1;
+  result->assertion.cbAuthenticatorData = result->authenticator_data.size();
+  result->assertion.pbAuthenticatorData = reinterpret_cast<PBYTE>(
+      const_cast<uint8_t*>(result->authenticator_data.data()));
 
-  result.assertion.cbSignature = result.signature.size();
-  result.assertion.pbSignature = result.signature.data();
-  result.assertion.Credential = {};
-  result.assertion.Credential.dwVersion = 1;
-  result.assertion.Credential.cbId = result.credential_id.size();
-  result.assertion.Credential.pbId = result.credential_id.data();
-  result.assertion.Credential.pwszCredentialType =
+  result->assertion.cbSignature = result->signature.size();
+  result->assertion.pbSignature = result->signature.data();
+  result->assertion.Credential = {};
+  result->assertion.Credential.dwVersion = 1;
+  result->assertion.Credential.cbId = result->credential_id.size();
+  result->assertion.Credential.pbId = result->credential_id.data();
+  result->assertion.Credential.pwszCredentialType =
       WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY;
   // TODO(martinkr): Return a user entity for requests with empty allow lists.
   // (Though the CTAP2.0 spec allows that to be omitted if only a single
   // credential matched.)
-  result.assertion.pbUserId = nullptr;
-  result.assertion.cbUserId = 0;
+  result->assertion.pbUserId = nullptr;
+  result->assertion.cbUserId = 0;
 
   // The real API hands out results in naked pointers and asks callers
   // to call FreeAssertion() when they're done. We maintain ownership
   // of the pointees in |returned_assertions_|.
+  *assertion_ptr = &result->assertion;
   returned_assertions_.push_back(std::move(result));
-  *assertion_ptr = &returned_assertions_.back().assertion;
 
   return S_OK;
 }
@@ -242,7 +257,10 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
   if (result_override_ != S_OK) {
     return result_override_;
   }
-  returned_credential_lists_.emplace_back();
+  returned_credential_lists_.emplace_back(
+      std::make_unique<CredentialInfoList>());
+  CredentialInfoList& credential_list =
+      *returned_credential_lists_.back().get();
   for (const auto& registration : registrations_) {
     if (!registration.second.is_resident) {
       continue;
@@ -254,17 +272,18 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
       }
     }
 
-    returned_credential_lists_.back().credentials.emplace_back(CredentialInfo({
-        .credential_id = registration.first,
-        .rp_id = base::UTF8ToUTF16(registration.second.rp->id),
-        .rp_name = base::UTF8ToUTF16(registration.second.rp->name.value_or("")),
-        .user_id = registration.second.user->id,
-        .user_name =
-            base::UTF8ToUTF16(registration.second.user->name.value_or("")),
-        .user_display_name = base::UTF8ToUTF16(
-            registration.second.user->display_name.value_or("")),
-    }));
-    auto& credential = returned_credential_lists_.back().credentials.back();
+    credential_list.credentials.emplace_back(
+        std::make_unique<CredentialInfo>());
+    auto& credential = *credential_list.credentials.back().get();
+    credential.credential_id = registration.first;
+    credential.rp_id = base::UTF8ToUTF16(registration.second.rp->id);
+    credential.rp_name =
+        base::UTF8ToUTF16(registration.second.rp->name.value_or(""));
+    credential.user_id = registration.second.user->id;
+    credential.user_name =
+        base::UTF8ToUTF16(registration.second.user->name.value_or(""));
+    credential.user_display_name =
+        base::UTF8ToUTF16(registration.second.user->display_name.value_or(""));
     if (registration.second.rp->icon_url) {
       credential.rp_icon =
           base::UTF8ToUTF16(registration.second.rp->icon_url->spec());
@@ -299,19 +318,16 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
     };
   }
 
-  for (auto& credential : returned_credential_lists_.back().credentials) {
-    returned_credential_lists_.back().win_credentials.push_back(
-        &credential.details);
+  for (auto& credential : credential_list.credentials) {
+    credential_list.win_credentials.push_back(&credential->details);
   }
-  returned_credential_lists_.back().credential_details_list = {
-      .cCredentialDetails = static_cast<DWORD>(
-          returned_credential_lists_.back().win_credentials.size()),
-      .ppCredentialDetails =
-          returned_credential_lists_.back().win_credentials.data(),
+  credential_list.credential_details_list = {
+      .cCredentialDetails =
+          static_cast<DWORD>(credential_list.win_credentials.size()),
+      .ppCredentialDetails = credential_list.win_credentials.data(),
   };
-  *credentials = &returned_credential_lists_.back().credential_details_list;
-  return returned_credential_lists_.back().credentials.empty() ? NTE_NOT_FOUND
-                                                               : S_OK;
+  *credentials = &credential_list.credential_details_list;
+  return credential_list.credentials.empty() ? NTE_NOT_FOUND : S_OK;
 }
 
 HRESULT FakeWinWebAuthnApi::DeletePlatformCredential(
@@ -362,7 +378,7 @@ void FakeWinWebAuthnApi::FreeCredentialAttestation(
 void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
   for (auto it = returned_assertions_.begin(); it != returned_assertions_.end();
        ++it) {
-    if (assertion != &it->assertion) {
+    if (assertion != &(*it)->assertion) {
       continue;
     }
     returned_assertions_.erase(it);
@@ -375,7 +391,7 @@ void FakeWinWebAuthnApi::FreePlatformCredentialList(
     PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials) {
   for (auto it = returned_credential_lists_.begin();
        it != returned_credential_lists_.end(); ++it) {
-    if (credentials != &it->credential_details_list) {
+    if (credentials != &(*it)->credential_details_list) {
       continue;
     }
     returned_credential_lists_.erase(it);

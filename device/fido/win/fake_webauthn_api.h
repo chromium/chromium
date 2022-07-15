@@ -115,10 +115,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   std::vector<WEBAUTHN_CREDENTIAL_ATTESTATION> returned_attestations_;
 
   // Owns assertions returned by AuthenticatorGetAssertion().
-  std::vector<WebAuthnAssertionEx> returned_assertions_;
+  std::vector<std::unique_ptr<WebAuthnAssertionEx>> returned_assertions_;
 
   // Owns lists of credentials returned by GetPlatformCredentialList().
-  std::vector<CredentialInfoList> returned_credential_lists_;
+  std::vector<std::unique_ptr<CredentialInfoList>> returned_credential_lists_;
 
   std::
       map<std::vector<uint8_t>, RegistrationData, fido_parsing_utils::RangeLess>
