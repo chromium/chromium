@@ -165,10 +165,6 @@ void ManagedSimLockNotifier::Click(
   // When clicked, open the SIM Unlock dialog in Cellular settings if
   // we can open WebUI settings, otherwise do nothing.
   if (TrayPopupUtils::CanOpenWebUISettings()) {
-    // TODO(b/228093904): Using GUID of network, take user to cellular
-    // details page with dialog open. Change dialog logic so that if
-    // the SIM is currently locked, entering the PIN will unlock the
-    // SIM and disable the PIN lock setting.
     Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
   } else {
     LOG(WARNING) << "Cannot open Cellular settings since it's not "
