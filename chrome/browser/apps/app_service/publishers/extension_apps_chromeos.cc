@@ -43,7 +43,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
-#include "chrome/browser/extensions/extension_keeplist_ash.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -747,7 +747,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   // Do not publish platform apps in Ash if it should run in Lacros instead.
   if (extension->is_platform_app() &&
       crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
-    return extensions::ExtensionAppRunsInAsh(extension->id());
+    return extensions::ExtensionAppRunsInOS(extension->id());
   }
 
   return true;
@@ -799,7 +799,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   // published to the app service at all. Thus this method should not be called.
   DCHECK(!(extension->is_platform_app() &&
            crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-           !extensions::ExtensionAppRunsInAsh(extension->id())));
+           !extensions::ExtensionAppRunsInOS(extension->id())));
   const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
 
   auto app = CreateAppImpl(
@@ -836,7 +836,7 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
   // published to the app service at all. Thus this method should not be called.
   DCHECK(!(extension->is_platform_app() &&
            crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-           !extensions::ExtensionAppRunsInAsh(extension->id())));
+           !extensions::ExtensionAppRunsInOS(extension->id())));
   const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
 
   apps::mojom::AppPtr app = ConvertImpl(

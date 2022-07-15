@@ -1001,6 +1001,8 @@ static_library("extensions") {
       "chromeos_browser_context_keyed_service_factories.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
+      "extension_keeplist_chromeos.cc",
+      "extension_keeplist_chromeos.h",
       "system_display/system_display_serialization.cc",
       "system_display/system_display_serialization.h",
     ]
@@ -1116,8 +1118,6 @@ static_library("extensions") {
       "extension_assets_manager_chromeos.h",
       "extension_garbage_collector_chromeos.cc",
       "extension_garbage_collector_chromeos.h",
-      "extension_keeplist_ash.cc",
-      "extension_keeplist_ash.h",
       "system_display/display_info_provider_chromeos.cc",
       "system_display/display_info_provider_chromeos.h",
       "updater/chromeos_extension_cache_delegate.cc",

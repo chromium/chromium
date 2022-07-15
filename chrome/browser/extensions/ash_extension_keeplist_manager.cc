@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/hosted_app_util.h"
-#include "chrome/browser/extensions/extension_keeplist_ash.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_constants/constants.h"
@@ -55,12 +55,12 @@ void AshExtensionKeeplistManager::ActivateKeeplistEnforcement() {
 
 bool AshExtensionKeeplistManager::ShouldDisable(
     const Extension* extension) const {
-  if (extension->is_extension() && !ExtensionRunsInAsh(extension->id()))
+  if (extension->is_extension() && !ExtensionRunsInOS(extension->id()))
     return true;
 
   if (extension->is_platform_app() &&
       crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-      !ExtensionAppRunsInAsh(extension->id())) {
+      !ExtensionAppRunsInOS(extension->id())) {
     return true;
   }
 
