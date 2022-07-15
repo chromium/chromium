@@ -535,6 +535,8 @@ chromium-metrics-reviews@google.com.
     <variant name="LinksOpened" summary="links opened"/>
     <variant name="RelatedSearchesClicked"
         summary="related search links opened"/>
+    <variant name="TogglesToBasicHistory"
+        summary="Tggles to from basic history UI"/>
     <variant name="VisibilityToggles" summary="Journeys UI toggles on/off"/>
   </token>
 </histogram>

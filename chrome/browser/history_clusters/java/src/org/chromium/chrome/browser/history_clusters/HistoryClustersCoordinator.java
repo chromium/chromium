@@ -111,7 +111,19 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         }
     }
 
-    public void setQueryState(QueryState queryState) {
+    /** Called when the user toggles to or from the Journeys UI in the containing history page. */
+    public void onToggled(boolean toggledTo) {
+        if (toggledTo) {
+            mMetricsLogger.setInitialState(HistoryClustersMetricsLogger.InitialState.SAME_DOCUMENT);
+            mMediator.setQueryState(QueryState.forQueryless());
+        } else {
+            mMetricsLogger.incrementToggleCount();
+        }
+    }
+
+    public void setInitialQuery(QueryState queryState) {
+        mMetricsLogger.setInitialState(
+                HistoryClustersMetricsLogger.InitialState.INDIRECT_NAVIGATION);
         mMediator.setQueryState(queryState);
     }
 

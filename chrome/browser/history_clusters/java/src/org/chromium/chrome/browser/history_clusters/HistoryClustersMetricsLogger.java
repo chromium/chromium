@@ -28,16 +28,50 @@ class HistoryClustersMetricsLogger {
         int NON_SRP = 1;
     }
 
-    // TODO(https://crbug.com/1303171): Add UKM metrics.
+    @IntDef({InitialState.UNINITIALIZED, InitialState.DIRECT_NAVIGATION,
+            InitialState.INDIRECT_NAVIGATION, InitialState.SAME_DOCUMENT, InitialState.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface InitialState {
+        int UNINITIALIZED = -1;
+        // The HistoryClusters UI was opened via direct URL, i.e., not opened via any
+        // other surface/path such as an omnibox action or other UI surface.
+        // Currently unused on Android because it's rare and hard to discern, but retained for
+        // completeness and parity with desktop.
+        int DIRECT_NAVIGATION = 1;
+        // The HistoryClusters UI was opened indirectly; e.g., using an omnibox
+        // action.
+        int INDIRECT_NAVIGATION = 2;
+        // The HistoryClusters UI was opened via a same-document navigation, which
+        // means the user likely clicked the tab over from History to Journeys.
+        int SAME_DOCUMENT = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     private int mVisitDeleteCount;
     private int mLinkOpenCount;
     private int mRelatedSearchesClickCount;
     private int mToggledVisibilityCount;
     private int mQueryCount;
+    private int mTogglesToBasicHistoryCount;
+    private int mInitialState = InitialState.UNINITIALIZED;
     private final TemplateUrlService mTemplateUrlService;
 
     HistoryClustersMetricsLogger(TemplateUrlService templateUrlService) {
         mTemplateUrlService = templateUrlService;
+    }
+
+    void setInitialState(@InitialState int initialState) {
+        if (mInitialState == InitialState.UNINITIALIZED) {
+            mInitialState = initialState;
+        }
+    }
+
+    void incrementToggleCount() {
+        if (mInitialState == InitialState.UNINITIALIZED) {
+            mInitialState = InitialState.SAME_DOCUMENT;
+        }
+
+        mTogglesToBasicHistoryCount++;
     }
 
     void incrementQueryCount() {
@@ -85,6 +119,12 @@ class HistoryClustersMetricsLogger {
     }
 
     void destroy() {
+        if (mInitialState == InitialState.UNINITIALIZED) {
+            return;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "History.Clusters.Actions.InitialState", mInitialState, InitialState.NUM_ENTRIES);
         RecordHistogram.recordCount100Histogram(
                 "History.Clusters.Actions.FinalState.NumberLinksOpened", mLinkOpenCount);
         RecordHistogram.recordCount100Histogram(
@@ -96,6 +136,9 @@ class HistoryClustersMetricsLogger {
         RecordHistogram.recordCount100Histogram(
                 "History.Clusters.Actions.FinalState.NumberIndividualVisitsDeleted",
                 mVisitDeleteCount);
+        RecordHistogram.recordCount100Histogram(
+                "History.Clusters.Actions.FinalState.TogglesToBasicHistory",
+                mTogglesToBasicHistoryCount);
         RecordHistogram.recordBooleanHistogram("History.Clusters.Actions.FinalState.WasSuccessful",
                 isCurrentlySuccessfulHistoryClustersOutcome());
         RecordHistogram.recordBooleanHistogram(

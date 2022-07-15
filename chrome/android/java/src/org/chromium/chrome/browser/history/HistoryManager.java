@@ -303,7 +303,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             QueryState queryState = TextUtils.isEmpty(historyClustersQuery)
                     ? QueryState.forQueryless()
                     : QueryState.forQuery(historyClustersQuery, getSearchEmptyString());
-            mHistoryClustersCoordinator.setQueryState(queryState);
+            mHistoryClustersCoordinator.setInitialQuery(queryState);
         } else {
             mContentView = mSelectableListLayout;
         }
@@ -485,8 +485,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return;
         } else if (mContentView == mSelectableListLayout && mHistoryClustersCoordinator != null) {
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
-            mHistoryClustersCoordinator.setQueryState(QueryState.forQueryless());
+            mHistoryClustersCoordinator.onToggled(true);
         } else {
+            mHistoryClustersCoordinator.onToggled(false);
             mContentView = mSelectableListLayout;
             mContentManager.startLoadingItems();
         }
