@@ -69,6 +69,8 @@ void MaybeLogAuditIssue(LocalFrame* frame,
                         const absl::optional<String>& string,
                         HTMLElement* element,
                         absl::optional<uint64_t> request_id) {
+  DCHECK(frame);
+
   if (!frame->IsAttached())
     return;
 
@@ -87,8 +89,9 @@ bool CanRegisterAttributionInContext(
     LocalFrame* frame,
     HTMLElement* element,
     absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context,
-    bool log_issues) {
+    AttributionSrcLoader::RegisterContext context) {
+  DCHECK(frame);
+
   LocalDOMWindow* window = frame->DomWindow();
   DCHECK(window);
 
@@ -99,26 +102,22 @@ bool CanRegisterAttributionInContext(
       mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
 
   if (!feature_policy_enabled) {
-    if (log_issues) {
-      MaybeLogAuditIssue(
-          frame, AttributionReportingIssueType::kPermissionPolicyDisabled,
-          /*string=*/absl::nullopt, element, request_id);
-    }
+    MaybeLogAuditIssue(frame,
+                       AttributionReportingIssueType::kPermissionPolicyDisabled,
+                       /*string=*/absl::nullopt, element, request_id);
     return false;
   }
 
   // The API is only allowed in secure contexts.
   if (!window->IsSecureContext()) {
-    if (log_issues) {
-      MaybeLogAuditIssue(
-          frame,
-          context == AttributionSrcLoader::RegisterContext::kAttributionSrc
-              ? AttributionReportingIssueType::
-                    kAttributionSourceUntrustworthyOrigin
-              : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
-          frame->GetSecurityContext()->GetSecurityOrigin()->ToString(), element,
-          request_id);
-    }
+    MaybeLogAuditIssue(
+        frame,
+        context == AttributionSrcLoader::RegisterContext::kAttributionSrc
+            ? AttributionReportingIssueType::
+                  kAttributionSourceUntrustworthyOrigin
+            : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
+        frame->GetSecurityContext()->GetSecurityOrigin()->ToString(), element,
+        request_id);
     return false;
   }
 
@@ -333,9 +332,9 @@ bool AttributionSrcLoader::UrlCanRegisterAttribution(
   DCHECK(window);
 
   if (!CanRegisterAttributionInContext(local_frame_, element, request_id,
-                                       context,
-                                       /*log_issues=*/true))
+                                       context)) {
     return false;
+  }
 
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(url);

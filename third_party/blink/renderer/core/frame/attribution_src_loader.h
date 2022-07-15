@@ -106,15 +106,14 @@ class CORE_EXPORT AttributionSrcLoader
   size_t num_resource_clients_ = 0;
 };
 
-// Returns whether attribution is allowed, and logs devtools issues if
-// registration was attempted in a context is not allowed and `log_issues` is
-// set. `element` may be null.
+// Returns whether attribution is allowed, and logs DevTools issues if
+// registration was attempted in a context that is not allowed.
+// `element` may be null.
 CORE_EXPORT bool CanRegisterAttributionInContext(
     LocalFrame* frame,
     HTMLElement* element,
     absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context,
-    bool log_issues);
+    AttributionSrcLoader::RegisterContext context);
 
 }  // namespace blink
 

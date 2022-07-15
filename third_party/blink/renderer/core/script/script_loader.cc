@@ -524,8 +524,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
               CanRegisterAttributionInContext(
                   context_window->GetFrame(), /*element=*/nullptr,
                   /*request_id=*/absl::nullopt,
-                  AttributionSrcLoader::RegisterContext::kResource,
-                  /*log_issues=*/false)
+                  AttributionSrcLoader::RegisterContext::kResource)
           ? ScriptFetchOptions::AttributionReportingEligibility::kEligible
           : ScriptFetchOptions::AttributionReportingEligibility::kIneligible;
 

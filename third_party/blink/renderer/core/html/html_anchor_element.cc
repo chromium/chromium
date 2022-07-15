@@ -540,8 +540,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
         CanRegisterAttributionInContext(
             frame, this,
             /*request_id=*/absl::nullopt,
-            AttributionSrcLoader::RegisterContext::kAttributionSrc,
-            /*log_issues=*/false)) {
+            AttributionSrcLoader::RegisterContext::kAttributionSrc)) {
       frame_request.SetImpression(blink::Impression());
     }
   }

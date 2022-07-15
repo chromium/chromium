@@ -229,8 +229,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
           CanRegisterAttributionInContext(
               dom_window->GetFrame(), /*element=*/nullptr,
               /*request_id=*/absl::nullopt,
-              AttributionSrcLoader::RegisterContext::kAttributionSrc,
-              /*log_issues=*/false)) {
+              AttributionSrcLoader::RegisterContext::kAttributionSrc)) {
         window_features.impression = blink::Impression();
       }
     }
