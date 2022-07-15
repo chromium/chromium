@@ -345,8 +345,10 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     MountContext mount_context) {
   std::unique_ptr<Volume> volume(new Volume());
+
   volume->file_system_id_ = file_system_info.file_system_id();
   volume->provider_id_ = file_system_info.provider_id();
+
   switch (file_system_info.source()) {
     case extensions::SOURCE_FILE:
       volume->source_ = SOURCE_FILE;
@@ -358,17 +360,61 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
       volume->source_ = SOURCE_NETWORK;
       break;
   }
+
   volume->volume_label_ = file_system_info.display_name();
   volume->type_ = VOLUME_TYPE_PROVIDED;
   volume->mount_path_ = file_system_info.mount_path();
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->mount_context_ = mount_context;
+
   volume->is_parent_ = true;
   volume->is_read_only_ = !file_system_info.writable();
   volume->configurable_ = file_system_info.configurable();
   volume->watchable_ = file_system_info.watchable();
-  volume->volume_id_ = GenerateVolumeId(*volume);
   volume->icon_set_ = file_system_info.icon_set();
+
+  volume->volume_id_ = GenerateVolumeId(*volume);
+  return volume;
+}
+
+// static: |mount_path| is the fusebox daemon AttachStorage API 'subdir'.
+std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
+    const base::FilePath& mount_path,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+    MountContext mount_context) {
+  const base::FilePath mount_point(util::kFuseBoxMediaPath);
+
+  std::unique_ptr<Volume> volume(new Volume());
+
+  switch (file_system_info.source()) {
+    case extensions::SOURCE_FILE:
+      volume->source_ = SOURCE_FILE;
+      break;
+    case extensions::SOURCE_DEVICE:
+      volume->source_ = SOURCE_DEVICE;
+      break;
+    case extensions::SOURCE_NETWORK:
+      volume->source_ = SOURCE_NETWORK;
+      break;
+  }
+
+  volume->volume_label_ = file_system_info.display_name();
+  if (ash::features::IsFileManagerFuseBoxDebugEnabled())
+    volume->volume_label_.insert(0, "fusebox ");
+
+  volume->type_ = VOLUME_TYPE_PROVIDED;
+  volume->file_system_type_ = util::kFuseBox;
+  volume->mount_path_ = mount_point.Append(mount_path);
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
+  volume->mount_context_ = mount_context;
+
+  volume->is_parent_ = true;
+  volume->is_read_only_ = !file_system_info.writable();
+  volume->icon_set_ = file_system_info.icon_set();
+
+  // "fusebox" prefix the original FSP volume id.
+  volume->volume_id_ = util::kFuseBox;
+  volume->volume_id_.append(GenerateVolumeId(*volume));
   return volume;
 }
 

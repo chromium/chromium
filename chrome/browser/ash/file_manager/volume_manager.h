@@ -111,6 +111,10 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       MountContext mount_context);
+  static std::unique_ptr<Volume> CreateForFuseBoxProvidedFileSystem(
+      const base::FilePath& mount_path,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      MountContext mount_context);
   static std::unique_ptr<Volume> CreateForMTP(const base::FilePath& mount_path,
                                               const std::string& label,
                                               bool read_only);
