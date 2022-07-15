@@ -747,13 +747,13 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       policies->Set(key::kReportDeviceNetworkConfiguration,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                     POLICY_SOURCE_CLOUD,
-                    base::Value(container.has_report_network_configuration()),
+                    base::Value(container.report_network_configuration()),
                     nullptr);
     }
     if (container.has_report_network_status()) {
       policies->Set(key::kReportDeviceNetworkStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.has_report_network_status()),
+                    base::Value(container.report_network_status()),
                     nullptr);
     }
     if (container.has_report_users()) {
