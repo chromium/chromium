@@ -47,6 +47,13 @@
   LAZY_STREAM(logging::LogMessage(file_name, line_number, sev).stream(), \
               WEBRTC_ENABLE_LOGGING)
 
+namespace blink {
+
+const base::Feature kSuppressAllWebRtcLogs{"SuppressAllWebRtcLogs",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace blink
+
 namespace rtc {
 
 void (*g_logging_delegate_function)(const std::string&) = NULL;
@@ -167,6 +174,10 @@ DiagnosticLogMessage::DiagnosticLogMessage(const char* file,
       log_to_chrome_(CheckVlogIsOnHelper(severity, file, strlen(file) + 1)) {}
 
 DiagnosticLogMessage::~DiagnosticLogMessage() {
+  // Suppress RTC_LOG which are forwarded both to Chrome logs and WebRTC logs.
+  if (base::FeatureList::IsEnabled(blink::kSuppressAllWebRtcLogs))
+    return;
+
   const bool call_delegate =
       g_logging_delegate_function && severity_ <= LS_INFO;
 

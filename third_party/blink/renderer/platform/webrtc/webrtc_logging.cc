@@ -32,6 +32,8 @@ void InitWebRtcLogging() {
 }
 
 void WebRtcLogMessage(const std::string& message) {
+  if (base::FeatureList::IsEnabled(blink::kSuppressAllWebRtcLogs))
+    return;
   VLOG(1) << message;
   if (g_webrtc_logging_delegate)
     g_webrtc_logging_delegate->LogMessage(message);

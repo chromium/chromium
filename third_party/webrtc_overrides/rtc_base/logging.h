@@ -28,6 +28,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/feature_list.h"
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -38,6 +39,12 @@
 #if defined(LOGGING_INSIDE_WEBRTC)
 
 #include <errno.h>
+
+namespace blink {
+
+RTC_EXPORT extern const base::Feature kSuppressAllWebRtcLogs;
+
+}  // namespace blink
 
 namespace rtc {
 
