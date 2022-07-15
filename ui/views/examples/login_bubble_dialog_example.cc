@@ -22,8 +22,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -163,5 +162,4 @@ void LoginBubbleDialogExample::OnSubmit(std::u16string username,
   password_input_->SetText(password);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
