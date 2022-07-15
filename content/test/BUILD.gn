@@ -507,6 +507,7 @@ static_library("test_support") {
     "//components/variations",
     "//components/viz/client",
     "//components/viz/host",
+    "//components/web_package/test_support",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
     "//content/browser/attribution_reporting:attribution_reporting_proto",
