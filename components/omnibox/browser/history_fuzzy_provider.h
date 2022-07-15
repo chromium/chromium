@@ -108,13 +108,12 @@ struct Node {
   ~Node();
 
   // Walk the trie, injecting nodes as necessary to build the given `text`
-  // starting at index `from`. The `from` parameter advances as an index into
-  // `text` and ensures recursion is bounded.
-  void Insert(const std::u16string& text, size_t from);
+  // starting at `text_index`. The `text_index` parameter advances as an index
+  // into `text` and ensures recursion is bounded.
+  void Insert(const std::u16string& text, size_t text_index);
 
   // Delete nodes as necessary to remove given `text` from the trie.
-  // Returns true if this node is left empty and may be deleted.
-  bool Delete(const std::u16string& text, size_t from);
+  void Delete(const std::u16string& text, size_t text_index);
 
   // Delete all nodes to clear the trie.
   void Clear();
@@ -133,17 +132,21 @@ struct Node {
                        ToleranceSchedule tolerance_schedule,
                        std::vector<Correction>& corrections) const;
 
-  // TODO(orinj): Remove this. It's a development-only debugging utility.
-  void Log(std::u16string built) const;
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Returns number of terminals contained within this trie (may include self).
+  int TerminalCount() const;
+
   // This is used to distinguish terminal nodes in the trie (nonzero values).
-  // TODO(orinj): Consider removing this if we only correct inputs and leave
-  //  scoring to other autocomplete machinery.
   int relevance = 0;
+
+  // This maintains the sum of `relevance` plus all `relevance_total` values
+  // contained within `next`. As long as `relevance` values are 0 or 1, this can
+  // be used as a count of contained terminals. When it drops to zero, the
+  // node may be deleted from the trie.
+  int relevance_total = 0;
 
   // Note: Some C++ implementations of unordered_map support using the
   // containing struct (Node) as the element type, but some do not. To avoid
@@ -218,14 +221,7 @@ class HistoryFuzzyProvider : public HistoryProvider,
 
   AutocompleteInput autocomplete_input_;
 
-  // TODO(orinj): For now this is memory resident for proof of concept, but
-  //  most likely the full implementation will store the tree in a SQL table
-  //  for persistence and to minimize RAM usage. Queries can be minimized by
-  //  making the algorithm stateful and incremental. As the user types, only
-  //  the last character is needed to take another step along the trie. Total
-  //  input changes are the rarer, more expensive case, and we might even
-  //  consider skipping them since fuzzy matching somewhat assumes human errors
-  //  generated while typing, not copy/pasting, etc.
+  // This is the trie facilitating search for input alternatives.
   fuzzy::Node root_;
 
   // This provides a thread-safe way to check that loading has completed.

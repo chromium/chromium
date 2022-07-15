@@ -480,18 +480,67 @@ TEST_F(HistoryFuzzyProviderTest, DoesNotProduceDuplicate) {
 
 TEST_F(HistoryFuzzyProviderTest, NodesDeleteAndPreserveStructure) {
   fuzzy::Node node;
+  const auto checked_delete = [&](const std::u16string& s) {
+    node.Delete(s, 0);
+    return node.TerminalCount() == 0;
+  };
   node.Insert(u"abc", 0);
-  CHECK(node.Delete(u"abc", 0));
+  CHECK(checked_delete(u"abc"));
   CHECK(node.next.empty());
   node.Insert(u"def", 0);
-  CHECK(!node.Delete(u"de", 0));
+  CHECK(!checked_delete(u"de"));
   CHECK(!node.next.empty());
-  CHECK(node.Delete(u"def", 0));
+  CHECK(checked_delete(u"def"));
   node.Insert(u"ghi", 0);
   node.Insert(u"ghost", 0);
-  CHECK(!node.Delete(u"gh", 0));
+  CHECK(!checked_delete(u"gh"));
   CHECK(!node.next.empty());
-  CHECK(!node.Delete(u"ghi", 0));
-  CHECK(node.Delete(u"ghost", 0));
+  CHECK(!checked_delete(u"ghi"));
+  CHECK(checked_delete(u"ghost"));
   CHECK(node.next.empty());
+}
+
+TEST_F(HistoryFuzzyProviderTest, NodesMaintainRelevanceTotalTerminalCount) {
+  fuzzy::Node node;
+
+  // Start with no terminals.
+  CHECK_EQ(node.TerminalCount(), 0);
+
+  // Support including the empty string as terminal.
+  node.Insert(u"", 0);
+  CHECK_EQ(node.TerminalCount(), 1);
+
+  // Ensure repeated insertions don't cause growth.
+  node.Insert(u"abc", 0);
+  CHECK_EQ(node.TerminalCount(), 2);
+  node.Insert(u"abc", 0);
+  CHECK_EQ(node.TerminalCount(), 2);
+
+  // Check further additions on different, same, and partially same paths.
+  node.Insert(u"def", 0);
+  CHECK_EQ(node.TerminalCount(), 3);
+  node.Insert(u"abcd", 0);
+  CHECK_EQ(node.TerminalCount(), 4);
+  node.Insert(u"ab", 0);
+  CHECK_EQ(node.next[u'a']->TerminalCount(), 3);
+  CHECK_EQ(node.next[u'd']->TerminalCount(), 1);
+  CHECK_EQ(node.TerminalCount(), 5);
+
+  // Check deletion, including no-op and empty string deletion.
+  node.Delete(u"a", 0);
+  CHECK_EQ(node.TerminalCount(), 5);
+  node.Delete(u"x", 0);
+  CHECK_EQ(node.TerminalCount(), 5);
+  node.Delete(u"", 0);
+  CHECK_EQ(node.TerminalCount(), 4);
+  node.Delete(u"abc", 0);
+  CHECK_EQ(node.TerminalCount(), 3);
+  node.Delete(u"abcd", 0);
+  CHECK_EQ(node.TerminalCount(), 2);
+  node.Delete(u"ab", 0);
+  CHECK_EQ(node.TerminalCount(), 1);
+  node.Delete(u"defx", 0);
+  CHECK_EQ(node.TerminalCount(), 1);
+  node.Delete(u"def", 0);
+  CHECK_EQ(node.TerminalCount(), 0);
 }
