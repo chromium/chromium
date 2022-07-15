@@ -172,7 +172,8 @@ TEST_F(RgbKeyboardManagerTest, SetAnimationMode) {
 }
 
 TEST_F(RgbKeyboardManagerTest, SetCapsLockStateDisallowedForZonedKeyboards) {
-  InitializeManagerWithCapability(rgbkbd::RgbKeyboardCapabilities::kFiveZone);
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed);
   EXPECT_FALSE(client_->get_caps_lock_state());
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
   // Caps lock state should still be false since RgbKeyboardManager should have
