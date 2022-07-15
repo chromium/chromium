@@ -22,7 +22,8 @@
       }
     }
   });
-
+  const url = 'https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php';
+  await session.navigate(url);  // Sometimes the first request fails after a 30s timeout. Sending "warm up" request to avoid this.
   async function onFrameNavigated(event) {
     const frameId = event.params.frame.id;
     const {result} = await session.protocol.Network.getSecurityIsolationStatus({frameId});
@@ -39,7 +40,6 @@
   });
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
-  const url = 'https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php';
   await session.navigate(`${url}?coep&corp=same-site&coop`);
   await session.navigate(`${url}?coep=require-corp;report-to="endpoint-1"&corp=same-origin&coop=same-origin-allow-popups;report-to="endpoint-2"`);
   await session.navigate(`${url}?coep-rpt&corp=same-site&coop-rpt`);
