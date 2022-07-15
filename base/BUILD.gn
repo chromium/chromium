@@ -2759,7 +2759,7 @@ test("base_perftests") {
       "allocator/partition_allocator/partition_alloc_perftest.cc",
       "allocator/partition_allocator/partition_lock_perftest.cc",
     ]
-    deps += [ "allocator/partition_allocator:test_support" ]
+    deps += [ ":partition_alloc_test_support" ]
   }
 
   data_deps = [
@@ -3716,7 +3716,7 @@ test("base_unittests") {
     } else if (is_fuchsia) {
       sources += [ "allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
     }
-    deps += [ "allocator/partition_allocator:test_support" ]
+    deps += [ ":partition_alloc_test_support" ]
   }
 
   if (is_mac) {
@@ -4633,4 +4633,63 @@ fuzzer_test("pickle_fuzzer") {
     "//base",
     "//base/test:test_support",
   ]
+}
+
+# TODO(1151236): Temporarily move test_support from
+# //base/allocator/partition_allocator/BUILD.gn to //base/BUILD.gn. After
+# fixing partition_allocator tests issue, we will move test_support to
+# //base/allocator/partition_allocator/BUILD.gn again.
+source_set("partition_alloc_test_support") {
+  testonly = true
+
+  sources = [
+    "allocator/partition_allocator/extended_api.cc",
+    "allocator/partition_allocator/extended_api.h",
+    "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h",
+  ]
+  if (is_posix) {
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]
+  }
+  if (is_fuchsia) {
+    sources += [
+      "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
+      "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
+    ]
+  }
+  if (is_win) {
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
+  }
+  if (is_mac || is_ios) {
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+  }
+  if (is_linux || is_chromeos) {
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]
+  }
+  if (is_android) {
+    sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_android_for_testing.cc" ]
+  }
+  public_deps = [
+    "allocator/partition_allocator:buildflags",
+    "//build:branding_buildflags",
+    "//build/config/compiler:compiler_buildflags",
+  ]
+  public_configs = []
+  if (is_fuchsia) {
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fit",
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs += [ ":fuchsia_sync_lib" ]
+  }
+  deps = [ ":base" ]
+
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
+  }
 }
