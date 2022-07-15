@@ -48,9 +48,6 @@ class FakeServerSyncInvalidationSender
   void OnFCMRegistrationTokenChanged() override;
 
  private:
-  std::map<std::string, syncer::ModelTypeSet>
-  GetTokenToInterestedDataTypesMap();
-
   // Returns a corresponding FCM handler having the same
   // |fcm_registration_token| if exists. Otherwise, returns nullptr.
   syncer::FCMHandler* GetFCMHandlerByToken(
