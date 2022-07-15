@@ -28,7 +28,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'difficult';
   insertPhrase = '';
   assertEquals('This is a test', f().value);
-  assertEquals(9, f().index);
+  assertEquals(9, f().caretIndex);
 
   // Case-insensitive delete.
   value = 'This is a DIFFICULT test';
@@ -36,7 +36,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'difficult';
   insertPhrase = '';
   assertEquals('This is a test', f().value);
-  assertEquals(9, f().index);
+  assertEquals(9, f().caretIndex);
 
   // Delete when there are multiple instances of `deletePhrase`.
   value = 'The cow jumped over the moon';
@@ -44,7 +44,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'the';
   insertPhrase = '';
   assertEquals('The cow jumped over moon', f().value);
-  assertEquals(19, f().index);
+  assertEquals(19, f().caretIndex);
 
   // Delete only content to the left of the caret.
   // "The cow| jumped over the moon"
@@ -53,7 +53,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'the';
   insertPhrase = '';
   assertEquals('cow jumped over the moon', f().value);
-  assertEquals(0, f().index);
+  assertEquals(0, f().caretIndex);
 
   // Delete last word.
   value = 'The cow jumped over the moon.';
@@ -61,7 +61,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'moon';
   insertPhrase = '';
   assertEquals('The cow jumped over the.', f().value);
-  assertEquals(23, f().index);
+  assertEquals(23, f().caretIndex);
 
   // Delete only at word boundaries.
   value = 'A square is also a rectangle';
@@ -69,7 +69,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'a';
   insertPhrase = '';
   assertEquals('A square is also rectangle', f().value);
-  assertEquals(16, f().index);
+  assertEquals(16, f().caretIndex);
 
   // Nothing is deleted if we can't find `deletePhrase`.
   value = 'This is a test';
@@ -77,7 +77,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'coconut';
   insertPhrase = '';
   assertEquals('This is a test', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Nothing is deleted if the caret is at index 0.
   value = 'This is a test';
@@ -85,7 +85,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'test';
   insertPhrase = '';
   assertEquals('This is a test', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Nothing is deleted if the caret is in the middle of the matched phrase.
   // "A squ|are is also a rectangle".
@@ -94,7 +94,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'square';
   insertPhrase = '';
   assertEquals('A square is also a rectangle', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Nothing is deleted if `deletePhrase` includes punctuation.
   value = 'Hello world.';
@@ -102,7 +102,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'world.';
   insertPhrase = '';
   assertEquals('Hello world.', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Simple replacement.
   value = 'This is a difficult test';
@@ -110,7 +110,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'difficult';
   insertPhrase = 'simple';
   assertEquals('This is a simple test', f().value);
-  assertEquals(16, f().index);
+  assertEquals(16, f().caretIndex);
 
   // Replace multiple words.
   value = 'The cow jumped over the moon';
@@ -118,7 +118,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'jumped over the moon';
   insertPhrase = 'went to bed early';
   assertEquals('The cow went to bed early', f().value);
-  assertEquals(25, f().index);
+  assertEquals(25, f().caretIndex);
 
   // Edge case: value is empty.
   value = '';
@@ -126,7 +126,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'coconut';
   insertPhrase = '';
   assertEquals('', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Edge case: caretIndex is negative.
   value = 'This is a test';
@@ -134,7 +134,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'test';
   insertPhrase = '';
   assertEquals('This is a test', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 
   // Edge case: caretIndex is larger than `value.length`. We treat this as
   // if the text caret is at the end of value.
@@ -143,7 +143,7 @@ AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   deletePhrase = 'Hello';
   insertPhrase = '';
   assertEquals('', f().value);
-  assertEquals(0, f().index);
+  assertEquals(0, f().caretIndex);
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
@@ -160,7 +160,7 @@ AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   insertPhrase = 'simple';
   beforePhrase = 'test';
   assertEquals('This is a simple test.', f().value);
-  assertEquals(16, f().index);
+  assertEquals(16, f().caretIndex);
 
   // Insert and match multiple words.
   value = 'This is a test';
@@ -168,7 +168,7 @@ AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   insertPhrase = 'This is a drill';
   beforePhrase = 'This is a test';
   assertEquals('This is a drill This is a test', f().value);
-  assertEquals(insertPhrase.length, f().index);
+  assertEquals(insertPhrase.length, f().caretIndex);
 
   // Nothing is inserted if `beforePhrase` isn't present.
   value = 'This is a test';
@@ -176,7 +176,7 @@ AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   insertPhrase = 'pineapple';
   beforePhrase = 'coconut';
   assertEquals('This is a test', f().value);
-  assertEquals(caretIndex, f().index);
+  assertEquals(caretIndex, f().caretIndex);
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {

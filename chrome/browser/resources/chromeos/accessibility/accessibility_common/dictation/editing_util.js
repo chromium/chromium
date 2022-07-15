@@ -19,7 +19,7 @@ export class EditingUtil {
    * @param {string} insertPhrase The phrase to be inserted.
    * @return {!{
    *  value: string,
-   *  index: number
+   *  caretIndex: number
    * }}
    */
   static replacePhrase(value, caretIndex, deletePhrase, insertPhrase) {
@@ -56,7 +56,7 @@ export class EditingUtil {
 
     return {
       value: newLeft + rightOfCaret,
-      index: newIndex,
+      caretIndex: newIndex,
     };
   }
 
@@ -73,7 +73,7 @@ export class EditingUtil {
    * @param {string} beforePhrase
    * @return {!{
    *  value: string,
-   *  index: number
+   *  caretIndex: number
    * }}
    */
   static insertBefore(value, caretIndex, insertPhrase, beforePhrase) {
@@ -92,7 +92,7 @@ export class EditingUtil {
 
     return {
       value: newLeft + rightOfCaret,
-      index: newIndex,
+      caretIndex: newIndex,
     };
   }
 
@@ -158,7 +158,7 @@ export class EditingUtil {
    * previous sentence can be found, returns 0.
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
-   * @return {number|null}
+   * @return {number}
    */
   static navPrevSent(value, caretIndex) {
     let encounteredText = false;
@@ -194,7 +194,7 @@ export class EditingUtil {
    * to maintain proper spacing between text.
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
-   * @param {string} text
+   * @param {string} commitText
    * @return {string}
    */
   static smartSpacing(value, caretIndex, commitText) {
@@ -238,7 +238,7 @@ export class EditingUtil {
    * return value: 'Goodnight world'
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
-   * @param {string} text
+   * @param {string} commitText
    * @return {string}
    */
   static smartCapitalization(value, caretIndex, commitText) {

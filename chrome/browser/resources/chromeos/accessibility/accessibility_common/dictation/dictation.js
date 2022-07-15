@@ -212,7 +212,7 @@ export class Dictation {
   /**
    * Sets the timeout to stop Dictation.
    * @param {number} durationMs
-   * @param {string?} debugInfo Optional debugging information for why Dictation
+   * @param {string=} debugInfo Optional debugging information for why Dictation
    *     stopped automatically.
    * @private
    */
@@ -487,7 +487,7 @@ export class Dictation {
   }
 
   /**
-   * @param {!MacroName} Name The macro to run.
+   * @param {!MacroName} name The macro to run.
    * @param {string} arg
    */
   runHiddenMacroWithStringArgForTesting(name, arg) {

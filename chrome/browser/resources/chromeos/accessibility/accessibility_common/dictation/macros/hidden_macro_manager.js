@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {InputController} from '../input_controller.js';
+
 import {DeletePrevSentMacro} from './delete_prev_sent_macro.js';
 import {MacroName} from './macro_names.js';
 import {NavNextSentMacro, NavPrevSentMacro} from './nav_sent_macro.js';

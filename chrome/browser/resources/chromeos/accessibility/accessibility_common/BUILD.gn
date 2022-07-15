@@ -165,7 +165,6 @@ js2gtest("accessibility_common_extjs_tests") {
 
 js_type_check("closure_compile") {
   deps = [ ":accessibility_common" ]
-  closure_flags = [ "js_module_root=../" ]
 }
 
 js_library("accessibility_common") {
@@ -228,7 +227,10 @@ js_library("dictation") {
 
 js_library("dictation_input_controller") {
   sources = [ "dictation/input_controller.js" ]
-  deps = [ ":dictation_editing_util" ]
+  deps = [
+    ":dictation_editing_util",
+    ":dictation_focus_handler",
+  ]
   externs_list = [
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",

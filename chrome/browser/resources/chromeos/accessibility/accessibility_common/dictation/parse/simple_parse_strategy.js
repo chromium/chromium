@@ -27,7 +27,7 @@ import {ParseStrategy} from './parse_strategy.js';
 /**
  * @typedef {{
  *   messageId: string,
- *   build: function(*): !Macro,
+ *   build: !Function,
  * }}
  */
 let MacroData;
@@ -123,8 +123,7 @@ class SimpleMacroFactory {
     const result = this.commandRegex_.exec(text);
     // `result[0]` contains the entire matched text, while all subsequent
     // indices contain text matched by each /(.*)/. We're only interested in
-    // text matched by
-    // /(.*)/, so ignore `result[0]`.
+    // text matched by /(.*)/, so ignore `result[0]`.
     const extractedArgs = result.slice(1);
     const finalArgs = initialArgs.concat(extractedArgs);
     const data = SimpleMacroFactory.getData_();
