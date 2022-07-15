@@ -227653,6 +227653,19 @@
        {}
       ]
      ],
+     "prefers-color-scheme-svg-image.html": [
+      "ce7babe6318f4456709dae0925064c6b8e55296d",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/prefers-color-scheme-svg-image-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "relative-units-001.html": [
       "4e526fbf2ef7e4c3eca48862cd692bff99acd88d",
       [
@@ -297191,6 +297204,10 @@
       "f277097263e7acf6f2e7b40fa810231c61b00e63",
       []
      ],
+     "prefers-color-scheme-svg-image-ref.html": [
+      "7da496cf8831819c0e75d73f07004e8d96e5b65a",
+      []
+     ],
      "reference": {
       "ref-green-body.xht": [
        "f79255de9cb1af511c23247de02918844a9afcc4",
@@ -297200,6 +297217,18 @@
      "resources": {
       "matchmedia-utils.js": [
        "49ce0bb42a30eda2d1debcacaaaa9342588a83c3",
+       []
+      ],
+      "prefers-color-scheme-dark.svg": [
+       "f65fce76ecbd949bd53e64e17ab2c41ded828857",
+       []
+      ],
+      "prefers-color-scheme-light.svg": [
+       "23ac2ad949605ee03bcb92265ffafae1803c357f",
+       []
+      ],
+      "prefers-color-scheme.svg": [
+       "5523ff39fa4983e4cf42d0c6f4cb1ac8cef3fe9d",
        []
       ]
      },
@@ -306924,6 +306953,10 @@
           []
          ]
         },
+        "serialize-worker.js": [
+         "a76537cc9e225cb220d07fe5b88477b17a38d763",
+         []
+        ],
         "transfer-worker.js": [
          "55465a899ca27d5202dfa796ec5200bde845892b",
          []
@@ -366526,7 +366559,7 @@
       ]
      ],
      "iframe-srcdoc-history-inheritance.html": [
-      "91592252e2efc64614d8a1b90290d3ec07a6e49a",
+      "52d460dc92cd0f9fd58cd727449706d0962a9930",
       [
        null,
        {}
@@ -375247,6 +375280,13 @@
       ],
       "conditional-CSSGroupingRule.html": [
        "bde92d7091bd0ace1320acb5d0d8f56c33def22e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "supports-conditionText.html": [
+       "ea74077dfd0070edd9e8ae4f2ab092bf369ce268",
        [
         null,
         {}
@@ -385426,7 +385466,16 @@
         "timeout": "long"
        }
       ]
-     ]
+     ],
+     "parsing": {
+      "paint-function-valid.https.html": [
+       "187bd9e94c5a69f32a84cdd0f6d759f34e313a3c",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "css-parser-api": {
      "idlharness.html": [
@@ -446311,6 +446360,13 @@
         ],
         "createImageBitmap-transfer.html": [
          "3ec02fcbf486f2f43c4c090b65ece7ad1d55f218",
+         [
+          null,
+          {}
+         ]
+        ],
+        "imagebitmap-replication-exif-orientation.html": [
+         "b04a76121effe42a2166eed421d17102913d816d",
          [
           null,
           {}
@@ -526206,6 +526262,15 @@
        }
       ]
      ],
+     "focus-click-on-shadow-host.html": [
+      "7a318a0200e7405b4793f2705434bef948aea61f",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-method-delegatesFocus-nested-browsing-context.html": [
       "d2724f17d52b93912544cda8a44aae7017918ac9",
       [
@@ -526239,7 +526304,7 @@
       ]
      ],
      "focus-tab-on-shadow-host.html": [
-      "354ed0ed941d96219dc54e3d16c276662723ac64",
+      "0dffc0157f53d7178ebb0ff04b3b09977642b280",
       [
        null,
        {
@@ -535228,6 +535293,13 @@
      "scripted": {
       "disabled-shapes-not-hit.svg": [
        "21ea9078785e865d36f03a3830b6b90f63f3d10a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shapes-clip-path.svg": [
+       "a8277226a5ba542ce408d64a50e319b7d44a7dcd",
        [
         null,
         {}
