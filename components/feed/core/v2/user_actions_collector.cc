@@ -43,8 +43,7 @@ base::Time PrefValueToTime(int64_t value) {
 // TODO: Hook up to browser clearing data delegate so we clear the pref when
 // user clears data from Chrome settings.
 UserActionsCollector::UserActionsCollector(PrefService* profile_prefs)
-    : visit_metadata_string_list_pref_(base::Value::Type::LIST),
-      profile_prefs_(profile_prefs) {
+    : profile_prefs_(profile_prefs) {
   if (!base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers))
     return;
   InitStoreFromPrefs();
@@ -63,8 +62,8 @@ void UserActionsCollector::UpdateUserProfileOnLinkClick(
 
   visit_metadata_string_list_pref_.Append(EntryToString(url, entity_mids));
 
-  profile_prefs_->Set(prefs::kFeedOnDeviceUserActionsCollector,
-                      visit_metadata_string_list_pref_);
+  profile_prefs_->SetList(prefs::kFeedOnDeviceUserActionsCollector,
+                          visit_metadata_string_list_pref_.Clone());
   profile_prefs_->SchedulePendingLossyWrites();
   UMA_HISTOGRAM_COUNTS(
       "ContentSuggestions.Feed.UnsignedUserPersonalization.LinkClicked", 1);
@@ -112,8 +111,8 @@ void UserActionsCollector::InitStoreFromPrefs() {
       count_values_during_store_initialization);
 
   if (rewrite_prefs) {
-    profile_prefs_->Set(prefs::kFeedOnDeviceUserActionsCollector,
-                        visit_metadata_string_list_pref_);
+    profile_prefs_->SetList(prefs::kFeedOnDeviceUserActionsCollector,
+                            visit_metadata_string_list_pref_.Clone());
     profile_prefs_->SchedulePendingLossyWrites();
   }
 }

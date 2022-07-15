@@ -70,8 +70,10 @@ struct PersistentMetricsData {
   base::TimeDelta accumulated_time_spent_in_feed;
 };
 
-base::Value PersistentMetricsDataToValue(const PersistentMetricsData& data);
-PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value);
+base::Value::Dict PersistentMetricsDataToDict(
+    const PersistentMetricsData& data);
+PersistentMetricsData PersistentMetricsDataFromDict(
+    const base::Value::Dict& dict);
 
 class LoadLatencyTimes {
  public:

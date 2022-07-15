@@ -10,7 +10,7 @@
 namespace feed {
 namespace {
 
-std::string ToJSON(const base::Value& value) {
+std::string ToJSON(base::ValueView value) {
   std::string json;
   CHECK(base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
@@ -26,19 +26,19 @@ TEST(PersistentMetricsData, SerializesAndDeserializes) {
   data.accumulated_time_spent_in_feed = base::Hours(2);
   data.current_day_start = base::Time::UnixEpoch();
 
-  const base::Value serialized_value = PersistentMetricsDataToValue(data);
-  const PersistentMetricsData deserialized_value =
-      PersistentMetricsDataFromValue(serialized_value);
+  const base::Value::Dict serialized_dict = PersistentMetricsDataToDict(data);
+  const PersistentMetricsData deserialized_dict =
+      PersistentMetricsDataFromDict(serialized_dict);
 
   EXPECT_EQ(R"({
    "day_start": "11644473600000000",
    "time_spent_in_feed": "7200000000"
 }
 )",
-            ToJSON(serialized_value));
+            ToJSON(serialized_dict));
   EXPECT_EQ(data.accumulated_time_spent_in_feed,
-            deserialized_value.accumulated_time_spent_in_feed);
-  EXPECT_EQ(data.current_day_start, deserialized_value.current_day_start);
+            deserialized_dict.accumulated_time_spent_in_feed);
+  EXPECT_EQ(data.current_day_start, deserialized_dict.current_day_start);
 }
 
 TEST(Types, ToContentRevision) {

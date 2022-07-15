@@ -15,19 +15,17 @@
 namespace feed {
 namespace {
 
-base::Value VectorToValue(const std::vector<base::TimeDelta>& values) {
-  base::Value result(base::Value::Type::LIST);
+base::Value::List VectorToList(const std::vector<base::TimeDelta>& values) {
+  base::Value::List result;
   for (base::TimeDelta delta : values) {
     result.Append(base::TimeDeltaToValue(delta));
   }
   return result;
 }
 
-bool ValueToVector(const base::Value& value,
-                   std::vector<base::TimeDelta>* result) {
-  if (!value.is_list())
-    return false;
-  for (const base::Value& entry : value.GetListDeprecated()) {
+bool ListToVector(const base::Value::List& value,
+                  std::vector<base::TimeDelta>* result) {
+  for (const base::Value& entry : value) {
     absl::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
     if (!delta)
       return false;
@@ -65,25 +63,21 @@ RequestSchedule& RequestSchedule::operator=(const RequestSchedule&) = default;
 RequestSchedule::RequestSchedule(RequestSchedule&&) = default;
 RequestSchedule& RequestSchedule::operator=(RequestSchedule&&) = default;
 
-base::Value RequestScheduleToValue(const RequestSchedule& schedule) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("anchor", base::TimeToValue(schedule.anchor_time));
-  result.SetKey("offsets", VectorToValue(schedule.refresh_offsets));
-  result.SetKey("type", base::Value(base::to_underlying(schedule.type)));
+base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule) {
+  base::Value::Dict result;
+  result.Set("anchor", base::TimeToValue(schedule.anchor_time));
+  result.Set("offsets", VectorToList(schedule.refresh_offsets));
+  result.Set("type", base::to_underlying(schedule.type));
   return result;
 }
 
-RequestSchedule RequestScheduleFromValue(const base::Value& value) {
-  if (!value.is_dict())
-    return {};
+RequestSchedule RequestScheduleFromDict(const base::Value::Dict& value) {
   RequestSchedule result;
-  absl::optional<base::Time> anchor =
-      base::ValueToTime(value.FindKey("anchor"));
-  const base::Value* offsets =
-      value.FindKeyOfType("offsets", base::Value::Type::LIST);
-  result.type = GetScheduleType(value.FindKey("type"));
+  absl::optional<base::Time> anchor = base::ValueToTime(value.Find("anchor"));
+  const base::Value::List* offsets = value.FindList("offsets");
+  result.type = GetScheduleType(value.Find("type"));
 
-  if (!anchor || !offsets || !ValueToVector(*offsets, &result.refresh_offsets))
+  if (!anchor || !offsets || !ListToVector(*offsets, &result.refresh_offsets))
     return {};
   result.anchor_time = *anchor;
   return result;

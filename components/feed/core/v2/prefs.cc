@@ -31,8 +31,7 @@ const char* RequestSchedulePrefName(RefreshTaskId task_id) {
 std::vector<int> GetThrottlerRequestCounts(PrefService& pref_service) {
   std::vector<int> result;
   const auto& value_list =
-      pref_service.GetList(kThrottlerRequestCountListPrefName)
-          ->GetListDeprecated();
+      pref_service.GetValueList(kThrottlerRequestCountListPrefName);
   for (const base::Value& value : value_list) {
     result.push_back(value.is_int() ? value.GetInt() : 0);
   }
@@ -41,13 +40,13 @@ std::vector<int> GetThrottlerRequestCounts(PrefService& pref_service) {
 
 void SetThrottlerRequestCounts(std::vector<int> request_counts,
                                PrefService& pref_service) {
-  std::vector<base::Value> value_list;
+  base::Value::List value_list;
   for (int count : request_counts) {
-    value_list.push_back(base::Value(count));
+    value_list.Append(count);
   }
 
-  pref_service.Set(kThrottlerRequestCountListPrefName,
-                   base::Value(std::move(value_list)));
+  pref_service.SetList(kThrottlerRequestCountListPrefName,
+                       std::move(value_list));
 }
 
 base::Time GetLastRequestTime(PrefService& pref_service) {
@@ -71,23 +70,23 @@ void SetDebugStreamData(const DebugStreamData& data,
 void SetRequestSchedule(RefreshTaskId task_id,
                         const RequestSchedule& schedule,
                         PrefService& pref_service) {
-  pref_service.Set(RequestSchedulePrefName(task_id),
-                   RequestScheduleToValue(schedule));
+  pref_service.SetDict(RequestSchedulePrefName(task_id),
+                       RequestScheduleToDict(schedule));
 }
 
 RequestSchedule GetRequestSchedule(RefreshTaskId task_id,
                                    PrefService& pref_service) {
-  return RequestScheduleFromValue(
-      *pref_service.Get(RequestSchedulePrefName(task_id)));
+  return RequestScheduleFromDict(
+      pref_service.GetValueDict(RequestSchedulePrefName(task_id)));
 }
 
 void SetPersistentMetricsData(const PersistentMetricsData& data,
                               PrefService& pref_service) {
-  pref_service.Set(kMetricsData, PersistentMetricsDataToValue(data));
+  pref_service.SetDict(kMetricsData, PersistentMetricsDataToDict(data));
 }
 
 PersistentMetricsData GetPersistentMetricsData(PrefService& pref_service) {
-  return PersistentMetricsDataFromValue(*pref_service.Get(kMetricsData));
+  return PersistentMetricsDataFromDict(pref_service.GetValueDict(kMetricsData));
 }
 
 std::string GetClientInstanceId(PrefService& pref_service) {
@@ -104,19 +103,17 @@ void ClearClientInstanceId(PrefService& pref_service) {
 }
 
 void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   for (const auto& exp : experiments) {
-    value.SetStringKey(exp.first, exp.second);
+    dict.Set(exp.first, exp.second);
   }
-  pref_service.Set(kExperiments, value);
+  pref_service.SetDict(kExperiments, std::move(dict));
 }
 
 Experiments GetExperiments(PrefService& pref_service) {
-  auto* value = pref_service.Get(kExperiments);
+  const auto& value = pref_service.GetValueDict(kExperiments);
   Experiments experiments;
-  if (!value->is_dict())
-    return experiments;
-  for (auto kv : value->DictItems()) {
+  for (auto kv : value) {
     experiments[kv.first] = kv.second.GetString();
   }
   return experiments;
@@ -124,8 +121,8 @@ Experiments GetExperiments(PrefService& pref_service) {
 
 void SetWebFeedContentOrder(PrefService& pref_service,
                             ContentOrder content_order) {
-  pref_service.Set(feed::prefs::kWebFeedContentOrder,
-                   base::Value(static_cast<int>(content_order)));
+  pref_service.SetInteger(feed::prefs::kWebFeedContentOrder,
+                          static_cast<int>(content_order));
 }
 
 ContentOrder GetWebFeedContentOrder(const PrefService& pref_service) {

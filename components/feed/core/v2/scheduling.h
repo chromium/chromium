@@ -8,12 +8,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
 
-namespace base {
-class Value;
-}
 namespace feedstore {
 class Metadata;
 }
@@ -41,8 +39,8 @@ struct RequestSchedule {
   Type type = Type::kScheduledRefresh;
 };
 
-base::Value RequestScheduleToValue(const RequestSchedule&);
-RequestSchedule RequestScheduleFromValue(const base::Value&);
+base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule);
+RequestSchedule RequestScheduleFromDict(const base::Value::Dict& dict);
 // Given a schedule, returns the next time a request should be made.
 // Updates |schedule| accordingly. If |schedule| has no fetches remaining,
 // returns a scheduled time using |Config::default_background_refresh_interval|.

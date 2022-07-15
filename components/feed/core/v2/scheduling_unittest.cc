@@ -20,7 +20,7 @@ namespace {
 const base::Time kAnchorTime = base::Time::UnixEpoch() + base::Hours(6);
 const base::TimeDelta kDefaultScheduleInterval = base::Hours(24);
 
-std::string ToJSON(const base::Value& value) {
+std::string ToJSON(base::ValueView value) {
   std::string json;
   CHECK(base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
@@ -35,17 +35,17 @@ TEST(RequestSchedule, CanSerialize) {
   schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
   schedule.type = RequestSchedule::Type::kScheduledRefresh;
 
-  const base::Value schedule_value = RequestScheduleToValue(schedule);
+  const base::Value::Dict schedule_dict = RequestScheduleToDict(schedule);
   ASSERT_EQ(R"({
    "anchor": "11644495200000000",
    "offsets": [ "3600000000", "21600000000" ],
    "type": 0
 }
 )",
-            ToJSON(schedule_value));
+            ToJSON(schedule_dict));
 
   RequestSchedule deserialized_schedule =
-      RequestScheduleFromValue(schedule_value);
+      RequestScheduleFromDict(schedule_dict);
   EXPECT_EQ(schedule.anchor_time, deserialized_schedule.anchor_time);
   EXPECT_EQ(schedule.refresh_offsets, deserialized_schedule.refresh_offsets);
   EXPECT_EQ(schedule.type, deserialized_schedule.type);
@@ -57,15 +57,15 @@ TEST(RequestSchedule, GetScheduleType) {
   schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
   schedule.type = RequestSchedule::Type::kScheduledRefresh;
   EXPECT_EQ(RequestSchedule::Type::kScheduledRefresh,
-            RequestScheduleFromValue(RequestScheduleToValue(schedule)).type);
+            RequestScheduleFromDict(RequestScheduleToDict(schedule)).type);
   schedule.type = RequestSchedule::Type::kFeedCloseRefresh;
-  base::Value schedule_value = RequestScheduleToValue(schedule);
+  base::Value::Dict schedule_dict = RequestScheduleToDict(schedule);
   EXPECT_EQ(RequestSchedule::Type::kFeedCloseRefresh,
-            RequestScheduleFromValue(schedule_value).type);
+            RequestScheduleFromDict(schedule_dict).type);
   // Default to kScheduledRefresh if the type isn't valid.
-  schedule_value.GetDict().Set("type", -1);
+  schedule_dict.Set("type", -1);
   EXPECT_EQ(RequestSchedule::Type::kScheduledRefresh,
-            RequestScheduleFromValue(schedule_value).type);
+            RequestScheduleFromDict(schedule_dict).type);
 }
 
 class NextScheduledRequestTimeTest : public testing::Test {

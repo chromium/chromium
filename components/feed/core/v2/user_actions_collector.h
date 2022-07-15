@@ -25,7 +25,7 @@ class UserActionsCollector {
   void UpdateUserProfileOnLinkClick(const GURL& url,
                                     const std::vector<int64_t>& entity_mids);
 
-  const base::Value& visit_metadata_string_list_pref_for_testing() const {
+  const base::Value::List& visit_metadata_string_list_pref_for_testing() const {
     return visit_metadata_string_list_pref_;
   }
 
@@ -43,7 +43,7 @@ class UserActionsCollector {
       const std::string& visit_metadata_serialized) const;
 
   // Current prefs on the disk. The list is sorted by increasing timestamp.
-  base::Value visit_metadata_string_list_pref_;
+  base::Value::List visit_metadata_string_list_pref_;
 
   raw_ptr<PrefService> profile_prefs_ = nullptr;
 };

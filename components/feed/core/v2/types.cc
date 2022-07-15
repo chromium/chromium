@@ -155,25 +155,25 @@ DebugStreamData::~DebugStreamData() = default;
 DebugStreamData::DebugStreamData(const DebugStreamData&) = default;
 DebugStreamData& DebugStreamData::operator=(const DebugStreamData&) = default;
 
-base::Value PersistentMetricsDataToValue(const PersistentMetricsData& data) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("day_start", base::TimeToValue(data.current_day_start));
-  dict.SetKey("time_spent_in_feed",
-              base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
+base::Value::Dict PersistentMetricsDataToDict(
+    const PersistentMetricsData& data) {
+  base::Value::Dict dict;
+  dict.Set("day_start", base::TimeToValue(data.current_day_start));
+  dict.Set("time_spent_in_feed",
+           base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
   return dict;
 }
 
-PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value) {
+PersistentMetricsData PersistentMetricsDataFromDict(
+    const base::Value::Dict& dict) {
   PersistentMetricsData result;
-  if (!value.is_dict())
-    return result;
   absl::optional<base::Time> day_start =
-      base::ValueToTime(value.FindKey("day_start"));
+      base::ValueToTime(dict.Find("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
   absl::optional<base::TimeDelta> time_spent_in_feed =
-      base::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
+      base::ValueToTimeDelta(dict.Find("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;
   }

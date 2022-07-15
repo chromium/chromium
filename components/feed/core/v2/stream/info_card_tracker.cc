@@ -160,14 +160,11 @@ void InfoCardTracker::SetState(int info_card_type,
   std::string base64_state;
   base::Base64Encode(serialized_state, &base64_state);
 
-  base::Value updated_states(base::Value::Type::DICTIONARY);
-  const base::Value& states = profile_prefs_->GetValue(prefs::kInfoCardStates);
-  if (states.is_dict()) {
-    updated_states = states.Clone();
-  }
-  updated_states.SetStringKey(InfoCardTypeToString(info_card_type),
-                              base64_state);
-  profile_prefs_->Set(prefs::kInfoCardStates, updated_states);
+  const base::Value::Dict& states =
+      profile_prefs_->GetValueDict(prefs::kInfoCardStates);
+  base::Value::Dict updated_states = states.Clone();
+  updated_states.Set(InfoCardTypeToString(info_card_type), base64_state);
+  profile_prefs_->SetDict(prefs::kInfoCardStates, std::move(updated_states));
 }
 
 }  // namespace feed
