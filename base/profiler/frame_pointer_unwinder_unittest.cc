@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/native_unwinder_apple.h"
+#include "base/profiler/frame_pointer_unwinder.h"
 
-#include "base/mac/mac_util.h"
+#include <memory>
+
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/unwinder.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include <memory>
+#if BUILDFLAG(IS_APPLE)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace base {
 
@@ -57,11 +60,15 @@ struct InputStack {
 
 }  // namespace
 
-class NativeUnwinderAppleTest : public testing::Test {
+class FramePointerUnwinderTest : public testing::Test {
  protected:
-  NativeUnwinderAppleTest() {
+  FramePointerUnwinderTest() {
+#if BUILDFLAG(IS_APPLE)
     if (__builtin_available(iOS 12, *)) {
-      unwinder_ = std::make_unique<NativeUnwinderApple>();
+#else
+    {
+#endif
+      unwinder_ = std::make_unique<FramePointerUnwinder>();
 
       auto test_module =
           std::make_unique<TestModule>(kModuleStart, kModuleSize);
@@ -90,7 +97,7 @@ class NativeUnwinderAppleTest : public testing::Test {
   raw_ptr<ModuleCache::Module> non_native_module_;
 };
 
-TEST_F(NativeUnwinderAppleTest, FPPointsOutsideOfStack) {
+TEST_F(FramePointerUnwinderTest, FPPointsOutsideOfStack) {
   InputStack input({
       {false, 0x1000},
       {false, 0x1000},
@@ -121,7 +128,7 @@ TEST_F(NativeUnwinderAppleTest, FPPointsOutsideOfStack) {
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 }
 
-TEST_F(NativeUnwinderAppleTest, FPPointsToSelf) {
+TEST_F(FramePointerUnwinderTest, FPPointsToSelf) {
   InputStack input({
       {true, 0},
       {false, kModuleStart + 0x10},
@@ -148,7 +155,7 @@ TEST_F(NativeUnwinderAppleTest, FPPointsToSelf) {
 
 // Tests that two frame pointers that point to each other can't create an
 // infinite loop
-TEST_F(NativeUnwinderAppleTest, FPCycle) {
+TEST_F(FramePointerUnwinderTest, FPCycle) {
   InputStack input({
       {true, 2},
       {false, kModuleStart + 0x10},
@@ -176,7 +183,7 @@ TEST_F(NativeUnwinderAppleTest, FPCycle) {
             stack);
 }
 
-TEST_F(NativeUnwinderAppleTest, NoModuleForIP) {
+TEST_F(FramePointerUnwinderTest, NoModuleForIP) {
   uintptr_t not_in_module = kModuleStart - 0x10;
   InputStack input({
       {true, 2},
@@ -203,7 +210,7 @@ TEST_F(NativeUnwinderAppleTest, NoModuleForIP) {
 
 // Tests that testing that checking if there's space to read two values from the
 // stack doesn't overflow.
-TEST_F(NativeUnwinderAppleTest, FPAdditionOverflows) {
+TEST_F(FramePointerUnwinderTest, FPAdditionOverflows) {
   uintptr_t will_overflow = std::numeric_limits<uintptr_t>::max() - 1;
   InputStack input({
       {true, 2},
@@ -228,7 +235,7 @@ TEST_F(NativeUnwinderAppleTest, FPAdditionOverflows) {
 }
 
 // Tests the happy path: a successful unwind with no non-native modules.
-TEST_F(NativeUnwinderAppleTest, RegularUnwind) {
+TEST_F(FramePointerUnwinderTest, RegularUnwind) {
   InputStack input({
       {true, 4},                     // fp of frame 1
       {false, kModuleStart + 0x20},  // ip of frame 1
@@ -261,7 +268,7 @@ TEST_F(NativeUnwinderAppleTest, RegularUnwind) {
 
 // Tests that if a V8 frame is encountered, unwinding stops and
 // kUnrecognizedFrame is returned to facilitate continuing with the V8 unwinder.
-TEST_F(NativeUnwinderAppleTest, NonNativeFrame) {
+TEST_F(FramePointerUnwinderTest, NonNativeFrame) {
   InputStack input({
       {true, 4},                     // fp of frame 1
       {false, kModuleStart + 0x20},  // ip of frame 1
@@ -298,7 +305,7 @@ TEST_F(NativeUnwinderAppleTest, NonNativeFrame) {
 
 // Tests that a V8 frame with an unaligned frame pointer correctly returns
 // kUnrecognizedFrame and not kAborted.
-TEST_F(NativeUnwinderAppleTest, NonNativeUnaligned) {
+TEST_F(FramePointerUnwinderTest, NonNativeUnaligned) {
   InputStack input({
       {true, 4},                     // fp of frame 1
       {false, kModuleStart + 0x20},  // ip of frame 1

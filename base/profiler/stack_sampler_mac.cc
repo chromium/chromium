@@ -4,9 +4,11 @@
 
 #include "base/profiler/stack_sampler.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/profiler/native_unwinder.h"
+#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"
@@ -16,10 +18,9 @@ namespace base {
 
 namespace {
 
-std::vector<std::unique_ptr<Unwinder>> CreateUnwinders(
-    ModuleCache* module_cache) {
+std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
   std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(CreateNativeUnwinder(module_cache));
+  unwinders.push_back(std::make_unique<FramePointerUnwinder>());
   return unwinders;
 }
 
@@ -36,7 +37,7 @@ std::unique_ptr<StackSampler> StackSampler::Create(
   return std::make_unique<StackSamplerImpl>(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateMac>(thread_token)),
-      BindOnce(&CreateUnwinders, Unretained(module_cache)), module_cache,
+      BindOnce(&CreateUnwinders), module_cache,
       std::move(record_sample_callback), test_delegate);
 }
 

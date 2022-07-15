@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/profiler/module_cache.h"
-#include "base/profiler/native_unwinder.h"
 #include "base/profiler/profile_builder.h"
 #include "build/build_config.h"
 
