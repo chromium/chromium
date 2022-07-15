@@ -56,22 +56,21 @@ jlong JNI_WebApkUpdateDataFetcher_Initialize(
   GURL scope(base::android::ConvertJavaStringToUTF8(env, java_scope_url));
   GURL web_manifest_url(
       base::android::ConvertJavaStringToUTF8(env, java_web_manifest_url));
-  std::string web_manifest_id;
+  GURL web_manifest_id;
   if (!java_web_manifest_id.is_null()) {
     web_manifest_id =
-        base::android::ConvertJavaStringToUTF8(env, java_web_manifest_id);
+        GURL(base::android::ConvertJavaStringToUTF8(env, java_web_manifest_id));
   }
   WebApkUpdateDataFetcher* fetcher = new WebApkUpdateDataFetcher(
       env, obj, scope, web_manifest_url, web_manifest_id);
   return reinterpret_cast<intptr_t>(fetcher);
 }
 
-WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(
-    JNIEnv* env,
-    jobject obj,
-    const GURL& scope,
-    const GURL& web_manifest_url,
-    const std::string& web_manifest_id)
+WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
+                                                 jobject obj,
+                                                 const GURL& scope,
+                                                 const GURL& web_manifest_url,
+                                                 const GURL& web_manifest_id)
     : content::WebContentsObserver(nullptr),
       scope_(scope),
       web_manifest_url_(web_manifest_url),
@@ -170,7 +169,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // continue observing as the id is the identity for the application. We
   // will treat the manifest with different id as the one of another WebAPK.
   if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
-      !web_manifest_id_.empty() &&
+      !web_manifest_id_.is_empty() &&
       web_manifest_id_ != webapps::ShortcutInfo::GetManifestId(data.manifest)) {
     return;
   }
@@ -226,7 +225,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   ScopedJavaLocalRef<jstring> java_short_name =
       base::android::ConvertUTF16ToJavaString(env, info_.short_name);
   ScopedJavaLocalRef<jstring> java_manifest_id =
-      base::android::ConvertUTF8ToJavaString(env, info_.manifest_id);
+      base::android::ConvertUTF8ToJavaString(env, info_.manifest_id.spec());
   ScopedJavaLocalRef<jstring> java_primary_icon_url =
       base::android::ConvertUTF8ToJavaString(
           env, info_.best_primary_icon_url.spec());

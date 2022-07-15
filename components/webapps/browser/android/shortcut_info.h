@@ -137,7 +137,7 @@ struct ShortcutInfo {
   std::set<GURL> GetWebApkIcons();
 
   // Generate the formatted id field from web manifest.
-  static std::string GetManifestId(const blink::mojom::Manifest& manifest);
+  static GURL GetManifestId(const blink::mojom::Manifest& manifest);
 
   GURL manifest_url;
   GURL url;
@@ -163,7 +163,7 @@ struct ShortcutInfo {
   absl::optional<ShareTarget> share_target;
 
   // Id specified in the manifest.
-  std::string manifest_id;
+  GURL manifest_id;
 
   // Both shortcut item related vectors have the same size.
   std::vector<blink::Manifest::ShortcutItem> shortcut_items;

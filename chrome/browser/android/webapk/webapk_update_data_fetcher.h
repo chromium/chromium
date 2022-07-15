@@ -33,7 +33,7 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
                           jobject obj,
                           const GURL& scope,
                           const GURL& web_manifest_url,
-                          const std::string& web_manifest_id);
+                          const GURL& web_manifest_id);
 
   WebApkUpdateDataFetcher(const WebApkUpdateDataFetcher&) = delete;
   WebApkUpdateDataFetcher& operator=(const WebApkUpdateDataFetcher&) = delete;
@@ -84,7 +84,7 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   const GURL web_manifest_url_;
 
   // The WebAPK's Web Manifest ID that the detector is looking for.
-  const std::string web_manifest_id_;
+  const GURL web_manifest_id_;
 
   // The URL for which the installable data is being fetched / was last fetched.
   GURL last_fetched_url_;

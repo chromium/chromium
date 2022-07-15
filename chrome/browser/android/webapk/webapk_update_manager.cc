@@ -116,8 +116,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       GURL(ConvertJavaStringToUTF8(env, java_splash_icon_url));
   info.is_splash_image_maskable = java_is_splash_icon_maskable;
   info.manifest_url = GURL(ConvertJavaStringToUTF8(env, java_web_manifest_url));
-  info.manifest_id = ConvertJavaStringToUTF8(env, java_manifest_id);
-  std::string app_key = ConvertJavaStringToUTF8(env, java_app_key);
+  info.manifest_id = GURL(ConvertJavaStringToUTF8(env, java_manifest_id));
+  GURL app_key(ConvertJavaStringToUTF8(env, java_app_key));
 
   GURL share_target_action =
       GURL(ConvertJavaStringToUTF8(env, java_share_target_action));

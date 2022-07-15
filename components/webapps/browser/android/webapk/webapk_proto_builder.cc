@@ -94,7 +94,7 @@ std::string getCurrentAbi() {
 
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
-    const std::string& app_key,
+    const GURL& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -133,8 +133,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       ui::OptionalSkColorToString(shortcut_info.theme_color));
 
   if (base::FeatureList::IsEnabled(features::kWebApkUniqueId)) {
-    web_app_manifest->set_id(shortcut_info.manifest_id);
-    webapk->set_app_key(app_key);
+    web_app_manifest->set_id(shortcut_info.manifest_id.spec());
+    webapk->set_app_key(app_key.spec());
   }
 
   std::string* scope = web_app_manifest->add_scopes();
@@ -277,7 +277,7 @@ scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
 
 void BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
-    const std::string& app_key,
+    const GURL& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -305,7 +305,7 @@ void BuildProto(
 bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const std::string& app_key,
+    const GURL& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,

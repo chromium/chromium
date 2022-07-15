@@ -220,7 +220,7 @@ void WebApkInstaller::OnInstallFinished(
 void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const std::string& app_key,
+    const GURL& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
