@@ -2132,7 +2132,7 @@ test("content_unittests") {
     "../browser/child_process_security_policy_unittest.cc",
     "../browser/client_hints/client_hints_unittest.cc",
     "../browser/code_cache/generated_code_cache_unittest.cc",
-    "../browser/code_cache/simple_lru_cache_index_unittest.cc",
+    "../browser/code_cache/simple_lru_cache_unittest.cc",
     "../browser/compute_pressure/compute_pressure_host_unittest.cc",
     "../browser/compute_pressure/compute_pressure_manager_unittest.cc",
     "../browser/compute_pressure/compute_pressure_quantizer_unittest.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/code_cache/simple_lru_cache_index.h"
+#include "content/browser/code_cache/simple_lru_cache.h"
 
 #include <limits>
 
@@ -11,11 +11,10 @@
 
 namespace content {
 
-SimpleLruCacheIndex::SimpleLruCacheIndex(uint64_t capacity)
-    : capacity_(capacity) {}
-SimpleLruCacheIndex::~SimpleLruCacheIndex() = default;
+SimpleLruCache::SimpleLruCache(uint64_t capacity) : capacity_(capacity) {}
+SimpleLruCache::~SimpleLruCache() = default;
 
-bool SimpleLruCacheIndex::Get(const std::string& key) {
+bool SimpleLruCache::Get(const std::string& key) {
   const auto it = entries_.find(key);
   if (it == entries_.end()) {
     return false;
@@ -27,7 +26,7 @@ bool SimpleLruCacheIndex::Get(const std::string& key) {
   return true;
 }
 
-void SimpleLruCacheIndex::Put(const std::string& key, uint32_t payload_size) {
+void SimpleLruCache::Put(const std::string& key, uint32_t payload_size) {
   Delete(key);
 
   const uint64_t size = base::ClampedNumeric<uint64_t>(key.size()) +
@@ -45,7 +44,7 @@ void SimpleLruCacheIndex::Put(const std::string& key, uint32_t payload_size) {
   Evict();
 }
 
-void SimpleLruCacheIndex::Delete(const std::string& key) {
+void SimpleLruCache::Delete(const std::string& key) {
   const auto it = entries_.find(key);
   if (it == entries_.end()) {
     return;
@@ -57,11 +56,11 @@ void SimpleLruCacheIndex::Delete(const std::string& key) {
   entries_.erase(it);
 }
 
-uint64_t SimpleLruCacheIndex::GetSize() const {
+uint64_t SimpleLruCache::GetSize() const {
   return size_;
 }
 
-void SimpleLruCacheIndex::Evict() {
+void SimpleLruCache::Evict() {
   while (capacity_ < size_) {
     auto it = access_list_.begin();
     DCHECK(it != access_list_.end());

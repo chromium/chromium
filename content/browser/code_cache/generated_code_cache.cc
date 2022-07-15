@@ -200,7 +200,7 @@ void GeneratedCodeCache::ReportPeriodicalHistograms() {
   DCHECK_EQ(cache_type_, CodeCacheType::kJavaScript);
   base::UmaHistogramCustomCounts(
       "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2",
-      lru_cache_index_.GetSize(),
+      lru_cache_.GetSize(),
       /*min=*/0,
       /*exclusive_max=*/kLruCacheCapacity,
       /*buckets=*/50);
@@ -294,9 +294,9 @@ class GeneratedCodeCache::PendingOperation {
     if (code_cache->cache_type_ == CodeCacheType::kJavaScript) {
       const bool code_cache_hit = data.size() > 0;
       const bool hypothetical_in_memory_code_cache_hit =
-          code_cache->lru_cache_index_.Get(key_);
+          code_cache->lru_cache_.Get(key_);
       if (code_cache_hit && !hypothetical_in_memory_code_cache_hit) {
-        code_cache->lru_cache_index_.Put(key_, data.size());
+        code_cache->lru_cache_.Put(key_, data.size());
       }
       if (code_cache_hit && hypothetical_in_memory_code_cache_hit) {
         base::UmaHistogramTimes(
@@ -476,7 +476,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
   auto op = std::make_unique<PendingOperation>(Operation::kWrite, key,
                                                small_buffer, large_buffer);
   EnqueueOperation(std::move(op));
-  lru_cache_index_.Put(key, data_size);
+  lru_cache_.Put(key, data_size);
 }
 
 void GeneratedCodeCache::FetchEntry(const GURL& url,
@@ -509,7 +509,7 @@ void GeneratedCodeCache::DeleteEntry(const GURL& url,
   auto op = std::make_unique<PendingOperation>(Operation::kDelete, key);
   EnqueueOperation(std::move(op));
 
-  lru_cache_index_.Delete(key);
+  lru_cache_.Delete(key);
 }
 
 void GeneratedCodeCache::CreateBackend() {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_INDEX_H_
-#define CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_INDEX_H_
+#ifndef CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_H_
+#define CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_H_
 
 #include <stdint.h>
 
@@ -17,13 +17,13 @@ namespace content {
 
 // A simple LRU cache index, to measure the potential performance impact of
 // memory-backed code cache.
-class CONTENT_EXPORT SimpleLruCacheIndex {
+class CONTENT_EXPORT SimpleLruCache {
  public:
-  explicit SimpleLruCacheIndex(uint64_t capacity);
-  ~SimpleLruCacheIndex();
+  explicit SimpleLruCache(uint64_t capacity);
+  ~SimpleLruCache();
 
-  SimpleLruCacheIndex(const SimpleLruCacheIndex&) = delete;
-  SimpleLruCacheIndex& operator=(const SimpleLruCacheIndex&) = delete;
+  SimpleLruCache(const SimpleLruCache&) = delete;
+  SimpleLruCache& operator=(const SimpleLruCache&) = delete;
 
   // Returns whether an entry for `key` exists in the cache.
   bool Get(const std::string& key);
@@ -59,4 +59,4 @@ class CONTENT_EXPORT SimpleLruCacheIndex {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_INDEX_H_
+#endif  // CONTENT_BROWSER_CODE_CACHE_SIMPLE_LRU_CACHE_H_

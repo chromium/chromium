@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "content/browser/code_cache/simple_lru_cache_index.h"
+#include "content/browser/code_cache/simple_lru_cache.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
@@ -235,7 +235,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
   CodeCacheType cache_type_;
 
   // A hypothetical memory-backed code cache. Used to collect UMAs.
-  SimpleLruCacheIndex lru_cache_index_{kLruCacheCapacity};
+  SimpleLruCache lru_cache_{kLruCacheCapacity};
   base::RepeatingTimer histograms_timer_;
   static const int64_t kLruCacheCapacity = 50 * 1024 * 1024;
 

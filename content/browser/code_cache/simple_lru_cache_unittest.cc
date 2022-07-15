@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/code_cache/simple_lru_cache_index.h"
+#include "content/browser/code_cache/simple_lru_cache.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
 
-constexpr auto kEmptyEntrySize = SimpleLruCacheIndex::kEmptyEntrySize;
+constexpr auto kEmptyEntrySize = SimpleLruCache::kEmptyEntrySize;
 
-TEST(SimpleLruCacheIndexTest, Empty) {
+TEST(SimpleLruCacheTest, Empty) {
   const std::string kKey = "hello";
-  SimpleLruCacheIndex cache(/*capacity=*/100 * 1024);
+  SimpleLruCache cache(/*capacity=*/100 * 1024);
 
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Get(kKey));
 }
 
-TEST(SimpleLruCacheIndexTest, PutAndGet) {
+TEST(SimpleLruCacheTest, PutAndGet) {
   const std::string kKey1("key1");
   const std::string kKey2("key2");
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(/*capacity=*/100 * 1024);
+  SimpleLruCache cache(/*capacity=*/100 * 1024);
 
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Get(kKey1));
@@ -62,10 +62,10 @@ TEST(SimpleLruCacheIndexTest, PutAndGet) {
   EXPECT_TRUE(cache.Get(kKey4));
 }
 
-TEST(SimpleLruCacheIndexTest, PutAndEvict) {
+TEST(SimpleLruCacheTest, PutAndEvict) {
   const std::string kKey("key1");
 
-  SimpleLruCacheIndex cache(/*capacity=*/kEmptyEntrySize + kKey.size() + 1);
+  SimpleLruCache cache(/*capacity=*/kEmptyEntrySize + kKey.size() + 1);
 
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Get(kKey));
@@ -86,13 +86,13 @@ TEST(SimpleLruCacheIndexTest, PutAndEvict) {
   EXPECT_FALSE(cache.Get(kKey));
 }
 
-TEST(SimpleLruCacheIndexTest, LRU) {
+TEST(SimpleLruCacheTest, LRU) {
   const std::string kKey1("key1");
   const std::string kKey2("key2");
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(kEmptyEntrySize * 2 + 8);
+  SimpleLruCache cache(kEmptyEntrySize * 2 + 8);
 
   cache.Put(kKey1, 0);
   cache.Put(kKey2, 0);
@@ -107,13 +107,13 @@ TEST(SimpleLruCacheIndexTest, LRU) {
   EXPECT_TRUE(cache.Get(kKey4));
 }
 
-TEST(SimpleLruCacheIndexTest, LRUAndGet) {
+TEST(SimpleLruCacheTest, LRUAndGet) {
   const std::string kKey1("key1");
   const std::string kKey2("key2");
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(kEmptyEntrySize * 2 + 8);
+  SimpleLruCache cache(kEmptyEntrySize * 2 + 8);
 
   cache.Put(kKey1, 0);
   cache.Put(kKey2, 0);
@@ -128,13 +128,13 @@ TEST(SimpleLruCacheIndexTest, LRUAndGet) {
   EXPECT_FALSE(cache.Get(kKey4));
 }
 
-TEST(SimpleLruCacheIndexTest, Delete) {
+TEST(SimpleLruCacheTest, Delete) {
   const std::string kKey1("key1");
   const std::string kKey2("key2");
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(/*capacity=*/1024 * 1024);
+  SimpleLruCache cache(/*capacity=*/1024 * 1024);
 
   cache.Put(kKey1, 1);
   cache.Put(kKey2, 2);
