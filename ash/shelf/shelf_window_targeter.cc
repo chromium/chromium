@@ -54,13 +54,16 @@ bool ShelfWindowTargeter::GetHitTestRects(
   // currently in an active session (or unknown session state) and change only
   // the behavior of the login shelf. On secondary displays, the login shelf
   // will not be visible.
+  // TODO(https://crbug.com/1343114): remove this code block after the login
+  // shelf widget is in use.
   bool target_is_shelf_widget =
       target == shelf_->shelf_widget()->GetNativeWindow();
   if (target_is_shelf_widget &&
       Shell::Get()->session_controller()->GetSessionState() !=
           session_manager::SessionState::ACTIVE &&
       Shell::Get()->session_controller()->GetSessionState() !=
-          session_manager::SessionState::UNKNOWN) {
+          session_manager::SessionState::UNKNOWN &&
+      !features::IsUseLoginShelfWidgetEnabled()) {
     // When this is the case, let events pass through the "empty" part of
     // the shelf.
     return shelf_->shelf_widget()->GetHitTestRects(target, hit_test_rect_mouse,

@@ -1229,7 +1229,9 @@ void ShelfLayoutManager::OnDisplayMetricsChanged(
 }
 
 void ShelfLayoutManager::OnLocaleChanged() {
-  shelf_->shelf_widget()->HandleLocaleChange();
+  if (!features::IsUseLoginShelfWidgetEnabled())
+    shelf_->shelf_widget()->HandleLocaleChange();
+
   shelf_->status_area_widget()->HandleLocaleChange();
   shelf_->navigation_widget()->HandleLocaleChange();
 
@@ -1616,7 +1618,8 @@ bool ShelfLayoutManager::SetDimmed(bool dimmed) {
   AnimateOpacity(GetLayer(shelf_->status_area_widget()), target_opacity_,
                  dim_animation_duration, dim_animation_tween);
 
-  shelf_widget_->SetLoginShelfButtonOpacity(target_opacity_);
+  if (!features::IsUseLoginShelfWidgetEnabled())
+    shelf_widget_->SetLoginShelfButtonOpacity(target_opacity_);
   return true;
 }
 
