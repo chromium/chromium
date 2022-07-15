@@ -326,7 +326,8 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
           reader.ReadPiece(&opt_data, opt_data_size))) {
       return nullptr;
     }
-    rdata->opts_.emplace_back(opt_code, opt_data);
+
+    rdata->opts_.emplace(opt_code, Opt(opt_code, opt_data));
   }
 
   return rdata;
@@ -357,18 +358,16 @@ void OptRecordRdata::AddOpt(const Opt& opt) {
                  writer.WriteBytes(opt_data.data(), opt_data.size());
   DCHECK(success);
 
-  opts_.push_back(opt);
+  opts_.emplace(opt.code(), opt);
 }
 
 void OptRecordRdata::AddOpts(const OptRecordRdata& other) {
   buf_.insert(buf_.end(), other.buf_.begin(), other.buf_.end());
-  opts_.insert(opts_.end(), other.opts_.begin(), other.opts_.end());
+  opts_.insert(other.opts_.begin(), other.opts_.end());
 }
 
 bool OptRecordRdata::ContainsOptCode(uint16_t opt_code) const {
-  return std::any_of(
-      opts_.begin(), opts_.end(),
-      [=](const OptRecordRdata::Opt& opt) { return opt.code() == opt_code; });
+  return opts_.find(opt_code) != opts_.end();
 }
 
 OptRecordRdata::Opt::Opt(uint16_t code, base::StringPiece data)

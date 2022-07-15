@@ -260,12 +260,16 @@ TEST(RecordRdataTest, ParseOptRecord) {
 
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece, parser);
+
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_THAT(rdata_obj->opts(), SizeIs(2));
-  ASSERT_EQ(1, rdata_obj->opts()[0].code());
-  ASSERT_EQ("\xde\xad", rdata_obj->opts()[0].data());
-  ASSERT_EQ(255, rdata_obj->opts()[1].code());
-  ASSERT_EQ("\xde\xad\xbe\xef", rdata_obj->opts()[1].data());
+
+  EXPECT_THAT(
+      rdata_obj->opts(),
+      testing::UnorderedElementsAre(
+          std::make_pair(1, OptRecordRdata::Opt(1, "\xde\xad")),
+          std::make_pair(255, OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"))));
+
   ASSERT_TRUE(rdata_obj->IsEqual(rdata_obj.get()));
 }
 
