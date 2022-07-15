@@ -63,6 +63,10 @@ class AX_EXPORT AXCallStatementInvoker final {
       const id target,
       const AXPropertyNode& property_node) const;
 
+  // Invokes a property node for a given NSRect.
+  AXOptionalNSObject InvokeForRect(const id target,
+                                   const AXPropertyNode& property_node) const;
+
   // Invokes setAccessibilityFocused method.
   AXOptionalNSObject InvokeSetAccessibilityFocused(
       const id target,

@@ -2640,21 +2640,6 @@ bool content::IsNSRange(id value) {
          ax::mojom::Restriction::kDisabled;
 }
 
-- (NSRect)accessibilityFrame {
-  if (![self instanceActive])
-    return NSZeroRect;
-
-  BrowserAccessibilityManager* manager = _owner->manager();
-  auto rect = _owner->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
-                                    ui::AXClippingBehavior::kClipped);
-
-  // TODO(vmpstr): GetBoundsRect() call above should account for this instead.
-  auto result_rect =
-      ScaleToRoundedRect(rect, 1.f / manager->device_scale_factor());
-
-  return gfx::ScreenRectToNSRect(result_rect);
-}
-
 - (BOOL)isCheckable {
   if (![self instanceActive])
     return NO;

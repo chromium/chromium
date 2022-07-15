@@ -14,6 +14,8 @@ namespace ui {
 
 class AXPlatformNodeCocoa;
 
+AX_EXPORT bool IsNSRect(id object);
+
 // An AXTextMarker is used by applications like Chrome to store a position in
 // the accessibility tree's text representation. It is a data structure whose
 // contents are opaque to the system but whose allocation and deallocation is
