@@ -63,9 +63,7 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
     statistics_recorder_ = StatisticsRecorder::CreateTemporaryForTesting();
   }
 
-  void UninitializeStatisticsRecorder() {
-    statistics_recorder_.reset();
-  }
+  void UninitializeStatisticsRecorder() { statistics_recorder_.reset(); }
 
   void CreatePersistentMemoryAllocator() {
     GlobalHistogramAllocator::CreateWithLocalMemory(
@@ -312,8 +310,7 @@ TEST_P(SparseHistogramTest, FactoryTime) {
   int64_t create_ms = create_ticks.InMilliseconds();
 
   VLOG(1) << kTestCreateCount << " histogram creations took " << create_ms
-          << "ms or about "
-          << (create_ms * 1000000) / kTestCreateCount
+          << "ms or about " << (create_ms * 1000000) / kTestCreateCount
           << "ns each.";
 
   // Calculate cost of looking up existing histograms.
@@ -332,8 +329,7 @@ TEST_P(SparseHistogramTest, FactoryTime) {
   int64_t lookup_ms = lookup_ticks.InMilliseconds();
 
   VLOG(1) << kTestLookupCount << " histogram lookups took " << lookup_ms
-          << "ms or about "
-          << (lookup_ms * 1000000) / kTestLookupCount
+          << "ms or about " << (lookup_ms * 1000000) / kTestLookupCount
           << "ns each.";
 
   // Calculate cost of accessing histograms.
@@ -347,9 +343,7 @@ TEST_P(SparseHistogramTest, FactoryTime) {
   int64_t add_ms = add_ticks.InMilliseconds();
 
   VLOG(1) << kTestAddCount << " histogram adds took " << add_ms
-          << "ms or about "
-          << (add_ms * 1000000) / kTestAddCount
-          << "ns each.";
+          << "ms or about " << (add_ms * 1000000) / kTestAddCount << "ns each.";
 }
 
 TEST_P(SparseHistogramTest, ExtremeValues) {
@@ -409,23 +403,22 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   EXPECT_EQ(25, count_and_data_bucket.count);
   EXPECT_EQ(4000, count_and_data_bucket.sum);
 
-  const base::Value::ConstListView buckets_list =
-      count_and_data_bucket.buckets.GetListDeprecated();
+  const base::Value::List& buckets_list = count_and_data_bucket.buckets;
   ASSERT_EQ(2u, buckets_list.size());
 
   // Check the first bucket.
-  const base::Value& bucket1 = buckets_list[0];
-  ASSERT_TRUE(bucket1.is_dict());
-  EXPECT_EQ(bucket1.FindIntKey("low"), absl::optional<int>(100));
-  EXPECT_EQ(bucket1.FindIntKey("high"), absl::optional<int>(101));
-  EXPECT_EQ(bucket1.FindIntKey("count"), absl::optional<int>(10));
+  const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
+  ASSERT_TRUE(bucket1 != nullptr);
+  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(100));
+  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(101));
+  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(10));
 
   // Check the second bucket.
-  const base::Value& bucket2 = buckets_list[1];
-  ASSERT_TRUE(bucket2.is_dict());
-  EXPECT_EQ(bucket2.FindIntKey("low"), absl::optional<int>(200));
-  EXPECT_EQ(bucket2.FindIntKey("high"), absl::optional<int>(201));
-  EXPECT_EQ(bucket2.FindIntKey("count"), absl::optional<int>(15));
+  const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
+  ASSERT_TRUE(bucket2 != nullptr);
+  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(200));
+  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(201));
+  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(15));
 }
 
 TEST_P(SparseHistogramTest, WriteAscii) {
@@ -451,9 +444,9 @@ TEST_P(SparseHistogramTest, ToGraphDict) {
   histogram->AddCount(/*sample=*/4, /*count=*/5);
   histogram->AddCount(/*sample=*/10, /*count=*/15);
 
-  base::Value output = histogram->ToGraphDict();
-  std::string* header = output.FindStringKey("header");
-  std::string* body = output.FindStringKey("body");
+  base::Value::Dict output = histogram->ToGraphDict();
+  std::string* header = output.FindString("header");
+  std::string* body = output.FindString("body");
 
   const char kOutputHeaderFormatRe[] =
       R"(Histogram: HTMLOut recorded 20 samples.*)";

@@ -220,7 +220,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
-  base::Value ToGraphDict() const override;
+  base::Value::Dict ToGraphDict() const override;
 
  protected:
   // This class, defined entirely within the .cc file, contains all the
@@ -279,7 +279,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
 
   // Writes the type, min, max, and bucket count information of the histogram in
   // |params|.
-  Value GetParameters() const override;
+  Value::Dict GetParameters() const override;
 
   // Samples that have not yet been logged with SnapshotDelta().
   std::unique_ptr<SampleVectorBase> unlogged_samples_;

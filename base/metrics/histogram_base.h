@@ -255,7 +255,7 @@ class BASE_EXPORT HistogramBase {
   // with the following format:
   // {"header": "Name of the histogram with samples, mean, and/or flags",
   // "body": "ASCII histogram representation"}
-  virtual base::Value ToGraphDict() const = 0;
+  virtual base::Value::Dict ToGraphDict() const = 0;
 
   // TODO(bcwhite): Remove this after https://crbug/836875.
   virtual void ValidateHistogramContents() const;
@@ -272,9 +272,9 @@ class BASE_EXPORT HistogramBase {
   struct BASE_EXPORT CountAndBucketData {
     Count count;
     int64_t sum;
-    Value buckets;
+    Value::List buckets;
 
-    CountAndBucketData(Count count, int64_t sum, Value buckets);
+    CountAndBucketData(Count count, int64_t sum, Value::List buckets);
     ~CountAndBucketData();
 
     CountAndBucketData(CountAndBucketData&& other);
@@ -285,7 +285,7 @@ class BASE_EXPORT HistogramBase {
   virtual void SerializeInfoImpl(base::Pickle* pickle) const = 0;
 
   // Writes information about the construction parameters in |params|.
-  virtual Value GetParameters() const = 0;
+  virtual Value::Dict GetParameters() const = 0;
 
   // Returns information about the current (non-empty) buckets and their sample
   // counts to |buckets|, the total sample count to |count| and the total sum

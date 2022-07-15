@@ -50,7 +50,7 @@ base::ListValue HistogramsMonitor::GetDiffInternal(
       snapshot->Subtract(*it->second.get());
     }
     if (snapshot->TotalCount() > 0) {
-      base::Value histogram_dict = snapshot->ToGraphDict(
+      base::Value::Dict histogram_dict = snapshot->ToGraphDict(
           histogram->histogram_name(), histogram->flags());
       histograms_list.Append(std::move(histogram_dict));
     }

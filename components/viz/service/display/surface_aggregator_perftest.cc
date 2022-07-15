@@ -485,9 +485,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   }
 
   std::string GetHistogramStats(base::HistogramBase* histogram) {
-    base::Value graph_dict = histogram->ToGraphDict();
+    base::Value::Dict graph_dict = histogram->ToGraphDict();
     // The header contains the sample count and the mean.
-    return *graph_dict.FindStringKey("header");
+    return *graph_dict.FindString("header");
   }
 
  protected:

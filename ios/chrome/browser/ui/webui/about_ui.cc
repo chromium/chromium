@@ -139,9 +139,9 @@ void AboutUIHTMLSource::StartDataRequest(
       if (histogram_name.find(path) == std::string::npos) {
         continue;
       }
-      base::Value histogram_dict = histogram->ToGraphDict();
-      std::string* header = histogram_dict.FindStringKey("header");
-      std::string* body = histogram_dict.FindStringKey("body");
+      base::Value::Dict histogram_dict = histogram->ToGraphDict();
+      std::string* header = histogram_dict.FindString("header");
+      std::string* body = histogram_dict.FindString("body");
 
       response.append("<PRE>");
       response.append("<h4>");

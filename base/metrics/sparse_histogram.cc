@@ -84,8 +84,7 @@ std::unique_ptr<HistogramBase> SparseHistogram::PersistentCreate(
     const char* name,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta) {
-  return WrapUnique(
-      new SparseHistogram(allocator, name, meta, logged_meta));
+  return WrapUnique(new SparseHistogram(allocator, name, meta, logged_meta));
 }
 
 SparseHistogram::~SparseHistogram() = default;
@@ -166,7 +165,7 @@ bool SparseHistogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-base::Value SparseHistogram::ToGraphDict() const {
+base::Value::Dict SparseHistogram::ToGraphDict() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
 }
@@ -215,11 +214,11 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
   return SparseHistogram::FactoryGet(histogram_name, flags);
 }
 
-Value SparseHistogram::GetParameters() const {
+Value::Dict SparseHistogram::GetParameters() const {
   // Unlike Histogram::GetParameters, only set the type here, and no other
   // params. The other params do not make sense for sparse histograms.
-  Value params(Value::Type::DICTIONARY);
-  params.SetStringKey("type", HistogramTypeToString(GetHistogramType()));
+  Value::Dict params;
+  params.Set("type", HistogramTypeToString(GetHistogramType()));
   return params;
 }
 
