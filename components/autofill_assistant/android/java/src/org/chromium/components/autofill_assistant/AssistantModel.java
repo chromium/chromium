@@ -38,8 +38,6 @@ public class AssistantModel extends PropertyModel {
     static final WritableObjectPropertyKey<WebContents> WEB_CONTENTS =
             new WritableObjectPropertyKey<>();
 
-    static final WritableBooleanPropertyKey HANDLE_BACK_PRESS = new WritableBooleanPropertyKey();
-
     private final AssistantOverlayModel mOverlayModel;
     private final AssistantHeaderModel mHeaderModel = new AssistantHeaderModel();
     private final AssistantDetailsModel mDetailsModel = new AssistantDetailsModel();
@@ -58,7 +56,7 @@ public class AssistantModel extends PropertyModel {
     AssistantModel(AssistantOverlayModel overlayModel) {
         super(ALLOW_SOFT_KEYBOARD, ALLOW_TALKBACK_ON_WEBSITE, BOTTOM_BAR_DELEGATE,
                 BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE, PEEK_MODE_DISABLED,
-                WEB_CONTENTS, HANDLE_BACK_PRESS);
+                WEB_CONTENTS);
         mOverlayModel = overlayModel;
     }
 
@@ -156,10 +154,5 @@ public class AssistantModel extends PropertyModel {
     @CalledByNative
     private void setWebContents(WebContents contents) {
         set(WEB_CONTENTS, contents);
-    }
-
-    @CalledByNative
-    private void setHandleBackPress(boolean handleBackPress) {
-        set(HANDLE_BACK_PRESS, handleBackPress);
     }
 }

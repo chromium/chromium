@@ -141,7 +141,6 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
         } else {
             mContent = new AssistantBottomSheetContent(getContext(), () -> delegate);
         }
-        mContent.setHandleBackPress(true);
     }
 
     @Override

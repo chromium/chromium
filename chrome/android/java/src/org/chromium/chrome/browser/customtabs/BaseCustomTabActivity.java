@@ -408,6 +408,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean handleBackPressed() {
+        // TODO(1091411): Find a better mechanism for back-press handling for features.
         if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
             return true;
         }

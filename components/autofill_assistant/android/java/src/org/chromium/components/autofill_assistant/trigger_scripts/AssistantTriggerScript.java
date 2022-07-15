@@ -304,9 +304,6 @@ public class AssistantTriggerScript {
 
         if (scrollToHide) enableScrollToHide();
 
-        if (mContent != null) {
-            mContent.setHandleBackPress(true);
-        }
         return true;
     }
 
@@ -314,9 +311,6 @@ public class AssistantTriggerScript {
         disableScrollToHide();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mContent, /* animate = */ mAnimateBottomSheet);
-        if (mContent != null) {
-            mContent.setHandleBackPress(false);
-        }
         mResizeVisualViewport = false;
         updateVisualViewportHeight();
     }

@@ -138,7 +138,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -1325,18 +1324,6 @@ public class RootUiCoordinator
                 mBrowserControlsManager, mModalDialogManagerSupplier,
                 this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
                 mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
-
-        // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
-        if (BackPressManager.isEnabled()) {
-            assert mBackPressManager != null
-                    && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
-            BackPressHandler mBottomSheetBackPressHandler =
-                    mBottomSheetController.getBottomSheetBackPressHandler();
-            if (mBottomSheetBackPressHandler != null) {
-                mBackPressManager.addHandler(
-                        mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
-            }
-        }
     }
 
     /**
