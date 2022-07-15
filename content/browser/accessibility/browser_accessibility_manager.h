@@ -568,6 +568,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   BrowserAccessibility* ApproximateHitTest(
       const gfx::Point& blink_screen_point) const;
 
+  // Detaches this instance from its parent manager. Useful during
+  // deconstruction.
+  void DetachFromParentManager();
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
