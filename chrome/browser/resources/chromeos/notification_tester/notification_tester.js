@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FormSelectOptions, NotificationPriority, NotificationType, NotifierType} from './form_constants.js';
+import {FormSelectOptions, NOTIFICATION_VIEW_TYPES, NotificationPriority, NotificationType, NotifierType} from './form_constants.js';
 import {Notification} from './types.js';
 
 // Web component housing the form for chrome://notification-tester.
@@ -271,6 +271,19 @@ export class NotificationTester extends PolymerElement {
         this.generatingDelayedNotification = false;
       }
     }, ONE_SECOND);
+  }
+
+  // Generate notifications of all types from
+  // go/cros-notification-spec.
+  onClickGenerateAllTypes() {
+    // chrome.send doesn't seem to properly register more than two consecutive
+    // synchronously calls, so they are sent with a small delay.
+    const DELAY_MS = 250;
+    for (let i = 0; i < NOTIFICATION_VIEW_TYPES.length; i++) {
+      setTimeout(
+          chrome.send, DELAY_MS * i, 'generateNotificationForm',
+          [NOTIFICATION_VIEW_TYPES[i]]);
+    }
   }
 }
 

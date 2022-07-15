@@ -207,3 +207,187 @@ export const FormSelectOptions = {
     {displayText: 'Group C', value: 'group_c'},
   ],
 };
+
+// Constant notification objects based on the notification spec:
+// go/cros-notification-spec
+
+/*
+ * Text Notification (go/cros-notification-spec)
+ */
+const TEXT_NOTIFICATION = {
+  id: 'random',
+  title: 'Text',
+  message: 'This is a text notification.',
+  icon: 'kProductIcon',
+  displaySource: 'Sample Display Source',
+  originURL: '',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.SYSTEM_COMPONENT,
+  richDataImage: 'none',
+  richDataSmallImage: 'none',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+
+
+/*
+ * Text + Big Picture Notification (go/cros-notification-spec)
+ */
+const TEXT_AND_BIG_PICTURE_NOTIFICATION = {
+  id: 'random',
+  title: 'Text + Big Picture',
+  message: 'This is a text + big picture notification.',
+  icon: 'kProductIcon',
+  displaySource: 'Sample Display Source',
+  originURL: '',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.SYSTEM_COMPONENT,
+  richDataImage: 'chromium_logo_large_png',
+  richDataSmallImage: 'none',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+
+/*
+ * Text + Progress Notification (go/cros-notification-spec)
+ */
+const TEXT_AND_PROGRESS_NOTIFICATION = {
+  id: 'random',
+  title: 'Text + Progress',
+  message: 'This is a text + progress notification.',
+  icon: 'kProductIcon',
+  displaySource: '',
+  originURL: '',
+  notificationType: NotificationType.NOTIFICATION_TYPE_PROGRESS,
+  notifierType: NotifierType.SYSTEM_COMPONENT,
+  richDataImage: 'none',
+  richDataSmallImage: 'none',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: 50,
+  richDataProgressStatus: 'Sample Progress Status',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+
+/*
+ * Text + Avatar (go/cros-notification-spec)
+ */
+const TEXT_AND_AVATAR_NOTIFICATION = {
+  id: 'random',
+  title: 'Text + Avatar',
+  message: 'This is a text + avatar notification.',
+  icon: 'chromium_logo',
+  displaySource: 'Display Source',
+  originURL: '',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.SYSTEM_COMPONENT,
+  richDataImage: 'none',
+  richDataSmallImage: 'kProductIcon',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+
+/*
+ * Text Group Notifications (go/cros-notification-spec)
+ */
+const TEXT_GROUP_NOTIFICATION_A = {
+  id: 'random',
+  title: 'Group - 1',
+  message: 'This is the first notification.',
+  icon: 'chromium_logo',
+  displaySource: '',
+  originURL: 'https://testurl.xyz',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.WEB_PAGE,
+  richDataImage: 'none',
+  richDataSmallImage: 'kProductIcon',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+const TEXT_GROUP_NOTIFICATION_B = {
+  id: 'random',
+  title: 'Group - 2',
+  message: 'This is the second notification.',
+  icon: 'google_logo',
+  displaySource: '',
+  originURL: 'https://testurl.xyz',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.WEB_PAGE,
+  richDataImage: 'none',
+  richDataSmallImage: 'kProductIcon',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+const TEXT_GROUP_NOTIFICATION_C = {
+  id: 'random',
+  title: 'Group - 3',
+  message: 'This is the third notification.',
+  icon: 'warning',
+  displaySource: '',
+  originURL: 'https://testurl.xyz',
+  notificationType: NotificationType.NOTIFICATION_TYPE_SIMPLE,
+  notifierType: NotifierType.WEB_PAGE,
+  richDataImage: 'none',
+  richDataSmallImage: 'kProductIcon',
+  richDataNeverTimeout: false,
+  richDataPriority: NotificationPriority.DEFAULT_PRIORITY,
+  richDataPinned: false,
+  richDataShowSnooze: false,
+  richDataShowSettings: false,
+  richDataProgress: -1,
+  richDataProgressStatus: '',
+  richDataNumButtons: 0,
+  richDataNumNotifItems: 0,
+};
+
+/*
+ * Array of notifications types from the spec. (go/cros-notification-spec).
+ */
+export const NOTIFICATION_VIEW_TYPES = [
+  TEXT_NOTIFICATION,
+  TEXT_AND_BIG_PICTURE_NOTIFICATION,
+  TEXT_AND_PROGRESS_NOTIFICATION,
+  TEXT_AND_AVATAR_NOTIFICATION,
+  TEXT_GROUP_NOTIFICATION_C,
+  TEXT_GROUP_NOTIFICATION_B,
+  TEXT_GROUP_NOTIFICATION_A,
+];
