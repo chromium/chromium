@@ -195,6 +195,8 @@ class SearchPrefetchService : public KeyedService,
   void AddCacheEntry(const GURL& navigation_url, const GURL& prefetch_url);
 
   // Removes the prefetch and prefetch timers associated with |search_terms|.
+  // Note: Always call this method to remove prefetch requests from memory
+  // cache; Do not delete it from `prefetches_` directly.
   void DeletePrefetch(std::u16string search_terms);
 
   // Records metrics around the error rate of prefetches. When |error| is true,

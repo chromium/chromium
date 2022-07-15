@@ -336,7 +336,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
   }
   AddCacheEntry(navigation_url, request_it->second->prefetch_url());
   request_it->second->MarkPrefetchAsPrerenderActivated();
-  prefetches_.erase(request_it);
+  DeletePrefetch(search_terms);
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>

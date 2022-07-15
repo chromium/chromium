@@ -146,7 +146,17 @@ class PrerenderManager::SearchPrerenderTask {
                                        base::Unretained(this)));
   }
 
-  ~SearchPrerenderTask() = default;
+  ~SearchPrerenderTask() {
+    // Record whether or not the prediction is correct when prerendering for
+    // search suggestion was started. The value `kNotStarted` is recorded in
+    // AutocompleteControllerAndroid::OnSuggestionSelected() or
+    // ChromeOmniboxClient::OnURLOpenedFromOmnibox() if there is no started
+    // prerender.
+    DCHECK_NE(prediction_status_, PrerenderPredictionStatus::kNotStarted);
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        prediction_status_);
+  }
 
   // Not copyable or movable.
   SearchPrerenderTask(const SearchPrerenderTask&) = delete;
@@ -244,6 +254,15 @@ class PrerenderManager::SearchPrerenderTask {
         delta, base::Milliseconds(1), base::Seconds(60), /*buckets=*/50);
   }
 
+  void set_prediction_status(PrerenderPredictionStatus prediction_status) {
+    // If the final status was set, do nothing because the status has been
+    // finalized.
+    if (prediction_status_ != PrerenderPredictionStatus::kUnused)
+      return;
+    DCHECK_NE(prediction_status, PrerenderPredictionStatus::kUnused);
+    prediction_status_ = prediction_status;
+  }
+
  private:
   // Called by OneShotTimer. Will cancel the ongoing prerender to ensure the
   // content displayed to users is up-to-date.
@@ -258,6 +277,11 @@ class PrerenderManager::SearchPrerenderTask {
 
   // Stops the ongoing prerender when the prerendered result is out-of-date.
   base::OneShotTimer expiry_timer_;
+
+  // A task is associated with a prediction, this tracks the correctness of the
+  // prediction.
+  PrerenderPredictionStatus prediction_status_ =
+      PrerenderPredictionStatus::kUnused;
 
   // Stores the search term that `search_prerender_handle_` is prerendering.
   const std::u16string prerendered_search_terms_;
@@ -422,9 +446,12 @@ void PrerenderManager::StopPrerenderSearchResult(
     const std::u16string& search_terms) {
   if (search_prerender_task_ &&
       search_prerender_task_->prerendered_search_terms() == search_terms) {
-    // TODO(https://crbug.com/1295170): Record
-    // PrerenderPredictionStatus::kCancelled here. And double check if we update
-    // kNotStarted.
+    // TODO(https://crbug.com/1295170): Now there is no kUnused record: all the
+    // unused tasks are canceled before navigation happens. Consider recording
+    // the result upon opening the URL rather than waiting for the navigation
+    // finishes.
+    search_prerender_task_->set_prediction_status(
+        PrerenderPredictionStatus::kCancelled);
     search_prerender_task_.reset();
   }
 }
@@ -467,21 +494,16 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     // TODO(https://crbug.com/1278634): Move all operations below into a
     // dedicated method of SearchPrerenderTask.
 
-    // Record whether or not the prediction is correct when prerendering for
-    // search suggestion was started. The value `kNotStarted` is recorded in
-    // AutocompleteControllerAndroid::OnSuggestionSelected() or
-    // ChromeOmniboxClient::OnURLOpenedFromOmnibox().
     bool is_search_destination_match = IsSearchDestinationMatch(
         search_prerender_task_->prerendered_search_terms(), *web_contents(),
         opened_url);
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
-        is_search_destination_match ? PrerenderPredictionStatus::kHitFinished
-                                    : PrerenderPredictionStatus::kUnused);
+
     if (is_search_destination_match) {
       // We may want to record this metric on AutocompleteMatch selected relying
       // on GetMatchSelectionTimestamp. But this is for rough estimation so it
       // may not need the precise data.
+      search_prerender_task_->set_prediction_status(
+          PrerenderPredictionStatus::kHitFinished);
       search_prerender_task_->RecordLifeTimeMetric();
     }
 
@@ -505,9 +527,7 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
   if (search_prerender_task_->prerendered_search_terms() == search_terms) {
     return false;
   }
-
-  base::UmaHistogramEnumeration(
-      internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+  search_prerender_task_->set_prediction_status(
       PrerenderPredictionStatus::kCancelled);
   search_prerender_task_.reset();
   return true;
