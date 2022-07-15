@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_list_item_view.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -15,6 +16,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -105,7 +107,13 @@ bool NetworkDetailedView::CloseInfoBubble() {
 }
 
 void NetworkDetailedView::OnSettingsClicked() {
-  // TODO(b/207089013): Record user action metrics here
+  base::RecordAction(
+      list_type_ == LIST_TYPE_VPN
+          ? base::UserMetricsAction("StatusArea_VPN_Settings")
+          : base::UserMetricsAction("StatusArea_Network_Settings"));
+
+  base::RecordAction(base::UserMetricsAction(
+      "ChromeOS.SystemTray.Network.SettingsButtonPressed"));
 
   const std::string guid = model_->default_network()
                                ? model_->default_network()->guid
