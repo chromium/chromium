@@ -164,7 +164,7 @@ const base::Feature kEnableCsrssLockdownFeature{
 bool AddDirectory(int path,
                   const wchar_t* sub_dir,
                   bool children,
-                  TargetPolicy::Semantics access,
+                  Semantics access,
                   TargetPolicy* policy) {
   base::FilePath directory;
   if (!base::PathService::Get(path, &directory))
@@ -174,8 +174,8 @@ bool AddDirectory(int path,
     directory = base::MakeAbsoluteFilePath(directory.Append(sub_dir));
 
   ResultCode result;
-  result = policy->AddRule(TargetPolicy::SUBSYS_FILES, access,
-                           directory.value().c_str());
+  result =
+      policy->AddRule(SubSystem::kFiles, access, directory.value().c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
@@ -184,8 +184,7 @@ bool AddDirectory(int path,
     directory_str += L"*";
   // Otherwise, add the version of the path that ends with a separator.
 
-  result = policy->AddRule(TargetPolicy::SUBSYS_FILES, access,
-                           directory_str.c_str());
+  result = policy->AddRule(SubSystem::kFiles, access, directory_str.c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
@@ -331,17 +330,16 @@ ResultCode AddGenericPolicy(sandbox::TargetPolicy* policy) {
   // Add the policy for the client side of a pipe. It is just a file
   // in the \pipe\ namespace. We restrict it to pipes that start with
   // "chrome." so the sandboxed process cannot connect to system services.
-  result =
-      policy->AddRule(TargetPolicy::SUBSYS_FILES, TargetPolicy::FILES_ALLOW_ANY,
-                      L"\\??\\pipe\\chrome.*");
+  result = policy->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
+                           L"\\??\\pipe\\chrome.*");
   if (result != SBOX_ALL_OK)
     return result;
 
   // Allow the server side of sync sockets, which are pipes that have
   // the "chrome.sync" namespace and a randomly generated suffix.
-  result = policy->AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                           TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                           L"\\\\.\\pipe\\chrome.sync.*");
+  result =
+      policy->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
+                      L"\\\\.\\pipe\\chrome.sync.*");
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -351,8 +349,7 @@ ResultCode AddGenericPolicy(sandbox::TargetPolicy* policy) {
   if (!base::PathService::Get(base::FILE_EXE, &exe))
     return SBOX_ERROR_GENERIC;
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
-  result = policy->AddRule(TargetPolicy::SUBSYS_FILES,
-                           TargetPolicy::FILES_ALLOW_READONLY,
+  result = policy->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
                            pdb_path.value().c_str());
   if (result != SBOX_ALL_OK)
     return result;
@@ -372,8 +369,7 @@ ResultCode AddGenericPolicy(sandbox::TargetPolicy* policy) {
     CHECK(coverage_dir.size() == coverage_dir_size);
     base::FilePath sancov_path =
         base::FilePath(coverage_dir).Append(L"*.sancov");
-    result = policy->AddRule(TargetPolicy::SUBSYS_FILES,
-                             TargetPolicy::FILES_ALLOW_ANY,
+    result = policy->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
                              sancov_path.value().c_str());
     if (result != SBOX_ALL_OK)
       return result;
@@ -859,8 +855,8 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  return policy->AddRule(TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
-                         TargetPolicy::FAKE_USER_GDI_INIT, nullptr);
+  return policy->AddRule(SubSystem::kWin32kLockdown, Semantics::kFakeGdiInit,
+                         nullptr);
 #else
   return SBOX_ALL_OK;
 #endif
@@ -1069,7 +1065,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
       process_type == switches::kPpapiPluginProcess ||
       sandbox_type == Sandbox::kPrintCompositor) {
     AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
-                 TargetPolicy::FILES_ALLOW_READONLY, policy);
+                 Semantics::kFilesAllowReadonly, policy);
   }
 #endif
 
@@ -1095,8 +1091,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
       process_type == switches::kUtilityProcess) {
     if (logging::IsLoggingToFileEnabled()) {
       DCHECK(base::FilePath(logging::GetLogFileFullPath()).IsAbsolute());
-      result = policy->AddRule(TargetPolicy::SUBSYS_FILES,
-                               TargetPolicy::FILES_ALLOW_ANY,
+      result = policy->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
                                logging::GetLogFileFullPath().c_str());
       if (result != SBOX_ALL_OK)
         return result;

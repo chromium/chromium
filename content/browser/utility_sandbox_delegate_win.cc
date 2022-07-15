@@ -187,15 +187,12 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
       return false;
 
     // Allow file read. These should match IconLoader::GroupForFilepath().
-    policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                    sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                    L"\\??\\*.exe");
-    policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                    sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                    L"\\??\\*.dll");
-    policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                    sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                    L"\\??\\*.ico");
+    policy->AddRule(sandbox::SubSystem::kFiles,
+                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+    policy->AddRule(sandbox::SubSystem::kFiles,
+                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+    policy->AddRule(sandbox::SubSystem::kFiles,
+                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&

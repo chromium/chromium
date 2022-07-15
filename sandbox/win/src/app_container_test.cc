@@ -962,8 +962,8 @@ class SocketBrokerTest
     }
     if (ShouldBrokerRuleBeAdded()) {
       TargetPolicy* policy = runner_.GetPolicy();
-      policy->AddRule(TargetPolicy::SUBSYS_SOCKET,
-                      TargetPolicy::SOCKET_ALLOW_BROKER, nullptr);
+      policy->AddRule(SubSystem::kSocket, Semantics::kSocketAllowBroker,
+                      nullptr);
     }
   }
 

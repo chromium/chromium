@@ -25,8 +25,8 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
   // The Pepper process is as locked-down as a renderer except that it can
   // create the server side of Chrome pipes.
   sandbox::ResultCode result;
-  result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                           sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
+  result = policy->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
                            L"\\\\.\\pipe\\chrome.*");
   if (result != sandbox::SBOX_ALL_OK)
     return false;

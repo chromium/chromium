@@ -21,19 +21,18 @@ constexpr size_t maxParams = 2;
 std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   auto policy = std::make_unique<sandbox::PolicyBase>();
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
-                  sandbox::TargetPolicy::FAKE_USER_GDI_INIT, nullptr);
+  policy->AddRule(sandbox::SubSystem::kWin32kLockdown,
+                  sandbox::Semantics::kFakeGdiInit, nullptr);
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                  sandbox::TargetPolicy::FILES_ALLOW_ANY,
-                  L"\\??\\pipe\\chrome.*");
+  policy->AddRule(sandbox::SubSystem::kFiles,
+                  sandbox::Semantics::kFilesAllowAny, L"\\??\\pipe\\chrome.*");
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                  sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
+  policy->AddRule(sandbox::SubSystem::kNamedPipes,
+                  sandbox::Semantics::kNamedPipesAllowAny,
                   L"\\\\.\\pipe\\chrome.nacl.*");
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                  sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
+  policy->AddRule(sandbox::SubSystem::kNamedPipes,
+                  sandbox::Semantics::kNamedPipesAllowAny,
                   L"\\\\.\\pipe\\chrome.sync.*");
 
   return policy;

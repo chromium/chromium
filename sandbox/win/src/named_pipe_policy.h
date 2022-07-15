@@ -22,7 +22,7 @@ class NamedPipePolicy {
   // 'semantics' is the desired semantics.
   // 'policy' is the policy generator to which the rules are going to be added.
   static bool GenerateRules(const wchar_t* name,
-                            TargetPolicy::Semantics semantics,
+                            Semantics semantics,
                             LowLevelPolicy* policy);
 
   // Processes a 'CreateNamedPipeW()' request from the target.

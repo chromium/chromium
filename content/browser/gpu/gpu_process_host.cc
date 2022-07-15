@@ -439,8 +439,8 @@ class GpuSandboxedProcessLauncherDelegate
       std::wstring log_file_path = logging::GetLogFileFullPath();
       if (!log_file_path.empty()) {
         sandbox::ResultCode result = policy->AddRule(
-            sandbox::TargetPolicy::SUBSYS_FILES,
-            sandbox::TargetPolicy::FILES_ALLOW_ANY, log_file_path.c_str());
+            sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowAny,
+            log_file_path.c_str());
         if (result != sandbox::SBOX_ALL_OK)
           return false;
       }

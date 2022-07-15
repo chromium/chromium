@@ -342,8 +342,10 @@ ResultCode PolicyBase::AddRule(SubSystem subsystem,
   ResultCode result = AddRuleInternal(subsystem, semantics, pattern);
   LOG_IF(ERROR, result != SBOX_ALL_OK)
       << "Failed to add sandbox rule."
-      << " error = " << result << ", subsystem = " << subsystem
-      << ", semantics = " << semantics << ", pattern = '" << pattern << "'";
+      << " error = " << result
+      << ", subsystem = " << static_cast<int>(subsystem)
+      << ", semantics = " << static_cast<int>(semantics) << ", pattern = '"
+      << pattern << "'";
   return result;
 }
 
@@ -690,21 +692,21 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
   }
 
   switch (subsystem) {
-    case SUBSYS_FILES: {
+    case SubSystem::kFiles: {
       if (!FileSystemPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
         NOTREACHED();
         return SBOX_ERROR_BAD_PARAMS;
       }
       break;
     }
-    case SUBSYS_NAMED_PIPES: {
+    case SubSystem::kNamedPipes: {
       if (!NamedPipePolicy::GenerateRules(pattern, semantics, policy_maker_)) {
         NOTREACHED();
         return SBOX_ERROR_BAD_PARAMS;
       }
       break;
     }
-    case SUBSYS_WIN32K_LOCKDOWN: {
+    case SubSystem::kWin32kLockdown: {
       // Win32k intercept rules only supported on Windows 8 and above. This must
       // match the version checks in process_mitigations.cc for consistency.
       if (base::win::GetVersion() >= base::win::Version::WIN8) {
@@ -720,7 +722,7 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
-    case SUBSYS_SIGNED_BINARY: {
+    case SubSystem::kSignedBinary: {
       // Signed intercept rules only supported on Windows 10 TH2 and above. This
       // must match the version checks in process_mitigations.cc for
       // consistency.
@@ -736,17 +738,18 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
-    case SUBSYS_SOCKET: {
+    case SubSystem::kSocket: {
       // Only one semantic is supported for this subsystem; to allow socket
       // brokering.
-      DCHECK_EQ(SOCKET_ALLOW_BROKER, semantics);
+      DCHECK_EQ(Semantics::kSocketAllowBroker, semantics);
       // A very simple policy that just allows socket brokering if present.
       PolicyRule socket_policy(ASK_BROKER);
       policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
       break;
     }
-
-    default: { return SBOX_ERROR_UNSUPPORTED; }
+    case SubSystem::kProcess: {
+      return SBOX_ERROR_UNSUPPORTED;
+    }
   }
 
   return SBOX_ALL_OK;

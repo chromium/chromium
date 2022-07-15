@@ -18,38 +18,38 @@ namespace sandbox {
 
 class AppContainer;
 
+// Windows subsystems that can have specific rules.
+// Note: The process subsystem  (kProcess) does not evaluate the request
+// exactly like the CreateProcess API does. See the comment at the top of
+// process_thread_dispatcher.cc for more details.
+enum class SubSystem {
+  kFiles,           // Creation and opening of files and pipes.
+  kNamedPipes,      // Creation of named pipes.
+  kProcess,         // Creation of child processes.
+  kWin32kLockdown,  // Win32K Lockdown related policy.
+  kSignedBinary,    // Signed binary policy.
+  kSocket           // Socket brokering policy.
+};
+
+// Allowable semantics when a rule is matched.
+enum class Semantics {
+  kFilesAllowAny,       // Allows open or create for any kind of access that
+                        // the file system supports.
+  kFilesAllowReadonly,  // Allows open or create with read access only.
+  kFilesAllowQuery,     // Allows access to query the attributes of a file.
+  kNamedPipesAllowAny,  // Allows creation of a named pipe.
+  kFakeGdiInit,         // Fakes user32 and gdi32 initialization. This can
+                        // be used to allow the DLLs to load and initialize
+                        // even if the process cannot access that subsystem.
+  kSignedAllowLoad,     // Allows loading the module when CIG is enabled.
+  kSocketAllowBroker    // Allows brokering of sockets.
+};
+
 // We need [[clang::lto_visibility_public]] because instances of this class are
 // passed across module boundaries. This means different modules must have
 // compatible definitions of the class even when LTO is enabled.
 class [[clang::lto_visibility_public]] TargetPolicy {
  public:
-  // Windows subsystems that can have specific rules.
-  // Note: The process subsystem(SUBSYS_PROCESS) does not evaluate the request
-  // exactly like the CreateProcess API does. See the comment at the top of
-  // process_thread_dispatcher.cc for more details.
-  enum SubSystem {
-    SUBSYS_FILES,            // Creation and opening of files and pipes.
-    SUBSYS_NAMED_PIPES,      // Creation of named pipes.
-    SUBSYS_PROCESS,          // Creation of child processes.
-    SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
-    SUBSYS_SIGNED_BINARY,    // Signed binary policy.
-    SUBSYS_SOCKET            // Socket brokering policy.
-  };
-
-  // Allowable semantics when a rule is matched.
-  enum Semantics {
-    FILES_ALLOW_ANY,       // Allows open or create for any kind of access that
-                           // the file system supports.
-    FILES_ALLOW_READONLY,  // Allows open or create with read access only.
-    FILES_ALLOW_QUERY,     // Allows access to query the attributes of a file.
-    NAMEDPIPES_ALLOW_ANY,  // Allows creation of a named pipe.
-    FAKE_USER_GDI_INIT,    // Fakes user32 and gdi32 initialization. This can
-                           // be used to allow the DLLs to load and initialize
-                           // even if the process cannot access that subsystem.
-    SIGNED_ALLOW_LOAD,     // Allows loading the module when CIG is enabled.
-    SOCKET_ALLOW_BROKER    // Allows brokering of sockets.
-  };
-
   virtual ~TargetPolicy() {}
 
   // Sets the security level for the target process' two tokens.

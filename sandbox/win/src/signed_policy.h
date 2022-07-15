@@ -21,7 +21,7 @@ class SignedPolicy {
   // Creates the required low-level policy rules to evaluate a high-level
   // policy rule.
   static bool GenerateRules(const wchar_t* name,
-                            TargetPolicy::Semantics semantics,
+                            Semantics semantics,
                             LowLevelPolicy* policy);
 
   // Performs the desired policy action on a request.

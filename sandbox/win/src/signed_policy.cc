@@ -18,10 +18,10 @@
 namespace sandbox {
 
 bool SignedPolicy::GenerateRules(const wchar_t* name,
-                                 TargetPolicy::Semantics semantics,
+                                 Semantics semantics,
                                  LowLevelPolicy* policy) {
   // Only support one semantic.
-  if (TargetPolicy::SIGNED_ALLOW_LOAD != semantics) {
+  if (Semantics::kSignedAllowLoad != semantics) {
     return false;
   }
 

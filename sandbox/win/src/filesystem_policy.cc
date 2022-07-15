@@ -72,7 +72,7 @@ SECURITY_QUALITY_OF_SERVICE GetAnonymousQOS() {
 namespace sandbox {
 
 bool FileSystemPolicy::GenerateRules(const wchar_t* name,
-                                     TargetPolicy::Semantics semantics,
+                                     Semantics semantics,
                                      LowLevelPolicy* policy) {
   std::wstring mod_name(name);
   if (mod_name.empty()) {
@@ -114,7 +114,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   PolicyRule rename(result);
 
   switch (semantics) {
-    case TargetPolicy::FILES_ALLOW_READONLY: {
+    case Semantics::kFilesAllowReadonly: {
       // We consider all flags that are not known to be readonly as potentially
       // used for write.
       DWORD allowed_flags = FILE_READ_DATA | FILE_READ_ATTRIBUTES |
@@ -130,13 +130,13 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
       rule_to_add &= ~kCallNtSetInfoRename;
       break;
     }
-    case TargetPolicy::FILES_ALLOW_QUERY: {
+    case Semantics::kFilesAllowQuery: {
       // Here we don't want to add policy for the open or the create.
       rule_to_add &=
           ~(kCallNtOpenFile | kCallNtCreateFile | kCallNtSetInfoRename);
       break;
     }
-    case TargetPolicy::FILES_ALLOW_ANY: {
+    case Semantics::kFilesAllowAny: {
       break;
     }
     default: {
