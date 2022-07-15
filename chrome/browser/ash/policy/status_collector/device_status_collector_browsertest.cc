@@ -899,7 +899,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     // Set up a fake local state for KioskAppManager and KioskCryptohomeRemover.
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    ash::KioskAppManager::RegisterPrefs(local_state_.registry());
+    ash::KioskAppManager::RegisterLocalStatePrefs(local_state_.registry());
     ash::KioskCryptohomeRemover::RegisterPrefs(local_state_.registry());
 
     // Use FakeUpdateEngineClient.

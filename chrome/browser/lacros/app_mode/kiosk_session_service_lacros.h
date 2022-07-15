@@ -26,8 +26,11 @@ class KioskSessionServiceLacros {
   // first before using it.
   static KioskSessionServiceLacros* Get();
 
-  // Registers all prefs associated with the service.
+  // Registers all local state prefs associated with the service.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Registers all profile prefs associated with the service.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   KioskSessionServiceLacros();
   KioskSessionServiceLacros(const KioskSessionServiceLacros&) = delete;

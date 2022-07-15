@@ -1567,6 +1567,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     base::Value::Type::LIST },
+  { key::kNewWindowsInKioskAllowed,
+    prefs::kNewWindowsInKioskAllowed,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)

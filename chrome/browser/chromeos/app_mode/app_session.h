@@ -43,7 +43,9 @@ class AppSession {
   AppSession& operator=(const AppSession&) = delete;
   virtual ~AppSession();
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Initializes an app session for Chrome App Kiosk.
   virtual void Init(Profile* profile, const std::string& app_id);

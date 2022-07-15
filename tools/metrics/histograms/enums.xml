@@ -32035,6 +32035,7 @@ Called by update_document_policy_enum.py.-->
   <int value="992" label="ChromeRootStoreEnabled"/>
   <int value="993" label="WebSQLNonSecureContextEnabled"/>
   <int value="994" label="IdleProfileCloseTimeout"/>
+  <int value="995" label="NewWindowsInKioskAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

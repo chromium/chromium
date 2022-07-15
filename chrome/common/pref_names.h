@@ -919,6 +919,11 @@ extern const char kLastChromadMigrationAttemptTime[];
 extern const char kHardwareSecureDecryptionDisabledTimes[];
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kKioskMetrics[];
+extern const char kNewWindowsInKioskAllowed[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kAttemptedToEnableAutoupdate[];
 
@@ -1252,10 +1257,6 @@ extern const char kSCTAuditingHashdanceReportCount[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kConsumerAutoUpdateToggle[];
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kKioskMetrics[];
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace prefs
 

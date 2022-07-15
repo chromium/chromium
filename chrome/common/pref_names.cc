@@ -2684,6 +2684,17 @@ const char kHardwareSecureDecryptionDisabledTimes[] =
     "media.hardware_secure_decryption.disabled_times";
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// A dictionary containing kiosk metrics latest session related information.
+// For example, kiosk session start times, number of network drops.
+// This setting resides in local state.
+const char kKioskMetrics[] = "kiosk-metrics";
+
+// A boolean pref which determines whether a Web Kiosk can open more than one
+// browser window.
+const char kNewWindowsInKioskAllowed[] = "new_windows_in_kiosk_allowed";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 
@@ -3539,12 +3550,5 @@ const char kSCTAuditingHashdanceReportCount[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-// A dictionary containing kiosk metrics latest session related information.
-// For example, kiosk session start times, number of network drops.
-// This setting resides in local state.
-const char kKioskMetrics[] = "kiosk-metrics";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace prefs

@@ -200,9 +200,15 @@ void KioskAppManager::ResetForTesting() {
 }
 
 // static
-void KioskAppManager::RegisterPrefs(PrefRegistrySimple* registry) {
+void KioskAppManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kKioskDictionaryName);
-  chromeos::AppSession::RegisterPrefs(registry);
+  chromeos::AppSession::RegisterLocalStatePrefs(registry);
+}
+
+// static
+void KioskAppManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  chromeos::AppSession::RegisterProfilePrefs(registry);
 }
 
 // static

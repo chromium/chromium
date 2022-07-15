@@ -33,7 +33,13 @@ KioskSessionServiceLacros* KioskSessionServiceLacros::Get() {
 // static
 void KioskSessionServiceLacros::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  chromeos::AppSession::RegisterPrefs(registry);
+  chromeos::AppSession::RegisterLocalStatePrefs(registry);
+}
+
+// static
+void KioskSessionServiceLacros::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  chromeos::AppSession::RegisterProfilePrefs(registry);
 }
 
 KioskSessionServiceLacros::KioskSessionServiceLacros() {

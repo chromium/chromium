@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -219,8 +220,13 @@ AppSession::~AppSession() {
     metrics_service_->RecordKioskSessionStopped();
 }
 
-void AppSession::RegisterPrefs(PrefRegistrySimple* registry) {
+void AppSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kKioskMetrics);
+}
+
+void AppSession::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
 }
 
 void AppSession::Init(Profile* profile, const std::string& app_id) {

@@ -1149,7 +1149,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::FastTransitionObserver::RegisterPrefs(registry);
   ash::HWDataUsageController::RegisterLocalStatePrefs(registry);
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
-  ash::KioskAppManager::RegisterPrefs(registry);
+  ash::KioskAppManager::RegisterLocalStatePrefs(registry);
   ash::KioskCryptohomeRemover::RegisterPrefs(registry);
   ash::language_prefs::RegisterPrefs(registry);
   chromeos::local_search_service::SearchMetricsReporter::
@@ -1541,12 +1541,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ProjectorAppClientImpl::RegisterProfilePrefs(registry);
   ash::floating_workspace_util::RegisterProfilePrefs(registry);
   policy::RebootNotificationsScheduler::RegisterProfilePrefs(registry);
+  ash::KioskAppManager::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   lacros_prefs::RegisterProfilePrefs(registry);
   chromeos::ProxyConfigServiceLacros::RegisterProfilePrefs(registry);
   lacros_prefs::RegisterExtensionControlledAshPrefs(registry);
+  KioskSessionServiceLacros::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_WIN)
