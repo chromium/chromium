@@ -12,6 +12,7 @@
 #include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/browser_process.h"
@@ -290,4 +291,108 @@ TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForNonWindow) {
   *TargetForAction() = nonWindowObject;
 
   CheckMenuItemsMatchNonBrowserWindow();
+}
+
+class AppControllerSafeProfileTest : public AppControllerTest {
+ protected:
+  AppControllerSafeProfileTest() = default;
+  ~AppControllerSafeProfileTest() override = default;
+
+  void TearDown() override { [NSApp setDelegate:nil]; }
+};
+
+// Tests that RunInLastProfileSafely() works with an already-loaded
+// profile.
+TEST_F(AppControllerSafeProfileTest, LastProfileLoaded) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  [NSApp setDelegate:ac];
+  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInLastProfileSafely(
+      base::BindLambdaForTesting([&](Profile* profile) {
+        EXPECT_EQ(profile, profile_.get());
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
+}
+
+// Tests that RunInLastProfileSafely() re-loads the profile from disk if
+// it's not currently in memory.
+TEST_F(AppControllerSafeProfileTest, LastProfileNotLoaded) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed, "New Profile 2");
+
+  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  [NSApp setDelegate:ac];
+  ASSERT_EQ(nil, [ac lastProfileIfLoaded]);
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInLastProfileSafely(
+      base::BindLambdaForTesting([&](Profile* profile) {
+        EXPECT_NE(profile, nullptr);
+        EXPECT_NE(profile, profile_.get());
+        EXPECT_EQ(profile->GetBaseName().MaybeAsASCII(), "New Profile 2");
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
+}
+
+// Tests that RunInProfileInSafeProfileHelper::RunInProfile() works with an
+// already-loaded profile.
+TEST_F(AppControllerSafeProfileTest, SpecificProfileLoaded) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  [NSApp setDelegate:ac];
+  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+
+  TestingProfile* profile2 =
+      profile_manager_.CreateTestingProfile("New Profile 2");
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInProfileSafely(
+      profile_manager_.profiles_dir().AppendASCII("New Profile 2"),
+      base::BindLambdaForTesting([&](Profile* profile) {
+        // This should run with the specific profile we asked for, rather than
+        // the last-used profile.
+        EXPECT_EQ(profile, profile2);
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
+}
+
+// Tests that RunInProfileSafely() re-loads the profile from
+// disk if it's not currently in memory.
+TEST_F(AppControllerSafeProfileTest, SpecificProfileNotLoaded) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  [NSApp setDelegate:ac];
+  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInProfileSafely(
+      profile_manager_.profiles_dir().AppendASCII("New Profile 2"),
+      base::BindLambdaForTesting([&](Profile* profile) {
+        // This should run with the specific profile we asked for, rather than
+        // the last-used profile.
+        EXPECT_NE(profile, nullptr);
+        EXPECT_NE(profile, profile_.get());
+        EXPECT_EQ(profile->GetBaseName().MaybeAsASCII(), "New Profile 2");
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
 }

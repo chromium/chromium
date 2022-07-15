@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/sessions/core/session_id.h"
+#include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_observer.h"
 
 #if defined(__OBJC__)
 
@@ -19,6 +24,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
@@ -256,6 +262,67 @@ void CreateGuestProfileIfNeeded();
 // Called when Enterprise startup dialog is close and repost
 // applicationDidFinished notification.
 void EnterpriseStartupDialogClosed();
+
+// Tells RunInSafeProfile() or RunInSpecificSafeProfile() what to do if the
+// profile cannot be loaded from disk.
+enum ProfileLoadFailureBehavior {
+  // Silently fail, and run |callback| with nullptr.
+  kIgnoreOnFailure,
+  // Show the profile picker, and run |callback| with nullptr.
+  kShowProfilePickerOnFailure,
+};
+
+// Tries to load the profile returned by |-safeProfileForNewWindows:|. If it
+// succeeds, calls |callback| with it.
+//
+// |callback| must be valid.
+void RunInLastProfileSafely(base::OnceCallback<void(Profile*)> callback,
+                            ProfileLoadFailureBehavior on_failure);
+
+// Tries to load the profile in |profile_dir|. If it succeeds, calls
+// |callback| with it. If the profile was already loaded, |callback| runs
+// immediately.
+//
+// |callback| must be valid.
+void RunInProfileSafely(const base::FilePath& profile_dir,
+                        base::OnceCallback<void(Profile*)> callback,
+                        ProfileLoadFailureBehavior on_failure);
+
+// Waits for the TabRestoreService to have loaded its entries, then calls
+// OpenWindowWithRestoredTabs().
+//
+// Owned by itself.
+class TabRestorer : public sessions::TabRestoreServiceObserver {
+ public:
+  // Restore the most recent tab in |profile|, e.g. for Cmd+Shift+T.
+  static void RestoreMostRecent(Profile* profile);
+
+  // Restore a specific tab in |profile|, e.g. for a History menu item.
+  // |session_id| can be a |TabRestoreService::Entry::id|, or a
+  // |TabRestoreEntryService::Entry::original_id|.
+  static void RestoreByID(Profile* profile, SessionID session_id);
+
+  ~TabRestorer() override;
+
+  // sessions::TabRestoreServiceObserver:
+  void TabRestoreServiceDestroyed(
+      sessions::TabRestoreService* service) override;
+  void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
+
+ private:
+  TabRestorer(Profile* profile, SessionID session_id);
+
+  // Performs the tab restore. Called either in TabRestoreServiceLoaded(), or
+  // directly from RestoreMostRecent()/RestoreByID() if the service was already
+  // loaded.
+  static void DoRestoreTab(Profile* profile, SessionID session_id);
+
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      observation_{this};
+  raw_ptr<Profile> profile_;
+  SessionID session_id_;
+};
 
 }  // namespace app_controller_mac
 
