@@ -80,6 +80,64 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Cras.DeviceConfigureTime{Direction}{Device}{HostCapability}{PeripheralCapability}"
+    units="ms" expires_after="2023-07-11">
+  <owner>hychao@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The configure time of {Direction} device {Device} in CRAS(ChromeOS audio
+    server). The configure time is the time taken for the device's own configure
+    function to execute and when it returns signaling that device is ready to
+    send/receive audio data. For wired audio devices this is expected to range
+    from 10ms to 100ms, while wireless headsets this could take longer than
+    500ms. We collect this configure time to gather stats and track the
+    improvement on shortening this configure time.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".Input"/>
+    <variant name=".Output"/>
+  </token>
+  <token key="Device">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".A2DP"/>
+    <variant name=".AbnormalFallback"/>
+    <variant name=".AlsaLoopback"/>
+    <variant name=".Bluetooth"/>
+    <variant name=".FrontMic"/>
+    <variant name=".Haptic"/>
+    <variant name=".HDMI"/>
+    <variant name=".Headphone"/>
+    <variant name=".HFP"/>
+    <variant name=".Hotword"/>
+    <variant name=".InternalMic"/>
+    <variant name=".InternalSpeaker"/>
+    <variant name=".InvalidType"/>
+    <variant name=".KeyboardMic"/>
+    <variant name=".Lineout"/>
+    <variant name=".Mic"/>
+    <variant name=".NoDevice"/>
+    <variant name=".NormalFallback"/>
+    <variant name=".PostDspLoopback"/>
+    <variant name=".PostMixLoopback"/>
+    <variant name=".RearMic"/>
+    <variant name=".SilentHotword"/>
+    <variant name=".Unknown"/>
+    <variant name=".USB"/>
+  </token>
+  <token key="HostCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NonOffloading"/>
+    <variant name=".Offloading"/>
+  </token>
+  <token key="PeripheralCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NarrowBandMic"/>
+    <variant name=".WideBandMic"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.DeviceGain" units="level" expires_after="2022-11-20">
 <!-- Name completed by histogram_suffixes
      name="Cras.DeviceType" -->
