@@ -1226,7 +1226,7 @@ class ClipboardHistoryWebContentsBrowserTest : public InProcessBrowserTest {
 // in this test case.
 // Flaky: crbug/1224777
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
-                       VerifyHTMLRendering) {
+                       DISABLED_VerifyHTMLRendering) {
   // Load the web page which contains images and text.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/image-and-text.html")));
@@ -1251,18 +1251,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
   // history shows, the process of HTML rendering starts.
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       ash::Shell::GetPrimaryRootWindow());
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-
-  // Add a callback that collects the stack trace when the clipboard history
-  // menu is closed. It helps to investigate the reason why the clipboard
-  // history menu is closed unexpectedly.
-  // TODO(https://crbug.com/1224777): when the flakiness is fixed, remove it.
-  GetClipboardHistoryController()->set_on_menu_closed_callback_for_test(
-      base::BindOnce([]() {
-        ADD_FAILURE() << "The clipboard history menu should not be closed";
-      }));
 
   // Render HTML with auto-resize mode enabled. Wait until the rendering
   // finishes.
@@ -1283,14 +1272,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
 
   // Verify that the clipboard history menu shows. Then close the menu.
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Reset the callback that runs when the clipboard history menu is closed.
-  // According to the CQ record, the unexpected menu close happens before
-  // this line.
-  // TODO(https://crbug.com/1224777): when the flakiness is fixed, remove it.
-  GetClipboardHistoryController()->set_on_menu_closed_callback_for_test(
-      base::NullCallback());
-
   event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 

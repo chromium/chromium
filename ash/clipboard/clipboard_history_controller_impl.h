@@ -136,10 +136,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     confirmed_operation_callback_for_test_ = new_callback;
   }
 
-  void set_on_menu_closed_callback_for_test(base::OnceClosure new_closure) {
-    on_menu_closed_callback_for_test_ = std::move(new_closure);
-  }
-
   void set_new_bitmap_to_write_while_encoding_for_test(const SkBitmap& bitmap) {
     new_bitmap_to_write_while_encoding_for_test_ = bitmap;
   }
@@ -261,9 +257,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when a copy or paste finishes. Accepts the operation's success as an
   // argument.
   base::RepeatingCallback<void(bool)> confirmed_operation_callback_for_test_;
-
-  // Called when the clipboard history menu is closed.
-  base::OnceClosure on_menu_closed_callback_for_test_;
 
   // A new bitmap to be written to the clipboard while existing images are being
   // encoded during `GetHistoryValues()`, which will force `GetHistoryValues()`
