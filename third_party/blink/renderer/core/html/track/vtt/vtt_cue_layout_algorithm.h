@@ -37,6 +37,7 @@ class VttCueLayoutAlgorithm {
 
   // Helpers for AdjustPositionWithSnapToLines():
 
+  LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension);
   static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
 
   VTTCueBox& cue_;
@@ -44,8 +45,8 @@ class VttCueLayoutAlgorithm {
 
   // |margin_| and |step_| are data members because they are accessed by
   // multiple member functions, and we'd like to simplify their arguments.
-  [[maybe_unused]] LayoutUnit margin_;
-  [[maybe_unused]] LayoutUnit step_;
+  LayoutUnit margin_;
+  LayoutUnit step_;
 };
 
 }  // namespace blink

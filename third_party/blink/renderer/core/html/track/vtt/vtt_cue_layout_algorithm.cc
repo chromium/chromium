@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
@@ -29,6 +31,42 @@ void VttCueLayoutAlgorithm::Layout() {
     // ↪ If cue’s WebVTT cue snap-to-lines flag is false
     AdjustPositionWithoutSnapToLines();
   }
+}
+
+LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
+    LayoutUnit max_dimension) {
+  DCHECK(std::isfinite(snap_to_lines_position_));
+
+  // 4. Let line be cue's computed line.
+  // 5. Round line to an integer by adding 0.5 and then flooring it.
+  float line = std::floorf(snap_to_lines_position_ + 0.5f);
+
+  // 6. Vertical Growing Left: Add one to line then negate it.
+  const auto& cue_box = *cue_.GetLayoutBox();
+  if (cue_box.HasFlippedBlocksWritingMode())
+    line = -(line + 1);
+
+  // 7. Let position be the result of multiplying step and line offset.
+  LayoutUnit position(step_ * line);
+
+  // 8. Vertical Growing Left: Decrease position by the width of the
+  // bounding box of the boxes in boxes, then increase position by step.
+  if (cue_box.HasFlippedBlocksWritingMode()) {
+    position -= cue_box.FrameRect().Width();
+    position += step_;
+  }
+
+  // 9. If line is less than zero then increase position by max dimension,
+  // and negate step.
+  if (line < 0) {
+    position += max_dimension;
+    step_ = -step_;
+  } else {
+    // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
+    // 11.11. Otherwise, increase position by margin.
+    position += margin_;
+  }
+  return position;
 }
 
 // CueBoundingBox() does not return the geometry from LayoutBox as is because
@@ -96,8 +134,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   const double margin_ratio =
       settings ? settings->GetTextTrackMarginPercentage() / 100.0 : 0;
   margin_ = LayoutUnit(full_dimension * margin_ratio);
-  [[maybe_unused]] const LayoutUnit max_dimension =
-      full_dimension - 2 * margin_;
+  const LayoutUnit max_dimension = full_dimension - 2 * margin_;
 
   // 2. Horizontal: Let step be the height of the first line box in boxes.
   //    Vertical: Let step be the width of the first line box in boxes.
@@ -106,6 +143,10 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // 3. If step is zero, then jump to the step labeled done positioning below.
   if (step_ == LayoutUnit())
     return;
+
+  // Step 4-9
+  [[maybe_unused]] LayoutUnit position =
+      ComputeInitialPositionAdjustment(max_dimension);
 
   // TODO(crbug.com/1335309): Implement this.
 
