@@ -41,6 +41,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -617,4 +618,63 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
       blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
   EXPECT_FALSE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
+}
+
+namespace {
+
+class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
+ public:
+  PrivacyBudgetBrowserTestActiveSampling() {
+    test::ScopedPrivacyBudgetConfig::Parameters params;
+    params.enabled = true;
+    params.enable_active_sampling = true;
+    params.actively_sampled_fonts = {"Arial", "Helvetica"};
+    privacy_budget_config_.Apply(params);
+  }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(parts);
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  ukm::TestUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
+
+ private:
+  test::ScopedPrivacyBudgetConfig privacy_budget_config_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestActiveSampling,
+                       ActiveSamplingIsPerformed) {
+  content::RunAllTasksUntilIdle();
+  auto merged_entries = ukm_recorder().GetMergedEntriesByName(
+      ukm::builders::Identifiability::kEntryName);
+
+  std::vector<uint64_t> reported_surface_keys;
+  for (const auto& entry : merged_entries) {
+    for (const auto& metric : entry.second->metrics) {
+      reported_surface_keys.push_back(metric.first);
+    }
+  }
+
+  uint64_t key_model = blink::IdentifiableSurface::FromTypeAndToken(
+                           blink::IdentifiableSurface::Type::
+                               kNavigatorUAData_GetHighEntropyValues,
+                           blink::IdentifiableToken("model"))
+                           .ToUkmMetricHash();
+  uint64_t key_arial =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+          blink::IdentifiableToken("arial"))
+          .ToUkmMetricHash();
+  uint64_t key_helvetica =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+          blink::IdentifiableToken("helvetica"))
+          .ToUkmMetricHash();
+  EXPECT_THAT(reported_surface_keys,
+              testing::IsSupersetOf({key_model, key_arial, key_helvetica}));
 }
