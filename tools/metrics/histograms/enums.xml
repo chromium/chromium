@@ -51184,6 +51184,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Return to Recent Tab tile"/>
   <int value="3" label="Feed Card"/>
+  <int value="4" label="Fake Omnibox"/>
 </enum>
 
 <enum name="iOSCredentialIdentityStoreErrorForReporting">

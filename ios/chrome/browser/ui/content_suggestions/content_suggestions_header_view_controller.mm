@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 
-#include "base/check.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -29,13 +29,13 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -462,6 +462,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
+  [self.delegate fakeboxTapped];
   [self focusFakebox];
 }
 
@@ -469,6 +470,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
+  [self.delegate fakeboxTapped];
   [self focusFakebox];
 }
 
