@@ -417,10 +417,6 @@ external/wpt/css/css-page/page-size-010.xht [ Skip ]
 external/wpt/css/css-page/page-size-011.xht [ Skip ]
 external/wpt/css/css-page/page-size-012.xht [ Skip ]
 
-# This test caused presubmit check failure due to baselines path name exceeds 200 characters
-# Skip this test for now. Will rename the test at upstream then unskip
-external/wpt/editing/other/insertparagraph-or-insertlinebreak-in-inline-editing-host.tentative.html [ Skip ]
-
 # This test includes arbitrary html in unit test names (via parametrize) which
 # is currently not well handled in WebDriverExpectations, and causes Lint error
 # crbug.com/1167318
