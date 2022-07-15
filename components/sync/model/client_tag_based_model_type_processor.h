@@ -51,10 +51,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
  public:
   ClientTagBasedModelTypeProcessor(ModelType type,
                                    const base::RepeatingClosure& dump_stack);
-  // Used only for unit-tests.
-  ClientTagBasedModelTypeProcessor(ModelType type,
-                                   const base::RepeatingClosure& dump_stack,
-                                   bool commit_only);
 
   ClientTagBasedModelTypeProcessor(const ClientTagBasedModelTypeProcessor&) =
       delete;
@@ -284,12 +280,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   //////////////////
 
   std::unique_ptr<ProcessorEntityTracker> entity_tracker_;
-
-  // If the processor should behave as if |type_| is one of the commit only
-  // model types. For this processor, being commit only means that on commit
-  // confirmation, we should delete local data, because the model side never
-  // intends to read it. This includes both data and metadata.
-  const bool commit_only_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -34,12 +34,26 @@ sync_pb::ModelTypeState GenerateModelTypeState() {
   return model_type_state;
 }
 
+ClientTagHash GetPrefHash(const std::string& key) {
+  return ClientTagHash::FromUnhashed(
+      PREFERENCES, FakeModelTypeSyncBridge::ClientTagFromKey(key));
+}
+
+sync_pb::EntitySpecifics GeneratePrefSpecifics(const std::string& key,
+                                               const std::string& value) {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_preference()->set_name(key);
+  specifics.mutable_preference()->set_value(value);
+  return specifics;
+}
+
 class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
  public:
   ClientTagBasedRemoteUpdateHandlerTest()
       : processor_entity_tracker_(GenerateModelTypeState(),
                                   EntityMetadataMap()),
-        model_type_sync_bridge_(change_processor_.CreateForwardingProcessor()),
+        model_type_sync_bridge_(PREFERENCES,
+                                change_processor_.CreateForwardingProcessor()),
         remote_update_handler_(PREFERENCES,
                                &model_type_sync_bridge_,
                                &processor_entity_tracker_),
@@ -61,27 +75,24 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
 
   UpdateResponseData GenerateUpdate(const std::string& key,
                                     const std::string& value) {
-    const ClientTagHash client_tag_hash =
-        FakeModelTypeSyncBridge::TagHashFromKey(key);
+    const ClientTagHash client_tag_hash = GetPrefHash(key);
     return GenerateUpdate(client_tag_hash, key, value);
   }
 
   UpdateResponseData GenerateUpdate(const ClientTagHash& client_tag_hash,
                                     const std::string& key,
                                     const std::string& value) {
-    return worker()->GenerateUpdateData(
-        client_tag_hash,
-        FakeModelTypeSyncBridge::GenerateSpecifics(key, value));
+    return worker()->GenerateUpdateData(client_tag_hash,
+                                        GeneratePrefSpecifics(key, value));
   }
 
   UpdateResponseData GenerateUpdate(const std::string& key,
                                     const std::string& value,
                                     int64_t version_offset) {
-    const ClientTagHash client_tag_hash =
-        FakeModelTypeSyncBridge::TagHashFromKey(key);
+    const ClientTagHash client_tag_hash = GetPrefHash(key);
     const sync_pb::ModelTypeState model_type_state = GenerateModelTypeState();
     const sync_pb::EntitySpecifics specifics =
-        FakeModelTypeSyncBridge::GenerateSpecifics(key, value);
+        GeneratePrefSpecifics(key, value);
     return worker()->GenerateUpdateData(client_tag_hash, specifics,
                                         version_offset,
                                         model_type_state.encryption_key_name());
@@ -158,8 +169,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
        ShouldIgnoreRemoteUpdatesWithUnexpectedClientTagHash) {
   ASSERT_EQ(0U, ProcessorEntityCount());
-  ProcessSingleUpdate(GenerateUpdate(
-      FakeModelTypeSyncBridge::TagHashFromKey(kKey2), kKey1, kValue1));
+  ProcessSingleUpdate(GenerateUpdate(GetPrefHash(kKey2), kKey1, kValue1));
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
@@ -237,7 +247,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   EXPECT_EQ(1U, db()->data_count());
   EXPECT_EQ(1U, db()->metadata_count());
 
-  EXPECT_EQ(kValue2, db()->GetValue(kKey1));
+  EXPECT_EQ(kValue2, db()->GetData(kKey1).specifics.preference().value());
   const sync_pb::EntityMetadata& metadata = db()->GetMetadata(kKey1);
   EXPECT_EQ(0, metadata.sequence_number());
   EXPECT_EQ(0, metadata.acked_sequence_number());
@@ -251,8 +261,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteDeletion) {
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
 
-  ProcessSingleUpdate(worker()->GenerateTombstoneUpdateData(
-      FakeModelTypeSyncBridge::TagHashFromKey(kKey1)));
+  ProcessSingleUpdate(
+      worker()->GenerateTombstoneUpdateData(GetPrefHash(kKey1)));
   // Delete from server should clear the data and all the metadata.
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());
@@ -263,8 +273,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteDeletion) {
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
        ShouldIgnoreRemoteDeletionOfUnknownEntity) {
   ASSERT_EQ(0U, ProcessorEntityCount());
-  ProcessSingleUpdate(worker()->GenerateTombstoneUpdateData(
-      FakeModelTypeSyncBridge::TagHashFromKey(kKey1)));
+  ProcessSingleUpdate(
+      worker()->GenerateTombstoneUpdateData(GetPrefHash(kKey1)));
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
@@ -302,8 +312,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
        ShouldNotIssueDeletionUponRemoteDeletion) {
   const std::string kTestEncryptionKeyName = "TestEncryptionKey";
   const std::string kDifferentEncryptionKeyName = "DifferentEncryptionKey";
-  const ClientTagHash kClientTagHash =
-      FakeModelTypeSyncBridge::TagHashFromKey(kKey1);
+  const ClientTagHash kClientTagHash = GetPrefHash(kKey1);
 
   sync_pb::ModelTypeState model_type_state = GenerateModelTypeState();
   model_type_state.set_encryption_key_name(kTestEncryptionKeyName);

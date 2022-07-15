@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -24,29 +23,15 @@ class EntitySpecifics;
 
 namespace syncer {
 
-class ClientTagHash;
 class MetadataBatch;
 struct EntityData;
 
 // A basic, functional implementation of ModelTypeSyncBridge for testing
-// purposes. It uses the PREFERENCES type to provide a simple key/value
-// interface, and uses its own simple in-memory Store class.
+// purposes. It uses its own simple in-memory Store class.
 class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
  public:
   // Generate a client tag with the given key.
   static std::string ClientTagFromKey(const std::string& key);
-
-  // Generates the tag hash for a given key.
-  static ClientTagHash TagHashFromKey(const std::string& key);
-
-  // Generates entity specifics for the given key and value.
-  static sync_pb::EntitySpecifics GenerateSpecifics(const std::string& key,
-                                                    const std::string& value);
-
-  // Generates an EntityData for the given key and value.
-  static std::unique_ptr<EntityData> GenerateEntityData(
-      const std::string& key,
-      const std::string& value);
 
   // A basic in-memory storage mechanism for data and metadata. This makes it
   // easier to test more complex behaviors involving when entities are written,
@@ -65,7 +50,6 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
     bool HasData(const std::string& key) const;
     bool HasMetadata(const std::string& key) const;
     const EntityData& GetData(const std::string& key) const;
-    const std::string& GetValue(const std::string& key) const;
     const sync_pb::EntityMetadata& GetMetadata(const std::string& key) const;
 
     const std::map<std::string, std::unique_ptr<EntityData>>& all_data() const {
@@ -96,15 +80,14 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
     sync_pb::ModelTypeState model_type_state_;
   };
 
-  explicit FakeModelTypeSyncBridge(
+  FakeModelTypeSyncBridge(
+      ModelType type,
       std::unique_ptr<ModelTypeChangeProcessor> change_processor);
   ~FakeModelTypeSyncBridge() override;
 
-  // Local data modification. Emulates signals from the model thread.
-  sync_pb::EntitySpecifics WriteItem(const std::string& key,
-                                     const std::string& value);
+  ModelType type() { return type_; }
 
-  // Overloaded form to allow passing of custom entity data.
+  // Local data modification. Emulates signals from the model thread.
   void WriteItem(const std::string& key,
                  std::unique_ptr<EntityData> entity_data);
 
@@ -171,8 +154,9 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // gets inferred deterministically from specifics).
   std::string GetLastGeneratedStorageKey() const;
 
-  // Add values that will be ignored by bridge.
-  void AddValueToIgnore(const std::string& value);
+  // Add preference values that will be ignored by bridge. Must only be called
+  // if the bridge's ModelType is PREFERENCES.
+  void AddPrefValueToIgnore(const std::string& value);
 
   const Store& db() const { return *db_; }
   Store* mutable_db() { return db_.get(); }
@@ -185,12 +169,20 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // Applies |change_list| to the metadata store.
   void ApplyMetadataChangeList(std::unique_ptr<MetadataChangeList> change_list);
 
+  // Same as GetStorageKey(), but doesn't check that SupportsGetStorageKey()
+  // is true.
+  std::string GetStorageKeyInternal(const EntityData& entity_data);
+
+  // If SupportsGetStorageKey() is true, same as GetStorageKey(). Otherwise,
+  // generates and returns a new unique storage key.
   std::string GenerateStorageKey(const EntityData& entity_data);
+
+  const ModelType type_;
 
   // The conflict resolution to use for calls to ResolveConflict.
   ConflictResolution conflict_resolution_;
 
-  // The keys that the bridge will ignore.
+  // The preference values that the bridge will ignore.
   std::unordered_set<std::string> values_to_ignore_;
 
   // Whether an error should be produced on the next bridge call.

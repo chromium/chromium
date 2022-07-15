@@ -71,33 +71,6 @@ std::string FakeModelTypeSyncBridge::ClientTagFromKey(const std::string& key) {
   return "ClientTag_" + key;
 }
 
-// static
-ClientTagHash FakeModelTypeSyncBridge::TagHashFromKey(const std::string& key) {
-  return ClientTagHash::FromUnhashed(
-      PREFERENCES, FakeModelTypeSyncBridge::ClientTagFromKey(key));
-}
-
-// static
-EntitySpecifics FakeModelTypeSyncBridge::GenerateSpecifics(
-    const std::string& key,
-    const std::string& value) {
-  EntitySpecifics specifics;
-  specifics.mutable_preference()->set_name(key);
-  specifics.mutable_preference()->set_value(value);
-  return specifics;
-}
-
-// static
-std::unique_ptr<EntityData> FakeModelTypeSyncBridge::GenerateEntityData(
-    const std::string& key,
-    const std::string& value) {
-  std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>();
-  entity_data->client_tag_hash = TagHashFromKey(key);
-  entity_data->specifics = GenerateSpecifics(key, value);
-  entity_data->name = key;
-  return entity_data;
-}
-
 FakeModelTypeSyncBridge::Store::Store() = default;
 FakeModelTypeSyncBridge::Store::~Store() = default;
 
@@ -143,11 +116,6 @@ const EntityData& FakeModelTypeSyncBridge::Store::GetData(
   return *data_store_.find(key)->second;
 }
 
-const std::string& FakeModelTypeSyncBridge::Store::GetValue(
-    const std::string& key) const {
-  return GetData(key).specifics.preference().value();
-}
-
 const sync_pb::EntityMetadata& FakeModelTypeSyncBridge::Store::GetMetadata(
     const std::string& key) const {
   return metadata_store_.find(key)->second;
@@ -173,20 +141,14 @@ void FakeModelTypeSyncBridge::Store::Reset() {
 }
 
 FakeModelTypeSyncBridge::FakeModelTypeSyncBridge(
+    ModelType type,
     std::unique_ptr<ModelTypeChangeProcessor> change_processor)
     : ModelTypeSyncBridge(std::move(change_processor)),
-      db_(std::make_unique<Store>()) {}
+      db_(std::make_unique<Store>()),
+      type_(type) {}
 
 FakeModelTypeSyncBridge::~FakeModelTypeSyncBridge() {
   EXPECT_FALSE(error_next_);
-}
-
-EntitySpecifics FakeModelTypeSyncBridge::WriteItem(const std::string& key,
-                                                   const std::string& value) {
-  std::unique_ptr<EntityData> entity_data = GenerateEntityData(key, value);
-  EntitySpecifics specifics_copy = entity_data->specifics;
-  WriteItem(key, std::move(entity_data));
-  return specifics_copy;
 }
 
 // Overloaded form to allow passing of custom entity data.
@@ -239,7 +201,8 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeSyncData(
     std::string storage_key = change->storage_key();
     EXPECT_NE(SupportsGetStorageKey(), storage_key.empty());
     if (storage_key.empty()) {
-      if (base::Contains(values_to_ignore_,
+      if (type_ == PREFERENCES &&
+          base::Contains(values_to_ignore_,
                          change->data().specifics.preference().value())) {
         change_processor()->UntrackEntityForClientTagHash(
             change->data().client_tag_hash);
@@ -349,19 +312,35 @@ void FakeModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 std::string FakeModelTypeSyncBridge::GetClientTag(
     const EntityData& entity_data) {
-  return ClientTagFromKey(entity_data.specifics.preference().name());
+  DCHECK(supports_get_client_tag_);
+  return ClientTagFromKey(GetStorageKeyInternal(entity_data));
 }
 
 std::string FakeModelTypeSyncBridge::GetStorageKey(
     const EntityData& entity_data) {
   DCHECK(supports_get_storage_key_);
-  return GenerateStorageKey(entity_data);
+  return GetStorageKeyInternal(entity_data);
+}
+
+std::string FakeModelTypeSyncBridge::GetStorageKeyInternal(
+    const EntityData& entity_data) {
+  switch (type_) {
+    case PREFERENCES:
+      return entity_data.specifics.preference().name();
+    case USER_EVENTS:
+      return base::NumberToString(
+          entity_data.specifics.user_event().event_time_usec());
+    default:
+      // If you need support for more types, add them here.
+      NOTREACHED();
+  }
+  return std::string();
 }
 
 std::string FakeModelTypeSyncBridge::GenerateStorageKey(
     const EntityData& entity_data) {
   if (supports_get_storage_key_) {
-    return entity_data.specifics.preference().name();
+    return GetStorageKey(entity_data);
   } else {
     return base::NumberToString(++last_generated_storage_key_);
   }
@@ -443,7 +422,8 @@ std::string FakeModelTypeSyncBridge::GetLastGeneratedStorageKey() const {
   return base::NumberToString(last_generated_storage_key_);
 }
 
-void FakeModelTypeSyncBridge::AddValueToIgnore(const std::string& value) {
+void FakeModelTypeSyncBridge::AddPrefValueToIgnore(const std::string& value) {
+  DCHECK_EQ(type_, PREFERENCES);
   values_to_ignore_.insert(value);
 }
 
