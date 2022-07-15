@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -127,6 +128,8 @@ void BrowserPolicyConnector::ScheduleServiceInitialization(
   // initialized (unit tests).
   if (device_management_service_)
     device_management_service_->ScheduleInitialization(delay_milliseconds);
+  else
+    CHECK_IS_TEST();
 }
 
 bool BrowserPolicyConnector::ProviderHasPolicies(

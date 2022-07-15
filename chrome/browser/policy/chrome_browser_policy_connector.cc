@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
@@ -169,9 +170,12 @@ void ChromeBrowserPolicyConnector::Shutdown() {
 
 ConfigurationPolicyProvider*
 ChromeBrowserPolicyConnector::GetPlatformProvider() {
-  ConfigurationPolicyProvider* provider =
-      BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_.get();
+  if (ConfigurationPolicyProvider* provider =
+          BrowserPolicyConnectorBase::GetPolicyProviderForTesting()) {
+    CHECK_IS_TEST();
+    return provider;
+  }
+  return platform_provider_.get();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
