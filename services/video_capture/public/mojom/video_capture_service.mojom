@@ -14,6 +14,9 @@ import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "media/capture/video/chromeos/mojom/camera_app.mojom";
 
+[EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
+
 [EnableIf=is_chromeos_ash]
 interface AcceleratorFactory {
   // Creates a new JpegDecodeAccelerator and binds it to |jda|.
@@ -29,6 +32,8 @@ const sandbox.mojom.Sandbox kVideoCaptureSandbox
   = sandbox.mojom.Sandbox.kNoSandbox;
 
 // Entry point to the Video Capture Service API.
+// This interface is executed in the Video Capture Utility process.
+// It is used from the Browser process.
 // The factory provides access to the capture devices connected to the system.
 // By using command-line switches, it is possible to replace this with a "fake"
 // factory, which provides access to fake devices that generates test frames.
@@ -59,4 +64,9 @@ interface VideoCaptureService  {
 
   // Binds a test-only interface for use by unit tests.
   BindControlsForTesting(pending_receiver<TestingControls> receiver);
+
+  // Notify the capture service about change of the GPU adapter used in
+  // the GPU process.
+  [EnableIf=is_win]
+  OnGpuInfoUpdate(gpu.mojom.Luid luid);
 };

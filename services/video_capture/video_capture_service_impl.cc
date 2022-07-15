@@ -235,4 +235,11 @@ void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
   video_source_provider_.reset();
 }
 
+#if BUILDFLAG(IS_WIN)
+void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  LazyInitializeDeviceFactory();
+  device_factory_->OnGpuInfoUpdate(luid);
+}
+#endif
+
 }  // namespace video_capture

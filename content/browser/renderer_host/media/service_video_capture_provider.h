@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/service_process_host.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
@@ -26,7 +27,7 @@ namespace content {
 // been released and no more answers to GetDeviceInfosAsync() calls are pending.
 class CONTENT_EXPORT ServiceVideoCaptureProvider
     : public VideoCaptureProvider,
-      public ServiceProcessHost::Observer {
+      public content::GpuDataManagerObserver {
  public:
   // This constructor uses a default factory for instances of
   // viz::mojom::Gpu which produces instances of class content::GpuClient.
@@ -49,9 +50,14 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
 
+  // content::GpuDataManagerObserver implementation.
+  void OnGpuInfoUpdate() override;
+
  private:
   void OnServiceStarted();
   void OnServiceStopped();
+
+  void RegisterWithGpuDataManager();
 
   enum class ReasonForDisconnect { kShutdown, kUnused, kConnectionLost };
 

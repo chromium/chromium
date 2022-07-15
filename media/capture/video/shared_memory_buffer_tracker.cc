@@ -57,7 +57,8 @@ size_t CalculateRequiredBufferSize(
 
 namespace media {
 
-SharedMemoryBufferTracker::SharedMemoryBufferTracker() = default;
+SharedMemoryBufferTracker::SharedMemoryBufferTracker(bool strict_pixel_format)
+    : strict_pixel_format_(strict_pixel_format){};
 
 SharedMemoryBufferTracker::~SharedMemoryBufferTracker() = default;
 
@@ -69,6 +70,7 @@ bool SharedMemoryBufferTracker::Init(const gfx::Size& dimensions,
       CalculateRequiredBufferSize(dimensions, format, strides);
   region_ = base::UnsafeSharedMemoryRegion::Create(buffer_size);
   mapping_ = {};
+  format_ = format;
   return region_.IsValid();
 }
 
@@ -76,8 +78,9 @@ bool SharedMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  return GetMemorySizeInBytes() >=
-         CalculateRequiredBufferSize(dimensions, format, strides);
+  return (!strict_pixel_format_ || format == format_) &&
+         GetMemorySizeInBytes() >=
+             CalculateRequiredBufferSize(dimensions, format, strides);
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>

@@ -49,6 +49,8 @@ scoped_refptr<DXGIDeviceManager>
 VideoCaptureDeviceFactory::GetDxgiDeviceManager() {
   return nullptr;
 }
+
+void VideoCaptureDeviceFactory::OnGpuInfoUpdate(const CHROME_LUID& luid){};
 #endif
 
 }  // namespace media

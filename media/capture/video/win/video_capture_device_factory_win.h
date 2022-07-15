@@ -91,6 +91,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
     return use_d3d11_with_media_foundation_;
   }
 
+  void OnGpuInfoUpdate(const CHROME_LUID& luid) override;
+
  private:
   void EnumerateDevicesUWP(std::vector<VideoCaptureDeviceInfo> devices_info,
                            GetDevicesInfoCallback result_callback);

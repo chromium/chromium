@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,6 +54,9 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
   void RegisterVirtualDevicesChangedObserver(
       mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present) override;
+#if BUILDFLAG(IS_WIN)
+  void OnGpuInfoUpdate(const CHROME_LUID& luid) override;
+#endif
 
  private:
   class VirtualDeviceEntry;

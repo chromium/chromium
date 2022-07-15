@@ -10,6 +10,12 @@ import "services/video_capture/public/mojom/devices_changed_observer.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/virtual_device.mojom";
 
+[EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
+
+// TODO(crbug.com/1344751): remove this deprecated interface.
+// This interface is executed in the Video Capture Utility process.
+// It is used from the Browser process.
 // Enables access to a set of video capture devices.
 // Typical operation is to first call GetDeviceInfos() to obtain
 // information about available devices. The |device_id| of the infos can
@@ -71,4 +77,9 @@ interface DeviceFactory {
   RegisterVirtualDevicesChangedObserver(
       pending_remote<DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present);
+
+  // Notify the capture service about change of the GPU adapter used in
+  // the GPU process.
+  [EnableIf=is_win]
+  OnGpuInfoUpdate(gpu.mojom.Luid luid);
 };

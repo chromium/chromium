@@ -1003,4 +1003,11 @@ VideoCaptureDeviceFactoryWin::GetDxgiDeviceManager() {
   return dxgi_device_manager_;
 }
 
+void VideoCaptureDeviceFactoryWin::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  luid_ = luid;
+  if (dxgi_device_manager_) {
+    dxgi_device_manager_->OnGpuInfoUpdate(luid_);
+  }
+}
+
 }  // namespace media

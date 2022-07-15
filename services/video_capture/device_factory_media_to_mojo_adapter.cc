@@ -218,4 +218,10 @@ void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
   active_devices_by_id_.erase(device_id);
 }
 
+#if BUILDFLAG(IS_WIN)
+void DeviceFactoryMediaToMojoAdapter::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  capture_system_->GetFactory()->OnGpuInfoUpdate(luid);
+}
+#endif
+
 }  // namespace video_capture

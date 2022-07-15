@@ -97,6 +97,12 @@ DXGIDeviceManager::~DXGIDeviceManager() = default;
 
 HRESULT DXGIDeviceManager::ResetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
+  base::AutoLock lock(lock_);
+  return ResetDevice_Locked(d3d_device);
+}
+
+HRESULT DXGIDeviceManager::ResetDevice_Locked(
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
   constexpr uint32_t kDeviceFlags =
       D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
   const D3D_FEATURE_LEVEL kFeatureLevels[] = {
@@ -148,10 +154,11 @@ HRESULT DXGIDeviceManager::ResetDevice(
 
 HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>* new_device) {
-  Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice();
+  base::AutoLock lock(lock_);
+  Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice_Locked();
   HRESULT hr = device ? device->GetDeviceRemovedReason() : MF_E_UNEXPECTED;
   if (FAILED(hr)) {
-    HRESULT reset_hr = ResetDevice(device);
+    HRESULT reset_hr = ResetDevice_Locked(device);
     if (FAILED(reset_hr)) {
       LOG(ERROR) << "Failed to recreate the device: "
                  << logging::SystemErrorCodeToString(reset_hr);
@@ -196,6 +203,11 @@ HRESULT DXGIDeviceManager::RegisterWithMediaSource(
 }
 
 Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice() {
+  base::AutoLock lock(lock_);
+  return GetDevice_Locked();
+}
+
+Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice_Locked() {
   DXGIDeviceScopedHandle device_handle(mf_dxgi_device_manager_.Get());
   return device_handle.GetDevice();
 }
@@ -203,6 +215,15 @@ Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice() {
 Microsoft::WRL::ComPtr<IMFDXGIDeviceManager>
 DXGIDeviceManager::GetMFDXGIDeviceManager() {
   return mf_dxgi_device_manager_;
+}
+
+void DXGIDeviceManager::OnGpuInfoUpdate(CHROME_LUID luid) {
+  base::AutoLock lock(lock_);
+  if (luid.HighPart != luid_.HighPart || luid.LowPart != luid_.LowPart) {
+    luid_ = luid;
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    ResetDevice_Locked(device);
+  }
 }
 
 }  // namespace media

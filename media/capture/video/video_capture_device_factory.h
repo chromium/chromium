@@ -84,6 +84,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
   // implementation always returns nullptr. Should be overridden by actual
   // factory implementation on Windows.
   virtual scoped_refptr<DXGIDeviceManager> GetDxgiDeviceManager();
+
+  // Default implementation does nothing. Should be overridden by actual
+  // factory implementation on Windows.
+  virtual void OnGpuInfoUpdate(const CHROME_LUID& luid);
 #endif
 
  protected:

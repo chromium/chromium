@@ -38,7 +38,7 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
 
   // Associates a new D3D device with the DXGI Device Manager
   // returns it in the parameter, which can't be nullptr.
-  HRESULT ResetDevice(
+  HRESULT ResetDevice_Locked(
       Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) override {
     mock_d3d_device_ = new MockD3D11Device();
     d3d_device = mock_d3d_device_;
@@ -46,7 +46,7 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
   }
 
   // Directly access D3D device stored in DXGI device manager
-  Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() override {
+  Microsoft::WRL::ComPtr<ID3D11Device> GetDevice_Locked() override {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     mock_d3d_device_.As(&device);
     return device;

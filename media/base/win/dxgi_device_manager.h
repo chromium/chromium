@@ -11,6 +11,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/win/mf_util_export.h"
 
 namespace media {
@@ -44,7 +46,7 @@ class MF_UTIL_EXPORT DXGIDeviceManager
 
   // Associates a new D3D device with the DXGI Device Manager
   // returns it in the parameter, which can't be nullptr.
-  virtual HRESULT ResetDevice(Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
+  HRESULT ResetDevice(Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
 
   // Checks if the local device was removed, recreates it if needed.
   // Returns DeviceRemovedReason HRESULT value.
@@ -63,9 +65,11 @@ class MF_UTIL_EXPORT DXGIDeviceManager
       Microsoft::WRL::ComPtr<IMFMediaSource> media_source);
 
   // Directly access D3D device stored in DXGI device manager
-  virtual Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
+  Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> GetMFDXGIDeviceManager();
+
+  void OnGpuInfoUpdate(CHROME_LUID luid);
 
  protected:
   friend class base::RefCountedThreadSafe<DXGIDeviceManager>;
@@ -75,9 +79,20 @@ class MF_UTIL_EXPORT DXGIDeviceManager
       CHROME_LUID luid);
   virtual ~DXGIDeviceManager();
 
+  virtual HRESULT ResetDevice_Locked(
+      Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  virtual Microsoft::WRL::ComPtr<ID3D11Device> GetDevice_Locked()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // TODO(1342872): remove this lock by changing VideoCaptureDeviceWinMF
+  // threading model and posting OnGpuInfoUpdate calls so that DxgiDeviceMAnager
+  // is used from the same sequence.
+  base::Lock lock_;
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager_;
   UINT d3d_device_reset_token_ = 0;
-  CHROME_LUID luid_ = {0, 0};
+  CHROME_LUID luid_ GUARDED_BY(lock_) = {0, 0};
 };
 
 }  // namespace media
