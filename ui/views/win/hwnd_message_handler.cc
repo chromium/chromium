@@ -3232,6 +3232,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
   bool handled = false;
 
   if (event.type() == ui::ET_MOUSE_DRAGGED) {
+    constexpr int kMaxDragEventsToIgnore00Move = 6;
     POINT point;
     point.x = event.x();
     point.y = event.y();
@@ -3239,25 +3240,22 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
     num_drag_events_after_press_++;
     // Windows sometimes sends spurious WM_MOUSEMOVEs at 0,0. If this happens
     // after a mouse down on a tab, it can cause a detach of the tab to 0,0.
-    // In general, it would cause weird behavior while dragging, so ignore
-    // these events if they're fairly far from the cursor.
-    if (point.x == 0 && point.y == 0) {
+    // A past study indicated that most of the spurious moves are among the
+    // first 6 moves after a press, and there's a very long tail.
+    // If we get kMaxDragEventsToIgnore00Move mouse move events before the
+    // spurious 0,0 move event, the user is probably really dragging, and we
+    // want to allow moves to 0,0.
+    if (point.x == 0 && point.y == 0 &&
+        num_drag_events_after_press_ <= kMaxDragEventsToIgnore00Move) {
       POINT cursor_pos;
       ::GetCursorPos(&cursor_pos);
-      constexpr int kMinSpuriousDistance = 200;
-      constexpr int kMaxDragEvents = 10;
+
+      // This constant tries to balance between detecting valid moves to 0,0
+      // and avoiding the detach bug happening to tabs near 0,0.
+      constexpr int kMinSpuriousDistance = 30;
       auto distance = sqrt(pow(static_cast<float>(abs(cursor_pos.x)), 2) +
                            pow(static_cast<float>(abs(cursor_pos.y)), 2));
-      // TODO(crbug.com/1270828): If this stat shows that
-      // `num_drag_events_after_press_` is predominantly less than some small
-      // number, add a check for that below and reduce kMinSpurious distance
-      // to something like 20 or 30 to reduce the chance of one of the first
-      // tab or two being detached incorrectly. Also fix the comment above the
-      // declaration of `num_drag_events_after_press_` to reflect this.
       if (distance > kMinSpuriousDistance) {
-        base::UmaHistogramExactLinear("Windows.DragEventsAfterPress",
-                                      num_drag_events_after_press_,
-                                      kMaxDragEvents + 1);
         SetMsgHandled(true);
         return 0;
       }
