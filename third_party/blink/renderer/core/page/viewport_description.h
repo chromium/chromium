@@ -156,7 +156,7 @@ struct CORE_EXPORT ViewportDescription {
   void ReportMobilePageStats(const LocalFrame*) const;
 
  private:
-  enum Direction { kHorizontal, kVertical };
+  enum class Direction { kHorizontal, kVertical };
   static float ResolveViewportLength(const Length&,
                                      const gfx::SizeF& initial_viewport_size,
                                      Direction);

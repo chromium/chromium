@@ -72,10 +72,10 @@ float ViewportDescription::ResolveViewportLength(
   if (length.IsExtendToZoom())
     return ViewportDescription::kValueExtendToZoom;
 
-  if (length.IsPercent() && direction == kHorizontal)
+  if (length.IsPercent() && direction == Direction::kHorizontal)
     return initial_viewport_size.width() * length.GetFloatValue() / 100.0f;
 
-  if (length.IsPercent() && direction == kVertical)
+  if (length.IsPercent() && direction == Direction::kVertical)
     return initial_viewport_size.height() * length.GetFloatValue() / 100.0f;
 
   if (length.IsDeviceWidth())
@@ -109,16 +109,16 @@ PageScaleConstraints ViewportDescription::Resolve(
     }
   }
 
-  float result_max_width =
-      ResolveViewportLength(copy_max_width, initial_viewport_size, kHorizontal);
-  float result_min_width =
-      ResolveViewportLength(copy_min_width, initial_viewport_size, kHorizontal);
+  float result_max_width = ResolveViewportLength(
+      copy_max_width, initial_viewport_size, Direction::kHorizontal);
+  float result_min_width = ResolveViewportLength(
+      copy_min_width, initial_viewport_size, Direction::kHorizontal);
 
   float result_height = kValueAuto;
-  float result_max_height =
-      ResolveViewportLength(max_height, initial_viewport_size, kVertical);
-  float result_min_height =
-      ResolveViewportLength(min_height, initial_viewport_size, kVertical);
+  float result_max_height = ResolveViewportLength(
+      max_height, initial_viewport_size, Direction::kVertical);
+  float result_min_height = ResolveViewportLength(
+      min_height, initial_viewport_size, Direction::kVertical);
 
   float result_zoom = zoom;
   float result_min_zoom = min_zoom;
