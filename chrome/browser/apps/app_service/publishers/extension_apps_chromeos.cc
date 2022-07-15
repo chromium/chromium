@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -709,12 +710,19 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     if (!extension->is_extension() || IsBlocklisted(extension->id())) {
       return false;
     }
+
     // QuickOffice has file_handlers which we need to register.
     if (extension_misc::IsQuickOfficeExtension(extension->id())) {
       // Don't publish quickoffice in ash if 1st party ash extension keep list
       // is enforced, since quickoffice extension is published in Lacros.
       return !crosapi::browser_util::ShouldEnforceAshExtensionKeepList();
     }
+
+    // Do not publish extensions in Ash if it should run in Lacros instead.
+    if (!apps::ShouldMuxExtensionIds()) {
+      return false;
+    }
+
     // Only accept extensions with file_browser_handlers.
     FileBrowserHandler::List* handler_list =
         FileBrowserHandler::GetHandlers(extension);
