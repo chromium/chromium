@@ -1399,7 +1399,6 @@ void PaymentRequest::OnShippingOptionChange(const String& shipping_option_id) {
 
 void PaymentRequest::OnPayerDetailChange(
     payments::mojom::blink::PayerDetailPtr detail) {
-  CHECK(RuntimeEnabledFeatures::PaymentRetryEnabled());
   DCHECK(payment_response_);
   DCHECK(GetPendingAcceptPromiseResolver());
   DCHECK(!complete_resolver_);
