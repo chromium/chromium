@@ -39,6 +39,7 @@ namespace syncer {
 namespace {
 
 constexpr int kCurrentLocalTrustedVaultVersion = 1;
+constexpr int kCurrentDeviceRegistrationVersion = 1;
 constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
 
 sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
@@ -366,14 +367,19 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   if (registration_state.has_value() &&
       !device_registration_state_recorded_to_uma_) {
     device_registration_state_recorded_to_uma_ = true;
+    base::UmaHistogramBoolean(
+        "Sync.TrustedVaultDeviceRegistered",
+        per_user_vault->local_device_registration_info().device_registered());
     RecordTrustedVaultDeviceRegistrationState(*registration_state);
 
-    // If the local state indicates that the device is already registered, and
-    // behind a feature toggle, trigger a procedure to verify that the server
-    // has a consistent state (i.e. downloading of new keys should succeed but
-    // return no new keys).
-    if (*registration_state ==
-            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered &&
+    // If the local state indicates that the device is already registered and
+    // there is no ongoing re-registration attempt, and behind a feature toggle,
+    // trigger a procedure to verify that the server has a consistent state
+    // (i.e. downloading of new keys should succeed but return no new keys).
+    if ((*registration_state ==
+             TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0 ||
+         *registration_state ==
+             TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1) &&
         base::FeatureList::IsEnabled(
             kSyncTrustedVaultVerifyDeviceRegistration)) {
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -563,6 +569,16 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
   return last_added_recovery_method_public_key_for_testing_;
 }
 
+void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
+    const std::string& gaia_id,
+    int version) {
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
+  DCHECK(per_user_vault);
+  per_user_vault->mutable_local_device_registration_info()
+      ->set_device_registered_version(version);
+  WriteToDisk(data_, file_path_);
+}
+
 void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
@@ -595,8 +611,17 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     return absl::nullopt;
   }
 
-  if (per_user_vault->local_device_registration_info().device_registered()) {
-    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered;
+  if (per_user_vault->local_device_registration_info().device_registered() &&
+      per_user_vault->local_device_registration_info()
+              .device_registered_version() ==
+          kCurrentDeviceRegistrationVersion) {
+    static_assert(kCurrentDeviceRegistrationVersion == 1);
+    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1;
+  }
+
+  if (per_user_vault->local_device_registration_info().device_registered() &&
+      !base::FeatureList::IsEnabled(kSyncTrustedVaultRedoDeviceRegistration)) {
+    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0;
   }
 
   if (per_user_vault->keys_are_stale()) {
@@ -659,6 +684,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     return TrustedVaultDeviceRegistrationStateForUMA::
         kAttemptingRegistrationWithPersistentAuthError;
   }
+
   return had_generated_key_pair ? TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithExistingKeyPair
                                 : TrustedVaultDeviceRegistrationStateForUMA::
@@ -688,6 +714,8 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       // client doesn't fully handled successful device registration before.
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered(true);
+      per_user_vault->mutable_local_device_registration_info()
+          ->set_device_registered_version(kCurrentDeviceRegistrationVersion);
       WriteToDisk(data_, file_path_);
       return;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
@@ -790,6 +818,8 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       // are available).
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered(false);
+      per_user_vault->mutable_local_device_registration_info()
+          ->clear_device_registered_version();
       WriteToDisk(data_, file_path_);
       break;
     }

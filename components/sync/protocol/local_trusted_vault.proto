@@ -21,6 +21,10 @@ message LocalDeviceRegistrationInfo {
   // Indicates whether device is registered, i.e. whether its public key is
   // successfully submitted to the server.
   optional bool device_registered = 2;
+
+  // Used to trigger another device registration attempt, even if device is
+  // already registered. Not set if `device_registered` is false.
+  optional int32 device_registered_version = 3;
 }
 
 message LocalTrustedVaultPerUser {
@@ -30,10 +34,10 @@ message LocalTrustedVaultPerUser {
   // All keys known for a user.
   repeated LocalTrustedVaultKey vault_key = 2;
 
-  // The version corresponding to the last element in |vault_key|.
+  // The version corresponding to the last element in `vault_key`.
   optional int32 last_vault_key_version = 3;
 
-  // Indicates whether |vault_key| is stale, i.e. that the latest locally
+  // Indicates whether `vault_key` is stale, i.e. that the latest locally
   // available key isn't the latest key in the vault. New keys need to be
   // fetched through key retrieval procedure or by following key rotation.
   optional bool keys_are_stale = 4;
