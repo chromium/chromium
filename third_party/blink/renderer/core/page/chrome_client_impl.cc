@@ -863,22 +863,18 @@ void ChromeClientImpl::AttachRootLayer(scoped_refptr<cc::Layer> root_layer,
     widget->SetRootLayer(std::move(root_layer));
 }
 
-void ChromeClientImpl::AttachCompositorAnimationTimeline(
-    cc::AnimationTimeline* compositor_timeline,
-    LocalFrame* local_frame) {
-  DCHECK(Platform::Current()->IsThreadedAnimationEnabled());
-  FrameWidget* widget = local_frame->GetWidgetForLocalRoot();
+cc::AnimationHost* ChromeClientImpl::GetCompositorAnimationHost(
+    LocalFrame& local_frame) const {
+  FrameWidget* widget = local_frame.GetWidgetForLocalRoot();
   DCHECK(widget);
-  widget->AnimationHost()->AddAnimationTimeline(compositor_timeline);
+  return widget->AnimationHost();
 }
 
-void ChromeClientImpl::DetachCompositorAnimationTimeline(
-    cc::AnimationTimeline* compositor_timeline,
-    LocalFrame* local_frame) {
-  DCHECK(Platform::Current()->IsThreadedAnimationEnabled());
-  FrameWidget* widget = local_frame->GetWidgetForLocalRoot();
+cc::AnimationTimeline* ChromeClientImpl::GetScrollAnimationTimeline(
+    LocalFrame& local_frame) const {
+  FrameWidget* widget = local_frame.GetWidgetForLocalRoot();
   DCHECK(widget);
-  widget->AnimationHost()->RemoveAnimationTimeline(compositor_timeline);
+  return widget->ScrollAnimationTimeline();
 }
 
 void ChromeClientImpl::EnterFullscreen(LocalFrame& frame,

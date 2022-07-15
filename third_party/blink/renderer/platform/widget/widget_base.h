@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_WIDGET_BASE_H_
 
 #include "base/time/time.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/browser_controls_params.h"
@@ -33,6 +34,7 @@
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class LayerTreeHost;
 class LayerTreeSettings;
 }  // namespace cc
@@ -182,6 +184,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ScheduleAnimationForWebTests() override;
 
   cc::AnimationHost* AnimationHost() const;
+  cc::AnimationTimeline* ScrollAnimationTimeline() const;
   cc::LayerTreeHost* LayerTreeHost() const;
   scheduler::WidgetScheduler* WidgetScheduler();
 
@@ -531,6 +534,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // TODO(dtapuska): Figure out if we can change this to Blink Space.
   // See https://crbug.com/1131389
   gfx::Size visible_viewport_size_in_dips_;
+
+  // The AnimationTimeline for smooth scrolls in this widget.
+  scoped_refptr<cc::AnimationTimeline> scroll_animation_timeline_;
 
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;

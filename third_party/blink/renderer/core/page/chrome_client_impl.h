@@ -201,10 +201,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void AttachRootLayer(scoped_refptr<cc::Layer>,
                        LocalFrame* local_root) override;
 
-  void AttachCompositorAnimationTimeline(cc::AnimationTimeline*,
-                                         LocalFrame*) override;
-  void DetachCompositorAnimationTimeline(cc::AnimationTimeline*,
-                                         LocalFrame*) override;
+  cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const override;
+  cc::AnimationTimeline* GetScrollAnimationTimeline(LocalFrame&) const override;
 
   void EnterFullscreen(LocalFrame&,
                        const FullscreenOptions*,

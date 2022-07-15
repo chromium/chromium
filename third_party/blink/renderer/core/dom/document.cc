@@ -44,6 +44,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
@@ -2636,8 +2637,11 @@ void Document::AttachCompositorTimeline(cc::AnimationTimeline* timeline) const {
   if (timeline->IsScrollTimeline() && timeline->animation_host())
     return;
 
-  GetPage()->GetChromeClient().AttachCompositorAnimationTimeline(timeline,
-                                                                 GetFrame());
+  if (cc::AnimationHost* host =
+          GetPage()->GetChromeClient().GetCompositorAnimationHost(
+              *GetFrame())) {
+    host->AddAnimationTimeline(timeline);
+  }
 }
 
 void Document::ClearFocusedElementIfNeeded() {

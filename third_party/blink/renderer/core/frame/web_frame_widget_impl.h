@@ -211,6 +211,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // FrameWidget overrides.
   cc::AnimationHost* AnimationHost() const final;
+  cc::AnimationTimeline* ScrollAnimationTimeline() const final;
   void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) final;
   void RequestAnimationAfterDelay(const base::TimeDelta&) final;

@@ -132,7 +132,6 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
@@ -584,40 +583,18 @@ ScrollingCoordinator* LocalFrameView::GetScrollingCoordinator() const {
   return p ? p->GetScrollingCoordinator() : nullptr;
 }
 
-ScrollingCoordinatorContext* LocalFrameView::GetScrollingContext() const {
-  LocalFrame* root = &GetFrame().LocalFrameRoot();
-  if (GetFrame() != root)
-    return root->View()->GetScrollingContext();
-
-  if (!scrolling_context_)
-    scrolling_context_ = std::make_unique<ScrollingCoordinatorContext>();
-  return scrolling_context_.get();
-}
-
 cc::AnimationHost* LocalFrameView::GetCompositorAnimationHost() const {
-  if (GetScrollingContext()->GetCompositorAnimationHost())
-    return GetScrollingContext()->GetCompositorAnimationHost();
-
-  if (!GetFrame().LocalFrameRoot().IsMainFrame())
-    return frame_->GetWidgetForLocalRoot()->AnimationHost();
-
-  // TODO(kenrb): Compositor animation host and timeline for the main frame
-  // still live on ScrollingCoordinator. https://crbug.com/680606.
-  ScrollingCoordinator* c = GetScrollingCoordinator();
-  return c ? c->GetCompositorAnimationHost() : nullptr;
-}
-
-cc::AnimationTimeline* LocalFrameView::GetCompositorAnimationTimeline() const {
-  if (GetScrollingContext()->GetCompositorAnimationTimeline())
-    return GetScrollingContext()->GetCompositorAnimationTimeline();
-
-  if (!GetFrame().LocalFrameRoot().IsMainFrame())
+  if (!GetChromeClient())
     return nullptr;
 
-  // TODO(kenrb): Compositor animation host and timeline for the main frame
-  // still live on ScrollingCoordinator. https://crbug.com/680606.
-  ScrollingCoordinator* c = GetScrollingCoordinator();
-  return c ? c->GetCompositorAnimationTimeline() : nullptr;
+  return GetChromeClient()->GetCompositorAnimationHost(*frame_);
+}
+
+cc::AnimationTimeline* LocalFrameView::GetScrollAnimationTimeline() const {
+  if (!GetChromeClient())
+    return nullptr;
+
+  return GetChromeClient()->GetScrollAnimationTimeline(*frame_);
 }
 
 void LocalFrameView::SetLayoutOverflowSize(const gfx::Size& size) {

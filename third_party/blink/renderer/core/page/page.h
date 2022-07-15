@@ -318,8 +318,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void Trace(Visitor*) const override;
 
-  void AnimationHostInitialized(cc::AnimationHost&, LocalFrameView*);
-  void WillCloseAnimationHost(LocalFrameView*);
+  void DidInitializeCompositing(cc::AnimationHost&);
+  void WillStopCompositing();
 
   void WillBeDestroyed();
 

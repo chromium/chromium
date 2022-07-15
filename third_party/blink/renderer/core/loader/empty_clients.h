@@ -221,6 +221,13 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   }
   void AttachRootLayer(scoped_refptr<cc::Layer>,
                        LocalFrame* local_root) override;
+  cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const override {
+    return nullptr;
+  }
+  cc::AnimationTimeline* GetScrollAnimationTimeline(
+      LocalFrame&) const override {
+    return nullptr;
+  }
   void SetEventListenerProperties(LocalFrame*,
                                   cc::EventListenerClass,
                                   cc::EventListenerProperties) override {}

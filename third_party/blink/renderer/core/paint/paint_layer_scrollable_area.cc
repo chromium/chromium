@@ -2558,9 +2558,7 @@ cc::AnimationHost* PaintLayerScrollableArea::GetCompositorAnimationHost()
 
 cc::AnimationTimeline*
 PaintLayerScrollableArea::GetCompositorAnimationTimeline() const {
-  return layer_->GetLayoutObject()
-      .GetFrameView()
-      ->GetCompositorAnimationTimeline();
+  return layer_->GetLayoutObject().GetFrameView()->GetScrollAnimationTimeline();
 }
 
 bool PaintLayerScrollableArea::HasTickmarks() const {

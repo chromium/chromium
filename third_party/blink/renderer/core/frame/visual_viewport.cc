@@ -1137,14 +1137,14 @@ bool VisualViewport::ShouldDisableDesktopWorkarounds() const {
 
 cc::AnimationHost* VisualViewport::GetCompositorAnimationHost() const {
   DCHECK(IsActiveViewport());
-  ScrollingCoordinator* c = GetPage().GetScrollingCoordinator();
-  return c ? c->GetCompositorAnimationHost() : nullptr;
+  DCHECK(GetChromeClient());
+  return GetChromeClient()->GetCompositorAnimationHost(LocalMainFrame());
 }
 
 cc::AnimationTimeline* VisualViewport::GetCompositorAnimationTimeline() const {
   DCHECK(IsActiveViewport());
-  ScrollingCoordinator* c = GetPage().GetScrollingCoordinator();
-  return c ? c->GetCompositorAnimationTimeline() : nullptr;
+  DCHECK(GetChromeClient());
+  return GetChromeClient()->GetScrollAnimationTimeline(LocalMainFrame());
 }
 
 void VisualViewport::NotifyRootFrameViewport() const {

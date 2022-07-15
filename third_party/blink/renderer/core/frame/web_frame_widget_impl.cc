@@ -41,6 +41,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_host.h"
@@ -318,17 +319,9 @@ void WebFrameWidgetImpl::SetIsNestedMainFrameWidget(bool is_nested) {
 }
 
 void WebFrameWidgetImpl::Close() {
-  LocalFrameView* frame_view;
-  if (ForSubframe()) {
-    frame_view = LocalRootImpl()->GetFrame()->View();
-  } else {
-    // Scrolling for the root frame is special we need to pass null indicating
-    // we are at the top of the tree when setting up the Animation. Which will
-    // cause ownership of the timeline and animation host.
-    // See ScrollingCoordinator::AnimationHostInitialized.
-    frame_view = nullptr;
-  }
-  GetPage()->WillCloseAnimationHost(frame_view);
+  // TODO(bokan): This seems wrong since the page may have other still-active
+  // frame widgets. See also: https://crbug.com/1344531.
+  GetPage()->WillStopCompositing();
 
   if (ForMainFrame()) {
     // Closing the WebFrameWidgetImpl happens in response to the local main
@@ -963,6 +956,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
       frame->GetEventHandler().TargetGestureEvent(scaled_event);
 
   // Link highlight animations are only for the main frame.
+  // TODO(bokan): This isn't intentional, see https://crbug.com/1344531.
   if (ForMainFrame()) {
     // Handle link highlighting outside the main switch to avoid getting lost in
     // the complicated set of cases handled below.
@@ -2058,18 +2052,11 @@ void WebFrameWidgetImpl::InitializeCompositing(
       *GetPage()->GetPageScheduler(), screen_infos, settings,
       input_handler_weak_ptr_factory_.GetWeakPtr());
 
-  LocalFrameView* frame_view;
-  if (ForSubframe()) {
-    frame_view = LocalRootImpl()->GetFrame()->View();
-  } else {
-    // Scrolling for the root frame is special we need to pass null indicating
-    // we are at the top of the tree when setting up the Animation. Which will
-    // cause ownership of the timeline and animation host.
-    // See ScrollingCoordinator::AnimationHostInitialized.
-    frame_view = nullptr;
-  }
-
-  GetPage()->AnimationHostInitialized(*AnimationHost(), frame_view);
+  // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
+  // will call DidInitializeCompositing once per FrameWidget. It probably makes
+  // sense to move LinkHighlight from Page to WidgetBase so initialization is
+  // per-widget. See also: https://crbug.com/1344531.
+  GetPage()->DidInitializeCompositing(*AnimationHost());
 }
 
 void WebFrameWidgetImpl::InitializeNonCompositing(
@@ -2912,6 +2899,10 @@ HitTestResult WebFrameWidgetImpl::CoreHitTestResultAt(
 
 cc::AnimationHost* WebFrameWidgetImpl::AnimationHost() const {
   return widget_base_->AnimationHost();
+}
+
+cc::AnimationTimeline* WebFrameWidgetImpl::ScrollAnimationTimeline() const {
+  return widget_base_->ScrollAnimationTimeline();
 }
 
 base::WeakPtr<PaintWorkletPaintDispatcher>

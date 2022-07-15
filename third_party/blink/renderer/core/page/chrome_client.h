@@ -62,6 +62,7 @@
 #undef CreateWindow
 
 namespace cc {
+class AnimationHost;
 class AnimationTimeline;
 struct ElementId;
 class Layer;
@@ -417,15 +418,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void AttachRootLayer(scoped_refptr<cc::Layer>,
                                LocalFrame* local_root) = 0;
 
-  // Set the cc::AnimationTimeline for a local root. Should later be unset
-  // by a call to DetachCompositorAnimationTimeline().
-  virtual void AttachCompositorAnimationTimeline(cc::AnimationTimeline*,
-                                                 LocalFrame* local_root) {}
-  // Removes the cc::AnimationTimeline for a local root. The timeline
-  // would have previously been given to AttachCompositorAnimationTimeline() but
-  // it's valid to call this even if the timeline was never attached.
-  virtual void DetachCompositorAnimationTimeline(cc::AnimationTimeline*,
-                                                 LocalFrame* local_root) {}
+  virtual cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const = 0;
+
+  virtual cc::AnimationTimeline* GetScrollAnimationTimeline(
+      LocalFrame&) const = 0;
 
   virtual void EnterFullscreen(LocalFrame&,
                                const FullscreenOptions*,

@@ -232,14 +232,13 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     popup_->widget_base_->RequestAnimationAfterDelay(delay);
   }
 
-  void AttachCompositorAnimationTimeline(cc::AnimationTimeline* timeline,
-                                         LocalFrame*) override {
-    popup_->widget_base_->AnimationHost()->AddAnimationTimeline(timeline);
+  cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const override {
+    return popup_->widget_base_->AnimationHost();
   }
 
-  void DetachCompositorAnimationTimeline(cc::AnimationTimeline* timeline,
-                                         LocalFrame*) override {
-    popup_->widget_base_->AnimationHost()->RemoveAnimationTimeline(timeline);
+  cc::AnimationTimeline* GetScrollAnimationTimeline(
+      LocalFrame&) const override {
+    return popup_->widget_base_->ScrollAnimationTimeline();
   }
 
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
@@ -409,7 +408,7 @@ WebPagePopupImpl::WebPagePopupImpl(
   if (AXObjectCache* cache = frame->GetDocument()->ExistingAXObjectCache())
     cache->ChildrenChanged(&popup_client_->OwnerElement());
 
-  page_->AnimationHostInitialized(*widget_base_->AnimationHost(), nullptr);
+  page_->DidInitializeCompositing(*widget_base_->AnimationHost());
 
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   popup_client_->WriteDocument(data.get());
@@ -575,7 +574,7 @@ void WebPagePopupImpl::Update() {
 }
 
 void WebPagePopupImpl::DestroyPage() {
-  page_->WillCloseAnimationHost(nullptr);
+  page_->WillStopCompositing();
   page_->WillBeDestroyed();
   page_.Clear();
 }

@@ -944,19 +944,12 @@ void Page::Trace(Visitor* visitor) const {
   Supplementable<Page>::Trace(visitor);
 }
 
-void Page::AnimationHostInitialized(cc::AnimationHost& animation_host,
-                                    LocalFrameView* view) {
-  if (GetScrollingCoordinator()) {
-    GetScrollingCoordinator()->AnimationHostInitialized(animation_host, view);
-  }
-  GetLinkHighlight().AnimationHostInitialized(animation_host);
+void Page::DidInitializeCompositing(cc::AnimationHost& host) {
+  GetLinkHighlight().AnimationHostInitialized(host);
 }
 
-void Page::WillCloseAnimationHost(LocalFrameView* view) {
-  if (scrolling_coordinator_)
-    scrolling_coordinator_->WillCloseAnimationHost(view);
+void Page::WillStopCompositing() {
   GetLinkHighlight().WillCloseAnimationHost();
-
   // We may have disconnected the associated LayerTreeHost during
   // the frame lifecycle so ensure the PageAnimator is reset to the
   // default state.

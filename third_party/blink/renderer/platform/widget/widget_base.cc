@@ -11,6 +11,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "cc/animation/animation_host.h"
+#include "cc/animation/animation_id_provider.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -236,6 +238,13 @@ void WidgetBase::InitializeCompositing(
   if (!is_hidden_)
     SetCompositorVisible(true);
 
+  if (Platform::Current()->IsThreadedAnimationEnabled()) {
+    DCHECK(AnimationHost());
+    scroll_animation_timeline_ = cc::AnimationTimeline::Create(
+        cc::AnimationIdProvider::NextTimelineId());
+    AnimationHost()->AddAnimationTimeline(scroll_animation_timeline_);
+  }
+
   initialized_ = true;
 }
 
@@ -266,6 +275,11 @@ void WidgetBase::Shutdown() {
   // LayerTreeView owns the LayerTreeHost, and is its client, so they are kept
   // alive together for a clean call stack.
   if (layer_tree_view_) {
+    if (ScrollAnimationTimeline()) {
+      DCHECK(AnimationHost());
+      AnimationHost()->RemoveAnimationTimeline(ScrollAnimationTimeline());
+    }
+
     layer_tree_view_->Disconnect();
 
     // The `widget_scheduler_` must be deleted last because the
@@ -303,7 +317,11 @@ cc::LayerTreeHost* WidgetBase::LayerTreeHost() const {
 }
 
 cc::AnimationHost* WidgetBase::AnimationHost() const {
-  return layer_tree_view_->animation_host();
+  return layer_tree_view_ ? layer_tree_view_->animation_host() : nullptr;
+}
+
+cc::AnimationTimeline* WidgetBase::ScrollAnimationTimeline() const {
+  return scroll_animation_timeline_.get();
 }
 
 scheduler::WidgetScheduler* WidgetBase::WidgetScheduler() {

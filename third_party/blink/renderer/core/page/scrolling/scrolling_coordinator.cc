@@ -29,9 +29,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "cc/animation/animation_host.h"
-#include "cc/animation/animation_id_provider.h"
-#include "cc/animation/animation_timeline.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/picture_layer.h"
@@ -46,7 +43,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
@@ -173,41 +169,6 @@ bool ScrollingCoordinator::UpdateCompositorScrollOffset(
 void ScrollingCoordinator::Reset(LocalFrame* frame) {
   horizontal_scrollbars_.clear();
   vertical_scrollbars_.clear();
-}
-
-void ScrollingCoordinator::AnimationHostInitialized(
-    cc::AnimationHost& animation_host,
-    LocalFrameView* view) {
-  if (!Platform::Current()->IsThreadedAnimationEnabled())
-    return;
-
-  auto timeline =
-      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
-  if (view && view->GetFrame().LocalFrameRoot() != page_->MainFrame()) {
-    view->GetScrollingContext()->SetAnimationHost(&animation_host);
-    view->GetScrollingContext()->SetAnimationTimeline(std::move(timeline));
-    view->GetCompositorAnimationHost()->AddAnimationTimeline(
-        view->GetCompositorAnimationTimeline());
-  } else {
-    animation_host_ = &animation_host;
-    programmatic_scroll_animator_timeline_ = std::move(timeline);
-    animation_host_->AddAnimationTimeline(
-        programmatic_scroll_animator_timeline_);
-  }
-}
-
-void ScrollingCoordinator::WillCloseAnimationHost(LocalFrameView* view) {
-  if (view && view->GetFrame().LocalFrameRoot() != page_->MainFrame()) {
-    view->GetCompositorAnimationHost()->RemoveAnimationTimeline(
-        view->GetCompositorAnimationTimeline());
-    view->GetScrollingContext()->SetAnimationTimeline(nullptr);
-    view->GetScrollingContext()->SetAnimationHost(nullptr);
-  } else if (programmatic_scroll_animator_timeline_) {
-    animation_host_->RemoveAnimationTimeline(
-        programmatic_scroll_animator_timeline_);
-    programmatic_scroll_animator_timeline_ = nullptr;
-    animation_host_ = nullptr;
-  }
 }
 
 void ScrollingCoordinator::WillBeDestroyed() {
