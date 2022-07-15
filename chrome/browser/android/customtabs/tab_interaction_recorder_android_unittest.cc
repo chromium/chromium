@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -157,9 +159,13 @@ class TabInteractionRecorderAndroidTest
   NiceMock<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;
+
+  base::test::ScopedFeatureList test_feature_list_;
 };
 
 TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
+  test_feature_list_.InitAndEnableFeature(chrome::android::kCCTRetainingState);
+
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 
@@ -169,6 +175,7 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
+  test_feature_list_.InitAndEnableFeature(chrome::android::kCCTRetainingState);
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 

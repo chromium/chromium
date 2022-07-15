@@ -203,7 +203,8 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     @Override
     public void onShown(Tab tab, int type) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RETAINING_STATE)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PACKAGE_NAME_RECORDING)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RETAINING_STATE)) {
             TabInteractionRecorder.createForTab(tab);
         }
     }
