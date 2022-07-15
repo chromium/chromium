@@ -509,9 +509,14 @@ void Controller::OnPeriodicScriptCheck() {
     periodic_script_check_count_--;
   }
 
-  if (periodic_script_check_count_ <= 0 && !allow_autostart()) {
+  if (periodic_script_check_count_ <= 0 &&
+      (!allow_autostart() || autostart_timeout_script_path_.empty())) {
     DCHECK_EQ(0, periodic_script_check_count_);
     periodic_script_check_scheduled_ = false;
+
+    if (allow_autostart()) {
+      OnNoRunnableScriptsForPage();
+    }
     return;
   }
 

@@ -792,6 +792,34 @@ TEST_F(ControllerTest, ScriptTimeoutWarning) {
   }
 }
 
+TEST_F(ControllerTest, ScriptTimeoutGiveUp) {
+  // Wait for #element to show up for will_never_match. After 2s, give up.
+  SupportsScriptResponseProto script_response;
+  ClientSettingsProto* client_settings_proto =
+      script_response.mutable_client_settings();
+  client_settings_proto->set_periodic_script_check_count(2);
+  client_settings_proto->set_periodic_script_check_interval_ms(1000);
+  *AddRunnableScript(&script_response, "will_never_match")
+       ->mutable_presentation()
+       ->mutable_precondition()
+       ->mutable_element_condition()
+       ->mutable_match() = ToSelectorProto("#element");
+  SetNextScriptResponse(script_response);
+
+  EXPECT_CALL(*mock_service_, GetActions).Times(0);
+  Start("http://a.example.com/path");
+  EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
+
+  // Still ok after one check / one second.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
+
+  // After two seconds, the last periodic check finishes and the controller
+  // stops.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
+}
+
 TEST_F(ControllerTest, SuccessfulNavigation) {
   EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
   EXPECT_FALSE(controller_->HasNavigationError());
