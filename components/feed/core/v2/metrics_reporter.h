@@ -184,7 +184,6 @@ class MetricsReporter {
   void ReportGetMoreIfNeeded(SurfaceId surface_id, bool success);
   void FinalizeMetrics();
   void FinalizeVisit();
-  void ReportSubscriptionCountAtEngagementTime(int subscription_count);
   void ReportFollowCountOnLoad(bool content_shown, int subscription_count);
 
   StreamStats& ForStream(const StreamType& stream_type);

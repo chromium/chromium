@@ -126,6 +126,14 @@ TEST_F(MetricsReporterTest, ScrollingSmall) {
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
   EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectTotalCount("ContentSuggestions.Feed.FollowCount.Engaged2",
+                              0);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2", 0);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2", 0);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", 0);
 }
 
 TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
@@ -138,6 +146,16 @@ TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
   EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.FollowCount.Engaged2",
+                                kSubscriptionCount, 1);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2", 0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      1);
 }
 
 TEST_F(MetricsReporterTest, OpeningContentIsInteracting) {
@@ -247,6 +265,14 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
       {FeedEngagementType::kFeedScrolled, 1},
   });
   EXPECT_EQ(want_1c, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.FollowCount.Engaged2",
+                                kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
@@ -272,6 +298,14 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
       {FeedEngagementType::kFeedScrolled, 2},
   });
   EXPECT_EQ(want_2c, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.FollowCount.Engaged2",
+                                kSubscriptionCount, 2);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 2);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       2);
@@ -556,6 +590,13 @@ TEST_F(MetricsReporterTest, OpenAction) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedOnCard, 1);
   histogram_.ExpectUniqueSample("NewTabPage.ContentSuggestions.Opened", 5, 1);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.FollowCount.Engaged2",
+                                kSubscriptionCount, 1);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2", 0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
@@ -576,6 +617,14 @@ TEST_F(MetricsReporterTest, OpenActionWebFeed) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedOnCard, 1);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.WebFeed.Opened", 5, 1);
+  histogram_.ExpectTotalCount("ContentSuggestions.Feed.FollowCount.Engaged2",
+                              0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
