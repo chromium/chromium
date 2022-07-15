@@ -56278,6 +56278,8 @@ from previous Chrome versions.
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
   <int value="-1555510175" label="PasswordImport:enabled"/>
+  <int value="-1554921134"
+      label="OmniboxRemoveSuggestionHeaderChevron:disabled"/>
   <int value="-1553477903" label="ash-disable-text-filtering-in-overview-mode"/>
   <int value="-1553280810" label="PromoBrowserCommands:enabled"/>
   <int value="-1552898031" label="SingleTabMode:enabled"/>
@@ -56714,6 +56716,8 @@ from previous Chrome versions.
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
+  <int value="-1295310553"
+      label="OmniboxRemoveSuggestionHeaderChevron:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>

@@ -45,6 +45,9 @@ public class HeaderViewBinder {
                 view.setOnClickListener(null);
                 view.setOnSelectListener(null);
             }
+        } else if (propertyKey == HeaderViewProperties.SHOULD_REMOVE_CHEVRON) {
+            view.setShouldRemoveSuggestionHeaderChevron(
+                    model.get(HeaderViewProperties.SHOULD_REMOVE_CHEVRON));
         }
     }
 }

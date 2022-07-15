@@ -142,4 +142,15 @@ public class HeaderViewBinderUnitTest {
         verify(info, never()).addAction(AccessibilityAction.ACTION_COLLAPSE);
         verify(info, times(1)).addAction(AccessibilityAction.ACTION_EXPAND);
     }
+
+    @Test
+    public void headerView_removeSuggestionHeaderChevron() {
+        // Remove Chevron.
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, true);
+        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderChevron(true);
+
+        // Restore Chevron.
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, false);
+        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderChevron(false);
+    }
 }

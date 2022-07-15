@@ -1905,6 +1905,11 @@ const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[] =
     "Permits longer MV Tiles titles to wrap around to the second line "
     "to reduce ellipsizing longer titles.";
 
+const char kOmniboxRemoveSuggestionHeaderChevronName[] =
+    "Omnibox Remove Suggestion Header Chevron";
+const char kOmniboxRemoveSuggestionHeaderChevronDescription[] =
+    "Remove the chevron on the right side of omnibox suggestion search header.";
+
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =

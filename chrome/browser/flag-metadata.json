@@ -4771,6 +4771,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "omnibox-remove-suggestion-header-chevron",
+    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-retain-suggestions-with-headers",
     "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 112

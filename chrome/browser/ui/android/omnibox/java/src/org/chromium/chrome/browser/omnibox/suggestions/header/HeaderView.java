@@ -73,7 +73,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_action_icon_width),
                 LayoutParams.MATCH_PARENT));
         addView(mHeaderIcon);
-
         ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
             @Override
             public void onInitializeAccessibilityNodeInfo(
@@ -131,6 +130,16 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         if (selected && mOnSelectListener != null) {
             mOnSelectListener.run();
         }
+    }
+
+    /**
+     * Specifies whether the chevron on the right side of header should be removed.
+     *
+     * @param shouldRemoveSuggestionHeaderChevron true, if the chevron on the right side of header
+     *         should be removed.
+     */
+    void setShouldRemoveSuggestionHeaderChevron(boolean shouldRemoveSuggestionHeaderChevron) {
+        mHeaderIcon.setVisibility(shouldRemoveSuggestionHeaderChevron ? GONE : VISIBLE);
     }
 
     @Override

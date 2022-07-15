@@ -503,6 +503,16 @@ const FeatureEntry::FeatureVariation
         {"Voice", kAdaptiveButtonCustomization_Voice,
          std::size(kAdaptiveButtonCustomization_Voice), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse[] = {
+        {"allow_group_collapsed_state", "true"}};
+const FeatureEntry::FeatureVariation
+    kOmniboxRemoveSuggestionHeaderChevronVariations[] = {
+        {"AllowCollapse", kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse,
+         std::size(kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse),
+         nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -5055,6 +5065,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesName,
      flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
+
+    {"omnibox-remove-suggestion-header-chevron",
+     flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronName,
+     flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kOmniboxRemoveSuggestionHeaderChevron,
+         kOmniboxRemoveSuggestionHeaderChevronVariations,
+         "OmniboxRemoveSuggestionHeaderChevron")},
 
     {"omnibox-most-visited-tiles-title-wrap-around",
      flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundName,

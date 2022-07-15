@@ -275,6 +275,11 @@ const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to remove the chevron on the right side of suggestion list
+// header under omnibox.
+const base::Feature kOmniboxRemoveSuggestionHeaderChevron{
+    "OmniboxRemoveSuggestionHeaderChevron", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature to enable memoizing URLs when replacing search terms in
 // `AutocompleteMatch::GURLToStrippedGURL()`.
 const base::Feature kStrippedGurlOptimization{

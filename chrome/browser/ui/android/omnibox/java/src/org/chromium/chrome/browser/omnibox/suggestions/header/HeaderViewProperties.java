@@ -28,9 +28,12 @@ public class HeaderViewProperties {
     public static final WritableBooleanPropertyKey IS_COLLAPSED = new WritableBooleanPropertyKey();
     /** The text content to be displayed as a header text. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    /** The flag to state whether to remove the header chevron. */
+    public static final WritableBooleanPropertyKey SHOULD_REMOVE_CHEVRON =
+            new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {DELEGATE, IS_COLLAPSED, TITLE};
+            new PropertyKey[] {DELEGATE, IS_COLLAPSED, TITLE, SHOULD_REMOVE_CHEVRON};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
