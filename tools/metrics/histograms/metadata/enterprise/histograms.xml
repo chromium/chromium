@@ -138,12 +138,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentBucketDownloadTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2021-12-26">
-  <owner>pmarko@chromium.org</owner>
+    units="ms" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Duration of the bucket download part of the auto-enrollment protocol.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-12-26 until
+    2022-07-15.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType"/>
@@ -161,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2023-07-09">
+    units="ms" expires_after="2023-07-10">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
@@ -174,23 +177,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
-    units="ms" expires_after="2022-04-10">
-  <owner>amraboelkher@google.com</owner>
+    units="ms" expires_after="2023-07-10">
+  <owner>sergiyb@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Duration of the private set membership request to determine enrollment state
     of the device. Only recorded if it finished successfully.
+
+    The histogram was expired (not recording data) from 2022-04-10 until
+    2022-07-15.
   </summary>
 </histogram>
 
 <histogram
     name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2022-01-09">
-  <owner>pmarko@chromium.org</owner>
+    units="ms" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Total duration time of the auto-enrollment protocol.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2022-01-09 until
+    2022-07-15.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType"/>
@@ -198,8 +207,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2022-10-31">
-  <owner>amraboelkher@chromium.org</owner>
+    enum="EnterpriseDeviceManagementStatus" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Device management server request status for auto-enrollment PSM requests.
@@ -216,8 +225,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2022-10-31">
-  <owner>amraboelkher@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment PSM requests.
@@ -234,8 +243,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
-    enum="PsmResult" expires_after="2022-10-31">
-  <owner>amraboelkher@chromium.org</owner>
+    enum="PsmResult" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     All possible PSM protocol results after it has executed succcessfully or
@@ -253,12 +262,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2021-12-19">
-  <owner>pmarko@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment requests.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-12-19 until
+    2022-07-15.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType"/>
@@ -266,12 +278,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2021-12-12">
-  <owner>pmarko@chromium.org</owner>
+    enum="EnterpriseDeviceManagementStatus" expires_after="2023-07-10">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     URL fetcher status for auto-enrollment requests.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-12-12 until
+    2022-07-15.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType"/>
