@@ -1122,9 +1122,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   aura::Window* existing_app_instance_window = nullptr;
   Desk* src_desk = nullptr;
   for (auto& desk : desks()) {
-    if (desk->is_active())
-      continue;
-
     for (aura::Window* window : desk->windows()) {
       const std::string* const app_id_ptr = window->GetProperty(kAppIDKey);
       if (app_id_ptr && *app_id_ptr == app_id) {
@@ -1143,112 +1140,121 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   if (!existing_app_instance_window)
     return true;
 
+  // We have a window that we are going to move to the right desk and then apply
+  // properties to. In order to do this, we need the restore data. If we are in
+  // this function, then we are dealing with a single instance app and there
+  // should be at most one entry in the launch list.
+  DCHECK_LE(launch_list.size(), 1u);
+  if (launch_list.empty() || !launch_list.begin()->second)
+    return false;
+
+  auto& app_restore_data = *launch_list.begin()->second;
+
   // No need to shift a window that is visible on all desks.
   // TODO(sammiequon): Remove this property if the window on the new desk should
   // not be visible on all desks.
   if (!desks_util::IsWindowVisibleOnAllWorkspaces(
           existing_app_instance_window)) {
-    DCHECK(src_desk);
-    DCHECK_NE(src_desk, active_desk_);
+    // The index of the target desk is found in `app_restore_data`. If it isn't
+    // set, or out of bounds, then we default to the rightmost desk.
+    const int rightmost_desk_index = desks_.size() - 1;
+    const int target_desk_index =
+        std::min(app_restore_data.desk_id.value_or(rightmost_desk_index),
+                 rightmost_desk_index);
+    Desk* target_desk = desks_[target_desk_index].get();
 
-    base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
-    src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
-                               existing_app_instance_window->GetRootWindow(),
-                               /*unminimize=*/false);
-    MaybeUpdateShelfItems(
-        /*windows_on_inactive_desk=*/{},
-        /*windows_on_active_desk=*/{existing_app_instance_window});
-    ReportNumberOfWindowsPerDeskHistogram();
+    DCHECK(src_desk);
+    if (src_desk != target_desk) {
+      base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
+      src_desk->MoveWindowToDesk(existing_app_instance_window, target_desk,
+                                 existing_app_instance_window->GetRootWindow(),
+                                 /*unminimize=*/false);
+      MaybeUpdateShelfItems(
+          /*windows_on_inactive_desk=*/{},
+          /*windows_on_active_desk=*/{existing_app_instance_window});
+      ReportNumberOfWindowsPerDeskHistogram();
+    }
   }
 
-  // We can now apply properties from the restore data. If we are in this
-  // function, then we are dealing with a single instance app and there should
-  // be at most one entry in the launch list.
-  DCHECK_LE(launch_list.size(), 1u);
-  if (launch_list.empty())
-    return false;
+  // Now that the window is on the correct desk, we can apply window properties.
+  if (app_restore_data.current_bounds) {
+    existing_app_instance_window->SetBounds(*app_restore_data.current_bounds);
+  }
 
-  if (const auto& app_restore_data = launch_list.begin()->second) {
-    if (app_restore_data->current_bounds) {
-      existing_app_instance_window->SetBounds(
-          *app_restore_data->current_bounds);
-    }
-    // Handle window state and window bounds.
-    if (app_restore_data->window_state_type) {
-      chromeos::WindowStateType target_state =
-          *app_restore_data->window_state_type;
+  // Handle window state and window bounds.
+  if (app_restore_data.window_state_type) {
+    chromeos::WindowStateType target_state =
+        *app_restore_data.window_state_type;
 
-      // Not all window states are supported.
-      const bool restoreable_state =
-          chromeos::IsNormalWindowStateType(target_state) ||
-          target_state == chromeos::WindowStateType::kMinimized ||
-          target_state == chromeos::WindowStateType::kMaximized ||
-          target_state == chromeos::WindowStateType::kPrimarySnapped ||
-          target_state == chromeos::WindowStateType::kSecondarySnapped;
+    // Not all window states are supported.
+    const bool restoreable_state =
+        chromeos::IsNormalWindowStateType(target_state) ||
+        target_state == chromeos::WindowStateType::kMinimized ||
+        target_state == chromeos::WindowStateType::kMaximized ||
+        target_state == chromeos::WindowStateType::kPrimarySnapped ||
+        target_state == chromeos::WindowStateType::kSecondarySnapped;
 
-      if (restoreable_state) {
-        WindowState* window_state =
-            WindowState::Get(existing_app_instance_window);
-        DCHECK(window_state);
+    if (restoreable_state) {
+      WindowState* window_state =
+          WindowState::Get(existing_app_instance_window);
+      DCHECK(window_state);
 
-        if (target_state != window_state->GetStateType()) {
-          switch (target_state) {
-            case chromeos::WindowStateType::kDefault:
-            case chromeos::WindowStateType::kNormal: {
-              const WMEvent event(WM_EVENT_NORMAL);
-              window_state->OnWMEvent(&event);
-              break;
-            }
-            case chromeos::WindowStateType::kMinimized:
-              if (window_state->CanMinimize()) {
-                window_state->Minimize();
-                window_state->set_unminimize_to_restore_bounds(true);
-              }
-              break;
-            case chromeos::WindowStateType::kMaximized:
-              if (window_state->CanMaximize())
-                window_state->Maximize();
-              break;
-            case chromeos::WindowStateType::kPrimarySnapped:
-            case chromeos::WindowStateType::kSecondarySnapped:
-              if (window_state->CanSnap()) {
-                window_state->set_snap_action_source(
-                    WindowSnapActionSource::kOthers);
-
-                const WMEvent event(
-                    target_state == chromeos::WindowStateType::kPrimarySnapped
-                        ? WM_EVENT_SNAP_PRIMARY
-                        : WM_EVENT_SNAP_SECONDARY);
-                window_state->OnWMEvent(&event);
-              }
-              break;
-            case chromeos::WindowStateType::kInactive:
-            case chromeos::WindowStateType::kFullscreen:
-            case chromeos::WindowStateType::kAutoPositioned:
-            case chromeos::WindowStateType::kPinned:
-            case chromeos::WindowStateType::kTrustedPinned:
-            case chromeos::WindowStateType::kPip:
-            // TODO(crbug.com/1331825): Float state support for desk template.
-            case chromeos::WindowStateType::kFloated:
-              NOTREACHED();
-              break;
+      if (target_state != window_state->GetStateType()) {
+        switch (target_state) {
+          case chromeos::WindowStateType::kDefault:
+          case chromeos::WindowStateType::kNormal: {
+            const WMEvent event(WM_EVENT_NORMAL);
+            window_state->OnWMEvent(&event);
+            break;
           }
+          case chromeos::WindowStateType::kMinimized:
+            if (window_state->CanMinimize()) {
+              window_state->Minimize();
+              window_state->set_unminimize_to_restore_bounds(true);
+            }
+            break;
+          case chromeos::WindowStateType::kMaximized:
+            if (window_state->CanMaximize())
+              window_state->Maximize();
+            break;
+          case chromeos::WindowStateType::kPrimarySnapped:
+          case chromeos::WindowStateType::kSecondarySnapped:
+            if (window_state->CanSnap()) {
+              window_state->set_snap_action_source(
+                  WindowSnapActionSource::kOthers);
+
+              const WMEvent event(
+                  target_state == chromeos::WindowStateType::kPrimarySnapped
+                      ? WM_EVENT_SNAP_PRIMARY
+                      : WM_EVENT_SNAP_SECONDARY);
+              window_state->OnWMEvent(&event);
+            }
+            break;
+          case chromeos::WindowStateType::kInactive:
+          case chromeos::WindowStateType::kFullscreen:
+          case chromeos::WindowStateType::kAutoPositioned:
+          case chromeos::WindowStateType::kPinned:
+          case chromeos::WindowStateType::kTrustedPinned:
+          case chromeos::WindowStateType::kPip:
+            // TODO(crbug.com/1331825): Float state support for desk template.
+          case chromeos::WindowStateType::kFloated:
+            NOTREACHED();
+            break;
         }
-
-        // For states with restore bounds (maximized, snapped, minimized), the
-        // restore bounds are stored in `current_bounds`.
-        const gfx::Rect restore_bounds =
-            app_restore_data->current_bounds.value_or(gfx::Rect());
-        if (!restore_bounds.IsEmpty())
-          window_state->SetRestoreBoundsInScreen(restore_bounds);
       }
-    }
 
-    if (app_restore_data->activation_index) {
-      existing_app_instance_window->SetProperty(
-          app_restore::kActivationIndexKey,
-          *app_restore_data->activation_index);
+      // For states with restore bounds (maximized, snapped, minimized), the
+      // restore bounds are stored in `current_bounds`.
+      const gfx::Rect restore_bounds =
+          app_restore_data.current_bounds.value_or(gfx::Rect());
+      if (!restore_bounds.IsEmpty())
+        window_state->SetRestoreBoundsInScreen(restore_bounds);
     }
+  }
+
+  if (app_restore_data.activation_index) {
+    existing_app_instance_window->SetProperty(
+        app_restore::kActivationIndexKey, *app_restore_data.activation_index);
   }
 
   WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
