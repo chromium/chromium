@@ -890,6 +890,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
 
 TEST_F(PasswordSyncBridgeTest,
        ShouldRemoveSyncMetadataWhenSpecificsCacheContainsSupportedFields) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       syncer::kCacheBaseEntitySpecificsInMetadata);
@@ -920,6 +921,9 @@ TEST_F(PasswordSyncBridgeTest,
   auto bridge = std::make_unique<PasswordSyncBridge>(
       mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
       base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+                                      4, 1);
 }
 
 TEST_F(

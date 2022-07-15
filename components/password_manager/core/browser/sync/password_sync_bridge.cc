@@ -53,8 +53,13 @@ enum class SyncMetadataReadError {
   // Reading successful but cleaning initiated in order to force initial sync.
   // This will clean undecryptable passwords.
   kReadSuccessButCleared = 3,
+  // Reading successful, but the base entity specifics cache contains proto
+  // fields supported in the current browser version. The cache is meant to only
+  // preserve unsupported fields, hence the initial sync flow is forced to
+  // resolve this incosistency.
+  kNewlySupportedFieldDetectedInUnsupportedFieldsCache = 4,
 
-  kMaxValue = kReadSuccessButCleared,
+  kMaxValue = kNewlySupportedFieldDetectedInUnsupportedFieldsCache,
 };
 
 std::string ComputeClientTag(
@@ -265,6 +270,8 @@ PasswordSyncBridge::PasswordSyncBridge(
       // the local model.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
+      sync_metadata_read_error = SyncMetadataReadError::
+          kNewlySupportedFieldDetectedInUnsupportedFieldsCache;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",
@@ -887,8 +894,6 @@ PasswordSyncBridge::GetPossiblyTrimmedPasswordSpecificsData(
       .client_only_encrypted_data();
 }
 
-// TODO(crbug.com/1296159): Consider moving this logic to processor. If not
-// moved, add a metric for read errors where this function is being called.
 bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
     const syncer::EntityMetadataMap& metadata_map) const {
   for (const auto& metadata_entry : metadata_map) {

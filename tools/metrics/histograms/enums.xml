@@ -75658,6 +75658,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="DB Not Available"/>
   <int value="2" label="Reading failure"/>
   <int value="3" label="Reading success but metadata cleaned for initial sync"/>
+  <int value="4"
+      label="Reading success but metadata cleaned to resolve inconsistencies
+             in the cache of unsupported proto fields"/>
 </enum>
 
 <enum name="PasswordSyncState">
