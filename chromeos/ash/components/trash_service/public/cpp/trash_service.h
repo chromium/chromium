@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
+#define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
+
+#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace chromeos::trash_service {
+
+// Starts up an out-of-process Trash service, binds receiver and returns the
+// pending remote.
+// TODO(b/238943248): This should not launch an individual service every time
+// but should re-use one if it's already running.
+mojo::PendingRemote<mojom::TrashService> LaunchTrashService();
+
+}  // namespace chromeos::trash_service
+
+#endif  // CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_

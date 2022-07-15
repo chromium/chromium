@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.trash_service.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Interface to the out-of-process Trash service. The service parses the
+// .trashinfo files and returns a path to restore the files to as well as the
+// deleted date.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface TrashService {
+};
