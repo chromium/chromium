@@ -67,8 +67,31 @@ public class RedirectHandler {
         }
     }
 
-    private class NavigationState {
-        final int mInitialNavigationType;
+    /**
+     * Captures the state of the initial navigation in a Navigation Chain.
+     */
+    public class InitialNavigationState {
+        public final boolean isRendererInitiated;
+        public final boolean hasUserGesture;
+        public final boolean isFromReload;
+        public final boolean isFromTyping;
+        public final boolean isFromFormSubmit;
+        public final boolean isFromIntent;
+
+        public InitialNavigationState(boolean isRendererInitiated, boolean hasUserGesture,
+                boolean isFromReload, boolean isFromTyping, boolean isFromFormSubmit,
+                boolean isFromIntent) {
+            this.isRendererInitiated = isRendererInitiated;
+            this.hasUserGesture = hasUserGesture;
+            this.isFromReload = isFromReload;
+            this.isFromTyping = isFromTyping;
+            this.isFromFormSubmit = isFromFormSubmit;
+            this.isFromIntent = isFromIntent;
+        }
+    }
+
+    private class NavigationChainState {
+        private final int mInitialNavigationType;
         final boolean mHasUserStartedNonInitialNavigation;
         boolean mIsOnFirstLoadInChain = true;
         boolean mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
@@ -76,19 +99,41 @@ public class RedirectHandler {
         // TODO(https://crbug.com/1286053): Plumb through the user activation time from blink.
         final long mNavigationChainStartTime = currentRealtime();
         boolean mUsedBackOrForward;
+        private final InitialNavigationState mInitialNavigationState;
 
-        NavigationState(int initialNavigationType, boolean hasUserStartedNonInitialNavigation) {
+        NavigationChainState(
+                int initialNavigationType, boolean hasUserStartedNonInitialNavigation) {
+            assert !isRefactoringEnabled();
             mInitialNavigationType = initialNavigationType;
             mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
+            mInitialNavigationState = null;
+        }
+
+        NavigationChainState(boolean hasUserStartedNonInitialNavigation,
+                InitialNavigationState initialNavigationChainState) {
+            assert isRefactoringEnabled();
+            mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
+            mInitialNavigationState = initialNavigationChainState;
+            mInitialNavigationType = 0;
+        }
+
+        int getInitialNavigationType() {
+            assert !isRefactoringEnabled();
+            return mInitialNavigationType;
+        }
+
+        InitialNavigationState getInitialNavigationState() {
+            assert isRefactoringEnabled();
+            return mInitialNavigationState;
         }
     }
 
     private long mLastNewUrlLoadingTime = INVALID_TIME;
     private IntentState mIntentState;
-    private NavigationState mNavigationState;
+    private NavigationChainState mNavigationChainState;
 
-    // Not part of NavigationState as this should persist through resetting of the NavigationChain
-    // so that the history state can be correctly set even after the tab is hidden.
+    // Not part of NavigationChainState as this should persist through resetting of the
+    // NavigationChain so that the history state can be correctly set even after the tab is hidden.
     private int mLastCommittedEntryIndexBeforeStartingNavigation = INVALID_ENTRY_INDEX;
 
     private long mLastUserInteractionTimeMillis;
@@ -143,7 +188,7 @@ public class RedirectHandler {
      */
     public void clear() {
         mIntentState = null;
-        mNavigationState = null;
+        mNavigationChainState = null;
     }
 
     /**
@@ -151,7 +196,7 @@ public class RedirectHandler {
      * occurs.
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
-        mNavigationState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain = true;
+        mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain = true;
     }
 
     /**
@@ -159,7 +204,7 @@ public class RedirectHandler {
      * a new user-initiated navigation occurs.
      */
     public void setShouldNotBlockUrlLoadingOverrideOnCurrentRedirectionChain() {
-        mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain = true;
+        mNavigationChainState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain = true;
     }
 
     /**
@@ -201,12 +246,14 @@ public class RedirectHandler {
             // chain. Server redirects are also part of the same navigation chain.
             boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
 
-            if (mNavigationState != null && isSameNavigationChain) {
-                updateNavigationState(pageTransType);
+            if (mNavigationChainState != null && isSameNavigationChain) {
+                updateNavigationChainState(pageTransType);
             } else {
-                resetNavigationState(pageTransType, hasUserGesture, lastCommittedEntryIndex,
-                        isInitialNavigation);
+                resetNavigationChainState(pageTransType, hasUserGesture, lastCommittedEntryIndex,
+                        isInitialNavigation, isRendererInitiated);
             }
+            boolean isBackOrForward = (pageTransType & PageTransition.FORWARD_BACK) != 0;
+            if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
         } else {
             updateNewUrlLoadingOldVersion(pageTransType, isRedirect, hasUserGesture,
                     lastUserInteractionTime, lastCommittedEntryIndex, isInitialNavigation,
@@ -222,7 +269,7 @@ public class RedirectHandler {
 
         int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
 
-        boolean isNewLoadingStartedByUser = mNavigationState == null;
+        boolean isNewLoadingStartedByUser = mNavigationChainState == null;
         boolean isFromIntent = (pageTransType & PageTransition.FROM_API) != 0;
         if (!isRedirect) {
             if ((pageTransType & PageTransition.FORWARD_BACK) != 0) {
@@ -236,11 +283,11 @@ public class RedirectHandler {
             }
         }
         if (!isNewLoadingStartedByUser) {
-            mNavigationState.mIsOnFirstLoadInChain = false;
+            mNavigationChainState.mIsOnFirstLoadInChain = false;
             return;
         }
 
-        // Create the NavigationState for a new Navigation chain.
+        // Create the NavigationChainState for a new Navigation chain.
         int initialNavigationType;
         if (isFromIntent && mIntentState != null) {
             initialNavigationType = NAVIGATION_TYPE_FROM_INTENT;
@@ -257,39 +304,32 @@ public class RedirectHandler {
                 initialNavigationType = NAVIGATION_TYPE_OTHER;
             }
         }
-        mNavigationState = new NavigationState(initialNavigationType, !isInitialNavigation);
+        mNavigationChainState =
+                new NavigationChainState(initialNavigationType, !isInitialNavigation);
         mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
     }
 
-    private void updateNavigationState(int pageTransType) {
-        mNavigationState.mIsOnFirstLoadInChain = false;
-
-        boolean isBackOrForward = (pageTransType & PageTransition.FORWARD_BACK) != 0;
-        if (isBackOrForward) mNavigationState.mUsedBackOrForward = true;
+    private void updateNavigationChainState(int pageTransType) {
+        mNavigationChainState.mIsOnFirstLoadInChain = false;
     }
 
-    private void resetNavigationState(int pageTransType, boolean hasUserGesture,
-            int lastCommittedEntryIndex, boolean isInitialNavigation) {
-        // Create the NavigationState for a new Navigation chain.
+    private void resetNavigationChainState(int pageTransType, boolean hasUserGesture,
+            int lastCommittedEntryIndex, boolean isInitialNavigation, boolean isRendererInitiated) {
+        // Create the NavigationChainState for a new Navigation chain.
         int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
-        boolean isFromIntent = (pageTransType & PageTransition.FROM_API) != 0;
-        boolean isBackOrForward = (pageTransType & PageTransition.FORWARD_BACK) != 0;
-        int initialNavigationType;
-        if (isFromIntent && mIntentState != null) {
-            initialNavigationType = NAVIGATION_TYPE_FROM_INTENT;
-        } else {
-            mIntentState = null;
-            if (pageTransitionCore == PageTransition.TYPED) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_USER_TYPING;
-            } else if (pageTransitionCore == PageTransition.RELOAD || isBackOrForward) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_RELOAD;
-            } else if (pageTransitionCore == PageTransition.LINK && !hasUserGesture) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
-            } else {
-                initialNavigationType = NAVIGATION_TYPE_OTHER;
-            }
-        }
-        mNavigationState = new NavigationState(initialNavigationType, !isInitialNavigation);
+        boolean isFromApi = (pageTransType & PageTransition.FROM_API) != 0;
+        boolean isFromIntent = isFromApi && mIntentState != null;
+        boolean isFromReload = pageTransitionCore == PageTransition.RELOAD;
+        boolean isFromTyping = pageTransitionCore == PageTransition.TYPED;
+        boolean isFromFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
+
+        if (!isFromIntent) mIntentState = null;
+        InitialNavigationState initialNavigationChainState =
+                new InitialNavigationState(isRendererInitiated, hasUserGesture, isFromReload,
+                        isFromTyping, isFromFormSubmit, isFromIntent);
+
+        mNavigationChainState =
+                new NavigationChainState(!isInitialNavigation, initialNavigationChainState);
         mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
     }
 
@@ -298,8 +338,14 @@ public class RedirectHandler {
      *         navigation (eg. has followed a client or server redirect).
      */
     public boolean isOnNoninitialLoadForIntentNavigationChain() {
-        return mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_INTENT
-                && !mNavigationState.mIsOnFirstLoadInChain;
+        if (isRefactoringEnabled()) {
+            return mNavigationChainState.getInitialNavigationState().isFromIntent
+                    && !mNavigationChainState.mIsOnFirstLoadInChain;
+
+        } else {
+            return mNavigationChainState.getInitialNavigationType() == NAVIGATION_TYPE_FROM_INTENT
+                    && !mNavigationChainState.mIsOnFirstLoadInChain;
+        }
     }
 
     /**
@@ -331,15 +377,31 @@ public class RedirectHandler {
     }
 
     private boolean shouldNavigationTypeStayInApp(boolean isForTrustedCallingApp) {
+        if (isRefactoringEnabled()) {
+            InitialNavigationState state = mNavigationChainState.getInitialNavigationState();
+            // http://crbug.com/162106: Never leave Chrome from a refresh.
+            if (state.isFromReload) return true;
+
+            // If the app we would navigate to is trusted and what launched Chrome, allow the
+            // navigation.
+            if (isForTrustedCallingApp) return false;
+
+            // Otherwise allow navigation out of the app only with a user gesture.
+            // TODO(https://crbug.com/839751): Remove gesture exception for form submits.
+            return state.isRendererInitiated && !state.hasUserGesture && !state.isFromFormSubmit;
+        }
+
         // http://crbug.com/162106: Never leave Chrome from a refresh.
-        if (mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD) return true;
+        if (mNavigationChainState.getInitialNavigationType() == NAVIGATION_TYPE_FROM_RELOAD) {
+            return true;
+        }
 
         // If the app we would navigate to is trusted and what launched Chrome, allow the
         // navigation.
         if (isForTrustedCallingApp) return false;
 
         // Otherwise allow navigation out of the app only with a user gesture.
-        return mNavigationState.mInitialNavigationType
+        return mNavigationChainState.getInitialNavigationType()
                 == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
     }
 
@@ -354,14 +416,20 @@ public class RedirectHandler {
      * @return whether navigation is from a user's typing or not.
      */
     public boolean isNavigationFromUserTyping() {
-        return mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_USER_TYPING;
+        if (isRefactoringEnabled()) {
+            return mNavigationChainState.getInitialNavigationState().isFromTyping;
+
+        } else {
+            return mNavigationChainState.getInitialNavigationType()
+                    == NAVIGATION_TYPE_FROM_USER_TYPING;
+        }
     }
 
     /**
      * @return whether we should stay in Chrome or not.
      */
     public boolean shouldNotOverrideUrlLoading() {
-        return mNavigationState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
+        return mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
     }
 
     /**
@@ -369,8 +437,9 @@ public class RedirectHandler {
      * chain.
      */
     public boolean getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain() {
-        boolean value = mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain;
-        mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain = false;
+        boolean value =
+                mNavigationChainState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain;
+        mNavigationChainState.mShouldNotBlockOverrideUrlLoadingOnCurrentNavigationChain = false;
         return value;
     }
 
@@ -378,7 +447,7 @@ public class RedirectHandler {
      * @return whether on navigation or not.
      */
     public boolean isOnNavigation() {
-        return mNavigationState != null;
+        return mNavigationChainState != null;
     }
 
     /**
@@ -393,7 +462,8 @@ public class RedirectHandler {
      * @return whether the user has started a non-initial navigation.
      */
     public boolean hasUserStartedNonInitialNavigation() {
-        return mNavigationState != null && mNavigationState.mHasUserStartedNonInitialNavigation;
+        return mNavigationChainState != null
+                && mNavigationChainState.mHasUserStartedNonInitialNavigation;
     }
 
     /**
@@ -432,25 +502,36 @@ public class RedirectHandler {
      * the user was started.
      */
     public boolean isNavigationChainExpired() {
-        return currentRealtime() - mNavigationState.mNavigationChainStartTime
+        return currentRealtime() - mNavigationChainState.mNavigationChainStartTime
                 > NAVIGATION_CHAIN_TIMEOUT_MILLIS;
     }
 
     public boolean navigationChainUsedBackOrForward() {
-        return mNavigationState.mUsedBackOrForward;
+        return mNavigationChainState.mUsedBackOrForward;
+    }
+
+    public InitialNavigationState getInitialNavigationState() {
+        return mNavigationChainState.getInitialNavigationState();
     }
 
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {
-        if (mNavigationState.mInitialNavigationType
-                == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE) {
-            long millisSinceLastGesture =
-                    SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
-            Log.w(TAG,
-                    "External navigation blocked due to missing gesture. Last input was "
-                            + millisSinceLastGesture + "ms ago.");
-            RecordHistogram.recordTimesHistogram(
-                    "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
+        boolean shouldLog = false;
+        if (isRefactoringEnabled()) {
+            shouldLog = mNavigationChainState.getInitialNavigationState().isRendererInitiated
+                    && !mNavigationChainState.getInitialNavigationState().hasUserGesture;
+
+        } else {
+            shouldLog = mNavigationChainState.getInitialNavigationType()
+                    == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
         }
+        if (!shouldLog) return;
+        long millisSinceLastGesture =
+                SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
+        Log.w(TAG,
+                "External navigation blocked due to missing gesture. Last input was "
+                        + millisSinceLastGesture + "ms ago.");
+        RecordHistogram.recordTimesHistogram(
+                "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
     }
 
     // Facilitates simulated waiting in tests.

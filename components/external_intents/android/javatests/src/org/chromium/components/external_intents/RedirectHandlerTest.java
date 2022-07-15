@@ -249,9 +249,8 @@ public class RedirectHandlerTest {
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
 
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 1, false, true);
+        handler.updateNewUrlLoading(PageTransition.LINK, false, true,
+                SystemClock.elapsedRealtime() + 1, 1, false, true);
         Assert.assertFalse(handler.isOnNoninitialLoadForIntentNavigationChain());
         Assert.assertTrue(handler.hasNewResolver(
                 queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
@@ -341,9 +340,8 @@ public class RedirectHandlerTest {
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
 
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 2, false, true);
+        handler.updateNewUrlLoading(PageTransition.LINK, false, true,
+                SystemClock.elapsedRealtime() + 1, 2, false, true);
         Assert.assertFalse(handler.shouldStayInApp(false));
         Assert.assertFalse(handler.shouldStayInApp(true));
 
@@ -467,22 +465,32 @@ public class RedirectHandlerTest {
         long lastUserInteractionTime = SystemClock.elapsedRealtime();
         handler.updateNewUrlLoading(PageTransition.FORM_SUBMIT | PageTransition.FORWARD_BACK, false,
                 true, lastUserInteractionTime, 0, false, false);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
+        if (RedirectHandler.isRefactoringEnabled()) {
+            Assert.assertTrue(handler.navigationChainUsedBackOrForward());
+        } else {
+            Assert.assertTrue(handler.shouldStayInApp(false));
+            Assert.assertTrue(handler.shouldStayInApp(true));
+        }
         Assert.assertTrue(handler.hasUserStartedNonInitialNavigation());
 
         handler.updateNewUrlLoading(PageTransition.LINK, false, false, lastUserInteractionTime, 1,
                 false /* isInitialNavigation */, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
+        if (RedirectHandler.isRefactoringEnabled()) {
+            Assert.assertTrue(handler.navigationChainUsedBackOrForward());
+        } else {
+            Assert.assertTrue(handler.shouldStayInApp(false));
+            Assert.assertTrue(handler.shouldStayInApp(true));
+        }
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
         Assert.assertTrue(handler.hasUserStartedNonInitialNavigation());
 
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(PageTransition.LINK, false, true, SystemClock.elapsedRealtime(),
-                2, false /* isInitialNavigation */, true);
+        handler.updateNewUrlLoading(PageTransition.LINK, false, true,
+                SystemClock.elapsedRealtime() + 1, 2, false /* isInitialNavigation */, true);
+        if (RedirectHandler.isRefactoringEnabled()) {
+            Assert.assertFalse(handler.navigationChainUsedBackOrForward());
+        }
         Assert.assertFalse(handler.shouldStayInApp(false));
         Assert.assertFalse(handler.shouldStayInApp(true));
 

@@ -41,7 +41,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -319,8 +318,7 @@ public class UrlOverridingTest {
     }
 
     private Origin createExampleOrigin() {
-        org.chromium.url.internal.mojom.Origin origin =
-                new org.chromium.url.internal.mojom.Origin();
+        org.chromium.url.internal.mojom.Origin origin = new org.chromium.url.internal.mojom.Origin();
         origin.scheme = "https";
         origin.host = "example.com";
         origin.port = 80;
@@ -1172,7 +1170,8 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url = mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE);
-        loadUrlAndWaitForIntentUrl(url, true, null, PageTransition.AUTO_BOOKMARK);
+        @OverrideUrlLoadingResultType
+        int result = loadUrlAndWaitForIntentUrl(url, true, null, PageTransition.AUTO_BOOKMARK);
     }
 
     @Test
