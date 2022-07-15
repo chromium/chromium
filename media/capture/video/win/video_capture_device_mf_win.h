@@ -22,6 +22,7 @@
 #include "base/containers/queue.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
@@ -52,12 +53,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   explicit VideoCaptureDeviceMFWin(
       const VideoCaptureDeviceDescriptor& device_descriptor,
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
-      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
   explicit VideoCaptureDeviceMFWin(
       const VideoCaptureDeviceDescriptor& device_descriptor,
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
-      Microsoft::WRL::ComPtr<IMFCaptureEngine> engine);
+      Microsoft::WRL::ComPtr<IMFCaptureEngine> engine,
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
 
   VideoCaptureDeviceMFWin(const VideoCaptureDeviceMFWin&) = delete;
   VideoCaptureDeviceMFWin& operator=(const VideoCaptureDeviceMFWin&) = delete;
@@ -79,7 +82,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
   // Captured new video data.
-  void OnIncomingCapturedData(IMFMediaBuffer* buffer,
+  void OnIncomingCapturedData(Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp);
   void OnFrameDropped(VideoCaptureFrameDropReason reason);
@@ -140,17 +143,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   HRESULT WaitOnCaptureEvent(GUID capture_event_guid);
   HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
                                  base::TimeTicks reference_time,
-                                 base::TimeDelta timestamp)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+                                 base::TimeDelta timestamp);
   void OnIncomingCapturedDataInternal(
-      IMFMediaBuffer* buffer,
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
       base::TimeTicks reference_time,
-      base::TimeDelta timestamp,
-      VideoCaptureFrameDropReason& frame_drop_reason);
+      base::TimeDelta timestamp);
   bool RecreateMFSource();
-  bool AllocateAndStartLocked(
-      const VideoCaptureParams& params,
-      std::unique_ptr<VideoCaptureDevice::Client> client);
+  void OnFrameDroppedInternal(VideoCaptureFrameDropReason reason);
+  void ProcessEventError(HRESULT hr);
 
   VideoCaptureDeviceDescriptor device_descriptor_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;
@@ -158,11 +158,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   bool is_initialized_;
   int max_retry_count_;
   int retry_delay_in_ms_;
-
-  // Guards the below variables from concurrent access between methods running
-  // on |sequence_checker_| and calls to OnIncomingCapturedData() and OnEvent()
-  // made by MediaFoundation on threads outside of our control.
-  base::Lock lock_;
 
   std::unique_ptr<VideoCaptureDevice::Client> client_;
   Microsoft::WRL::ComPtr<IMFMediaSource> source_;
@@ -189,9 +184,18 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   VideoCaptureParams params_;
   int num_restarts_ = 0;
 
+  // Main thread task runner, used to serialize work triggered by
+  // IMFCaptureEngine callbacks (OnEvent, OnSample) and work triggered
+  // by video capture service API calls (Init, AllocateAndStart,
+  // StopAndDeallocate) This can be left as nullptr in test environment where
+  // callbacks are called from the same thread as API methods.
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
+
   media::VideoCaptureFeedback last_feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<VideoCaptureDeviceMFWin> weak_factory_{this};
 };
 
 }  // namespace media

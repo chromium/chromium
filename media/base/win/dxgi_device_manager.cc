@@ -91,18 +91,16 @@ DXGIDeviceManager::DXGIDeviceManager(
     CHROME_LUID luid)
     : mf_dxgi_device_manager_(std::move(mf_dxgi_device_manager)),
       d3d_device_reset_token_(d3d_device_reset_token),
-      luid_(luid) {}
+      luid_(luid) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 DXGIDeviceManager::~DXGIDeviceManager() = default;
 
 HRESULT DXGIDeviceManager::ResetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
-  base::AutoLock lock(lock_);
-  return ResetDevice_Locked(d3d_device);
-}
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-HRESULT DXGIDeviceManager::ResetDevice_Locked(
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
   constexpr uint32_t kDeviceFlags =
       D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
   const D3D_FEATURE_LEVEL kFeatureLevels[] = {
@@ -154,11 +152,12 @@ HRESULT DXGIDeviceManager::ResetDevice_Locked(
 
 HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>* new_device) {
-  base::AutoLock lock(lock_);
-  Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice_Locked();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice();
   HRESULT hr = device ? device->GetDeviceRemovedReason() : MF_E_UNEXPECTED;
   if (FAILED(hr)) {
-    HRESULT reset_hr = ResetDevice_Locked(device);
+    HRESULT reset_hr = ResetDevice(device);
     if (FAILED(reset_hr)) {
       LOG(ERROR) << "Failed to recreate the device: "
                  << logging::SystemErrorCodeToString(reset_hr);
@@ -203,11 +202,8 @@ HRESULT DXGIDeviceManager::RegisterWithMediaSource(
 }
 
 Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice() {
-  base::AutoLock lock(lock_);
-  return GetDevice_Locked();
-}
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice_Locked() {
   DXGIDeviceScopedHandle device_handle(mf_dxgi_device_manager_.Get());
   return device_handle.GetDevice();
 }
@@ -218,11 +214,12 @@ DXGIDeviceManager::GetMFDXGIDeviceManager() {
 }
 
 void DXGIDeviceManager::OnGpuInfoUpdate(CHROME_LUID luid) {
-  base::AutoLock lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (luid.HighPart != luid_.HighPart || luid.LowPart != luid_.LowPart) {
     luid_ = luid;
     Microsoft::WRL::ComPtr<ID3D11Device> device;
-    ResetDevice_Locked(device);
+    ResetDevice(device);
   }
 }
 
