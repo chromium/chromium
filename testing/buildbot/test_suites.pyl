@@ -1969,7 +1969,6 @@
       'crypto_unittests': {},
       'events_unittests': {},
       'filesystem_service_unittests': {},
-      'fuchsia_mojo_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
       'google_apis_unittests': {},

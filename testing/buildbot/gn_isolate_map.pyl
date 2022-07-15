@@ -870,10 +870,6 @@
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
     "type": "script",
   },
-  "fuchsia_mojo_unittests": {
-    "label": "//mojo/public/cpp/base/fuchsia:fuchsia_mojo_unittests",
-    "type": "console_test_launcher",
-  },
   "fuchsia_pytype": {
     "label": "//testing:fuchsia_pytype",
     "script": "//build/fuchsia/test/run_pytype.py",

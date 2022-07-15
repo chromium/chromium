@@ -159,4 +159,8 @@ source_set("tests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+
+  if (is_fuchsia) {
+    public_deps += [ "//mojo/public/cpp/base/fuchsia:unittests" ]
+  }
 }
