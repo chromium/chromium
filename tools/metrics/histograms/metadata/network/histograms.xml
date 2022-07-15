@@ -3019,6 +3019,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.MemoryCache.FreshnessAtStore" units="seconds"
+    expires_after="2022-10-05">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records freshness of a response when it is going to be stored into the
+    in-memory cache. The range is from 1 seconds to 864000 seconds (10 days).
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.NetworkLoaderCompletionTime.{Source}"
     units="ms" expires_after="2022-10-05">
   <owner>bashi@chromium.org</owner>

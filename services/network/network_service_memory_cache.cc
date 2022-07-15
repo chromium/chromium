@@ -263,6 +263,20 @@ void NetworkServiceMemoryCache::StoreResponse(
   if (max_per_entry_bytes_ < data.size())
     return;
 
+  // Record fresness of the response in seconds.
+  net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
+      response_head->headers->GetFreshnessLifetimes(
+          response_head->response_time);
+  DCHECK(!lifetimes.freshness.is_zero());
+  const int64_t freshness_in_seconds = lifetimes.freshness.InSeconds();
+  constexpr int kMinSeconds = 1;
+  constexpr int kMaxSeconds = 60 * 60 * 24 * 10;  // 10 days.
+  base::UmaHistogramCustomCounts(
+      "NetworkService.MemoryCache.FreshnessAtStore",
+      base::saturated_cast<base::Histogram::Sample>(freshness_in_seconds),
+      kMinSeconds, kMaxSeconds,
+      /*buckets=*/50);
+
   auto prev = entries_.Peek(cache_key);
   if (prev != entries_.end()) {
     DCHECK_GE(total_bytes_, prev->second->content->size());
