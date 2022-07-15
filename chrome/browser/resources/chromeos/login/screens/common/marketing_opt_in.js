@@ -208,7 +208,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
    */
   onA11yNavButtonsSettingChanged_() {
     chrome.send('login.MarketingOptInScreen.setA11yNavigationButtonsEnabled', [
-      this.$.a11yNavButtonToggle.checked
+      this.$.a11yNavButtonToggle.checked,
     ]);
   }
 

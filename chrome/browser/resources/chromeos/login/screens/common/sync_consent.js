@@ -71,7 +71,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       optInButtonTextKey_: {
         type: String,
         computed: 'getOptInButtonTextKey_(isMinorMode_)',
-      }
+      },
     };
   }
 
@@ -156,9 +156,11 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.composedPath());
     chrome.send('login.SyncConsentScreen.continue', [
-      opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
+      opted_in,
+      this.$.reviewSettingsBox.checked,
+      this.getConsentDescription_(),
       this.getConsentConfirmation_(
-          /** @type {!Array<!HTMLElement>} */ (e.composedPath()))
+          /** @type {!Array<!HTMLElement>} */ (e.composedPath())),
     ]);
   }
 

@@ -86,7 +86,7 @@ function getTree(loadedPage) {
     leaf4,
     leaf5,
     leaf6,
-    leaf7
+    leaf7,
   };
 }
 

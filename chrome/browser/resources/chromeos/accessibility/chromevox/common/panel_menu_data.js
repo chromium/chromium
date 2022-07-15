@@ -21,7 +21,7 @@ PanelNodeMenuId = {
   LANDMARK: 2,
   LINK: 3,
   FORM_CONTROL: 4,
-  TABLE: 5
+  TABLE: 5,
 };
 
 /**
@@ -51,26 +51,26 @@ ALL_NODE_MENU_DATA = [
   {
     menuId: PanelNodeMenuId.HEADING,
     titleId: 'role_heading',
-    predicate: AutomationPredicate.heading
+    predicate: AutomationPredicate.heading,
   },
   {
     menuId: PanelNodeMenuId.LANDMARK,
     titleId: 'role_landmark',
-    predicate: AutomationPredicate.landmark
+    predicate: AutomationPredicate.landmark,
   },
   {
     menuId: PanelNodeMenuId.LINK,
     titleId: 'role_link',
-    predicate: AutomationPredicate.link
+    predicate: AutomationPredicate.link,
   },
   {
     menuId: PanelNodeMenuId.FORM_CONTROL,
     titleId: 'panel_menu_form_controls',
-    predicate: AutomationPredicate.formField
+    predicate: AutomationPredicate.formField,
   },
   {
     menuId: PanelNodeMenuId.TABLE,
     titleId: 'role_table',
-    predicate: AutomationPredicate.table
+    predicate: AutomationPredicate.table,
   },
 ];

@@ -270,7 +270,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           new CustomAutomationEvent(evt.type, selectionStart, {
             eventFrom: evt.eventFrom,
             eventFromAction: evt.eventFromAction,
-            intents: evt.intents
+            intents: evt.intents,
           }));
     }
 
@@ -335,7 +335,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     const event = new CustomAutomationEvent(EventType.FOCUS, node, {
       eventFrom: evt.eventFrom,
       eventFromAction: evt.eventFromAction,
-      intents: evt.intents
+      intents: evt.intents,
     });
     this.onEventDefault(event);
 

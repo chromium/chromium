@@ -69,7 +69,7 @@ TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
           endCallback() {
             assertFalse(spruiousStringEndCallbackCalled);
             spruiousStringEndCallbackCalled = true;
-          }
+          },
         });
         speak('Fourth string');
       })
@@ -93,7 +93,7 @@ TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
       assertFalse(onlyStartCallbackCalled);
       onlyStartCallbackCalled = true;
       assertFalse(onlyEndCallbackCalled);
-    }
+    },
   });
   speak('Only end callback', {
     endCallback() {
@@ -101,7 +101,7 @@ TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
       assertFalse(onlyEndCallbackCalled);
       onlyEndCallbackCalled = true;
       assertFalse(bothCallbacksStartCalled);
-    }
+    },
   });
   speak('Both callbacks', {
     startCallback() {
@@ -114,7 +114,7 @@ TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
       assertTrue(bothCallbacksStartCalled);
       assertFalse(bothCallbacksEndCalled);
       bothCallbacksEndCalled = true;
-    }
+    },
   });
   mock.expectSpeech('Both callbacks');
   mock.replay();
@@ -200,7 +200,7 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
         speak('MyButton', {
           startCallback() {
             earcon('BUTTON');
-          }
+          },
         });
       })
       .expectSpeech('MyButton')
@@ -210,7 +210,7 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
         speak('MyTextField', {
           startCallback() {
             earcon('EDITABLE_TEXT');
-          }
+          },
         });
       })
       .expectEarcon(Earcon.ALERT_MODAL)

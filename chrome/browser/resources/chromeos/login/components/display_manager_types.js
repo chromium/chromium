@@ -16,7 +16,7 @@
   OOBE: 'oobe',
   LOGIN: 'login',
   APP_LAUNCH_SPLASH: 'app-launch-splash',
-  GAIA_SIGNIN: 'gaia-signin'
+  GAIA_SIGNIN: 'gaia-signin',
 };
 
 /**

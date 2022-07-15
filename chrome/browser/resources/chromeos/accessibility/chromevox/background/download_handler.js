@@ -179,19 +179,19 @@ DownloadHandler.notifyProgress = function(id) {
       } else if (timeRemaining < 60) {
         // Seconds. Use up until 1 minute remaining.
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('seconds')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else if (timeRemaining < 3600) {
         // Minutes. Use up until 1 hour remaining.
         timeRemaining = Math.floor(timeRemaining / 60);
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('minutes')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else if (timeRemaining < 36000) {
         // Hours. Use up until 10 hours remaining.
         timeRemaining = Math.floor(timeRemaining / 3600);
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('hours')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else {
         // If 10+ hours remaining, do not report progress.
@@ -199,7 +199,10 @@ DownloadHandler.notifyProgress = function(id) {
       }
 
       const optSubs = [
-        storedItem.percentComplete, storedItem.fileName, timeRemaining, timeUnit
+        storedItem.percentComplete,
+        storedItem.fileName,
+        timeRemaining,
+        timeUnit,
       ];
       DownloadHandler.speechAndBrailleOutput(
           'download_progress', QueueMode.FLUSH, optSubs);

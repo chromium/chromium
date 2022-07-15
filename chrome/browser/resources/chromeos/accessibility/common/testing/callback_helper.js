@@ -62,7 +62,7 @@ CallbackHelper.prototype = {
       savedArgs.arguments = Array.prototype.slice.call(arguments);
       runAll.invoke();
     };
-  }
+  },
 };
 
 /**

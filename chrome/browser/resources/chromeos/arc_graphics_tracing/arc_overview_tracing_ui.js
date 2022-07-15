@@ -100,7 +100,7 @@ function calculateAppRenderQualityAndCommitDeviation(model) {
 
   if (deltas.events.length < 3) {
     return [
-      0.0 /* % */, 0.0 /* ms */
+      0.0 /* % */, 0.0, /* ms */
     ];
   }
 
@@ -112,7 +112,7 @@ function calculateAppRenderQualityAndCommitDeviation(model) {
 
   return [
     renderQuality * 100.0 /* convert to % */,
-    commitDeviation * 0.001 /* mcs to ms */
+    commitDeviation * 0.001, /* mcs to ms */
   ];
 }
 
@@ -738,7 +738,7 @@ function addDeltaView(parent, resolution, duration, appView) {
     minValue: 0,
     name: 'ms',
     scale: 1.0 / 1000.0,
-    width: 1.0
+    width: 1.0,
   };
   for (i = 0; i < models.length; i++) {
     var attributes = Object.assign({}, attributesTemplate);
@@ -769,7 +769,7 @@ function addPowerView(parent, title, resolution, duration, eventType) {
     minValue: 0,
     name: 'watts',
     scale: 1.0 / 1000,
-    width: 1.0
+    width: 1.0,
   };
   for (i = 0; i < models.length; i++) {
     var events = new Events(models[i].system.memory, eventType, eventType);

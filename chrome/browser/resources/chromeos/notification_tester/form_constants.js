@@ -55,53 +55,53 @@ export const FormSelectOptions = {
   TITLE_OPTIONS: [
     {
       displayText: 'Short Sentence (Left-to-Right)',
-      value: 'Notification Title'
+      value: 'Notification Title',
     },
     {displayText: 'Short Sentence (Right-to-Left)', value: 'כותרת הודעה'},
     {
       displayText: 'Long Sentence (Left-to-Right)',
       value:
-          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers'
+          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers',
     },
     {
       displayText: 'Long Sentence (Right-to-Left)',
-      value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר'
+      value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר',
     },
     {
       displayText: 'Repetitive Characters (Left-to-Right)',
-      value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+      value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
     },
     {
       displayText: 'Repetitive Characters (Right-to-Left)',
-      value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש'
+      value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש',
     },
     {displayText: 'Empty', value: ''},
   ],
   MESSAGE_OPTIONS: [
     {
       displayText: 'One Sentence (Left-to-Right)',
-      value: 'Notification content'
+      value: 'Notification content',
     },
     {displayText: 'One Sentence (Right-to-Left)', value: 'תוכן הודעה'},
     {
       displayText: 'Multiple Sentences (Left-to-Right)',
       value:
-          'This is the notification\'s message.It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that\'s being used.'
+          'This is the notification\'s message.It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that\'s being used.',
     },
     {
       displayText: 'Multiple Sentences (Right-to-Left)',
       value:
-          'זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש'
+          'זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש',
     },
     {
       displayText: 'Repetitive Characters (Left-to-Right)',
       value:
-          'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+          'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
     },
     {
       displayText: 'Repetitive Characters (Right-to-Left)',
       value:
-          'ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש'
+          'ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש',
     },
     {displayText: 'Unicode Emojis', value: '🌇😃🍈😆🍜🍻😋⛅⛳😚ඞ'},
     {displayText: 'Empty', value: ''},
@@ -122,11 +122,11 @@ export const FormSelectOptions = {
     {displayText: 'No Image', value: 'none'},
     {
       displayText: 'Google Logo (PNG, 180 x 68)',
-      value: 'google_logo_small_png'
+      value: 'google_logo_small_png',
     },
     {
       displayText: 'Chromium Logo (PNG, 192 x 192)',
-      value: 'chromium_logo_large_png'
+      value: 'chromium_logo_large_png',
     },
   ],
   URL_OPTIONS: [
@@ -137,18 +137,18 @@ export const FormSelectOptions = {
   SOURCE_OPTIONS: [
     {
       displayText: 'Short Sentence (Left-to-Right)',
-      value: 'Sample Display Source'
+      value: 'Sample Display Source',
     },
     {displayText: 'Short Sentence (Right-to-Left)', value: 'مصدر عرض العينة'},
     {
       displayText: 'Long Sentence (Left-to-Right)',
       value:
-          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers'
+          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers',
     },
     {
       displayText: 'Long Sentence (Right-to-Left)',
       value:
-          'مصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينة'
+          'مصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينةمصدر عرض العينة',
     },
     {displayText: 'Empty', value: ''},
 
@@ -157,16 +157,16 @@ export const FormSelectOptions = {
     {displayText: 'Simple', value: NotificationType.NOTIFICATION_TYPE_SIMPLE},
     {
       displayText: 'Base Format',
-      value: NotificationType.NOTIFICATION_TYPE_BASE_FORMAT
+      value: NotificationType.NOTIFICATION_TYPE_BASE_FORMAT,
     },
     {displayText: 'Image', value: NotificationType.NOTIFICATION_TYPE_IMAGE},
     {
       displayText: 'Multiple',
-      value: NotificationType.NOTIFICATION_TYPE_MULTIPLE
+      value: NotificationType.NOTIFICATION_TYPE_MULTIPLE,
     },
     {
       displayText: 'Progress',
-      value: NotificationType.NOTIFICATION_TYPE_PROGRESS
+      value: NotificationType.NOTIFICATION_TYPE_PROGRESS,
     },
   ],
   PRIORITY_OPTIONS: [
@@ -183,19 +183,19 @@ export const FormSelectOptions = {
     {
       displayText: 'Long Sentence (Left-to-Right)',
       value:
-          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers'
+          'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers',
     },
     {
       displayText: 'Long Sentence (Right-to-Left)',
-      value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר'
+      value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר',
     },
     {
       displayText: 'Repetitive Characters (Left-to-Right)',
-      value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+      value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
     },
     {
       displayText: 'Repetitive Characters (Right-to-Left)',
-      value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש'
+      value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש',
     },
     {displayText: 'Unicode Emojis', value: '🌇😃🍈😆🍜🍻😋⛅⛳😚ඞ'},
     {displayText: 'Empty', value: ''},
@@ -205,5 +205,5 @@ export const FormSelectOptions = {
     {displayText: 'Group A', value: 'group_a'},
     {displayText: 'Group B', value: 'group_b'},
     {displayText: 'Group C', value: 'group_c'},
-  ]
+  ],
 };

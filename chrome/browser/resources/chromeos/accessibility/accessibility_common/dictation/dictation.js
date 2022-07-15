@@ -438,7 +438,7 @@ export class Dictation {
     // TODO(crbug.com/1288964): Finalize string and internationalization.
     this.uiController_.setState(UIState.MACRO_FAIL, {
       text: `Failed to run command: ${transcript}`,
-      context: HintContext.STANDBY
+      context: HintContext.STANDBY,
     });
   }
 

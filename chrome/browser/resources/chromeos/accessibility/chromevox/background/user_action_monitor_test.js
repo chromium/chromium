@@ -55,7 +55,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'UnitTest', async function() {
       value: {'keys': {'keyCode': [KeyCode.SPACE]}},
     },
     {type: 'braille', value: 'jumpToTop'},
-    {type: 'gesture', value: Gesture.SWIPE_UP1}
+    {type: 'gesture', value: Gesture.SWIPE_UP1},
   ];
   const onFinished = () => finished = true;
 
@@ -84,7 +84,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'ActionUnitTest', async function() {
       {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
   const keySequenceActionTwo = new UserActionMonitor.Action({
     type: 'key_sequence',
-    value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A))
+    value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)),
   });
   const gestureActionOne = UserActionMonitor.Action.fromActionInfo(
       {type: 'gesture', value: Gesture.SWIPE_UP1});
@@ -198,14 +198,14 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'Output', async function() {
       type: 'gesture',
       value: Gesture.SWIPE_UP1,
       beforeActionMsg: 'First instruction',
-      afterActionMsg: 'Congratulations!'
+      afterActionMsg: 'Congratulations!',
     },
     {
       type: 'gesture',
       value: Gesture.SWIPE_UP1,
       beforeActionMsg: 'Second instruction',
-      afterActionMsg: 'You did it!'
-    }
+      afterActionMsg: 'You did it!',
+    },
   ];
   const onFinished = () => finished = true;
 
@@ -257,7 +257,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'MultipleKeys', async function() {
   let finished = false;
   const actions = [{
     type: 'key_sequence',
-    value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.O, KeyCode.B]}}
+    value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.O, KeyCode.B]}},
   }];
   const onFinished = () => finished = true;
 
@@ -291,18 +291,18 @@ AX_TEST_F(
           type: 'key_sequence',
           value: {
             'keys':
-                {'altKey': [true], 'shiftKey': [true], 'keyCode': [KeyCode.L]}
+                {'altKey': [true], 'shiftKey': [true], 'keyCode': [KeyCode.L]},
           },
-          afterActionMsg: 'You pressed the first sequence!'
+          afterActionMsg: 'You pressed the first sequence!',
         },
         {
           type: 'key_sequence',
           value: {
             'keys':
-                {'altKey': [true], 'shiftKey': [true], 'keyCode': [KeyCode.S]}
+                {'altKey': [true], 'shiftKey': [true], 'keyCode': [KeyCode.S]},
           },
-          afterActionMsg: 'You pressed the second sequence!'
-        }
+          afterActionMsg: 'You pressed the second sequence!',
+        },
       ];
       const onFinished = () => finished = true;
 
@@ -341,12 +341,12 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'BlockCommands', async function() {
   const actions = [
     {
       type: 'key_sequence',
-      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.RIGHT]}}
+      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.RIGHT]}},
     },
     {
       type: 'key_sequence',
-      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.LEFT]}}
-    }
+      value: {'cvoxModifier': true, 'keys': {'keyCode': [KeyCode.LEFT]}},
+    },
   ];
   const onFinished = () => finished = true;
 
@@ -439,7 +439,7 @@ AX_TEST_F(
       const actions = [{
         type: 'key_sequence',
         value: {keys: {keyCode: [KeyCode.CONTROL]}},
-        shouldPropagate: false
+        shouldPropagate: false,
       }];
       const onFinished = () => finished = true;
       UserActionMonitor.create(actions, onFinished);
@@ -477,7 +477,7 @@ AX_TEST_F(
       const actions = [{
         type: 'gesture',
         value: Gesture.SWIPE_RIGHT1,
-        afterActionCmd: 'announceBatteryDescription'
+        afterActionCmd: 'announceBatteryDescription',
       }];
       const onFinished = () => finished = true;
 

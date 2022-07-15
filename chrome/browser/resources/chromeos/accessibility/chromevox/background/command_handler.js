@@ -124,7 +124,7 @@ export class CommandHandler extends CommandHandlerInterface {
       case 'showLearnModePage':
         const explorerPage = {
           url: 'chromevox/learn_mode/learn_mode.html',
-          type: 'panel'
+          type: 'panel',
         };
         chrome.windows.create(explorerPage);
         break;
@@ -436,7 +436,8 @@ export class CommandHandler extends CommandHandlerInterface {
           DesktopAutomationInterface.instance.textEditHandler
               .injectInferredIntents([{
                 command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-                textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER
+                textBoundary:
+                    chrome.automation.IntentTextBoundaryType.CHARACTER,
               }]);
         }
         return true;
@@ -459,7 +460,7 @@ export class CommandHandler extends CommandHandlerInterface {
                 command: chrome.automation.IntentCommandType.MOVE_SELECTION,
                 textBoundary: command === 'nativeNextWord' ?
                     chrome.automation.IntentTextBoundaryType.WORD_END :
-                    chrome.automation.IntentTextBoundaryType.WORD_START
+                    chrome.automation.IntentTextBoundaryType.WORD_START,
               }]);
         }
         return true;

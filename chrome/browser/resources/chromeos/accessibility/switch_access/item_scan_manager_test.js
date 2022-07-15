@@ -470,7 +470,7 @@ AX_TEST_F(
       // Fake a children changed event.
       handler.eventStack_ = [{
         type: chrome.automation.EventType.CHILDREN_CHANGED,
-        target: automationGroup
+        target: automationGroup,
       }];
       handler.handleEvent_();
 
@@ -585,7 +585,7 @@ AX_TEST_F(
       // Wait for focus to move to the password field.
       await this.untilFocusIs({
         role: chrome.automation.RoleType.TEXT_FIELD,
-        name: 'Password for stub-user@example.com'
+        name: 'Password for stub-user@example.com',
       });
 
       // The button is no longer in the tree because the screen is locked.

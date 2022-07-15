@@ -41,9 +41,17 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
       callback([
         // All properties of TtsVoice object are optional.
         // https://developer.chrome.com/apps/tts#type-TtsVoice.
-        {}, {voiceName: 'Android'}, {'lang': 'en-US'}, {'lang': 'fr-CA'},
-        {'lang': 'es-ES'}, {'lang': 'it-IT'}, {'lang': 'ja-JP'},
-        {'lang': 'ko-KR'}, {'lang': 'zh-TW'}, {'lang': 'ast'}, {'lang': 'pt'}
+        {},
+        {voiceName: 'Android'},
+        {'lang': 'en-US'},
+        {'lang': 'fr-CA'},
+        {'lang': 'es-ES'},
+        {'lang': 'it-IT'},
+        {'lang': 'ja-JP'},
+        {'lang': 'ko-KR'},
+        {'lang': 'zh-TW'},
+        {'lang': 'ast'},
+        {'lang': 'pt'},
       ]);
     };
   }

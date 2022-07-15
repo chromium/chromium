@@ -35,5 +35,5 @@ export const AutomationObjectConstructorInstaller = {
           },
           true);
     });
-  }
+  },
 };

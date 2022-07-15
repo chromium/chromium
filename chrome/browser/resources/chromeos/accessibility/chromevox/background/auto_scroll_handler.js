@@ -353,7 +353,7 @@ AutoScrollHandler.RELATED_SCROLL_EVENT_TYPES = [
   EventType.SCROLL_POSITION_CHANGED,
   // These two events are sent by Web and Views via AXEventGenerator.
   EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
-  EventType.SCROLL_VERTICAL_POSITION_CHANGED
+  EventType.SCROLL_VERTICAL_POSITION_CHANGED,
 ];
 
 /**

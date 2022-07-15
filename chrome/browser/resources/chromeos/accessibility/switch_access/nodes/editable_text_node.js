@@ -145,5 +145,5 @@ export class EditableTextNode extends BasicNode {
 
 BasicNode.creators.push({
   predicate: SwitchAccessPredicate.isTextInput,
-  creator: (node, parentNode) => new EditableTextNode(node, parentNode)
+  creator: (node, parentNode) => new EditableTextNode(node, parentNode),
 });

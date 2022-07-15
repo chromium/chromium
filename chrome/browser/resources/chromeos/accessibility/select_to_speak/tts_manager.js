@@ -123,7 +123,7 @@ export class TtsManager {
           }
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.START,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.END:
@@ -131,7 +131,7 @@ export class TtsManager {
           this.currentCharIndex_ = text.length + offset;
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.END,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.WORD:
@@ -140,7 +140,7 @@ export class TtsManager {
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.WORD,
             charIndex: this.currentCharIndex_,
-            length: event.length
+            length: event.length,
           });
           break;
         case chrome.tts.EventType.INTERRUPTED:
@@ -151,7 +151,7 @@ export class TtsManager {
           if (this.pauseCompleteCallback_) {
             TtsManager.sendEventToOptions(ttsOptions, {
               type: chrome.tts.EventType.PAUSE,
-              charIndex: this.currentCharIndex_
+              charIndex: this.currentCharIndex_,
             });
             this.pauseCompleteCallback_();
             break;
@@ -203,7 +203,7 @@ export class TtsManager {
     if (this.text_.slice(this.currentCharIndex_).trim().length === 0) {
       TtsManager.sendEventToOptions(ttsOptions, {
         type: chrome.tts.EventType.ERROR,
-        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT
+        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT,
       });
       return;
     }

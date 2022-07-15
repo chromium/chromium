@@ -25,7 +25,7 @@ cr.define('cr.ArcGraphicsTracing', function() {
 
     setModel(model) {
       setGraphicBuffersModel(model);
-    }
+    },
   };
 });
 

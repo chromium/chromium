@@ -50,7 +50,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
         this.numChildrenBeforeScroll_ = list.children.length;
       },
       scrollFinished: list =>
-          list.children.length !== this.numChildrenBeforeScroll_
+          list.children.length !== this.numChildrenBeforeScroll_,
     });
   }
 
@@ -91,7 +91,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
       },
       scrollFinished: list => list.children.length === 2 &&
           list.children[0] !== this.childrenBeforeScroll_[0] &&
-          list.children[1] !== this.childrenBeforeScroll_[1]
+          list.children[1] !== this.childrenBeforeScroll_[1],
     });
   }
 
@@ -121,7 +121,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
     Object.defineProperty(list, 'standardActions', {
       get: () =>
           [chrome.automation.ActionType.SCROLL_FORWARD,
-           chrome.automation.ActionType.SCROLL_BACKWARD]
+           chrome.automation.ActionType.SCROLL_BACKWARD],
     });
 
     // Create a fake addEventListener to dispatch an event listener of

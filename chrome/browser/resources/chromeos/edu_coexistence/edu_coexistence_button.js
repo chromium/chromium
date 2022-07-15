@@ -162,6 +162,6 @@ Polymer({
       this.fire('go-action');
       return;
     }
-  }
+  },
 
 });

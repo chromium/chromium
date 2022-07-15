@@ -25,8 +25,10 @@ const OsInstallScreenState = {
  */
 const OsInstallScreenElementBase = Polymer.mixinBehaviors(
     [
-      OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior,
-      MultiStepBehavior
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
     ],
     Polymer.Element);
 

@@ -29,11 +29,11 @@ const featureStatusToStringMap = new Map([
   [FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE, 'Not eligible for feature'],
   [
     FeatureStatus.ELIGIBLE_PHONE_BUT_NOT_SETUP,
-    'Eligible for phone but not setup'
+    'Eligible for phone but not setup',
   ],
   [
     FeatureStatus.PHONE_SELECTED_AND_PENDING_SETUP,
-    'Phone selected and pending setup'
+    'Phone selected and pending setup',
   ],
   [FeatureStatus.DISABLED, 'Disabled'],
   [FeatureStatus.UNAVAILABLE_BLUETOOTH_OFF, 'Unavailable bluetooth off'],
@@ -63,14 +63,14 @@ Polymer({
     shouldEnableFakePhoneHubManager_: {
       type: Boolean,
       value: false,
-      observer: 'onShouldEnableFakePhoneHubManagerChanged_'
+      observer: 'onShouldEnableFakePhoneHubManagerChanged_',
     },
 
     /** @private */
     shouldShowOnboardingFlow_: {
       type: Boolean,
       value: false,
-      observer: 'onShouldShowOnboardingFlowChanged_'
+      observer: 'onShouldShowOnboardingFlowChanged_',
     },
 
     /**

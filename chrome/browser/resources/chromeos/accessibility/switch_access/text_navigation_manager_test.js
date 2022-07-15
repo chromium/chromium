@@ -218,7 +218,7 @@ AX_TEST_F(
         targetIndex: 0,
         navigationAction: () => {
           TextNavigationManager.jumpToBeginning();
-        }
+        },
       });
     });
 
@@ -232,7 +232,7 @@ AX_TEST_F(
         targetIndex: 8,
         navigationAction: () => {
           TextNavigationManager.jumpToEnd();
-        }
+        },
       });
     });
 
@@ -246,7 +246,7 @@ AX_TEST_F(
         targetIndex: 6,
         navigationAction: () => {
           TextNavigationManager.moveBackwardOneChar();
-        }
+        },
       });
     });
 
@@ -260,7 +260,7 @@ AX_TEST_F(
         targetIndex: 0,
         navigationAction: () => {
           TextNavigationManager.moveBackwardOneWord();
-        }
+        },
       });
     });
 
@@ -274,7 +274,7 @@ AX_TEST_F(
         targetIndex: 1,
         navigationAction: () => {
           TextNavigationManager.moveForwardOneChar();
-        }
+        },
       });
     });
 
@@ -288,7 +288,7 @@ AX_TEST_F(
         targetIndex: 12,
         navigationAction: () => {
           TextNavigationManager.moveForwardOneWord();
-        }
+        },
       });
     });
 
@@ -304,7 +304,7 @@ AX_TEST_F(
         wrap: 'hard',
         navigationAction: () => {
           TextNavigationManager.moveUpOneLine();
-        }
+        },
       });
     });
 
@@ -320,7 +320,7 @@ AX_TEST_F(
         wrap: 'hard',
         navigationAction: () => {
           TextNavigationManager.moveDownOneLine();
-        }
+        },
       });
     });
 
@@ -386,7 +386,7 @@ AX_TEST_F(
         wrap: 'hard',
         navigationAction: () => {
           TextNavigationManager.moveForwardOneChar();
-        }
+        },
       });
     });
 
@@ -407,7 +407,7 @@ AX_TEST_F(
         navigationAction: () => {
           TextNavigationManager.moveBackwardOneWord();
         },
-        backward: true
+        backward: true,
       });
     });
 

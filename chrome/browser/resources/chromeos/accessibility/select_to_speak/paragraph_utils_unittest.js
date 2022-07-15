@@ -124,25 +124,25 @@ AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'GetStartCharIndexInParent', function() {
       const staticText = {
         role: 'staticText',
-        name: 'My name is Bond, James Bond'
+        name: 'My name is Bond, James Bond',
       };
       const inline1 = {
         role: 'inlineTextBox',
         name: 'My name is ',
         indexInParent: 0,
-        parent: staticText
+        parent: staticText,
       };
       const inline2 = {
         role: 'inlineTextBox',
         name: 'Bond, ',
         indexInParent: 1,
-        parent: staticText
+        parent: staticText,
       };
       const inline3 = {
         role: 'inlineTextBox',
         name: 'James Bond',
         indexInParent: 2,
-        parent: staticText
+        parent: staticText,
       };
       staticText.children = [inline1, inline2, inline3];
       assertEquals(ParagraphUtils.getStartCharIndexInParent(inline1), 0);
@@ -155,7 +155,7 @@ AX_TEST_F(
     function() {
       const staticText = {
         role: 'staticText',
-        name: 'My name is Bond, James Bond'
+        name: 'My name is Bond, James Bond',
       };
       const inline1 = {role: 'inlineTextBox', name: 'My name is '};
       const inline2 = {role: 'inlineTextBox', name: 'Bond, '};
@@ -190,7 +190,7 @@ AX_TEST_F(
     function() {
       const staticText = {
         role: 'staticText',
-        name: 'My name is Bond, James Bond'
+        name: 'My name is Bond, James Bond',
       };
       const inline1 = {role: 'inlineTextBox', name: 'My name is '};
       const inline2 = {role: 'inlineTextBox', name: 'Bond, '};
@@ -292,21 +292,21 @@ AX_TEST_F(
         parent: root,
         name: 'text1',
         root,
-        detectedLanguage: 'en-US'
+        detectedLanguage: 'en-US',
       };
       const text2 = {
         role: 'staticText',
         parent: root,
         name: 'text2',
         root,
-        detectedLanguage: 'en-US'
+        detectedLanguage: 'en-US',
       };
       const text3 = {
         role: 'staticText',
         parent: root,
         name: 'text3',
         root,
-        detectedLanguage: 'fr-FR'
+        detectedLanguage: 'fr-FR',
       };
 
       const result1 = ParagraphUtils.buildNodeGroup(
@@ -368,7 +368,7 @@ AX_TEST_F(
         parent: root,
         name: 'text3',
         root,
-        detectedLanguage: 'fr-FR'
+        detectedLanguage: 'fr-FR',
       };
       const result = ParagraphUtils.buildNodeGroup(
           [text1, text2, text3], 0, {splitOnLanguage});
@@ -398,7 +398,7 @@ AX_TEST_F(
         parent: root,
         name: 'text2',
         root,
-        detectedLanguage: 'en-US'
+        detectedLanguage: 'en-US',
       };
       const text3 = {role: 'staticText', parent: root, name: 'text3', root};
       const text4 = {
@@ -406,7 +406,7 @@ AX_TEST_F(
         parent: root,
         name: 'text4',
         root,
-        detectedLanguage: 'fr-FR'
+        detectedLanguage: 'fr-FR',
       };
       const result = ParagraphUtils.buildNodeGroup(
           [text1, text2, text3, text4], 0, {splitOnLanguage});
@@ -434,7 +434,7 @@ AX_TEST_F(
         parent: root,
         name: 'text2',
         root,
-        detectedLanguage: 'en-US'
+        detectedLanguage: 'en-US',
       };
       const text3 = {role: 'staticText', parent: root, name: 'text3', root};
       const text4 = {
@@ -442,7 +442,7 @@ AX_TEST_F(
         parent: root,
         name: 'text4',
         root,
-        detectedLanguage: 'fr-FR'
+        detectedLanguage: 'fr-FR',
       };
       const result = ParagraphUtils.buildNodeGroup(
           [text1, text2, text3, text4], 0, {splitOnLanguage});
@@ -492,7 +492,7 @@ AX_TEST_F(
         role: 'textField',
         name: 'Address and search bar',
         value: 'http://www.google.com',
-        children: []
+        children: [],
       };
       let result = ParagraphUtils.buildNodeGroup([searchBar], 0);
       assertEquals('http://www.google.com ', result.text);
@@ -652,45 +652,45 @@ function generateNodesForParagraph() {
   const text1 = {
     name: 'The first sentence.',
     role: 'staticText',
-    parent: paragraph
+    parent: paragraph,
   };
   const inlineText1 = {
     role: 'inlineTextBox',
     name: 'The first',
     indexInParent: 0,
-    parent: text1
+    parent: text1,
   };
   const inlineText2 = {
     role: 'inlineTextBox',
     name: ' sentence.',
     indexInParent: 1,
-    parent: text1
+    parent: text1,
   };
   text1.children = [inlineText1, inlineText2];
 
   const text2 = {
     name: 'The second sentence is longer.',
     role: 'staticText',
-    parent: paragraph
+    parent: paragraph,
   };
   const inlineText3 = {
     role: 'inlineTextBox',
     name: 'The second',
     indexInParent: 0,
-    parent: text2
+    parent: text2,
   };
   const inlineText4 = {
     role: 'inlineTextBox',
     name: ' sentence is longer.',
     indexInParent: 1,
-    parent: text2
+    parent: text2,
   };
   text2.children = [inlineText3, inlineText4];
 
   const text3 = {
     name: 'No child sentence.',
     role: 'staticText',
-    parent: paragraph
+    parent: paragraph,
   };
 
   return [inlineText1, inlineText2, inlineText3, inlineText4, text3];

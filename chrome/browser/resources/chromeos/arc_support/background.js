@@ -335,15 +335,15 @@ class TermsOfServicePage {
         name: 'preProcess',
         matches: ['https://play.google.com/*'],
         js: {code: scriptInitTermsView},
-        run_at: 'document_start'
+        run_at: 'document_start',
       },
       {
         name: 'postProcess',
         matches: ['https://play.google.com/*'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
-        run_at: 'document_end'
-      }
+        run_at: 'document_end',
+      },
     ]);
 
     // webview is not allowed to open links in the new window. Hook these
@@ -502,7 +502,7 @@ class TermsOfServicePage {
       isBackupRestoreEnabled: this.backupRestoreCheckbox_.isChecked(),
       isBackupRestoreManaged: this.backupRestoreCheckbox_.isManaged(),
       isLocationServiceEnabled: this.locationServiceCheckbox_.isChecked(),
-      isLocationServiceManaged: this.locationServiceCheckbox_.isManaged()
+      isLocationServiceManaged: this.locationServiceCheckbox_.isManaged(),
     };
   }
 
@@ -685,7 +685,7 @@ class ActiveDirectoryAuthPage {
       } else {
         sendNativeMessage('onAuthFailed', {
           errorMessage:
-              'Status code ' + details.statusCode + ' in DM server response.'
+              'Status code ' + details.statusCode + ' in DM server response.',
         });
       }
     }
@@ -1040,7 +1040,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
       css: {files: ['overlay.css']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
 
     focusManager = new appWindow.contentWindow.ArcOptInFocusManager();
@@ -1077,7 +1077,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     'resizable': false,
     'hidden': true,
     'frame': {type: 'chrome', color: '#ffffff'},
-    'outerBounds': {'width': OUTER_WIDTH, 'height': OUTER_HEIGHT}
+    'outerBounds': {'width': OUTER_WIDTH, 'height': OUTER_HEIGHT},
   };
   chrome.app.window.create('main.html', options, onWindowCreated);
 });

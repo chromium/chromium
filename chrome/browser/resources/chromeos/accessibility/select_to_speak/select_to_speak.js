@@ -429,13 +429,13 @@ export class SelectToSpeak {
         // relates to a node that doesn't exist.
         this.startSpeechQueue_(nodes, {
           clearFocusRing: userRequested,
-          startCharIndex: firstPosition.offset
+          startCharIndex: firstPosition.offset,
         });
       } else {
         this.startSpeechQueue_(nodes, {
           clearFocusRing: userRequested,
           startCharIndex: firstPosition.offset,
-          endCharIndex: lastPosition.offset
+          endCharIndex: lastPosition.offset,
         });
       }
       if (focusedNode) {
@@ -466,7 +466,7 @@ export class SelectToSpeak {
         chrome.tabs.executeScript(tab.id, {
           allFrames: true,
           matchAboutBlank: true,
-          code: 'document.execCommand("copy");'
+          code: 'document.execCommand("copy");',
         });
         if (userRequested) {
           MetricsUtils.recordStartEvent(
@@ -690,8 +690,8 @@ export class SelectToSpeak {
         {
           url: [
             'https://docs.google.com/document*',
-            'https://docs.sandbox.google.com/*'
-          ]
+            'https://docs.sandbox.google.com/*',
+          ],
         },
         tabs => {
           tabs.forEach(tab => {
@@ -744,7 +744,7 @@ export class SelectToSpeak {
         this.cancelIfSpeaking_(true /* clear the focus ring */);
       },
       // onTextReceived: Text received from a 'paste' event to read aloud.
-      onTextReceived: text => this.startSpeech_(text)
+      onTextReceived: text => this.startSpeech_(text),
     });
     this.inputHandler_.setUpEventListeners();
 
@@ -1373,7 +1373,8 @@ export class SelectToSpeak {
       if (hasLength) {
         this.currentNodeWord_ = {
           'start': event.charIndex - this.currentNodeGroupItem_.startChar,
-          'end': event.charIndex + length - this.currentNodeGroupItem_.startChar
+          'end':
+              event.charIndex + length - this.currentNodeGroupItem_.startChar,
         };
         this.updateUi_();
       } else {

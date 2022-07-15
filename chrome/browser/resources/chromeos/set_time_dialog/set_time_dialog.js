@@ -54,7 +54,7 @@ function dateToHtmlValues(date) {
   localDate.setMinutes(date.getMinutes() - date.getTimezoneOffset());
   return {
     date: localDate.toISOString().slice(0, 10),
-    time: localDate.toISOString().slice(11, 16)
+    time: localDate.toISOString().slice(11, 16),
   };
 }
 

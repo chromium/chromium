@@ -629,11 +629,12 @@ AX_TEST_F('ChromeVoxEditingTest', 'RichTextImageByCharacter', async function() {
     {speech: ['s'], braille: [lineText, {startIndex: 5, endIndex: 5}]},
     {speech: [' '], braille: [lineText, {startIndex: 6, endIndex: 6}]},
     {speech: ['a'], braille: [lineText, {startIndex: 7, endIndex: 7}]},
-    {speech: [' '], braille: [lineText, {startIndex: 8, endIndex: 8}]}, {
+    {speech: [' '], braille: [lineText, {startIndex: 8, endIndex: 8}]},
+    {
       speech: ['cat', 'Image'],
-      braille: [lineOnCatText, {startIndex: 9, endIndex: 9}]
+      braille: [lineOnCatText, {startIndex: 9, endIndex: 9}],
     },
-    {speech: [' '], braille: [lineText, {startIndex: 12, endIndex: 12}]}
+    {speech: [' '], braille: [lineText, {startIndex: 12, endIndex: 12}]},
   ];
 
   for (const item of moves) {
@@ -1944,12 +1945,12 @@ AX_TEST_F(
       const ctrlDown = () => chrome.accessibilityPrivate.sendSyntheticKeyEvent({
         type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
         keyCode: KeyCode.DOWN,
-        modifiers: {ctrl: true}
+        modifiers: {ctrl: true},
       });
       const ctrlUp = () => chrome.accessibilityPrivate.sendSyntheticKeyEvent({
         type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
         keyCode: KeyCode.UP,
-        modifiers: {ctrl: true}
+        modifiers: {ctrl: true},
       });
 
       mockFeedback.expectSpeech('Text area')
@@ -2091,7 +2092,7 @@ AX_TEST_F(
 
         11000000 /* cursor _ */,
 
-        101011 /* ed contraction */
+        101011, /* ed contraction */
       ]);
 
       this.press(KeyCode.HOME)();
@@ -2106,7 +2107,7 @@ AX_TEST_F(
 
         0 /* space */,
 
-        101011 /* ed contraction */
+        101011, /* ed contraction */
       ]);
     });
 

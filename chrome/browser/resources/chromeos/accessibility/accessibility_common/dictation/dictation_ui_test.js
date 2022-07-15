@@ -88,7 +88,7 @@ AX_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
   await this.waitForUIProperties({
     visible: true,
     icon: this.iconType.STANDBY,
-    hints: [this.hintType.TRY_SAYING, this.hintType.TYPE, this.hintType.HELP]
+    hints: [this.hintType.TRY_SAYING, this.hintType.TYPE, this.hintType.HELP],
   });
 });
 
@@ -113,9 +113,12 @@ AX_TEST_F(
         visible: true,
         icon: this.iconType.STANDBY,
         hints: [
-          this.hintType.TRY_SAYING, this.hintType.UNDO, this.hintType.DELETE,
-          this.hintType.SELECT_ALL, this.hintType.HELP
-        ]
+          this.hintType.TRY_SAYING,
+          this.hintType.UNDO,
+          this.hintType.DELETE,
+          this.hintType.SELECT_ALL,
+          this.hintType.HELP,
+        ],
       });
     });
 
@@ -141,9 +144,12 @@ AX_TEST_F(
         visible: true,
         icon: this.iconType.STANDBY,
         hints: [
-          this.hintType.TRY_SAYING, this.hintType.UNSELECT, this.hintType.COPY,
-          this.hintType.DELETE, this.hintType.HELP
-        ]
+          this.hintType.TRY_SAYING,
+          this.hintType.UNSELECT,
+          this.hintType.COPY,
+          this.hintType.DELETE,
+          this.hintType.HELP,
+        ],
       });
     });
 
@@ -169,6 +175,6 @@ AX_TEST_F(
         visible: true,
         icon: this.iconType.STANDBY,
         hints:
-            [this.hintType.TRY_SAYING, this.hintType.UNDO, this.hintType.HELP]
+            [this.hintType.TRY_SAYING, this.hintType.UNDO, this.hintType.HELP],
       });
     });

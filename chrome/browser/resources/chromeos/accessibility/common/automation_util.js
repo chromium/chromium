@@ -477,7 +477,7 @@ function createWalker(cur, dir, pred, opt_restrictions) {
     leaf: undefined,
     root: undefined,
     visit: undefined,
-    skipInitialSubtree: !AutomationPredicate.container(cur) && pred(cur)
+    skipInitialSubtree: !AutomationPredicate.container(cur) && pred(cur),
   };
 
   restrictions.root = opt_restrictions.root || AutomationPredicate.root;

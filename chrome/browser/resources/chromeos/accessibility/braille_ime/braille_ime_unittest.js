@@ -92,8 +92,14 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
 
   createIme() {
     var IME_EVENTS = [
-      'onActivate', 'onDeactivated', 'onFocus', 'onBlur',
-      'onInputContextUpdate', 'onKeyEvent', 'onReset', 'onMenuItemActivated'
+      'onActivate',
+      'onDeactivated',
+      'onFocus',
+      'onBlur',
+      'onInputContextUpdate',
+      'onKeyEvent',
+      'onReset',
+      'onMenuItemActivated',
     ];
     for (var i = 0, name; name = IME_EVENTS[i]; ++i) {
       this[name] = chrome.input.ime[name] = new MockEvent();
@@ -198,8 +204,9 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   expectTrue(this.sendKeyUp('KeyF'));
 
   assertDeepEquals(this.port.messages, [
-    {type: 'brailleDots', dots: 0x03}, {type: 'brailleDots', dots: 0x09},
-    {type: 'brailleDots', dots: 0}
+    {type: 'brailleDots', dots: 0x03},
+    {type: 'brailleDots', dots: 0x09},
+    {type: 'brailleDots', dots: 0},
   ]);
 });
 
@@ -217,7 +224,7 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   this.port.onMessage.dispatch({
     type: 'keyEventHandled',
     requestId: this.lastSentKeyRequestId_ + '',
-    result: true
+    result: true,
   });
   expectEquals(this.lastSentKeyRequestId_, this.lastHandledKeyRequestId_);
   expectTrue(this.lastHandledKeyResult_);

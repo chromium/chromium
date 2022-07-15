@@ -86,7 +86,7 @@ Polymer({
       type: Number,
       value() {
         return -1;
-      }
+      },
     },
 
     /**
@@ -98,7 +98,7 @@ Polymer({
       type: Number,
       value() {
         return 0;
-      }
+      },
     },
 
     /**
@@ -109,7 +109,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
 
     /**
@@ -132,9 +132,9 @@ Polymer({
           {name: 'Aokr', type: AudioNodeType.AOKR},
           {name: 'Post Mix Loopback', type: AudioNodeType.POST_MIX_LOOPBACK},
           {name: 'Post Dsp Loopback', type: AudioNodeType.POST_DSP_LOOPBACK},
-          {name: 'Other', type: AudioNodeType.OTHER}
+          {name: 'Other', type: AudioNodeType.OTHER},
         ];
-      }
+      },
     },
   },
 
@@ -230,5 +230,5 @@ Polymer({
       newNodeList.push(node);
     }
     this.nodes = newNodeList;
-  }
+  },
 });

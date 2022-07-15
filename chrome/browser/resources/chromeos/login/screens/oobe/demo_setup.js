@@ -27,8 +27,10 @@ const DemoSetupUIState = {
  */
 const DemoSetupScreenBase = Polymer.mixinBehaviors(
     [
-      OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior,
-      MultiStepBehavior
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
     ],
     Polymer.Element);
 
@@ -50,7 +52,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
         value() {
           return /** @type {!Object} */ (
               loadTimeData.getValue('demoSetupSteps'));
-        }
+        },
       },
 
       /** Which step index is currently running in Demo Mode setup. */

@@ -70,7 +70,7 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
     return [
       'setDisplayEmail',
       'setDomain',
-      'setIsNewGaiaAccount'
+      'setIsNewGaiaAccount',
     ];
   }
 

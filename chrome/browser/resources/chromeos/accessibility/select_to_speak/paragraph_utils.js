@@ -478,7 +478,7 @@ export class ParagraphUtils {
     return {
       nodeGroup,
       startIndexInGroup: opt_startIndex,
-      endIndexInGroup: opt_endIndex
+      endIndexInGroup: opt_endIndex,
     };
   }
 
@@ -530,7 +530,7 @@ export class ParagraphUtils {
         return inlineTextNode ? {
           node: inlineTextNode,
           offset: currentNodeOffset -
-              ParagraphUtils.getStartCharIndexInParent(inlineTextNode)
+              ParagraphUtils.getStartCharIndexInParent(inlineTextNode),
         } :
                                 {node: currentNode, offset: currentNodeOffset};
       }

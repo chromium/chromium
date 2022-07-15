@@ -28,7 +28,7 @@ const KeyboardPassThroughState_ = {
 
   // The pass through shortcut command has been pressed and released, waiting
   // for the user to press/release a shortcut to be passed through.
-  PENDING_SHORTCUT_KEYUPS: 'pending_shortcut_keyups'
+  PENDING_SHORTCUT_KEYUPS: 'pending_shortcut_keyups',
 };
 
 export class BackgroundKeyboardHandler {

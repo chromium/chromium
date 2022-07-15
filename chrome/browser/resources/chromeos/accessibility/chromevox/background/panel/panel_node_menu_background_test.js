@@ -9,7 +9,7 @@ GEN_INCLUDE([
 
 // Fake Msgs object.
 const Msgs = {
-  getMsg: (id) => (id === 'panel_menu_item_none' ? 'None' : '_')
+  getMsg: (id) => (id === 'panel_menu_item_none' ? 'None' : '_'),
 };
 
 // Fake PanelBridge.
@@ -123,7 +123,7 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
       Documents.main,
       Documents.navigation,
       Documents.region,
-      Documents.search
+      Documents.search,
     ].join('\n');
   }
 
@@ -141,14 +141,14 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
       Documents.table,
       Documents.region,
       Documents.link,
-      Documents.header
+      Documents.header,
     ].join('\n');
   }
 
   get tablesDoc() {
     return [
-        Documents.grid,
-        Documents.table
+      Documents.grid,
+      Documents.table,
     ].join('\n');
   }
 };

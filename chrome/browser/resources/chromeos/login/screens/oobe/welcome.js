@@ -750,7 +750,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       // Set a timeout that gives the ChromeVox hint in the default locale.
       const ttsOptions = /** @type {!chrome.tts.TtsOptions} */ ({
         lang: DEFAULT_CHROMEVOX_HINT_LOCALE,
-        extensionId: DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID
+        extensionId: DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID,
       });
       this.defaultChromeVoxHintTimeoutId_ = window.setTimeout(
           () => this.giveChromeVoxHint_(

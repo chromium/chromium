@@ -75,8 +75,12 @@ export class LogPage {
     const date = new Date();
     a.download =
         [
-          'chromevox_logpage', date.getMonth() + 1, date.getDate(),
-          date.getHours(), date.getMinutes(), date.getSeconds()
+          'chromevox_logpage',
+          date.getMonth() + 1,
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds(),
         ].join('_') +
         '.txt';
     a.href = 'data:text/plain; charset=utf-8,' + encodeURI(outputText);

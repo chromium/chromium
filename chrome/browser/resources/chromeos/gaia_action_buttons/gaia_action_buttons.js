@@ -78,7 +78,7 @@ export class GaiaActionButtonsElement extends PolymerElement {
             secondaryActionButtonLabel: '',
             secondaryActionButtonEnabled: true,
           };
-        }
+        },
       },
     };
   }

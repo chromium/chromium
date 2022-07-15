@@ -141,101 +141,101 @@ class SimpleMacroFactory {
     return {
       [MacroName.DELETE_PREV_CHAR]: {
         messageId: 'dictation_command_delete_prev_char',
-        build: RepeatableKeyPress.DeletePreviousCharacterMacro
+        build: RepeatableKeyPress.DeletePreviousCharacterMacro,
       },
       [MacroName.NAV_PREV_CHAR]: {
         messageId: 'dictation_command_nav_prev_char',
-        build: RepeatableKeyPress.NavPreviousCharMacro
+        build: RepeatableKeyPress.NavPreviousCharMacro,
       },
       [MacroName.NAV_NEXT_CHAR]: {
         messageId: 'dictation_command_nav_next_char',
-        build: RepeatableKeyPress.NavNextCharMacro
+        build: RepeatableKeyPress.NavNextCharMacro,
       },
       [MacroName.NAV_PREV_LINE]: {
         messageId: 'dictation_command_nav_prev_line',
-        build: RepeatableKeyPress.NavPreviousLineMacro
+        build: RepeatableKeyPress.NavPreviousLineMacro,
       },
       [MacroName.NAV_NEXT_LINE]: {
         messageId: 'dictation_command_nav_next_line',
-        build: RepeatableKeyPress.NavNextLineMacro
+        build: RepeatableKeyPress.NavNextLineMacro,
       },
       [MacroName.COPY_SELECTED_TEXT]: {
         messageId: 'dictation_command_copy_selected_text',
-        build: RepeatableKeyPress.CopySelectedTextMacro
+        build: RepeatableKeyPress.CopySelectedTextMacro,
       },
       [MacroName.PASTE_TEXT]: {
         messageId: 'dictation_command_paste_text',
-        build: RepeatableKeyPress.PasteTextMacro
+        build: RepeatableKeyPress.PasteTextMacro,
       },
       [MacroName.CUT_SELECTED_TEXT]: {
         messageId: 'dictation_command_cut_selected_text',
-        build: RepeatableKeyPress.CutSelectedTextMacro
+        build: RepeatableKeyPress.CutSelectedTextMacro,
       },
       [MacroName.UNDO_TEXT_EDIT]: {
         messageId: 'dictation_command_undo_text_edit',
-        build: RepeatableKeyPress.UndoTextEditMacro
+        build: RepeatableKeyPress.UndoTextEditMacro,
       },
       [MacroName.REDO_ACTION]: {
         messageId: 'dictation_command_redo_action',
-        build: RepeatableKeyPress.RedoActionMacro
+        build: RepeatableKeyPress.RedoActionMacro,
       },
       [MacroName.SELECT_ALL_TEXT]: {
         messageId: 'dictation_command_select_all_text',
-        build: RepeatableKeyPress.SelectAllTextMacro
+        build: RepeatableKeyPress.SelectAllTextMacro,
       },
       [MacroName.UNSELECT_TEXT]: {
         messageId: 'dictation_command_unselect_text',
-        build: RepeatableKeyPress.UnselectTextMacro
+        build: RepeatableKeyPress.UnselectTextMacro,
       },
       [MacroName.LIST_COMMANDS]: {
         messageId: 'dictation_command_list_commands',
-        build: ListCommandsMacro
+        build: ListCommandsMacro,
       },
       [MacroName.NEW_LINE]:
           {messageId: 'dictation_command_new_line', build: NewLineMacro},
       [MacroName.STOP_LISTENING]: {
         messageId: 'dictation_command_stop_listening',
-        build: StopListeningMacro
+        build: StopListeningMacro,
       },
       [MacroName.DELETE_PREV_WORD]: {
         messageId: 'dictation_command_delete_prev_word',
-        build: RepeatableKeyPress.DeletePrevWordMacro
+        build: RepeatableKeyPress.DeletePrevWordMacro,
       },
       [MacroName.DELETE_PREV_SENT]: {
         messageId: 'dictation_command_delete_prev_sent',
-        build: DeletePrevSentMacro
+        build: DeletePrevSentMacro,
       },
       [MacroName.NAV_NEXT_WORD]: {
         messageId: 'dictation_command_nav_next_word',
-        build: RepeatableKeyPress.NavNextWordMacro
+        build: RepeatableKeyPress.NavNextWordMacro,
       },
       [MacroName.NAV_PREV_WORD]: {
         messageId: 'dictation_command_nav_prev_word',
-        build: RepeatableKeyPress.NavPrevWordMacro
+        build: RepeatableKeyPress.NavPrevWordMacro,
       },
       [MacroName.SMART_DELETE_PHRASE]: {
         messageId: 'dictation_command_smart_delete_phrase',
-        build: SmartDeletePhraseMacro
+        build: SmartDeletePhraseMacro,
       },
       [MacroName.SMART_REPLACE_PHRASE]: {
         messageId: 'dictation_command_smart_replace_phrase',
-        build: SmartReplacePhraseMacro
+        build: SmartReplacePhraseMacro,
       },
       [MacroName.SMART_INSERT_BEFORE]: {
         messageId: 'dictation_command_smart_insert_before',
-        build: SmartInsertBeforeMacro
+        build: SmartInsertBeforeMacro,
       },
       [MacroName.SMART_SELECT_BTWN_INCL]: {
         messageId: 'dictation_command_smart_select_btwn_incl',
-        build: SmartSelectBetweenMacro
+        build: SmartSelectBetweenMacro,
       },
       [MacroName.NAV_NEXT_SENT]: {
         messageId: 'dictation_command_nav_next_sent',
-        build: NavNextSentMacro
+        build: NavNextSentMacro,
       },
       [MacroName.NAV_PREV_SENT]: {
         messageId: 'dictation_command_nav_prev_sent',
-        build: NavPrevSentMacro
+        build: NavPrevSentMacro,
       },
     };
   }

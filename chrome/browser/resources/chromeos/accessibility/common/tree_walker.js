@@ -25,7 +25,7 @@ AutomationTreeWalkerPhase = {
   /** Walker is on a descendant of initial node. */
   DESCENDANT: 'descendant',
   /** Walker is on a node not covered by any other phase. */
-  OTHER: 'other'
+  OTHER: 'other',
 };
 
 /**

@@ -5,7 +5,7 @@
 // Include test fixture.
 GEN_INCLUDE([
   '../select_to_speak/select_to_speak_e2e_test_base.js',
-  '../chromevox/testing/snippets.js'
+  '../chromevox/testing/snippets.js',
 ]);
 
 /**
@@ -228,7 +228,7 @@ AX_TEST_F(
           new AutomationTreeWalker(r.firstChild, 'backward', {
             root(node) {
               return node === r;
-            }
+            },
           });
       assertEquals(r, backwardWalker.next().node);
       assertEquals(null, backwardWalker.next().node);
@@ -237,7 +237,7 @@ AX_TEST_F(
           new AutomationTreeWalker(r.firstChild.lastChild, 'forward', {
             root(node) {
               return node === r;
-            }
+            },
           });
       // Advance to the static text box of button contains text "Forward".
       assertEquals('Forward', forwardWalker.next().node.name);

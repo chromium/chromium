@@ -26,7 +26,7 @@ goog.provide('TtsInterface');
  */
 TtsCategory = {
   LIVE: 'live',
-  NAV: 'nav'
+  NAV: 'nav',
 };
 
 /**
@@ -51,7 +51,7 @@ QueueMode = {
   CATEGORY_FLUSH: 2,
 
   /** Append this utterance to the end of the queue. */
-  QUEUE: 3
+  QUEUE: 3,
 };
 
 /**

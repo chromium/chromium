@@ -892,8 +892,17 @@ TtsBackground.hint_delay_ms_ = 1000;
  * @const
  */
 TtsBackground.ALLOWED_PROPERTIES_ = [
-  'desiredEventTypes', 'enqueue', 'extensionId', 'gender', 'lang', 'onEvent',
-  'pitch', 'rate', 'requiredEventTypes', 'voiceName', 'volume'
+  'desiredEventTypes',
+  'enqueue',
+  'extensionId',
+  'gender',
+  'lang',
+  'onEvent',
+  'pitch',
+  'rate',
+  'requiredEventTypes',
+  'voiceName',
+  'volume',
 ];
 
 

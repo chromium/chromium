@@ -86,5 +86,5 @@ class ComboBoxNode extends BasicNode {
 
 BasicNode.creators.push({
   predicate: AutomationPredicate.comboBox,
-  creator: (node, parent) => new ComboBoxNode(node, parent)
+  creator: (node, parent) => new ComboBoxNode(node, parent),
 });

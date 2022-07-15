@@ -171,9 +171,13 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   get EXTERNAL_API() {
     return [
-      'doReload', 'setAdJoinConfiguration', 'setAdJoinParams',
-      'setEnterpriseDomainInfo', 'showAttributePromptStep', 'showError',
-      'showStep'
+      'doReload',
+      'setAdJoinConfiguration',
+      'setAdJoinParams',
+      'setEnterpriseDomainInfo',
+      'showAttributePromptStep',
+      'showError',
+      'showStep',
     ];
   }
 
@@ -221,8 +225,11 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       this.$['step-ad-join'].disabled = true;
       this.$['step-ad-join'].loading = true;
       chrome.send('oauthEnrollAdCompleteLogin', [
-        e.detail.machine_name, e.detail.distinguished_name,
-        e.detail.encryption_types, e.detail.username, e.detail.password
+        e.detail.machine_name,
+        e.detail.distinguished_name,
+        e.detail.encryption_types,
+        e.detail.username,
+        e.detail.password,
       ]);
     });
 
@@ -261,7 +268,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
         js: {code: KEYBOARD_UTILS_FOR_INJECTION},
-        run_at: 'document_start'
+        run_at: 'document_start',
       }]);
     }
 

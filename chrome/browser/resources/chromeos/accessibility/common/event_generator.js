@@ -34,7 +34,7 @@ export class EventGenerator {
    */
   static sendMouseClick(x, y, params = {
     delayMs: 0,
-    mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT
+    mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
   }) {
     if (EventGenerator.currentlyMidMouseClick) {
       EventGenerator.mouseClickQueue.push(arguments);

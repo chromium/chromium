@@ -116,7 +116,7 @@ AX_TEST_F(
       // Added one display; not paired, not connected.
       displays = [
         {name: 'Focus 40 BT', address: 'abcd1234', paired: true},
-        {name: 'Focus 40 BT rev 2', address: '4321dcba'}
+        {name: 'Focus 40 BT rev 2', address: '4321dcba'},
       ];
       ui.onDisplayListChanged(displays);
       assertEqualsDOM(

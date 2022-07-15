@@ -307,7 +307,7 @@ UserActionMonitor.Action = class {
       value,
       shouldPropagate,
       beforeActionCallback,
-      afterActionCallback
+      afterActionCallback,
     });
   }
 

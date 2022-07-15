@@ -64,7 +64,7 @@ var MockInputIme = {
       if (MockInputIme.onFocusListener_ === listener) {
         MockInputIme.onFocusListener_ = null;
       }
-    }
+    },
   },
 
   onBlur: {
@@ -84,7 +84,7 @@ var MockInputIme = {
       if (MockInputIme.onBlurListener_ === listener) {
         MockInputIme.onBlurListener_ = null;
       }
-    }
+    },
   },
 
   /** @param {!MockImeCompositionParameters} composition */
@@ -165,5 +165,5 @@ var MockInputIme = {
     return new Promise(resolve => {
       this.waitForCommitResolve_ = resolve;
     });
-  }
+  },
 };

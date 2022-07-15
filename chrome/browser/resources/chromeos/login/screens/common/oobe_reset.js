@@ -27,20 +27,22 @@ const POWERWASH_MODE = {
 /** @type {Map<number, Object<string,string>>} */
 const POWERWASH_MODE_DETAILS = new Map([
   [
-    POWERWASH_MODE.POWERWASH_WITH_ROLLBACK, {
+    POWERWASH_MODE.POWERWASH_WITH_ROLLBACK,
+    {
       subtitleText: 'resetPowerwashRollbackWarningDetails',
       dialogTitle: 'confirmRollbackTitle',
       dialogContent: 'confirmRollbackMessage',
       buttonTextKey: 'resetButtonPowerwashAndRollback',
-    }
+    },
   ],
   [
-    POWERWASH_MODE.POWERWASH_ONLY, {
+    POWERWASH_MODE.POWERWASH_ONLY,
+    {
       subtitleText: 'resetPowerwashWarningDetails',
       dialogTitle: 'confirmPowerwashTitle',
       dialogContent: 'confirmPowerwashMessage',
       buttonTextKey: 'resetButtonPowerwash',
-    }
+    },
   ],
 ]);
 
@@ -138,13 +140,13 @@ class OobeReset extends ResetScreenElementBase {
       // The subtitle to be shown while the screen is in POWERWASH_PROPOSAL
       powerwashStateSubtitle_: {
         type: String,
-        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)'
+        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)',
       },
 
       // The text shown on the powerwash button. (depends on powerwash mode)
       powerwashButtonTextKey_: {
         type: String,
-        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)'
+        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)',
       },
 
       // Whether the powerwash button is disabled.

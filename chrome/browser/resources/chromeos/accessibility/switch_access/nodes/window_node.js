@@ -38,5 +38,5 @@ export class WindowRootNode extends BasicRootNode {
 
 BasicRootNode.builders.push({
   predicate: rootNode => SwitchAccessPredicate.isWindow(rootNode),
-  builder: WindowRootNode.buildTree
+  builder: WindowRootNode.buildTree,
 });

@@ -26,7 +26,7 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
         addListener: callback => {
           this.onStopListeners.push(callback);
         },
-      }
+      },
     };
   }
 

@@ -63,11 +63,11 @@ export class InputPage extends Page {
         [
           {
             canvas: $('channel-l') as HTMLCanvasElement,
-            analyser: this.analyserLeft
+            analyser: this.analyserLeft,
           },
           {
             canvas: $('channel-r') as HTMLCanvasElement,
-            analyser: this.analyserRight
+            analyser: this.analyserRight,
           },
         ];
     const draw = () => {

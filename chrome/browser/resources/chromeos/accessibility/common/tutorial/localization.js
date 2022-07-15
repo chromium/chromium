@@ -20,5 +20,5 @@ export const Localization = {
    */
   getMsg(id, opt_subs) {
     return Msgs.getMsg(id, opt_subs);
-  }
+  },
 };

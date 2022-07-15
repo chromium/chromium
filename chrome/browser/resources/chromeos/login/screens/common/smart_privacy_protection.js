@@ -64,7 +64,7 @@ class SmartPrivacyProtectionScreen extends
         // TODO(dkuzmin): change the default value once appropriate capability
         // is available on C++ side.
         value: true,
-      }
+      },
     };
   }
 

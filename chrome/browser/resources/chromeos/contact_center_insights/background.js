@@ -73,7 +73,7 @@ function reportTelemetryData(telemetryData) {
   const request = {
     recordData: record.serializeBinary(),
     priority: proto.reporting.Priority.FAST_BATCH,
-    eventType: chrome.enterprise.reportingPrivate.EventType.USER
+    eventType: chrome.enterprise.reportingPrivate.EventType.USER,
   };
 
   // Report prepared request

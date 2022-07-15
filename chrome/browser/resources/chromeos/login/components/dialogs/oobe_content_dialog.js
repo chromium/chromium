@@ -53,5 +53,5 @@ Polymer({
     if (this.noLazy) {
       this.shadowRoot.querySelector('#lazy').get();
     }
-  }
+  },
 });

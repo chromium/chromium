@@ -524,7 +524,7 @@ export class EarconEngine {
       gain: 0.008,
       freq: freq1,
       overtones: 1,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
   }
 
@@ -711,7 +711,7 @@ export class EarconEngine {
       gain: 0.3,
       freq: freq1,
       overtones: 3,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
     this.generateSinusoidal({
       attack: 0.02,
@@ -720,7 +720,7 @@ export class EarconEngine {
       gain: 0.3,
       freq: freq2,
       overtones: 3,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
 
     this.currentTrackedEarcon_ = undefined;
@@ -741,7 +741,7 @@ export class EarconEngine {
       freq: freq1,
       endFreq: freq2,
       overtones: 1,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
   }
 
@@ -755,12 +755,12 @@ export class EarconEngine {
       let t = this.progressTime_ - this.context_.currentTime;
       this.progressSources_.push([
         this.progressTime_,
-        this.play('static', {gain: 0.5 * this.progressGain_, time: t})
+        this.play('static', {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
         this.play(
-            this.controlSound, {pitch: 20, time: t, gain: this.progressGain_})
+            this.controlSound, {pitch: 20, time: t, gain: this.progressGain_}),
       ]);
 
       if (this.progressGain_ > this.progressFinalGain) {
@@ -770,12 +770,12 @@ export class EarconEngine {
 
       this.progressSources_.push([
         this.progressTime_,
-        this.play('static', {gain: 0.5 * this.progressGain_, time: t})
+        this.play('static', {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
         this.play(
-            this.controlSound, {pitch: 8, time: t, gain: this.progressGain_})
+            this.controlSound, {pitch: 8, time: t, gain: this.progressGain_}),
       ]);
 
       if (this.progressGain_ > this.progressFinalGain) {

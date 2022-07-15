@@ -136,7 +136,7 @@ AX_TEST_F(
       // An unrecognized device was added.
       devices = [
         {name: 'Focus 40 BT', address: '1234'},
-        {name: 'headphones', address: '4321'}
+        {name: 'headphones', address: '4321'},
       ];
       manager.handleDevicesChanged();
       assertEquals(1, listener.displays.length);
@@ -145,7 +145,7 @@ AX_TEST_F(
       // A named variant of Focus 40 BT was added.
       devices = [
         {name: 'Focus 40 BT', address: '1234'},
-        {name: 'Focus 40 BT rev 123', address: '4321'}
+        {name: 'Focus 40 BT rev 123', address: '4321'},
       ];
       manager.handleDevicesChanged();
       assertEquals(2, listener.displays.length);

@@ -32,7 +32,7 @@ BrailleKeyCommand = {
   SECONDARY_ROUTING: 'secondary_routing',
   DOTS: 'dots',
   CHORD: 'chord',
-  STANDARD_KEY: 'standard_key'
+  STANDARD_KEY: 'standard_key',
 };
 
 
@@ -148,7 +148,7 @@ BrailleKeyEvent.brailleDotsToStandardKeyCode = {
   0b10110: '6',
   0b110110: '7',
   0b100110: '8',
-  0b10100: '9'
+  0b10100: '9',
 };
 
 /**
@@ -159,7 +159,7 @@ BrailleKeyEvent.brailleChordsToStandardKeyCode = {
   0b1000000: 'Backspace',
   0b10100: 'Tab',
   0b110101: 'Escape',
-  0b101000: 'Enter'
+  0b101000: 'Enter',
 };
 
 /**
@@ -170,7 +170,7 @@ BrailleKeyEvent.brailleDotsToModifiers = {
   0b100100: {altKey: true},
   0b1000100: {shiftKey: true},
   0b1010010: {ctrlKey: true, shiftKey: true},
-  0b1100100: {altKey: true, shiftKey: true}
+  0b1100100: {altKey: true, shiftKey: true},
 };
 
 
@@ -194,7 +194,7 @@ BrailleKeyEvent.legacyKeyCodeMap_ = {
   'Insert': KeyCode.INSERT,
   'Delete': KeyCode.DELETE,
   'AudioVolumeDown': KeyCode.VOLUME_DOWN,
-  'AudioVolumeUp': KeyCode.VOLUME_UP
+  'AudioVolumeUp': KeyCode.VOLUME_UP,
 };
 
 (function() {

@@ -382,7 +382,7 @@ export class TextNavigationManager {
         anchorObject: this.selectionStartObject_,
         anchorOffset: this.selectionStartIndex_,
         focusObject: this.selectionEndObject_,
-        focusOffset: this.selectionEndIndex_
+        focusOffset: this.selectionEndIndex_,
       });
     }
   }

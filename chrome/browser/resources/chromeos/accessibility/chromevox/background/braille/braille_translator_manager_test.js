@@ -54,7 +54,7 @@ FakeLibLouis.prototype = {
       }
     }
     callback(result);
-  }
+  },
 };
 
 FakeTranslator = class {

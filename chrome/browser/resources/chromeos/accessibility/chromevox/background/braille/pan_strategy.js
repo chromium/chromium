@@ -93,7 +93,7 @@ export class PanStrategy {
     return {
       brailleOffset: this.viewPort_.firstRow * this.displaySize_.columns,
       textOffset: this.brailleToText
-                      [this.viewPort_.firstRow * this.displaySize_.columns]
+                      [this.viewPort_.firstRow * this.displaySize_.columns],
     };
   }
 

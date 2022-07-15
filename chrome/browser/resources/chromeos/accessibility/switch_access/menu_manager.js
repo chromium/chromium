@@ -134,7 +134,7 @@ export class MenuManager {
     SwitchAccess.findNodeMatching(
         {
           role: chrome.automation.RoleType.MENU,
-          attributes: {className: 'SwitchAccessMenuView'}
+          attributes: {className: 'SwitchAccessMenuView'},
         },
         node => this.jumpToMenuAutomationNode_(node));
   }
@@ -163,7 +163,7 @@ export class MenuManager {
           node,
           [
             chrome.automation.EventType.CHILDREN_CHANGED,
-            chrome.automation.EventType.LOCATION_CHANGED
+            chrome.automation.EventType.LOCATION_CHANGED,
           ],
           () => this.jumpToMenuAutomationNode_(node), {listenOnce: true})
           .start();

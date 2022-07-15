@@ -88,7 +88,7 @@ export class KeySequence {
       altGraphKey: [],
       shiftKey: [],
       metaKey: [],
-      keyCode: []
+      keyCode: [],
     };
 
     this.extractKey_(originalEvent);
@@ -537,7 +537,7 @@ KeySequence.KEY_PRESS_CODE = {
   59: 186,
   91: 219,
   92: 220,
-  93: 221
+  93: 221,
 };
 
 /**

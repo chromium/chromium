@@ -67,7 +67,7 @@ const UNAVAILABLE_USERNAMES = [
   'pulse',
   'android-root',
   'chronos-access',
-  'android-everybody'
+  'android-everybody',
 ];
 
 Polymer({
@@ -562,5 +562,5 @@ Polymer({
   onDiskSizeRadioChanged_(event) {
     this.showDiskSlider_ =
         (event.detail.value !== 'recommended' || !!this.isLowSpaceAvailable_);
-  }
+  },
 });

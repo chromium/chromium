@@ -22,5 +22,5 @@ ArcOptInFocusManager.prototype = {
     } else {
       return $('overlay-page');
     }
-  }
+  },
 };

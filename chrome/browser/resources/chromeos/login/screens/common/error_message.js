@@ -330,8 +330,8 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         'autoEnrollmentOfflineMessageBody', {
           substitutions: [
             loadTimeData.getString('deviceType'),
-            '<b>' + this.currentNetworkName_ + '</b>'
-          ]
+            '<b>' + this.currentNetworkName_ + '</b>',
+          ],
         },
         'auto-enrollment-learn-more');
     this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick =

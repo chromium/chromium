@@ -102,7 +102,7 @@ var MockAccessibilityPrivate = {
       if (MockAccessibilityPrivate.boundsListener_ === listener) {
         MockAccessibilityPrivate.boundsListener_ = null;
       }
-    }
+    },
   },
 
   onMagnifierBoundsChanged:
@@ -136,7 +136,7 @@ var MockAccessibilityPrivate = {
       if (MockAccessibilityPrivate.dictationToggleListener_ === listener) {
         MockAccessibilityPrivate.dictationToggleListener_ = null;
       }
-    }
+    },
   },
 
   onSelectToSpeakStateChangeRequested: {

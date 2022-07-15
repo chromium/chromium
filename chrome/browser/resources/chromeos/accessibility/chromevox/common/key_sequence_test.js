@@ -442,8 +442,8 @@ TEST_F('ChromeVoxKeySequenceUnitTest', 'Deserialize', function() {
       'altGraphKey': [false],
       'shiftKey': [false],
       'metaKey': [false],
-      'keyCode': [KeyCode.DOWN]
-    }
+      'keyCode': [KeyCode.DOWN],
+    },
   });
   assertTrue(forwardSequence.cvoxModifier);
   assertEqualsJSON(forwardSequence.keys.keyCode, [KeyCode.DOWN]);
@@ -459,8 +459,8 @@ TEST_F('ChromeVoxKeySequenceUnitTest', 'Deserialize', function() {
       'altGraphKey': [false],
       'shiftKey': [false],
       'metaKey': [false],
-      'keyCode': [KeyCode.CONTROL]
-    }
+      'keyCode': [KeyCode.CONTROL],
+    },
   });
   assertEqualsJSON(ctrlSequence.keys.ctrlKey, [true]);
   assertEqualsJSON(ctrlSequence.keys.keyCode, [KeyCode.CONTROL]);

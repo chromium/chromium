@@ -25,44 +25,44 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   'swipeUp1': {
     msgId: 'swipeup1_gesture',
     command: 'previousAtGranularity',
-    menuKeyOverride: {keyCode: KeyCode.UP}
+    menuKeyOverride: {keyCode: KeyCode.UP},
   },
   'swipeDown1': {
     msgId: 'swipedown1_gesture',
     command: 'nextAtGranularity',
-    menuKeyOverride: {keyCode: KeyCode.DOWN}
+    menuKeyOverride: {keyCode: KeyCode.DOWN},
   },
   'swipeLeft1': {
     msgId: 'swipeleft1_gesture',
     command: 'previousObject',
-    menuKeyOverride: {keyCode: KeyCode.LEFT}
+    menuKeyOverride: {keyCode: KeyCode.LEFT},
   },
   'swipeRight1': {
     msgId: 'swiperight1_gesture',
     command: 'nextObject',
-    menuKeyOverride: {keyCode: KeyCode.RIGHT}
+    menuKeyOverride: {keyCode: KeyCode.RIGHT},
   },
   'swipeUp2': {msgId: 'swipeup2_gesture', command: 'jumpToTop'},
   'swipeDown2': {msgId: 'swipedown2_gesture', command: 'readFromHere'},
   'swipeLeft2': {
     msgId: 'swipeleft2_gesture',
     commandDescriptionMsgId: 'escape_gesture_description',
-    globalKey: {keyCode: KeyCode.ESCAPE}
+    globalKey: {keyCode: KeyCode.ESCAPE},
   },
   'swipeRight2': {
     msgId: 'swiperight2_gesture',
     commandDescriptionMsgId: 'enter_gesture_description',
-    globalKey: {keyCode: KeyCode.RETURN}
+    globalKey: {keyCode: KeyCode.RETURN},
   },
   'swipeUp3': {
     msgId: 'swipeup3_gesture',
     commandDescriptionMsgId: 'next_page_gesture_description',
-    command: 'nextPage'
+    command: 'nextPage',
   },
   'swipeDown3': {
     msgId: 'swipedown3_gesture',
     commandDescriptionMsgId: 'previous_page_gesture_description',
-    command: 'previousPage'
+    command: 'previousPage',
   },
   'swipeLeft3': {msgId: 'swipeleft3_gesture', command: 'previousGranularity'},
   'swipeRight3': {msgId: 'swiperight3_gesture', command: 'nextGranularity'},
@@ -70,13 +70,13 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
     msgId: 'swipeleft4_gesture',
     commandDescriptionMsgId: 'previous_pane_gesture_description',
     acceleratorAction:
-        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_PREVIOUS_PANE
+        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_PREVIOUS_PANE,
   },
   'swipeRight4': {
     msgId: 'swiperight4_gesture',
     commandDescriptionMsgId: 'next_pane_gesture_description',
     acceleratorAction:
-        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_NEXT_PANE
+        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_NEXT_PANE,
   },
 
   'touchExplore': {msgId: 'touch_explore_gesture'},
@@ -96,5 +96,5 @@ export const GestureGranularity = {
   HEADING: 3,
   LINK: 4,
   FORM_FIELD_CONTROL: 5,
-  COUNT: 6
+  COUNT: 6,
 };

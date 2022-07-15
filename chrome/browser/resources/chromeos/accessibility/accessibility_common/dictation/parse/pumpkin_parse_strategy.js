@@ -136,7 +136,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
       goog['global']['Module'] = {
         onRuntimeInitialized() {
           resolve();
-        }
+        },
       };
     });
     document.head.appendChild(wasmModuleScript);

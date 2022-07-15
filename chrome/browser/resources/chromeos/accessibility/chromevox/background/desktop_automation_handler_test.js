@@ -181,7 +181,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const combobox = root.find({
         role: RoleType.TEXT_FIELD_WITH_COMBO_BOX,
-        attributes: {name: 'Choose one'}
+        attributes: {name: 'Choose one'},
       });
       assertTrue(Boolean(combobox));
       combobox.focus();

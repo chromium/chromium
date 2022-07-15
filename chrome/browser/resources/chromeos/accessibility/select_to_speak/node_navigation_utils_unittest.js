@@ -167,7 +167,7 @@ AX_TEST_F(
         role: 'staticText',
         parent: paragraph2,
         root: otherRoot,
-        name: 'Line 2'
+        name: 'Line 2',
       });
 
       let result = NodeNavigationUtils.getNextParagraphWithNode_(
@@ -204,13 +204,13 @@ AX_TEST_F(
         role: 'paragraph',
         display: 'block',
         parent: iframeRoot,
-        root: iframeRoot
+        root: iframeRoot,
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph2,
         root: iframeRoot,
-        name: 'Line 2'
+        name: 'Line 2',
       });
       const paragraph3 = createMockNode(
           {role: 'paragraph', display: 'block', parent: root, root});
@@ -285,7 +285,7 @@ AX_TEST_F(
         role: 'staticText',
         parent: nestedParagraph,
         root,
-        name: 'Middle text'
+        name: 'Middle text',
       });
       const text3 = createMockNode(
           {role: 'staticText', parent: paragraph1, root, name: 'After text'});
@@ -609,14 +609,14 @@ AX_TEST_F(
         parent: paragraph1,
         root,
         name: 'Line 1.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'Line 2.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const paragraph2 = createMockNode(
           {role: 'paragraph', display: 'block', parent: root, root});
@@ -625,14 +625,14 @@ AX_TEST_F(
         parent: paragraph2,
         root,
         name: 'Line 3.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text4 = createMockNode({
         role: 'staticText',
         parent: paragraph2,
         root,
         name: 'Line 4.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const nodeGroupForParagraph1 = ParagraphUtils.buildNodeGroup(
           [text1, text2], 0 /* index */, {splitOnLanguage: false});
@@ -754,35 +754,35 @@ AX_TEST_F(
         parent: paragraph1,
         root,
         name: 'Line 1.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'This sentence',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text3 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'is chopped. Another',
-        sentenceStarts: [12]
+        sentenceStarts: [12],
       });
       const text4 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'chopped',
-        sentenceStarts: []
+        sentenceStarts: [],
       });
       const text5 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'sentence.',
-        sentenceStarts: []
+        sentenceStarts: [],
       });
       const nodeGroup = ParagraphUtils.buildNodeGroup(
           [text1, text2, text3, text4, text5], 0 /* index */,

@@ -272,7 +272,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       name: 'preProcess',
       matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
       js: {code: scriptSetParameters},
-      run_at: 'document_start'
+      run_at: 'document_start',
     }]);
 
     webview.addContentScripts([{
@@ -280,14 +280,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
       css: {files: ['playstore.css']},
       js: {files: ['playstore.js']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
 
     this.$.arcTosOverlayWebview.addContentScripts([{
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
       css: {files: ['overlay.css']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
 
     webview.addEventListener('newwindow', (event) => {
@@ -648,8 +648,10 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   onAcceptClick_() {
     chrome.send('ToSAccept', [
-      this.usageChecked, this.backupChecked, this.locationChecked,
-      this.arcTosContent_
+      this.usageChecked,
+      this.backupChecked,
+      this.locationChecked,
+      this.arcTosContent_,
     ]);
   }
 
@@ -690,7 +692,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
       css: {files: ['playstore.css']},
       js: {files: ['playstore.js']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
   }
 }

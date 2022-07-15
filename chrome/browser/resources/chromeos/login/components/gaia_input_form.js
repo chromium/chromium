@@ -38,7 +38,7 @@ class GaiaInputForm extends GaiaInputFormBase {
       buttonText: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 

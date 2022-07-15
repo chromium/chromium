@@ -17,8 +17,19 @@ var unusedColor = '#ff0000';
 
 // Supported zooms, mcs per pixel
 var zooms = [
-  2.5, 5.0, 10.0, 25.0, 50.0, 100.0, 250.0, 500.0, 1000.0, 2500.0, 5000.0,
-  10000.0, 25000.0
+  2.5,
+  5.0,
+  10.0,
+  25.0,
+  50.0,
+  100.0,
+  250.0,
+  500.0,
+  1000.0,
+  2500.0,
+  5000.0,
+  10000.0,
+  25000.0,
 ];
 
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
@@ -88,7 +99,7 @@ var eventAttributes = {
     color: '#ff0000',
     name: 'Android composition jank',
     width: 1.0,
-    radius: 4.0
+    radius: 4.0,
   },
   // kVsyncTimestamp
   406: {color: '#ff3300', name: 'vsync', width: 0.5},
@@ -108,7 +119,7 @@ var eventAttributes = {
     color: '#ff0000',
     name: 'Chrome composition jank',
     width: 1.0,
-    radius: 4.0
+    radius: 4.0,
   },
 
   // kCustomEvent
@@ -185,7 +196,7 @@ var valueAttributes = {
     minRange: 512.0,
     name: 'used mb',
     scale: 1.0 / 1024.0,
-    width: 1.0
+    width: 1.0,
   },
   // kSwapRead.
   2: {
@@ -193,7 +204,7 @@ var valueAttributes = {
     minRange: 32.0,
     name: 'swap read sectors',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kSwapWrite.
   3: {
@@ -201,7 +212,7 @@ var valueAttributes = {
     minRange: 32.0,
     name: 'swap write sectors',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGemObjects.
   5: {
@@ -209,7 +220,7 @@ var valueAttributes = {
     minRange: 1000,
     name: 'geom. objects',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGemSize.
   6: {
@@ -217,7 +228,7 @@ var valueAttributes = {
     minRange: 256.0,
     name: 'geom. size mb',
     scale: 1.0 / 1024.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGpuFrequency.
   7: {
@@ -225,7 +236,7 @@ var valueAttributes = {
     minRange: 300.0,
     name: 'GPU frequency mhz',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuTemperature.
   8: {
@@ -233,7 +244,7 @@ var valueAttributes = {
     minRange: 20.0,
     name: 'CPU celsius.',
     scale: 1.0 / 1000.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuFrequency.
   9: {
@@ -241,7 +252,7 @@ var valueAttributes = {
     minRange: 300.0,
     name: 'CPU Mhz.',
     scale: 1.0 / 1000.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuPower.
   10: {
@@ -249,7 +260,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'CPU milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGpuPower.
   11: {
@@ -257,7 +268,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'GPU milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kMemoryPower.
   12: {
@@ -265,7 +276,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'Memory milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kPackagePowerConstraint.
   13: {
@@ -273,7 +284,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'CPU package constraint milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
 };
 
@@ -644,7 +655,7 @@ class EventBands {
     this.bands.push({
       band: eventBand,
       top: this.nextYOffset,
-      bottom: this.nextYOffset + height
+      bottom: this.nextYOffset + height,
     });
 
     this.updateHeight(height, padding);
@@ -674,7 +685,7 @@ class EventBands {
     this.charts.push({
       sourcesWithBounds: [],
       top: this.nextYOffset,
-      bottom: this.nextYOffset + height
+      bottom: this.nextYOffset + height,
     });
 
     this.updateHeight(height, padding);
@@ -793,7 +804,7 @@ class EventBands {
         minValue: minValue,
         maxValue: maxValue,
         source: source,
-        smooth: smooth
+        smooth: smooth,
       });
 
       SVG.addPolyline(this.svg, points, attributes.color, attributes.width);
@@ -844,7 +855,7 @@ class EventBands {
       bottom: y + height - 1,
       tooltip: tooltip,
       tooltipWidth: tooltipWidth,
-      tooltipHeight: tooltipHeight
+      tooltipHeight: tooltipHeight,
     });
   }
 
@@ -1589,8 +1600,9 @@ class CpuDetailedInfoView extends DetailedInfoView {
     // Add center and boundary lines.
     var kTimeMark = 10000;
     var timeEvents = [
-      [kTimeMark, minTimestamp], [kTimeMark, eventTimestamp],
-      [kTimeMark, maxTimestamp - 1]
+      [kTimeMark, minTimestamp],
+      [kTimeMark, eventTimestamp],
+      [kTimeMark, maxTimestamp - 1],
     ];
     bands.addGlobal(new Events(timeEvents, kTimeMark, kTimeMark));
 

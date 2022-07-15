@@ -197,7 +197,7 @@ FakeEditor = class {
     this.contextID_++;
     this.message_({
       type: 'inputContext',
-      context: {type: fieldType, contextID: this.contextID_}
+      context: {type: fieldType, contextID: this.contextID_},
     });
   }
 
@@ -269,11 +269,11 @@ function FakePort() {
  * @const Array<Array<string> >
  */
 const UNCONTRACTED_TABLE = [
-  ['0', ' '],   ['1', 'a'],    ['12', 'b'],    ['14', 'c'],   ['145', 'd'],
-  ['15', 'e'],  ['124', 'f'],  ['1245', 'g'],  ['125', 'h'],  ['24', 'i'],
-  ['245', 'j'], ['13', 'k'],   ['123', 'l'],   ['134', 'm'],  ['1345', 'n'],
-  ['135', 'o'], ['1234', 'p'], ['12345', 'q'], ['1235', 'r'], ['234', 's'],
-  ['2345', 't']
+  ['0', ' '],    ['1', 'a'],    ['12', 'b'],    ['14', 'c'],   ['145', 'd'],
+  ['15', 'e'],   ['124', 'f'],  ['1245', 'g'],  ['125', 'h'],  ['24', 'i'],
+  ['245', 'j'],  ['13', 'k'],   ['123', 'l'],   ['134', 'm'],  ['1345', 'n'],
+  ['135', 'o'],  ['1234', 'p'], ['12345', 'q'], ['1235', 'r'], ['234', 's'],
+  ['2345', 't'],
 ];
 
 
@@ -288,7 +288,9 @@ const UNCONTRACTED_TABLE = [
  * @const
  */
 const CONTRACTED_TABLE = [
-  ['12 1235 123', 'braille'], ['^12$', 'but'], ['1456', 'this']
+  ['12 1235 123', 'braille'],
+  ['^12$', 'but'],
+  ['1456', 'this'],
 ].concat(UNCONTRACTED_TABLE);
 
 /**
@@ -393,7 +395,7 @@ FakeTranslatorManager.prototype = {
     if (this.changeListener) {
       this.changeListener();
     }
-  }
+  },
 };
 
 /**
@@ -493,7 +495,7 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxNextE2ETest {
   sendKeyEvent(keyCode) {
     const event = {
       command: BrailleKeyCommand.STANDARD_KEY,
-      standardKeyCode: keyCode
+      standardKeyCode: keyCode,
     };
     return this.inputHandler.onBrailleKeyEvent(event);
   }

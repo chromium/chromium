@@ -21,7 +21,7 @@ const UpdateRequiredUIState = {
   UPDATE_COMPLETED_NEED_REBOOT: 'update-completed-need-reboot',
   UPDATE_ERROR: 'update-error',
   EOL_REACHED: 'eol',
-  UPDATE_NO_NETWORK: 'update-no-network'
+  UPDATE_NO_NETWORK: 'update-no-network',
 };
 
 /**

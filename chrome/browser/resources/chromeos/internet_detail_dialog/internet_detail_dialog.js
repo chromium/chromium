@@ -72,7 +72,7 @@ Polymer({
       value() {
         return loadTimeData.valueExists('showTechnologyBadge') &&
             loadTimeData.getBoolean('showTechnologyBadge');
-      }
+      },
     },
 
     /**
@@ -94,7 +94,7 @@ Polymer({
     disabled_: {
       type: Boolean,
       value: false,
-      computed: 'computeDisabled_(deviceState_.*)'
+      computed: 'computeDisabled_(deviceState_.*)',
     },
 
     /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
@@ -667,5 +667,5 @@ Polymer({
     // If this is a cellular device and inhibited, state cannot be changed, so
     // the dialog's inputs should be disabled.
     return OncMojo.deviceIsInhibited(this.deviceState_);
-  }
+  },
 });

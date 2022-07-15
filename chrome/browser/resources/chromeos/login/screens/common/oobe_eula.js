@@ -20,7 +20,7 @@ const EULA_CLEAR_ANCHORS_CONTENT_SCRIPT = {
       '    e.textContent=el.textContent + "(" + el.href + ")";' +
       '  }' +
       '  el.parentNode.replaceChild(e,el);' +
-      '}'
+      '}',
 };
 
 const EULA_FONTS_CSS = {
@@ -30,7 +30,7 @@ const EULA_FONTS_CSS = {
         line-height: 20px !important;}
        body h2 {
          font-size: 15px !important;
-         line-height: 22px !important;}`
+         line-height: 22px !important;}`,
 };
 
 /**
@@ -317,7 +317,7 @@ class EulaScreen extends EulaScreenBase {
        */
       backButtonHidden_: {
         type: Boolean,
-      }
+      },
     };
   }
 
@@ -334,8 +334,10 @@ class EulaScreen extends EulaScreenBase {
 
   get EXTERNAL_API() {
     return [
-      'setUsageStats', 'showAdditionalTosDialog', 'showSecuritySettingsDialog',
-      'setTpmDesc'
+      'setUsageStats',
+      'showAdditionalTosDialog',
+      'showSecuritySettingsDialog',
+      'setTpmDesc',
     ];
   }
 

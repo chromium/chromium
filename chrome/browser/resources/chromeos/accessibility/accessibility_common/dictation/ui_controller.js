@@ -25,7 +25,7 @@ export const HintContext = {
   STANDBY: 'standby',
   TEXT_COMMITTED: 'text_committed',
   TEXT_SELECTED: 'text_selected',
-  MACRO_SUCCESS: 'macro_success'
+  MACRO_SUCCESS: 'macro_success',
 };
 
 /**
@@ -126,13 +126,19 @@ UIController.HINT_TIMEOUT_MS_ = 2 * 1000;
 UIController.CONTEXT_TO_HINTS_MAP_ = {
   [HintContext.STANDBY]: [HintType.TRY_SAYING, HintType.TYPE, HintType.HELP],
   [HintContext.TEXT_COMMITTED]: [
-    HintType.TRY_SAYING, HintType.UNDO, HintType.DELETE, HintType.SELECT_ALL,
-    HintType.HELP
+    HintType.TRY_SAYING,
+    HintType.UNDO,
+    HintType.DELETE,
+    HintType.SELECT_ALL,
+    HintType.HELP,
   ],
   [HintContext.TEXT_SELECTED]: [
-    HintType.TRY_SAYING, HintType.UNSELECT, HintType.COPY, HintType.DELETE,
-    HintType.HELP
+    HintType.TRY_SAYING,
+    HintType.UNSELECT,
+    HintType.COPY,
+    HintType.DELETE,
+    HintType.HELP,
   ],
   [HintContext.MACRO_SUCCESS]:
-      [HintType.TRY_SAYING, HintType.UNDO, HintType.HELP]
+      [HintType.TRY_SAYING, HintType.UNDO, HintType.HELP],
 };

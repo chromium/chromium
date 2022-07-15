@@ -97,7 +97,7 @@ BluetoothBrailleDisplayManager = class {
       'SuperVario',
       'TSM',
       'VarioConnect',
-      'VarioUltra'
+      'VarioUltra',
     ];
 
     /**

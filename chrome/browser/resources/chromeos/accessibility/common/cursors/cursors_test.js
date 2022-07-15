@@ -4,7 +4,7 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js'
+  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js',
 ]);
 
 /**
@@ -201,7 +201,7 @@ AX_TEST_F('AccessibilityExtensionCursorsTest', 'WordCursor', async function() {
     [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
 
     [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
-    [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: undefined}]
+    [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: undefined}],
   ]);
 });
 
@@ -220,7 +220,7 @@ AX_TEST_F(
         [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'same line'}],
         [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],
         [CHARACTER, DIRECTIONAL, BACKWARD, {index: 4, value: 'start '}],
-        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}]
+        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
       ]);
     });
 
@@ -238,7 +238,7 @@ AX_TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', async function() {
     [LINE, DIRECTIONAL, BACKWARD, {value: 'same line'}],
     // Bump against an edge.
     [LINE, DIRECTIONAL, BACKWARD, {value: 'same line'}],
-    [LINE, BOUND, BACKWARD, {value: 'start '}]
+    [LINE, BOUND, BACKWARD, {value: 'start '}],
   ]);
 });
 
@@ -263,58 +263,84 @@ AX_TEST_F(
           this.simpleDoc,
           [
             [
-              CHARACTER, FORWARD, {value: 'start ', index: 1},
-              {value: 'start ', index: 2}
+              CHARACTER,
+              FORWARD,
+              {value: 'start ', index: 1},
+              {value: 'start ', index: 2},
             ],
             [
-              CHARACTER, FORWARD, {value: 'start ', index: 2},
-              {value: 'start ', index: 3}
+              CHARACTER,
+              FORWARD,
+              {value: 'start ', index: 2},
+              {value: 'start ', index: 3},
             ],
             [
-              CHARACTER, FORWARD, {value: 'start ', index: 3},
-              {value: 'start ', index: 4}
+              CHARACTER,
+              FORWARD,
+              {value: 'start ', index: 3},
+              {value: 'start ', index: 4},
             ],
             [
-              CHARACTER, FORWARD, {value: 'start ', index: 4},
-              {value: 'start ', index: 5}
+              CHARACTER,
+              FORWARD,
+              {value: 'start ', index: 4},
+              {value: 'start ', index: 5},
             ],
             [
-              CHARACTER, FORWARD, {value: 'start ', index: 5},
-              {value: 'start ', index: 6}
+              CHARACTER,
+              FORWARD,
+              {value: 'start ', index: 5},
+              {value: 'start ', index: 6},
             ],
 
             [
-              CHARACTER, FORWARD, {value: 'same line', index: 0},
-              {value: 'same line', index: 1}
+              CHARACTER,
+              FORWARD,
+              {value: 'same line', index: 0},
+              {value: 'same line', index: 1},
             ],
 
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 5},
-              {value: 'start ', index: 6}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 5},
+              {value: 'start ', index: 6},
             ],
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 4},
-              {value: 'start ', index: 5}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 4},
+              {value: 'start ', index: 5},
             ],
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 3},
-              {value: 'start ', index: 4}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 3},
+              {value: 'start ', index: 4},
             ],
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 2},
-              {value: 'start ', index: 3}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 2},
+              {value: 'start ', index: 3},
             ],
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 1},
-              {value: 'start ', index: 2}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 1},
+              {value: 'start ', index: 2},
             ],
             [
-              CHARACTER, BACKWARD, {value: 'start ', index: 0},
-              {value: 'start ', index: 1}
+              CHARACTER,
+              BACKWARD,
+              {value: 'start ', index: 0},
+              {value: 'start ', index: 1},
             ],
             [
-              CHARACTER, BACKWARD, {value: undefined, index: 0},
-              {value: undefined, index: 1}
+              CHARACTER,
+              BACKWARD,
+              {value: undefined, index: 0},
+              {value: undefined, index: 1},
             ],
           ],
           this.RANGE);
@@ -325,33 +351,45 @@ AX_TEST_F('AccessibilityExtensionCursorsTest', 'WordRange', async function() {
       this.simpleDoc,
       [
         [
-          WORD, FORWARD, {value: 'same line', index: 0},
-          {value: 'same line', index: 4}
+          WORD,
+          FORWARD,
+          {value: 'same line', index: 0},
+          {value: 'same line', index: 4},
         ],
         [
-          WORD, FORWARD, {value: 'same line', index: 5},
-          {value: 'same line', index: 9}
+          WORD,
+          FORWARD,
+          {value: 'same line', index: 5},
+          {value: 'same line', index: 9},
         ],
 
         [WORD, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
         [WORD, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
 
         [
-          WORD, BACKWARD, {value: 'same line', index: 5},
-          {value: 'same line', index: 9}
+          WORD,
+          BACKWARD,
+          {value: 'same line', index: 5},
+          {value: 'same line', index: 9},
         ],
         [
-          WORD, BACKWARD, {value: 'same line', index: 0},
-          {value: 'same line', index: 4}
+          WORD,
+          BACKWARD,
+          {value: 'same line', index: 0},
+          {value: 'same line', index: 4},
         ],
 
         [
-          WORD, BACKWARD, {value: 'start ', index: 0},
-          {value: 'start ', index: 5}
+          WORD,
+          BACKWARD,
+          {value: 'start ', index: 0},
+          {value: 'start ', index: 5},
         ],
         [
-          WORD, BACKWARD, {value: undefined, index: 0},
-          {value: undefined, index: 5}
+          WORD,
+          BACKWARD,
+          {value: undefined, index: 0},
+          {value: undefined, index: 5},
         ],
       ],
       this.RANGE);
@@ -368,14 +406,18 @@ AX_TEST_F('AccessibilityExtensionCursorsTest', 'LineRange', async function() {
         [LINE, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
 
         [
-          LINE, BACKWARD, {value: 'start ', index: 0},
-          {value: 'same line', index: 9}
+          LINE,
+          BACKWARD,
+          {value: 'start ', index: 0},
+          {value: 'same line', index: 9},
         ],
 
         [
-          LINE, BACKWARD, {value: 'start ', index: 0},
-          {value: 'same line', index: 9}
-        ]
+          LINE,
+          BACKWARD,
+          {value: 'start ', index: 0},
+          {value: 'same line', index: 9},
+        ],
       ],
       this.RANGE);
 });
@@ -623,43 +665,58 @@ AX_TEST_F(
         [WORD, BOUND, FORWARD, {index: 19, value: 'Inline text content'}],
         // 'Button' start and end indices.
         [
-          WORD, DIRECTIONAL, FORWARD,
-          {index: 0, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          FORWARD,
+          {index: 0, value: 'Button example content'},
         ],
         [WORD, BOUND, FORWARD, {index: 6, value: 'Button example content'}],
         // 'example' start and end indices.
         [
-          WORD, DIRECTIONAL, FORWARD,
-          {index: 7, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          FORWARD,
+          {index: 7, value: 'Button example content'},
         ],
         [WORD, BOUND, FORWARD, {index: 14, value: 'Button example content'}],
         // 'content' start index. Reached last word of last object.
         [
-          WORD, DIRECTIONAL, FORWARD,
-          {index: 15, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          FORWARD,
+          {index: 15, value: 'Button example content'},
         ],
         [
-          WORD, DIRECTIONAL, FORWARD,
-          {index: 15, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          FORWARD,
+          {index: 15, value: 'Button example content'},
         ],
 
         // Move backward by word.
         // Only test start indices.
         [
-          WORD, DIRECTIONAL, BACKWARD,
-          {index: 7, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          BACKWARD,
+          {index: 7, value: 'Button example content'},
         ],
         [
-          WORD, DIRECTIONAL, BACKWARD,
-          {index: 0, value: 'Button example content'}
+          WORD,
+          DIRECTIONAL,
+          BACKWARD,
+          {index: 0, value: 'Button example content'},
         ],
         [
-          WORD, DIRECTIONAL, BACKWARD, {index: 12, value: 'Inline text content'}
+          WORD,
+          DIRECTIONAL,
+          BACKWARD,
+          {index: 12, value: 'Inline text content'},
         ],
         [WORD, DIRECTIONAL, BACKWARD, {index: 7, value: 'Inline text content'}],
         [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'Inline text content'}],
         // Reached first word of first object.
-        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'Inline text content'}]
+        [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'Inline text content'}],
       ]);
     });
 

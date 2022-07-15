@@ -53,7 +53,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
       isManualInput: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

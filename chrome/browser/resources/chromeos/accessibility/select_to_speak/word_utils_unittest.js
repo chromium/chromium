@@ -58,7 +58,7 @@ AX_TEST_F(
     function() {
       const inlineText = {
         wordStarts: [0, 5, 10, 16],
-        name: 'once upon kitty cat'
+        name: 'once upon kitty cat',
       };
       const staticText = {children: [inlineText], name: 'once upon kitty cat'};
       const node = {node: staticText, startChar: 9, hasInlineText: true};
@@ -83,16 +83,16 @@ AX_TEST_F(
       const inlineText1 = {
         wordStarts: [0, 6],
         name: 'kitty cat ',
-        indexInParent: 0
+        indexInParent: 0,
       };
       const inlineText2 = {
         wordStarts: [0, 3],
         name: 'is cute',
-        indexInParent: 1
+        indexInParent: 1,
       };
       const staticText = {
         children: [inlineText1, inlineText2],
-        name: 'kitty cat is cute'
+        name: 'kitty cat is cute',
       };
       inlineText1.parent = staticText;
       inlineText2.parent = staticText;
@@ -127,12 +127,12 @@ AX_TEST_F(
       const inlineText1 = {
         wordEnds: [5, 9],
         name: 'kitty cat ',
-        indexInParent: 0
+        indexInParent: 0,
       };
       const inlineText2 = {wordEnds: [2, 7], name: 'is cute', indexInParent: 1};
       const staticText = {
         children: [inlineText1, inlineText2],
-        name: 'kitty cat is cute'
+        name: 'kitty cat is cute',
       };
       inlineText1.parent = staticText;
       inlineText2.parent = staticText;

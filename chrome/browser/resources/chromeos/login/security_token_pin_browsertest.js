@@ -43,7 +43,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     enableUserInput: true,
     hasError: false,
     formattedError: '',
-    formattedAttemptsLeft: ''
+    formattedAttemptsLeft: '',
   };
 
   let securityTokenPin;
@@ -116,7 +116,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
 
     // The user enters some value. No new 'completed' event is triggered so far.
@@ -182,7 +182,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertFalse(inputField.disabled);
 
@@ -194,7 +194,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertTrue(inputField.disabled);
   });
@@ -212,7 +212,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertEquals(pinInput.value, '');
     assertEquals(inputField.value, '');
@@ -234,7 +234,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertEquals(pinInput.value, '');
     assertEquals(inputField.value, '');
@@ -319,7 +319,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertEquals(getErrorContainerVisibility(), 'visible');
     assertTrue(pinInput.hasAttribute('invalid'));
@@ -336,7 +336,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: 'Invalid PIN.',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertEquals(errorElement.textContent, 'Invalid PIN.');
   });
@@ -347,7 +347,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: 'Maximum allowed attempts exceeded.',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     assertEquals(
         errorElement.textContent, 'Maximum allowed attempts exceeded.');
@@ -359,7 +359,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: false,
       formattedError: '',
-      formattedAttemptsLeft: '3 attempts left'
+      formattedAttemptsLeft: '3 attempts left',
     };
     assertEquals(errorElement.textContent, '3 attempts left');
   });
@@ -407,7 +407,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     // The PIN keyboard is shown again, replacing the animation UI.
     assertFalse(pinKeyboardContainer.hidden);
@@ -436,7 +436,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     // The PIN keyboard is shown again, replacing the animation UI.
     assertFalse(pinKeyboardContainer.hidden);

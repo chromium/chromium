@@ -8,9 +8,9 @@
   matches: ['<all_urls>'],
   js: {
     code: 'document.querySelectorAll(\'a\').forEach(' +
-        'function(anchor){anchor.href=\'javascript:void(0)\';})'
+        'function(anchor){anchor.href=\'javascript:void(0)\';})',
   },
-  run_at: 'document_end'
+  run_at: 'document_end',
 };
 
 /**

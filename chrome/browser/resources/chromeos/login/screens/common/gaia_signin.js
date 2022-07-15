@@ -221,7 +221,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       isFirstSigninStep_: {
         type: Boolean,
         computed: 'isFirstSigninStep(uiStep, canGaiaGoBack_, isSaml_)',
-        observer: 'onIsFirstSigninStepChanged'
+        observer: 'onIsFirstSigninStepChanged',
       },
 
       /*

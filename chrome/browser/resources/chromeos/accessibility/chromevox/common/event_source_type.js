@@ -11,5 +11,5 @@ export const EventSourceType = {
   NONE: 'none',
   BRAILLE_KEYBOARD: 'brailleKeyboard',
   STANDARD_KEYBOARD: 'standardKeyboard',
-  TOUCH_GESTURE: 'touchGesture'
+  TOUCH_GESTURE: 'touchGesture',
 };

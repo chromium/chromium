@@ -228,9 +228,13 @@ Polymer({
   onAuthCompletedMessage_(e) {
     const credentials = e.detail;
     chrome.send('completeAuthentication', [
-      credentials.gaiaId, credentials.email, credentials.password,
-      credentials.scrapedSAMLPasswords, credentials.usingSAML,
-      credentials.services, credentials.passwordAttributes
+      credentials.gaiaId,
+      credentials.email,
+      credentials.password,
+      credentials.scrapedSAMLPasswords,
+      credentials.usingSAML,
+      credentials.services,
+      credentials.passwordAttributes,
     ]);
   },
 

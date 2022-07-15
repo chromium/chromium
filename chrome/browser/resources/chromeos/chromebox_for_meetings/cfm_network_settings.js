@@ -51,7 +51,7 @@ export class CfmNetworkSettings extends PolymerElement {
         type: Array,
         notify: false,
         readOnly: true,
-      }
+      },
     };
   }
 

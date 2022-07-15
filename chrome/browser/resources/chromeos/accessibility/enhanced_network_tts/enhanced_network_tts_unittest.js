@@ -43,21 +43,21 @@ SYNC_TEST_F(
           audioBuffer:
               EnhancedNetworkTts.subarrayFrom(decodedAudioData, 0, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.04s - 0.08s contains the start of the first word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize, bufferSize),
           charIndex: 0,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.08s - 0.12s is a part of the first word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 2, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.12s - 0.16s contains the end of the first word and the start of the
         // second.
@@ -65,21 +65,21 @@ SYNC_TEST_F(
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 3, bufferSize),
           charIndex: 6,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.16s - 0.2s is a part of the second word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 4, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // The last buffer runs 0.0135s.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 5, bufferSize),
           charIndex: undefined,
-          isLastBuffer: true
+          isLastBuffer: true,
         },
       ];
       const sendTtsAudio = function(receivedBuffer) {
@@ -198,21 +198,21 @@ SYNC_TEST_F(
           audioBuffer:
               EnhancedNetworkTts.subarrayFrom(decodedAudioData, 0, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.04s - 0.08s contains the start of the first word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize, bufferSize),
           charIndex: 0,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.08s - 0.12s is a part of the first word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 2, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.12s - 0.16s contains the end of the first word and the start of the
         // second.
@@ -220,21 +220,21 @@ SYNC_TEST_F(
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 3, bufferSize),
           charIndex: 6,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // 0.16s - 0.2s is a part of the second word.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 4, bufferSize),
           charIndex: undefined,
-          isLastBuffer: false
+          isLastBuffer: false,
         },
         // The last buffer runs 0.0135s.
         {
           audioBuffer: EnhancedNetworkTts.subarrayFrom(
               decodedAudioData, bufferSize * 5, bufferSize),
           charIndex: undefined,
-          isLastBuffer: true
+          isLastBuffer: true,
         },
       ];
       // Copy the expectedBuffers but modify |isLastBuffer|.
@@ -289,7 +289,7 @@ function generateTestBufferData() {
     218, 164, 141, 181, 7,   252, 252, 185, 183, 181, 96,  71,  167, 143, 221,
     7,   142, 104, 12,  209, 169, 168, 188, 105, 184, 244, 111, 145, 71,  40,
     74,  40,  33,  234, 158, 16,  44,  104, 9,   73,  154, 65,  180, 184, 46,
-    212, 58,  33,  41,  158, 252, 16,  100, 140, 106, 65,  21,  168, 221
+    212, 58,  33,  41,  158, 252, 16,  100, 140, 106, 65,  21,  168, 221,
   ];
   return new Uint8Array(testData).buffer;
 }
@@ -308,13 +308,13 @@ function generateTestTimeInfoData() {
       'text': 'Hello',
       'textOffset': 0,        // The word offset to the start of the utterance.
       'timeOffset': '0.05s',  // Start time at the entire playback.
-      'duration': '0.1s'      // The word lasts 0.1s.
+      'duration': '0.1s',     // The word lasts 0.1s.
     },
     {
       'text': 'world',
       'textOffset': 6,        // The word offset to the start of the utterance.
       'timeOffset': '0.15s',  // Start time at the entire playback.
-      'duration': '0.06s'     // The word lasts 0.6s.
-    }                         // The last 0.0035s in the playback is empty.
+      'duration': '0.06s',    // The word lasts 0.6s.
+    },                        // The last 0.0035s in the playback is empty.
   ];
 }

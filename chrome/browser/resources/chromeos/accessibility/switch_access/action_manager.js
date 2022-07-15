@@ -184,7 +184,7 @@ export class ActionManager {
           SwitchAccessMenuAction.MOVE_FORWARD_ONE_WORD_OF_TEXT,
           SwitchAccessMenuAction.MOVE_BACKWARD_ONE_CHAR_OF_TEXT,
           SwitchAccessMenuAction.MOVE_FORWARD_ONE_CHAR_OF_TEXT,
-          SwitchAccessMenuAction.END_TEXT_SELECTION
+          SwitchAccessMenuAction.END_TEXT_SELECTION,
         ];
       case SAConstants.MenuType.POINT_SCAN_MENU:
         return [
@@ -252,7 +252,7 @@ export class ActionManager {
         left: Math.floor(Navigator.byPoint.currentPoint.x),
         top: Math.floor(Navigator.byPoint.currentPoint.y),
         width: 1,
-        height: 1
+        height: 1,
       };
     }
 

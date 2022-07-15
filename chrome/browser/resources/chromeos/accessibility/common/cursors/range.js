@@ -254,7 +254,7 @@ export class CursorRange {
         anchorObject: startNode,
         anchorOffset: startIndex,
         focusObject: endNode,
-        focusOffset: endIndex
+        focusOffset: endIndex,
       });
     }
   }

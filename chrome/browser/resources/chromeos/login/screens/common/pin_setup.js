@@ -79,7 +79,7 @@ class PinSetup extends PinSetupBase {
         type: Object,
         value() {
           return settings.recordLockScreenProgress;
-        }
+        },
       },
 
       /**

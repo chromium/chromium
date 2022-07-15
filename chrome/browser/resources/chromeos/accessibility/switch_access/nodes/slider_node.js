@@ -48,5 +48,5 @@ export class SliderNode extends BasicNode {
 
 BasicNode.creators.push({
   predicate: baseNode => baseNode.role === chrome.automation.RoleType.SLIDER,
-  creator: (node, parent) => new SliderNode(node, parent)
+  creator: (node, parent) => new SliderNode(node, parent),
 });

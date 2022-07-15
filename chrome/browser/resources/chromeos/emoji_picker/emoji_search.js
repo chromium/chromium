@@ -34,7 +34,7 @@ export class EmojiSearch extends PolymerElement {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-        readonly: true
+        readonly: true,
       },
       /** @private {!boolean} */
       needIndexing: {type: Boolean, value: false},
@@ -43,7 +43,7 @@ export class EmojiSearch extends PolymerElement {
 
   static get observers() {
     return [
-      'categoriesDataChanged(categoriesData.splices,lazyIndexing)'
+      'categoriesDataChanged(categoriesData.splices,lazyIndexing)',
     ];
   }
 
@@ -58,7 +58,7 @@ export class EmojiSearch extends PolymerElement {
       keys: [
         {name: 'base.name', weight: 10},  // Increase scoring of emoji name.
         'base.keywords',
-      ]
+      ],
     };
     /** @private {Map<CategoryEnum,Object>} */
     this.fuseInstances = new Map();

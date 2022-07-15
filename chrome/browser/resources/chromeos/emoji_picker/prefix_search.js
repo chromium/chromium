@@ -101,7 +101,7 @@ export class EmojiPrefixSearch {
                pos,
                isMatched: token.startsWith(term),
                token,
-               weight: PRIMARY_NAME_WEIGHT
+               weight: PRIMARY_NAME_WEIGHT,
              }))
         .filter(item => item.isMatched);
   }
@@ -170,7 +170,7 @@ export class EmojiPrefixSearch {
     const results =
         Array.from(queryScores.keys()).map(emoji => ({
                                              item: this.emojiMap_.get(emoji),
-                                             score: queryScores.get(emoji)
+                                             score: queryScores.get(emoji),
                                            }));
     return this.sort_(results);
   }

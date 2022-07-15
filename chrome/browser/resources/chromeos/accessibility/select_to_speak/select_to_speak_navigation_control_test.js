@@ -166,17 +166,17 @@ AX_TEST_F(
           const textNode2 = this.findTextNode(root, 'two');
           const mouseEvent2 = {
             screenX: textNode2.location.left + 1,
-            screenY: textNode2.location.top + 1
+            screenY: textNode2.location.top + 1,
           };
           this.triggerReadMouseSelectedText(mouseEvent2, mouseEvent2);
-        })
+        }),
       ]);
 
       // Click on node in first paragraph.
       const textNode1 = this.findTextNode(root, 'one');
       const event1 = {
         screenX: textNode1.location.left + 1,
-        screenY: textNode1.location.top + 1
+        screenY: textNode1.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event1, event1);
     });
@@ -444,7 +444,7 @@ AX_TEST_F(
           anchorObject: firstNode,
           anchorOffset: 5,
           focusObject: lastNode,
-          focusOffset: 6
+          focusOffset: 6,
         });
       });
       const root = await this.runWithLoadedTree(bodyHtml);
@@ -826,7 +826,7 @@ AX_TEST_F(
           anchorObject: node,
           anchorOffset: 0,
           focusObject: node,
-          focusOffset: 5
+          focusOffset: 5,
         });
       });
       const root = await this.runWithLoadedTree(bodyHtml);
@@ -997,7 +997,7 @@ AX_TEST_F(
           anchorObject: textNode,
           anchorOffset: 0,
           focusObject: textNode,
-          focusOffset: 0
+          focusOffset: 0,
         });
 
         // Perform Search key + S, which should restore focus to

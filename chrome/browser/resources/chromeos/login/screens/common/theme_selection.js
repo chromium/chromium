@@ -61,7 +61,7 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
       isInTabletMode_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

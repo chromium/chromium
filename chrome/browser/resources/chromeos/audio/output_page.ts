@@ -24,35 +24,35 @@ const audiosSamples: AudioSample[] = [
     freqency: 440,
     channelCount: 1,
     pan: 0,
-    description: '44.1k mono 440Hz sine tone'
+    description: '44.1k mono 440Hz sine tone',
   },
   {
     sampleRate: 48000,
     freqency: 440,
     channelCount: 1,
     pan: 0,
-    description: '48k mono 440Hz sine tone'
+    description: '48k mono 440Hz sine tone',
   },
   {
     sampleRate: 48000,
     freqency: 440,
     channelCount: 2,
     pan: 0,
-    description: '48k stereo 440Hz sine tone'
+    description: '48k stereo 440Hz sine tone',
   },
   {
     sampleRate: 48000,
     freqency: 440,
     channelCount: 2,
     pan: -1,
-    description: '48k stereo 440Hz sine tone - Left channel only'
+    description: '48k stereo 440Hz sine tone - Left channel only',
   },
   {
     sampleRate: 48000,
     freqency: 440,
     channelCount: 2,
     pan: 1,
-    description: '48k stereo 440Hz sine tone - Right channel only'
+    description: '48k stereo 440Hz sine tone - Right channel only',
   },
 ];
 

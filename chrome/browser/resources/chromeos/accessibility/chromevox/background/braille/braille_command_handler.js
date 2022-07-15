@@ -159,7 +159,7 @@ export class BrailleCommandHandler {
         anchorObject: actionNode,
         anchorOffset: targetPosition,
         focusObject: actionNode,
-        focusOffset: targetPosition
+        focusOffset: targetPosition,
       });
     } else {
       const start = text.getSpanStart(selectionSpan);

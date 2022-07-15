@@ -50,7 +50,7 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
         anchorObject: textNode,
         anchorOffset,
         focusObject: textNode,
-        focusOffset
+        focusOffset,
       });
     }, expected);
   }
@@ -137,7 +137,7 @@ AX_TEST_F(
               anchorObject: firstNode,
               anchorOffset: 0,
               focusObject: lastNode,
-              focusOffset: 5
+              focusOffset: 5,
             });
           },
           'This is some bold text');
@@ -156,7 +156,7 @@ AX_TEST_F(
               anchorObject: firstNode,
               anchorOffset: 5,
               focusObject: lastNode,
-              focusOffset: 0
+              focusOffset: 0,
             });
           },
           'This is some bold text');
@@ -175,7 +175,7 @@ AX_TEST_F(
           anchorObject: firstNode,
           anchorOffset: 0,
           focusObject: lastNode,
-          focusOffset: 1
+          focusOffset: 1,
         });
       };
       setFocusCallback = this.newCallback(setFocusCallback);
@@ -213,7 +213,7 @@ AX_TEST_F(
               anchorObject: firstNode,
               anchorOffset: 0,
               focusObject: lastNode,
-              focusOffset: 5
+              focusOffset: 5,
             });
           },
           'This is some bold text');
@@ -232,7 +232,7 @@ AX_TEST_F(
               anchorObject: firstNode,
               anchorOffset: 0,
               focusObject: lastNode,
-              focusOffset: 5
+              focusOffset: 5,
             });
           },
           'This is some text');
@@ -248,7 +248,7 @@ AX_TEST_F(
               anchorObject: container,
               anchorOffset: 0,
               focusObject: container,
-              focusOffset: 1
+              focusOffset: 1,
             });
           }, 'one');
     });
@@ -265,7 +265,7 @@ AX_TEST_F(
               anchorObject: container,
               anchorOffset: 1,
               focusObject: container,
-              focusOffset: 2
+              focusOffset: 2,
             });
           },
           'two');

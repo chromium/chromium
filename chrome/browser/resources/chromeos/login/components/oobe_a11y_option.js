@@ -36,7 +36,7 @@
        */
       labelForAria: {
         type: String,
-      }
+      },
     };
   }
 

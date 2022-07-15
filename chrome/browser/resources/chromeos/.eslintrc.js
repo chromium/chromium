@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 module.exports = {
-  'rules': {
-    'eqeqeq': 'off',
-    'no-var': 'off',
+  'rules' : {
+    'comma-dangle' : ['error', 'always-multiline'],
+    'eqeqeq' : 'off',
+    'no-var' : 'off',
   },
 };

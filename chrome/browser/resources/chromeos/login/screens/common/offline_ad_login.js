@@ -125,7 +125,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       errorState: {
         type: Number,
         value: ActiveDirectoryErrorState.NONE,
-        observer: 'errorStateObserver_'
+        observer: 'errorStateObserver_',
       },
       /**
        * Whether machine name input should be invalid.
@@ -133,7 +133,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       machineNameInvalid: {
         type: Boolean,
         value: false,
-        observer: 'machineNameInvalidObserver_'
+        observer: 'machineNameInvalidObserver_',
       },
       /**
        * Whether username input should be invalid.
@@ -146,7 +146,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       authPasswordInvalid: {
         type: Boolean,
         value: false,
-        observer: 'authPasswordInvalidObserver_'
+        observer: 'authPasswordInvalidObserver_',
       },
       /**
        * Whether unlock password input should be invalid.
@@ -154,7 +154,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       unlockPasswordInvalid: {
         type: Boolean,
         value: false,
-        observer: 'unlockPasswordInvalidObserver_'
+        observer: 'unlockPasswordInvalidObserver_',
       },
 
       /**

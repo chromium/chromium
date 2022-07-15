@@ -26,7 +26,7 @@ cr.define('cr.ui', function() {
     // The arrow is positioned at the bottom and the end of the bubble. In
     // left to right mode this is the bottom right. The entire bubble is
     // positioned above the anchor node.
-    BOTTOM_END: 'bottom-end'
+    BOTTOM_END: 'bottom-end',
   };
 
   /**
@@ -48,7 +48,7 @@ cr.define('cr.ui', function() {
     // taken into account as the preferred alignment but may be overruled if
     // there is insufficient space (see BubbleBase.reposition for the exact
     // placement algorithm).
-    ENTIRELY_VISIBLE: 'entirely-visible'
+    ENTIRELY_VISIBLE: 'entirely-visible',
   };
 
   /**

@@ -126,8 +126,7 @@ function setGraphicBuffersModel(model) {
   memoryBands.addChartSources(
       [
         new Events(model.system.memory, 2 /* kSwapRead */, 2 /* kSwapRead */),
-        new Events(
-            model.system.memory, 3 /* kSwapWrite */, 3 /* kSwapWrite */)
+        new Events(model.system.memory, 3 /* kSwapWrite */, 3 /* kSwapWrite */),
       ],
       true /* smooth */);
   // Geom objects and size.

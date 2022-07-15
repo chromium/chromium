@@ -420,7 +420,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
         treeChange => this.onTreeChange_(treeChange), {
           predicate: treeChange =>
               this.group_.findChild(treeChange.target) != null ||
-              this.group_.isEquivalentTo(treeChange.target)
+              this.group_.isEquivalentTo(treeChange.target),
         });
 
     // The status tray fires a SHOW event when it opens.
@@ -428,7 +428,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
         this.desktop_,
         [
           chrome.automation.EventType.MENU_START,
-          chrome.automation.EventType.SHOW
+          chrome.automation.EventType.SHOW,
         ],
         event => this.onModalDialog_(event))
         .start();

@@ -78,7 +78,7 @@ Polymer({
     shillDebugging_: {
       type: String,
       value: 'unknown',
-    }
+    },
   },
 
   observers: ['onShillDebuggingChanged_(shillDebugging_)'],

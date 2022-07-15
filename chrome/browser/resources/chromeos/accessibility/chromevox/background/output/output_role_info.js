@@ -46,19 +46,19 @@ export const OutputRoleInfo = {
     msgId: 'role_comment',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
-    inherits: 'abstractSpan'
+    inherits: 'abstractSpan',
   },
   contentDeletion: {
     msgId: 'role_content_deletion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
-    inherits: 'abstractSpan'
+    inherits: 'abstractSpan',
   },
   contentInsertion: {
     msgId: 'role_content_insertion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
-    inherits: 'abstractSpan'
+    inherits: 'abstractSpan',
   },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
   date: {msgId: 'input_type_date', inherits: 'abstractFormFieldContainer'},
@@ -69,7 +69,7 @@ export const OutputRoleInfo = {
   dialog: {
     msgId: 'role_dialog',
     contextOrder: OutputContextOrder.DIRECTED,
-    ignoreAncestry: true
+    ignoreAncestry: true,
   },
   directory: {msgId: 'role_directory', inherits: 'abstractContainer'},
   docAbstract: {msgId: 'role_doc_abstract', inherits: 'abstractSpan'},
@@ -82,7 +82,7 @@ export const OutputRoleInfo = {
   docBiblioEntry: {
     msgId: 'role_doc_biblio_entry',
     earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
+    inherits: 'abstractItem',
   },
   docBibliography: {msgId: 'role_doc_bibliography', inherits: 'abstractSpan'},
   docBiblioRef:
@@ -97,7 +97,7 @@ export const OutputRoleInfo = {
   docEndnote: {
     msgId: 'role_doc_endnote',
     earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
+    inherits: 'abstractItem',
   },
   docEndnotes:
       {msgId: 'role_doc_endnotes', earconId: 'LISTBOX', inherits: 'list'},
@@ -108,7 +108,7 @@ export const OutputRoleInfo = {
   docFootnote: {
     msgId: 'role_doc_footnote',
     earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
+    inherits: 'abstractItem',
   },
   docForeword: {msgId: 'role_doc_foreword', inherits: 'abstractSpan'},
   docGlossary: {msgId: 'role_doc_glossary', inherits: 'abstractSpan'},
@@ -160,14 +160,14 @@ export const OutputRoleInfo = {
     msgId: 'role_mark',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
-    inherits: 'abstractContainer'
+    inherits: 'abstractContainer',
   },
   marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
   math: {msgId: 'role_math', inherits: 'abstractContainer'},
   menu: {
     msgId: 'role_menu',
     contextOrder: OutputContextOrder.FIRST,
-    ignoreAncestry: true
+    ignoreAncestry: true,
   },
   menuBar: {
     msgId: 'role_menubar',
@@ -185,7 +185,7 @@ export const OutputRoleInfo = {
   popUpButton: {
     msgId: 'role_button',
     earconId: 'POP_UP_BUTTON',
-    inherits: 'comboBoxMenuButton'
+    inherits: 'comboBoxMenuButton',
   },
   radioButton: {msgId: 'role_radio'},
   radioGroup:
@@ -201,7 +201,7 @@ export const OutputRoleInfo = {
   spinButton: {
     msgId: 'role_spinbutton',
     inherits: 'abstractRange',
-    earconId: 'LISTBOX'
+    earconId: 'LISTBOX',
   },
   splitter: {msgId: 'role_separator', inherits: 'abstractSpan'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
@@ -210,7 +210,7 @@ export const OutputRoleInfo = {
     msgId: 'role_suggestion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
-    inherits: 'abstractSpan'
+    inherits: 'abstractSpan',
   },
   superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
   tab: {msgId: 'role_tab', inherits: 'abstractContainer'},
@@ -226,5 +226,5 @@ export const OutputRoleInfo = {
   tree: {msgId: 'role_tree'},
   treeItem: {msgId: 'role_treeitem'},
   video: {msgId: 'tag_video', inherits: 'abstractFormFieldContainer'},
-  window: {ignoreAncestry: true}
+  window: {ignoreAncestry: true},
 };

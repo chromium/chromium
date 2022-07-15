@@ -12,7 +12,7 @@ const GesturePage = {
   INTRO: 'gestureIntro',
   HOME: 'gestureHome',
   OVERVIEW: 'gestureOverview',
-  BACK: 'gestureBack'
+  BACK: 'gestureBack',
 };
 
 /**

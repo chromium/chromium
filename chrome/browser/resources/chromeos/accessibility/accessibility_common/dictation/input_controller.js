@@ -175,7 +175,7 @@ export class InputController {
       contextID: this.activeImeContextId_,
       engineID: InputController.IME_ENGINE_ID,
       length,
-      offset
+      offset,
     });
   }
 

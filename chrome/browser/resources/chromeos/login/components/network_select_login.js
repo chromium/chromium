@@ -56,7 +56,7 @@ let networkCustomItemCustomData;
        */
       showTechnologyBadge_: {
         type: Boolean,
-      }
+      },
     };
   }
 

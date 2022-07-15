@@ -214,425 +214,438 @@ export class KeyMap {
 KeyMap.BINDINGS_ = [
   {
     command: 'previousObject',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}},
   },
   {
     command: 'previousLine',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.UP]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.UP]}},
   },
   {
     command: 'nextObject',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}},
   },
   {
     command: 'nextLine',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN]}},
   },
   {
     command: 'nextCharacter',
-    sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], shiftKey: [true]}}
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], shiftKey: [true]},
+    },
   },
   {
     command: 'previousCharacter',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}},
   },
   {
     command: 'nativeNextCharacter',
-    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}}
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}},
   },
   {
     command: 'nativePreviousCharacter',
-    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}}
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}},
   },
   {
     command: 'nextWord',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], shiftKey: [true]},
+    },
   },
   {
     command: 'previousWord',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]},
+    },
   },
   {
     command: 'nativeNextWord',
-    sequence:
-        {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}}
+    sequence: {
+      cvoxModifier: false,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]},
+    },
   },
   {
     command: 'nativePreviousWord',
     sequence:
-        {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}}
+        {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
   },
   {
     command: 'nextButton',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.B]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.B]}},
   },
   {
     command: 'previousButton',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.B], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.B], shiftKey: [true]}},
   },
   {
     command: 'nextCheckbox',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.X]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.X]}},
   },
   {
     command: 'previousCheckbox',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.X], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.X], shiftKey: [true]}},
   },
   {
     command: 'nextComboBox',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.C]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.C]}},
   },
   {
     command: 'previousComboBox',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], shiftKey: [true]}},
   },
   {
     command: 'nextEditText',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.E]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.E]}},
   },
   {
     command: 'previousEditText',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.E], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.E], shiftKey: [true]}},
   },
   {
     command: 'nextFormField',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.F]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.F]}},
   },
   {
     command: 'previousFormField',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], shiftKey: [true]}},
   },
   {
     command: 'previousGraphic',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.G], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.G], shiftKey: [true]}},
   },
   {
     command: 'nextGraphic',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G]}},
   },
   {
     command: 'nextHeading',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.H]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.H]}},
   },
   {
     command: 'nextHeading1',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE]}},
   },
   {
     command: 'nextHeading2',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO]}},
   },
   {
     command: 'nextHeading3',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE]}},
   },
   {
     command: 'nextHeading4',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR]}},
   },
   {
     command: 'nextHeading5',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE]}},
   },
   {
     command: 'nextHeading6',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX]}},
   },
   {
     command: 'previousHeading',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], shiftKey: [true]}},
   },
   {
     command: 'previousHeading1',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE], shiftKey: [true]}},
   },
   {
     command: 'previousHeading2',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO], shiftKey: [true]}},
   },
   {
     command: 'previousHeading3',
-    sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE], shiftKey: [true]}}
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.THREE], shiftKey: [true]},
+    },
   },
   {
     command: 'previousHeading4',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR], shiftKey: [true]}},
   },
   {
     command: 'previousHeading5',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE], shiftKey: [true]}},
   },
   {
     command: 'previousHeading6',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX], shiftKey: [true]}},
   },
   {
     command: 'nextLink',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.L]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.L]}},
   },
   {
     command: 'previousLink',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], shiftKey: [true]}},
   },
   {
     command: 'nextTable',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.T]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.T]}},
   },
   {
     command: 'previousTable',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], shiftKey: [true]}},
   },
   {
     command: 'nextVisitedLink',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.V]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.V]}},
   },
   {
     command: 'previousVisitedLink',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.V], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.V], shiftKey: [true]}},
   },
   {
     command: 'nextLandmark',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1]}},
   },
   {
     command: 'previousLandmark',
-    sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], shiftKey: [true]}}
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.OEM_1], shiftKey: [true]},
+    },
   },
   {
     command: 'jumpToBottom',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}},
   },
   {
     command: 'jumpToTop',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
   },
   {
     command: 'forceClickOnCurrentItem',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}},
   },
   {
     command: 'contextMenu',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}},
   },
   {
     command: 'readFromHere',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.R]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.R]}},
   },
   {
     command: 'toggleStickyMode',
     sequence: {
       skipStripping: false,
       doubleTap: true,
-      keys: {keyCode: [KeyCode.SEARCH]}
-    }
+      keys: {keyCode: [KeyCode.SEARCH]},
+    },
   },
   {
     command: 'passThroughMode',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.ESCAPE], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.ESCAPE], shiftKey: [true]},
+    },
   },
   {
     command: 'toggleKeyboardHelp',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_PERIOD]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_PERIOD]}},
   },
   {
     command: 'stopSpeech',
     sequence: {
       cvoxModifier: false,
-      keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}
-    }
+      keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]},
+    },
   },
   {
     command: 'decreaseTtsRate',
-    sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4], shiftKey: [true]}}
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.OEM_4], shiftKey: [true]},
+    },
   },
   {
     command: 'increaseTtsRate',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4]}},
   },
   {
     command: 'decreaseTtsPitch',
-    sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6], shiftKey: [true]}}
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.OEM_6], shiftKey: [true]},
+    },
   },
   {
     command: 'increaseTtsPitch',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6]}},
   },
   {
     command: 'stopSpeech',
-    sequence: {keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}}
+    sequence: {keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}},
   },
   {
     command: 'cyclePunctuationEcho',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}},
   },
   {
     command: 'showLearnModePage',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}},
   },
   {
     command: 'cycleTypingEcho',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.T]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.T]}},
   },
   {
     command: 'showOptionsPage',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}},
   },
   {
     command: 'showLogPage',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.W]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.W]}},
   },
   {
     command: 'enableLogging',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.E]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.E]}},
   },
   {
     command: 'disableLogging',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.D]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.D]}},
   },
   {
     command: 'dumpTree',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.D, KeyCode.T], ctrlKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.D, KeyCode.T], ctrlKey: [true]},
+    },
   },
   {
     command: 'help',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.T]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.T]}},
   },
   {
     command: 'toggleEarcons',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.E]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.E]}},
   },
   {
     command: 'speakTimeAndDate',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}},
   },
   {
     command: 'readCurrentTitle',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.W]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.W]}},
   },
   {
     command: 'readCurrentURL',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.U]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.U]}},
   },
   {
     command: 'reportIssue',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.I]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.I]}},
   },
   {
     command: 'toggleSearchWidget',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_2]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_2]}},
   },
   {
     command: 'showHeadingsList',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], ctrlKey: [true]}},
   },
   {
     command: 'showFormsList',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], ctrlKey: [true]}},
   },
   {
     command: 'showLandmarksList',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], ctrlKey: [true]}},
   },
   {
     command: 'showLinksList',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}},
   },
   {
     command: 'showActionsMenu',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.A], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.A], ctrlKey: [true]}},
   },
   {
     command: 'showTablesList',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}},
   },
   {
     command: 'toggleBrailleCaptions',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.B]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.B]}},
   },
   {
     command: 'toggleBrailleTable',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}},
   },
   {
     command: 'viewGraphicAsBraille',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}}
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}},
   },
   {
     command: 'toggleSelection',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.S]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.S]}},
   },
   {
     command: 'fullyDescribe',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.K]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.K]}},
   },
   {
     command: 'previousRow',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.UP], ctrlKey: [true], altKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.UP], ctrlKey: [true], altKey: [true]},
+    },
   },
   {
     command: 'nextRow',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true], altKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true], altKey: [true]},
+    },
   },
   {
     command: 'nextCol',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], altKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], altKey: [true]},
+    },
   },
   {
     command: 'previousCol',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], altKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], altKey: [true]},
+    },
   },
   {
     command: 'goToRowFirstCell',
@@ -642,9 +655,9 @@ KeyMap.BINDINGS_ = [
         keyCode: [KeyCode.LEFT],
         ctrlKey: [true],
         altKey: [true],
-        shiftKey: [true]
-      }
-    }
+        shiftKey: [true],
+      },
+    },
   },
   {
     command: 'goToColFirstCell',
@@ -654,9 +667,9 @@ KeyMap.BINDINGS_ = [
         keyCode: [KeyCode.UP],
         ctrlKey: [true],
         altKey: [true],
-        shiftKey: [true]
-      }
-    }
+        shiftKey: [true],
+      },
+    },
   },
   {
     command: 'goToColLastCell',
@@ -666,23 +679,23 @@ KeyMap.BINDINGS_ = [
         keyCode: [KeyCode.DOWN],
         ctrlKey: [true],
         altKey: [true],
-        shiftKey: [true]
-      }
-    }
+        shiftKey: [true],
+      },
+    },
   },
   {
     command: 'goToFirstCell',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.LEFT], altKey: [true], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.LEFT], altKey: [true], shiftKey: [true]},
+    },
   },
   {
     command: 'goToLastCell',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.RIGHT], altKey: [true], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.RIGHT], altKey: [true], shiftKey: [true]},
+    },
   },
   {
     command: 'goToRowLastCell',
@@ -692,115 +705,115 @@ KeyMap.BINDINGS_ = [
         keyCode: [KeyCode.RIGHT],
         ctrlKey: [true],
         altKey: [true],
-        shiftKey: [true]
-      }
-    }
+        shiftKey: [true],
+      },
+    },
   },
   {
     command: 'previousGroup',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.UP], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.UP], ctrlKey: [true]}},
   },
   {
     command: 'nextGroup',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true]}},
   },
   {
     command: 'previousSimilarItem',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.I], shiftKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.I], shiftKey: [true]}},
   },
   {
     command: 'nextSimilarItem',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}},
   },
   {
     command: 'previousInvalidItem',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.I]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.I]}},
   },
   {
     command: 'nextInvalidItem',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.N, KeyCode.I]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.N, KeyCode.I]}},
   },
   {
     command: 'jumpToDetails',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}},
   },
   {
     command: 'toggleScreen',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}},
   },
   {
     command: 'toggleSpeechOnOrOff',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.VOLUME_MUTE]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.VOLUME_MUTE]}},
   },
   {
     command: 'enableChromeVoxArcSupportForCurrentApp',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_4]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_4]}},
   },
   {
     command: 'disableChromeVoxArcSupportForCurrentApp',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}},
   },
   {
     command: 'showTalkBackKeyboardShortcuts',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.K]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.K]}},
   },
   {
     command: 'forceClickOnCurrentItem',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true},
   },
   {
     command: 'showTtsSettings',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}},
   },
   {
     command: 'announceBatteryDescription',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.B]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.B]}},
   },
   {
     command: 'announceRichTextDescription',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.F]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.F]}},
   },
   {
     command: 'readPhoneticPronunciation',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.C]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.C]}},
   },
   {
     command: 'readLinkURL',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.L]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.L]}},
   },
   {
     command: 'nextList',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.J, KeyCode.L]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.J, KeyCode.L]}},
   },
   {
     command: 'previousList',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.J, KeyCode.L], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.J, KeyCode.L], shiftKey: [true]},
+    },
   },
   {
     command: 'resetTextToSpeechSettings',
     sequence: {
       cvoxModifier: true,
-      keys: {keyCode: [KeyCode.OEM_5], ctrlKey: [true], shiftKey: [true]}
-    }
+      keys: {keyCode: [KeyCode.OEM_5], ctrlKey: [true], shiftKey: [true]},
+    },
   },
   {
     command: 'logLanguageInformationForCurrentNode',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.L]}}
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.L]}},
   },
   {
     command: 'copy',
     sequence:
-        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}}
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}},
   },
   {
     command: 'toggleDictation',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.D]}}
-  }
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.D]}},
+  },
 ];

@@ -34,7 +34,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
 
   tapTrayButton(desktop, callback) {
     const button = desktop.find({
-      attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
+      attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME},
     });
 
     callback = this.newCallback(callback);
@@ -65,7 +65,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });
@@ -88,17 +88,17 @@ AX_TEST_F(
         this.newCallback(function(utterance) {
           this.assertEqualsCollapseWhitespace(
               utterance, 'This is some more text');
-        })
+        }),
       ]);
       const firstNode = this.findTextNode(root, 'This is some text');
       const downEvent = {
         screenX: firstNode.location.left + 1,
-        screenY: firstNode.location.top + 1
+        screenY: firstNode.location.top + 1,
       };
       const lastNode = this.findTextNode(root, 'This is some more text');
       const upEvent = {
         screenX: lastNode.location.left + lastNode.location.width,
-        screenY: lastNode.location.top + lastNode.location.height
+        screenY: lastNode.location.top + lastNode.location.height,
       };
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
@@ -124,12 +124,12 @@ AX_TEST_F(
           root, 'This is some text in a paragraph that wraps. ');
       const downEvent = {
         screenX: firstNode.location.left + 1,
-        screenY: firstNode.location.top + 1
+        screenY: firstNode.location.top + 1,
       };
       const lastNode = this.findTextNode(root, 'Italic text');
       const upEvent = {
         screenX: lastNode.location.left + lastNode.location.width,
-        screenY: lastNode.location.top + lastNode.location.height
+        screenY: lastNode.location.top + lastNode.location.height,
       };
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
@@ -152,7 +152,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       // A state change request should shift us into 'selecting' state
       // from 'inactive'.
@@ -172,7 +172,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       // A state change request should shift us into 'selecting' state
       // from 'inactive'.
@@ -214,7 +214,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });
@@ -233,7 +233,7 @@ TEST_F(
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
-            attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
+            attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME},
           });
 
           // Use the same automation callbacks as Select-to-Speak to make
@@ -252,7 +252,7 @@ TEST_F(
 
           const event = {
             screenX: button.location.left + 1,
-            screenY: button.location.top + 1
+            screenY: button.location.top + 1,
           };
           selectToSpeak.fireMockMouseDownEvent(event);
           selectToSpeak.fireMockMouseUpEvent(event);

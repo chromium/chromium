@@ -43,7 +43,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
        */
       errorSubtitle_: {
         type: String,
-        computed: 'computeSubtitle_(locale, errorState_, params_)'
+        computed: 'computeSubtitle_(locale, errorState_, params_)',
       },
 
       /**

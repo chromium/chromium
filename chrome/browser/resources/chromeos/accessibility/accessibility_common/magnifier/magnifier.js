@@ -155,7 +155,7 @@ export class Magnifier {
       chrome.accessibilityPrivate.setFocusRings([{
         rects: [bounds],
         type: chrome.accessibilityPrivate.FocusType.GLOW,
-        color: '#22d'
+        color: '#22d',
       }]);
     }
   }

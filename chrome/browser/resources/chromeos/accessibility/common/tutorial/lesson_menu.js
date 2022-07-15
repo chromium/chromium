@@ -95,5 +95,5 @@ export const LessonMenu = Polymer({
    */
   shouldHideLessonButton_(validCurriculums, curriculum) {
     return !validCurriculums.includes(curriculum);
-  }
+  },
 });

@@ -92,7 +92,7 @@ TEST_F(
       const uncontractedTranslator = {
         translate(text, formTypeMap, callback) {
           callback(null, null, null);
-        }
+        },
       };
       const translationResult = null;
 
@@ -276,41 +276,42 @@ TEST_F(
        * location and a 'c' means that the contracted translator was used.
        */
       const TESTDATA = [
-        {name: 'emptyText', input: createText(''), contractedOutput: ''}, {
+        {name: 'emptyText', input: createText(''), contractedOutput: ''},
+        {
           name: 'emptyTextWithCaret',
           input: createText('', 0),
-          contractedOutput: ''
+          contractedOutput: '',
         },
         {
           name: 'textWithNoSelection',
           input: createText(TEXT),
-          contractedOutput: 'ccccccccccccc'
+          contractedOutput: 'ccccccccccccc',
         },
         {
           name: 'textWithCaretAtStart',
           input: createText(TEXT, 0),
-          contractedOutput: 'uuuuuuccccccc'
+          contractedOutput: 'uuuuuuccccccc',
         },
         {
           name: 'textWithCaretAtEnd',
           input: createText(TEXT, TEXT.length),
-          contractedOutput: 'cccccccuuuuuu'
+          contractedOutput: 'cccccccuuuuuu',
         },
         {
           name: 'textWithCaretInWhitespace',
           input: createText(TEXT, 6),
-          contractedOutput: 'uuuuuuucccccc'
+          contractedOutput: 'uuuuuuucccccc',
         },
         {
           name: 'textWithSelectionEndInWhitespace',
           input: createText(TEXT, 0, 7),
-          contractedOutput: 'uuuuuuucccccc'
+          contractedOutput: 'uuuuuuucccccc',
         },
         {
           name: 'textWithSelectionInTwoWords',
           input: createText(TEXT, 2, 9),
-          contractedOutput: 'uuuuuucuuuuuu'
-        }
+          contractedOutput: 'uuuuuucuuuuuu',
+        },
       ];
       const TESTDATA_WITH_SELECTION = TESTDATA.filter(function(testCase) {
         return testCase.input.getSpanInstanceOf(ValueSelectionSpan);

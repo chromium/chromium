@@ -275,5 +275,5 @@ Polymer({
   /** @private */
   onReadMoreClick_() {
     this.maybeUpgradeReadMoreState_(true /* read_more_clicked */);
-  }
+  },
 });

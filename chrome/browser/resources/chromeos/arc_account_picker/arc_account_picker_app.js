@@ -65,7 +65,7 @@ export class ArcAccountPickerAppElement extends PolymerElement {
        */
       accounts_: {
         type: Array,
-      }
+      },
     };
   }
 

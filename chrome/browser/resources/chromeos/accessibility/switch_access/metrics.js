@@ -24,5 +24,5 @@ export const SwitchAccessMetrics = {
     const underscoreAndWhitespaceRegex = /(\s|_)+/g;
     return str.replace(wordRegex, word => word.toUpperCase())
         .replace(underscoreAndWhitespaceRegex, '');
-  }
+  },
 };

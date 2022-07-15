@@ -23,7 +23,7 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
     this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
       {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
       {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
-      {type: 'boolean', key: enhancedNetworkVoicesAllowedKey, value: true}
+      {type: 'boolean', key: enhancedNetworkVoicesAllowedKey, value: true},
     ]);
     this.mockSettingsPrivate_.allowSetPref();
     chrome.settingsPrivate = this.mockSettingsPrivate_;
@@ -31,7 +31,7 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
     chrome.i18n = {
       getMessage(msgid) {
         return msgid;
-      }
+      },
     };
   }
 

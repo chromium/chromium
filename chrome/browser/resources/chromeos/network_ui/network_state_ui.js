@@ -34,10 +34,18 @@ Polymer({
    * @const
    */
   NETWORK_STATE_FIELDS: [
-    'guid', 'name', 'type', 'connectionState', 'connectable', 'errorState',
-    'wifi.security', ['cellular.networkTechnology', 'EAP.EAP'],
-    'cellular.activationState', 'cellular.roaming', 'wifi.frequency',
-    'wifi.signalStrength'
+    'guid',
+    'name',
+    'type',
+    'connectionState',
+    'connectable',
+    'errorState',
+    'wifi.security',
+    ['cellular.networkTechnology', 'EAP.EAP'],
+    'cellular.activationState',
+    'cellular.roaming',
+    'wifi.frequency',
+    'wifi.signalStrength',
   ],
 
   /** @const */

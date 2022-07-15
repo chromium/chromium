@@ -351,7 +351,7 @@ export class Panel extends PanelInterface {
         'actions': actionsMenu,
 
         'braille': null,
-        'developer': null
+        'developer': null,
       };
 
       // TODO(accessibility): Commands should be based off of CommandStore and
@@ -1232,7 +1232,7 @@ Panel.ACTION_TO_MSG_ID = {
   increment: 'action_increment_description',
   scrollBackward: 'action_scroll_backward_description',
   scrollForward: 'action_scroll_forward_description',
-  showContextMenu: 'show_context_menu'
+  showContextMenu: 'show_context_menu',
 };
 
 

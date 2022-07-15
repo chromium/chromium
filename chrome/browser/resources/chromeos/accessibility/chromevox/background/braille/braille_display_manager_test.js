@@ -5,7 +5,7 @@
 // Include test fixture.
 GEN_INCLUDE([
   '../../testing/chromevox_next_e2e_test_base.js',
-  '../../testing/fake_objects.js'
+  '../../testing/fake_objects.js',
 ]);
 
 /**
@@ -51,7 +51,7 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
     this.displayState = {
       available: true,
       textRowCount: this.DISPLAY_ROW_SIZE,
-      textColumnCount: this.DISPLAY_COLUMN_SIZE
+      textColumnCount: this.DISPLAY_COLUMN_SIZE,
     };
   }
 
@@ -149,7 +149,7 @@ FakeTranslator.prototype = {
       }
     }
     callback(buf.buffer, textToBraille, brailleToText);
-  }
+  },
 };
 
 /** @extends {BrailleTranslatorManager} */
@@ -173,7 +173,7 @@ FakeTranslatorManager.prototype = {
 
   getExpandingTranslator() {
     return this.translator;
-  }
+  },
 };
 
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
@@ -336,8 +336,13 @@ AX_TEST_F(
       const translated = '1234456';
       const mapping = [0, 9, 10, 11, 12, 13, 14];
       const expected = [
-        ['knowledge', '1'], ['h', '2'], ['a', '3'], ['p', '4'], ['p', '4'],
-        ['y', '5'], ['ch', '6']
+        ['knowledge', '1'],
+        ['h', '2'],
+        ['a', '3'],
+        ['p', '4'],
+        ['p', '4'],
+        ['y', '5'],
+        ['ch', '6'],
       ];
       const offsets = {brailleOffset: 0, textOffset: 0};
 
@@ -355,8 +360,14 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'RandB_Random', function() {
   const translated = '1X23X45678';
   const mapping = [0, 9, 9, 10, 11, 11, 12, 13, 14, 15];
   const expected = [
-    ['knowledge', '1'], ['I', 'X2'], ['s', '3'], ['P', 'X4'], ['o', '5'],
-    ['w', '6'], ['e', '7'], ['r', '8']
+    ['knowledge', '1'],
+    ['I', 'X2'],
+    ['s', '3'],
+    ['P', 'X4'],
+    ['o', '5'],
+    ['w', '6'],
+    ['e', '7'],
+    ['r', '8'],
   ];
   const offsets = {brailleOffset: 0, textOffset: 0};
 

@@ -39,7 +39,7 @@ class SettingZippy extends Polymer.Element {
       nativeIconLabel: {
         type: String,
         value: null,
-      }
+      },
     };
   }
 

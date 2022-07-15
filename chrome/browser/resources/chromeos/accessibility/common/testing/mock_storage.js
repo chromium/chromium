@@ -43,7 +43,7 @@ const MockStorage = {
     remove: key => {
       delete MockStorage.local_[key];
       MockStorage.callOnChangedListeners(this.local_);
-    }
+    },
   },
 
   sync: {
@@ -74,7 +74,7 @@ const MockStorage = {
     remove: key => {
       delete MockStorage.sync_[key];
       MockStorage.callOnChangedListeners(this.sync_);
-    }
+    },
   },
 
   onChanged: {
@@ -111,5 +111,5 @@ const MockStorage = {
     MockStorage.local_ = {};
     MockStorage.sync_ = {};
     MockStorage.callbacks_ = [];
-  }
+  },
 };

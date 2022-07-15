@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE([
-  'accessibility_test_base.js', 'assert_additions.js', 'callback_helper.js',
-  'common.js', 'doc_utils.js'
+  'accessibility_test_base.js',
+  'assert_additions.js',
+  'callback_helper.js',
+  'common.js',
+  'doc_utils.js',
 ]);
 
 /**

@@ -175,7 +175,7 @@ LibLouis.FormType = {
   ITALIC: 1,
   UNDERLINE: 2,
   BOLD: 4,
-  COMPUTER_BRAILLE: 8
+  COMPUTER_BRAILLE: 8,
 };
 
 
@@ -229,7 +229,7 @@ LibLouis.Translator = class {
     const message = {
       'table_names': this.tableNames_,
       text,
-      form_type_map: formTypeMap
+      form_type_map: formTypeMap,
     };
     this.instance_.rpc_('Translate', message, reply => {
       let cells = null;
@@ -271,7 +271,7 @@ LibLouis.Translator = class {
     }
     const message = {
       'table_names': this.tableNames_,
-      'cells': LibLouis.Translator.encodeHexString_(cells)
+      'cells': LibLouis.Translator.encodeHexString_(cells),
     };
     this.instance_.rpc_('BackTranslate', message, reply => {
       if (!reply['success'] || !goog.isString(reply['text'])) {

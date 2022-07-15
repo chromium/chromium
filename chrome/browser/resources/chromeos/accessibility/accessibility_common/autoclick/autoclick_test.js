@@ -99,7 +99,7 @@ AX_TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
       '</div></div>');
   const node = root.find({
     role: RoleType.STATIC_TEXT,
-    attributes: {name: 'cats rock! this text wraps and overflows!'}
+    attributes: {name: 'cats rock! this text wraps and overflows!'},
   });
   await new Promise(resolve => {
     this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(

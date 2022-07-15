@@ -34,7 +34,7 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('shareNetworkAllowEnable');
-      }
+      },
     },
 
     /** @private */
@@ -42,7 +42,7 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('shareNetworkDefault');
-      }
+      },
     },
 
     /**

@@ -115,7 +115,7 @@ Polymer({
 
     const parentAccessResult = await Promise.race([
       this.server.whenParentAccessResult(),
-      this.server.whenInitializationError()
+      this.server.whenInitializationError(),
     ]);
 
     // Notify ParentAccessUIHandler that we received a result.

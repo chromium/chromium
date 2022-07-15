@@ -42,7 +42,7 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('enableBluetoothRevamp');
-      }
+      },
     },
 
     /**

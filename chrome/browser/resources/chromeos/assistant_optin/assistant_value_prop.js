@@ -63,7 +63,7 @@ class AssistantValueProp extends AssistantValuePropBase {
         type: String,
         value: function() {
           return this.urlTemplate_.replace('$', 'en_us');
-        }
+        },
       },
 
       /**

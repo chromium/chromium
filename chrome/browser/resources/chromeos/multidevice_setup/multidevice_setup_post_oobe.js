@@ -127,8 +127,9 @@ Polymer({
     }
 
     chrome.send('metricsHandler:recordInHistogram', [
-      'MultiDevice.PostOOBESetupFlow.PageShown', pageNameValue,
-      PageNameValue.MAX_VALUE
+      'MultiDevice.PostOOBESetupFlow.PageShown',
+      pageNameValue,
+      PageNameValue.MAX_VALUE,
     ]);
   },
 
@@ -169,5 +170,5 @@ Polymer({
     }
 
     return this.i18n(text);
-  }
+  },
 });

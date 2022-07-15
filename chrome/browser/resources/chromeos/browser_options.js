@@ -24,7 +24,7 @@ cr.define('options', function() {
     initializePage() {
       chrome.bluetoothPrivate.onPairing.addListener(
           BluetoothPairing.onBluetoothPairingEvent);
-    }
+    },
   };
 
   // Export

@@ -150,5 +150,5 @@ export const MENU_TEXT_COLOR_DARK = '#333';
  */
 export const UnitLabelAlign = {
   LEFT: 0,
-  RIGHT: 1
+  RIGHT: 1,
 };

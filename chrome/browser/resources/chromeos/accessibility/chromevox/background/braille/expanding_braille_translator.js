@@ -80,7 +80,7 @@ export class ExpandingBrailleTranslator {
         end: pos,
         cells,
         textToBraille: [],
-        brailleToText: new Array(cells.byteLength)
+        brailleToText: new Array(cells.byteLength),
       };
       for (let i = 0; i < cells.byteLength; ++i) {
         chunk.brailleToText[i] = 0;
@@ -314,7 +314,7 @@ ExpandingBrailleTranslator.ExpansionType = {
    * the user is editing a text field where it doesn't make sense to use
    * contracted braille (such as a url or email address).
    */
-  ALL: 2
+  ALL: 2,
 };
 
 

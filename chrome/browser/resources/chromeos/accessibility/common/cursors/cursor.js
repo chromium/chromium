@@ -44,7 +44,7 @@ export const CursorUnit = {
    * A node or in line textbox that immediately precedes or follows a visual
    *     line break.
    */
-  LINE: 'line'
+  LINE: 'line',
 };
 
 /**
@@ -62,7 +62,7 @@ export const CursorMovement = {
    * Move to the beginning or end of the current cursor. Only supports
    * Unit.CHARACTER and Unit.WORD
    */
-  SYNC: 'sync'
+  SYNC: 'sync',
 };
 
 /**

@@ -65,7 +65,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
       chrome.runtime.sendMessage({
         target: 'LearnMode',
         action: 'onKeyDown',
-        args: [this.makeMockKeyEvent(evt)]
+        args: [this.makeMockKeyEvent(evt)],
       });
     };
   }
@@ -75,7 +75,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
       chrome.runtime.sendMessage({
         target: 'LearnMode',
         action: 'onKeyUp',
-        args: [this.makeMockKeyEvent(evt)]
+        args: [this.makeMockKeyEvent(evt)],
       });
     };
   }
@@ -85,7 +85,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
       chrome.runtime.sendMessage({
         target: 'LearnMode',
         action: 'onAccessibilityGesture',
-        args: [gesture]
+        args: [gesture],
       });
     };
   }

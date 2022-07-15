@@ -102,7 +102,7 @@ const MockTtsApi = {
   enqueueAudioData(audio, timeInfo, lastData) {
     const response = {'data': {audio, timeInfo, lastData}};
     this.queuedResults_.push(response);
-  }
+  },
 };
 
 /**

@@ -322,7 +322,7 @@ Spannable = class {
         const spanObj = {
           type: serializeInfo.name,
           start: span.start,
-          end: span.end
+          end: span.end,
         };
         if (serializeInfo.toJson) {
           spanObj.value = serializeInfo.toJson.apply(span.value);

@@ -321,7 +321,7 @@ AbstractTts.PUNCTUATION_ECHOES = [
     name: 'none',
     msg: 'no_punctuation',
     regexp: /[-$#"()*;:<>\n\\\/+='~`@_]/g,
-    clear: true
+    clear: true,
   },
 
   // Punctuation echoed for the 'some' option.
@@ -329,7 +329,7 @@ AbstractTts.PUNCTUATION_ECHOES = [
     name: 'some',
     msg: 'some_punctuation',
     regexp: /[$#"*<>\\\/\{\}+=~`%\u2022\u25e6\u25a0]/g,
-    clear: false
+    clear: false,
   },
 
   // Punctuation echoed for the 'all' option.
@@ -337,8 +337,8 @@ AbstractTts.PUNCTUATION_ECHOES = [
     name: 'all',
     msg: 'all_punctuation',
     regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g,
-    clear: false
-  }
+    clear: false,
+  },
 ];
 
 /** TTS pause property. @type {string} */
@@ -353,7 +353,7 @@ AbstractTts.PERSONALITY_ANNOTATION = {
   'relativePitch': -0.25,
   // TODO:(rshearer) Added this color change for I/O presentation.
   'color': 'yellow',
-  'punctuationEcho': 'none'
+  'punctuationEcho': 'none',
 };
 
 
@@ -363,7 +363,7 @@ AbstractTts.PERSONALITY_ANNOTATION = {
  * @type {Object}
  */
 AbstractTts.PERSONALITY_ANNOUNCEMENT = {
-  'punctuationEcho': 'none'
+  'punctuationEcho': 'none',
 };
 
 /**
@@ -373,7 +373,7 @@ AbstractTts.PERSONALITY_ANNOUNCEMENT = {
  */
 AbstractTts.PERSONALITY_SYSTEM_ALERT = {
   'punctuationEcho': 'none',
-  'doNotInterrupt': true
+  'doNotInterrupt': true,
 };
 
 /**
@@ -382,7 +382,7 @@ AbstractTts.PERSONALITY_SYSTEM_ALERT = {
  */
 AbstractTts.PERSONALITY_ASIDE = {
   'relativePitch': -0.1,
-  'color': '#669'
+  'color': '#669',
 };
 
 
@@ -391,7 +391,7 @@ AbstractTts.PERSONALITY_ASIDE = {
  * @type {Object}
  */
 AbstractTts.PERSONALITY_CAPITAL = {
-  'relativePitch': 0.2
+  'relativePitch': 0.2,
 };
 
 
@@ -401,7 +401,7 @@ AbstractTts.PERSONALITY_CAPITAL = {
  */
 AbstractTts.PERSONALITY_DELETED = {
   'punctuationEcho': 'none',
-  'relativePitch': -0.6
+  'relativePitch': -0.6,
 };
 
 
@@ -412,7 +412,7 @@ AbstractTts.PERSONALITY_DELETED = {
 AbstractTts.PERSONALITY_QUOTE = {
   'relativePitch': 0.1,
   'color': '#b6b',
-  'fontWeight': 'bold'
+  'fontWeight': 'bold',
 };
 
 
@@ -423,7 +423,7 @@ AbstractTts.PERSONALITY_QUOTE = {
 AbstractTts.PERSONALITY_STRONG = {
   'relativePitch': 0.1,
   'color': '#b66',
-  'fontWeight': 'bold'
+  'fontWeight': 'bold',
 };
 
 
@@ -435,7 +435,7 @@ AbstractTts.PERSONALITY_EMPHASIS = {
   'relativeVolume': 0.1,
   'relativeRate': -0.1,
   'color': '#6bb',
-  'fontWeight': 'bold'
+  'fontWeight': 'bold',
 };
 
 
@@ -491,7 +491,7 @@ AbstractTts.CHARACTER_DICTIONARY = {
   '\\': 'backslash',
   '\u2022': 'bullet',
   '\u25e6': 'white_bullet',
-  '\u25a0': 'square_bullet'
+  '\u25a0': 'square_bullet',
 };
 
 
@@ -552,7 +552,7 @@ AbstractTts.SUBSTITUTION_DICTIONARY = {
   '\u25c4': 'left pointer',
   '\u25c5': 'left pointer',
   '\uf8ff': 'apple',
-  '£': 'pound sterling'
+  '£': 'pound sterling',
 };
 
 

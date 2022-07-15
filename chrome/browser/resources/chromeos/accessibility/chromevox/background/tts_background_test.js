@@ -98,7 +98,7 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
     {lang: 'zh-CN', voiceName: 'Chinese'},
     {lang: 'zh-TW', voiceName: 'Chinese (Taiwan)'},
     {lang: 'es', voiceName: 'Spanish'},
-    {lang: 'en-US', voiceName: 'U.S. English'}
+    {lang: 'en-US', voiceName: 'U.S. English'},
   ];
 
   chrome.tts.getVoices = function(callback) {
@@ -131,7 +131,7 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
         voices[3].lang = 'en';
       },
       testVoice: 'U.S. English',
-      expectedVoice: 'U.S. English'
+      expectedVoice: 'U.S. English',
     },
 
     {
@@ -140,7 +140,7 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
         voices[3].voiceName = 'French';
       },
       testVoice: '',
-      expectedVoice: constants.SYSTEM_VOICE
+      expectedVoice: constants.SYSTEM_VOICE,
     },
 
     {testVoice: 'French', expectedVoice: 'French'},
@@ -165,7 +165,7 @@ TEST_F(
             ++endCalls;
             assertEquals(speakCalls, endCalls);
             assertEquals(endCalls, startCalls);
-          })
+          }),
         });
       };
 
@@ -438,7 +438,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   this.expectUtteranceQueueIsLike([
     {textString: 'Hi', queueMode: QueueMode.FLUSH},
     {textString: 'there.', queueMode: QueueMode.QUEUE},
-    {textString: 'How are you?', queueMode: QueueMode.QUEUE}
+    {textString: 'How are you?', queueMode: QueueMode.QUEUE},
   ]);
 
   // Interject a single utterance now.
@@ -456,14 +456,14 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
     {textString: 'Sorry; busy!', queueMode: QueueMode.INTERJECT},
     {textString: 'Hi', queueMode: QueueMode.FLUSH},
     {textString: 'there.', queueMode: QueueMode.QUEUE},
-    {textString: 'How are you?', queueMode: QueueMode.QUEUE}
+    {textString: 'How are you?', queueMode: QueueMode.QUEUE},
   ]);
 
   // Try interjecting again. Notice it interrupts the previous interjection.
   tts.speak('Actually, not busy after all!', QueueMode.INTERJECT, {});
   this.expectUtteranceQueueIsLike([{
     textString: 'Actually, not busy after all!',
-    queueMode: QueueMode.INTERJECT
+    queueMode: QueueMode.INTERJECT,
   }]);
 
   // Before the end of the current callstack, simulated by calling the callback
@@ -474,10 +474,10 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   this.expectUtteranceQueueIsLike([
     {
       textString: 'Actually, not busy after all!',
-      queueMode: QueueMode.INTERJECT
+      queueMode: QueueMode.INTERJECT,
     },
     {textString: 'I am good.', queueMode: QueueMode.QUEUE},
-    {textString: 'How about you?', queueMode: QueueMode.QUEUE}
+    {textString: 'How about you?', queueMode: QueueMode.QUEUE},
   ]);
 
   // The above call should have resulted in a setTimeout; call it.
@@ -489,13 +489,13 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   this.expectUtteranceQueueIsLike([
     {
       textString: 'Actually, not busy after all!',
-      queueMode: QueueMode.INTERJECT
+      queueMode: QueueMode.INTERJECT,
     },
     {textString: 'I am good.', queueMode: QueueMode.INTERJECT},
     {textString: 'How about you?', queueMode: QueueMode.INTERJECT},
     {textString: 'Hi', queueMode: QueueMode.FLUSH},
     {textString: 'there.', queueMode: QueueMode.QUEUE},
-    {textString: 'How are you?', queueMode: QueueMode.QUEUE}
+    {textString: 'How are you?', queueMode: QueueMode.QUEUE},
   ]);
 
   // Interject again. Notice all previous interjections get cancelled again.
@@ -513,7 +513,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
     {textString: 'Sorry! Gotta go!', queueMode: QueueMode.INTERJECT},
     {textString: 'Hi', queueMode: QueueMode.FLUSH},
     {textString: 'there.', queueMode: QueueMode.QUEUE},
-    {textString: 'How are you?', queueMode: QueueMode.QUEUE}
+    {textString: 'How are you?', queueMode: QueueMode.QUEUE},
   ]);
 });
 
@@ -531,7 +531,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   tts.speak('world.', QueueMode.QUEUE, {});
   this.expectUtteranceQueueIsLike([
     {textString: 'Hello', queueMode: QueueMode.FLUSH},
-    {textString: 'world.', queueMode: QueueMode.QUEUE}
+    {textString: 'world.', queueMode: QueueMode.QUEUE},
   ]);
 
   // Toggle speech off.

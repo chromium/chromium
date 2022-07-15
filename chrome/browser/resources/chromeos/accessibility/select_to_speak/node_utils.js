@@ -239,7 +239,7 @@ export class NodeUtils {
 
     return {
       node: automationPosition.node,
-      offset: automationPosition.textOffset
+      offset: automationPosition.textOffset,
     };
   }
 
@@ -272,7 +272,7 @@ export class NodeUtils {
           node: /** @type {!AutomationNode} */ (child),
           offset: isStart ?
               0 :
-              NodeUtils.nameLength(/** @type {!AutomationNode} */ (child))
+              NodeUtils.nameLength(/** @type {!AutomationNode} */ (child)),
         };
       } else if (isStart && !NodeUtils.isTextField(parent)) {
         // We are off the edge of this parent. Go to the next leaf node that is
@@ -293,7 +293,7 @@ export class NodeUtils {
         if (previousNode) {
           return {
             node: previousNode,
-            offset: NodeUtils.nameLength(previousNode)
+            offset: NodeUtils.nameLength(previousNode),
           };
         }
       }
@@ -353,7 +353,7 @@ export class NodeUtils {
           if (leafNode) {
             return {
               node: leafNode,
-              offset: isStart ? 0 : NodeUtils.nameLength(leafNode)
+              offset: isStart ? 0 : NodeUtils.nameLength(leafNode),
             };
           }
         }
@@ -370,7 +370,7 @@ export class NodeUtils {
       if (leafNode) {
         return {
           node: leafNode,
-          offset: isStart ? 0 : NodeUtils.nameLength(leafNode)
+          offset: isStart ? 0 : NodeUtils.nameLength(leafNode),
         };
       }
     }

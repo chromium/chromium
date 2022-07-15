@@ -21,7 +21,7 @@ export const OutputContextOrder = {
   LAST: 'last',
 
   // Ancestor context is placed both before and after node output.
-  FIRST_AND_LAST: 'firstAndLast'
+  FIRST_AND_LAST: 'firstAndLast',
 };
 
 /**
@@ -123,5 +123,5 @@ export class OutputNodeSpan {
  * @enum {string}
  */
 export const OutputEventType = {
-  NAVIGATE: 'navigate'
+  NAVIGATE: 'navigate',
 };

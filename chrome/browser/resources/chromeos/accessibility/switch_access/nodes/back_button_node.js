@@ -155,7 +155,7 @@ export class BackButtonNode extends SAChildNode {
     SwitchAccess.findNodeMatching(
         {
           role: chrome.automation.RoleType.BUTTON,
-          attributes: {className: 'SwitchAccessBackButtonView'}
+          attributes: {className: 'SwitchAccessBackButtonView'},
         },
         BackButtonNode.saveAutomationNode_);
   }

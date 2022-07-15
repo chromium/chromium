@@ -43,7 +43,7 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: Object,
         // Should be in sync with the C++ enum (ash::quick_start::Shape).
         value: {CIRCLE: 0, DIAMOND: 1, TRIANGLE: 2, SQUARE: 3},
-        readOnly: true
+        readOnly: true,
       },
     };
   }

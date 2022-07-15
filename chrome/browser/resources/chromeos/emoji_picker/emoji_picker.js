@@ -64,7 +64,7 @@ export class EmojiPicker extends PolymerElement {
         type: Boolean,
         value: false,
         computed: 'isTextSubcategoryBarEnabled(v2Enabled, category)',
-        reflectToAttribute: true
+        reflectToAttribute: true,
       },
       /** @private {boolean} */
       v2Enabled: {type: Boolean, value: false, reflectToAttribute: true},
@@ -205,16 +205,15 @@ export class EmojiPicker extends PolymerElement {
     // Create a flat list of urls (with details) that need to be fetched and
     // rendered sequentially.
     const dataUrls = categoryDataUrls.flatMap(
-      item =>
-        // Create url details of the category.
+        item =>
+            // Create url details of the category.
         item.urls.map(
-          (url, index) => ({
+            (url, index) => ({
               'category': item.category,
               'url': url,
-              'categoryLastPartition':
-                  index === item.urls.length - 1,
-          })
-        )
+              'categoryLastPartition': index === item.urls.length - 1,
+            }),
+            ),
     );
 
     // Update feature list, incognito state and fetch data of first url.
@@ -252,21 +251,26 @@ export class EmojiPicker extends PolymerElement {
     // Create a chain of promises for fetching and rendering data of
     // different categories in the correct order.
     remainingData.forEach(
-      (dataUrl, index) => {
-        // Fetch the url only after the previous url is fetched.
-        prevFetchPromise = prevFetchPromise.then(() =>
-          this.fetchOrderingData(dataUrl.url));
-        // Update category data after the data is fetched and the previous
-        // category data update/rendering completed successfully.
-        prevRenderPromise = Promise.all(
-          [prevRenderPromise, prevFetchPromise]
-        ).then((values) => values[1]).then((data) =>
-          this.updateCategoryData(
-            data, dataUrl.category, dataUrl.categoryLastPartition,
-            index === remainingData.length - 1
-          )
-        );
-      }
+        (dataUrl, index) => {
+          // Fetch the url only after the previous url is fetched.
+          prevFetchPromise =
+              prevFetchPromise.then(() => this.fetchOrderingData(dataUrl.url));
+          // Update category data after the data is fetched and the previous
+          // category data update/rendering completed successfully.
+          prevRenderPromise = Promise
+                                  .all(
+                                      [prevRenderPromise, prevFetchPromise],
+                                      )
+                                  .then((values) => values[1])
+                                  .then(
+                                      (data) => this.updateCategoryData(
+                                          data,
+                                          dataUrl.category,
+                                          dataUrl.categoryLastPartition,
+                                          index === remainingData.length - 1,
+                                          ),
+                                  );
+        },
     );
   }
 
@@ -332,9 +336,9 @@ export class EmojiPicker extends PolymerElement {
       const tabIndex = baseIndex + index;
       const tabCategory = V2_SUBCATEGORY_TABS[tabIndex].category;
       categoriesGroupElements.push(
-        this.createEmojiGroupElement(
-          emojiGroup.emoji, this.getEmojiGroupPreference(category),
-          false, tabIndex)
+          this.createEmojiGroupElement(
+              emojiGroup.emoji, this.getEmojiGroupPreference(category), false,
+              tabIndex),
       );
 
       // TODO(b/233271528): Remove assert after removing metadata.
@@ -366,15 +370,18 @@ export class EmojiPicker extends PolymerElement {
         V2_SUBCATEGORY_TABS[numEmojiGroups].category !== CategoryEnum.EMOJI;
 
       // Ensure hard-coded tabs match the loaded data.
-      console.assert(dataMatchSubcategoryTabs,
-        `The Number of tabs "${V2_SUBCATEGORY_TABS.length}" does not match ` +
-        ` the number of loaded groups "${numEmojiGroups}".`
+      console.assert(
+          dataMatchSubcategoryTabs,
+          `The Number of tabs "${V2_SUBCATEGORY_TABS.length}" does not match ` +
+              ` the number of loaded groups "${numEmojiGroups}".`,
       );
 
-      afterNextRender(this, () => {
-          this.dispatchEvent(events.createCustomEvent(
-            events.EMOJI_PICKER_READY, {'v2Enabled': this.v2Enabled}));
-        }
+      afterNextRender(
+          this,
+          () => {
+            this.dispatchEvent(events.createCustomEvent(
+                events.EMOJI_PICKER_READY, {'v2Enabled': this.v2Enabled}));
+          },
       );
     }
   }
@@ -730,8 +737,8 @@ export class EmojiPicker extends PolymerElement {
    */
   updateHistoryTabDisabledProperty() {
     this.set(
-      ['emojiGroupTabs', 0, 'disabled'],
-      this.isCategoryHistoryEmpty(this.category)
+        ['emojiGroupTabs', 0, 'disabled'],
+        this.isCategoryHistoryEmpty(this.category),
     );
   }
 
@@ -748,10 +755,10 @@ export class EmojiPicker extends PolymerElement {
     }
 
     return this.categoriesHistory[category].data.history.map(
-      emoji => ({
-        base: {string: emoji.base, name: emoji.name, keywords: []},
-        alternates: emoji.alternates
-    }));
+        emoji => ({
+          base: {string: emoji.base, name: emoji.name, keywords: []},
+          alternates: emoji.alternates,
+        }));
   }
 
   /**
@@ -1062,7 +1069,7 @@ export class EmojiPicker extends PolymerElement {
     return CATEGORY_METADATA.map(data => ({
                                    name: data.name,
                                    icon: data.icon,
-                                   active: data.name === category
+                                   active: data.name === category,
                                  }));
   }
 }

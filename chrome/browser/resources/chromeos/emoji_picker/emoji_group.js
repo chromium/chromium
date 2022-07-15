@@ -13,7 +13,7 @@ import {CategoryEnum, EmojiVariants} from './types.js';
  */
 export const EmojiGroupLayoutType = {
   GRID_LAYOUT: 'grid-layout',
-  FLEX_LAYOUT: 'flex-layout'
+  FLEX_LAYOUT: 'flex-layout',
 };
 
 const DEFAULT_CATEGORY_LAYOUTS = {
@@ -44,12 +44,12 @@ export class EmojiGroupComponent extends PolymerElement {
       category: {
         type: String,
         value: CategoryEnum.EMOJI,
-        readonly: true
+        readonly: true,
       },
       /** @type {?string} */
       layoutType: {
         type: String,
-        value: null
+        value: null,
       },
       /** @type {boolean} */
       showClearRecents: {type: Boolean, value: false},

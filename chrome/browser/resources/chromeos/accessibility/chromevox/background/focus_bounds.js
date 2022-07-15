@@ -21,9 +21,9 @@ FocusBounds = {
     chrome.accessibilityPrivate.setFocusRings([{
       rects: bounds,
       type: chrome.accessibilityPrivate.FocusType.GLOW,
-      color: constants.FOCUS_COLOR
+      color: constants.FOCUS_COLOR,
     }]);
-  }
+  },
 };
 
 /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */

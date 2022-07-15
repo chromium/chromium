@@ -176,7 +176,7 @@ class GaiaDialog extends GaiaDialogBase {
        */
       isPopUpOverlayVisible_: {
         type: Boolean,
-        computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)'
+        computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)',
       },
 
       /**
@@ -193,7 +193,7 @@ class GaiaDialog extends GaiaDialogBase {
         type: Boolean,
         computed: 'isSamlBackButtonHidden(isDefaultSsoProvider, isClosable,' +
             'flagRedirectToDefaultIdPEnabled_)',
-      }
+      },
     };
   }
 

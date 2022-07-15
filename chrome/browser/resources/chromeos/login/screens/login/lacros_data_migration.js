@@ -16,8 +16,10 @@
  */
 const LacrosDataMigrationScreenElementBase = Polymer.mixinBehaviors(
     [
-      OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior,
-      MultiStepBehavior
+      OobeDialogHostBehavior,
+      OobeI18nBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
     ],
     Polymer.Element);
 
@@ -44,7 +46,7 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
       canSkip_: {type: Boolean},
       lowBatteryStatus_: {type: Boolean},
       requiredSizeStr_: {type: String},
-      showGotoFiles_: {type: Boolean}
+      showGotoFiles_: {type: Boolean},
     };
   }
 
@@ -61,8 +63,10 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
 
   get EXTERNAL_API() {
     return [
-      'setProgressValue', 'showSkipButton', 'setLowBatteryStatus',
-      'setFailureStatus'
+      'setProgressValue',
+      'showSkipButton',
+      'setLowBatteryStatus',
+      'setFailureStatus',
     ];
   }
 

@@ -355,7 +355,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
       css: {files: ['playstore.css']},
       js: {files: ['playstore.js']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
 
     var overlayUrl = this.$.arcTosOverlayWebview;
@@ -363,7 +363,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
       css: {files: ['overlay.css']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
   }
 
@@ -479,7 +479,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       name: 'preProcess',
       matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
       js: {code: scriptSetParameters},
-      run_at: 'document_start'
+      run_at: 'document_start',
     }]);
 
     // Try to use currently loaded document first.
@@ -529,7 +529,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
       css: {files: ['playstore.css']},
       js: {files: ['playstore.js']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
   }
 
@@ -554,8 +554,10 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
 
     this.enableButtons_(false);
     chrome.send('arcTermsOfServiceAccept', [
-      this.backupRestore, this.locationService, this.reviewSettings,
-      this.tosContent_
+      this.backupRestore,
+      this.locationService,
+      this.reviewSettings,
+      this.tosContent_,
     ]);
   }
 

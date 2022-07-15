@@ -301,7 +301,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EscapeTest', async function() {
         tutorial.onKeyDown({
           key: 'Escape',
           preventDefault: () => {},
-          stopPropagation: () => {}
+          stopPropagation: () => {},
         });
       })
       .expectSpeech('Some web content')

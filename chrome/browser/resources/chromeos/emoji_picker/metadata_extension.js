@@ -34,35 +34,35 @@ function _MakeGroupTabs(categories, categoryBaseEmojis) {
   for (const category of categories) {
     // Add recently used tab.
     groupTabs.push(
-      {
-        name: RECENTLY_USED_NAME,
-        icon: 'emoji_picker:schedule',
-        category: category,
-        groupId: `${category}-history`,
-        active: false,
-        disabled: true,
-        pagination: 1,
-      }
+        {
+          name: RECENTLY_USED_NAME,
+          icon: 'emoji_picker:schedule',
+          category: category,
+          groupId: `${category}-history`,
+          active: false,
+          disabled: true,
+          pagination: 1,
+        },
     );
     let pagination = 1;
     categoryBaseEmojis[category].forEach(
-      tab => {
-        // Update pagination if provided.
-        pagination = tab.pagination || pagination;
-        // Add new tab.
-        groupTabs.push(
-          {
-            name: tab.name,
-            icon: tab.icon,
-            category: category,
-            pagination: pagination,
-            groupId: groupId.toString(),
-            active: false,
-            disabled: false,
-          }
-        );
-        groupId ++;
-      }
+        tab => {
+          // Update pagination if provided.
+          pagination = tab.pagination || pagination;
+          // Add new tab.
+          groupTabs.push(
+              {
+                name: tab.name,
+                icon: tab.icon,
+                category: category,
+                pagination: pagination,
+                groupId: groupId.toString(),
+                active: false,
+                disabled: false,
+              },
+          );
+          groupId++;
+        },
     );
   }
   return groupTabs;
@@ -127,29 +127,29 @@ const CATEGORY_TABS = {
     },
   ],
   'emoticon': [
-    {name: 'Classic', pagination: 1,},
-    {name: 'Smiling',},
-    {name: 'Loving',},
-    {name: 'Hugging',},
-    {name: 'Flexing',},
-    {name: 'Animals', pagination: 2,},
-    {name: 'Surprising',},
-    {name: 'Dancing', },
-    {name: 'Shrugging',},
-    {name: 'Table Flipping', pagination: 3,},
-    {name: 'Disapproving',},
-    {name: 'Crying',},
-    {name: 'Worrying', pagination: 4,},
-    {name: 'Pointing',},
-    {name: 'Sparkling',},
+    {name: 'Classic', pagination: 1},
+    {name: 'Smiling'},
+    {name: 'Loving'},
+    {name: 'Hugging'},
+    {name: 'Flexing'},
+    {name: 'Animals', pagination: 2},
+    {name: 'Surprising'},
+    {name: 'Dancing'},
+    {name: 'Shrugging'},
+    {name: 'Table Flipping', pagination: 3},
+    {name: 'Disapproving'},
+    {name: 'Crying'},
+    {name: 'Worrying', pagination: 4},
+    {name: 'Pointing'},
+    {name: 'Sparkling'},
   ],
   'symbol': [
-    {name: 'Arrows', pagination: 1,},
-    {name: 'Bullet/Stars',},
-    {name: 'Currency',},
-    {name: 'Letterlike', pagination: 2,},
-    {name: 'Math',},
-    {name: 'Miscellaneous',},
+    {name: 'Arrows', pagination: 1},
+    {name: 'Bullet/Stars'},
+    {name: 'Currency'},
+    {name: 'Letterlike', pagination: 2},
+    {name: 'Math'},
+    {name: 'Miscellaneous'},
   ],
 };
 
@@ -165,9 +165,11 @@ export const V2_SUBCATEGORY_TABS = _MakeGroupTabs(
 
 // A mapping from each category to the index of their first tab.
 export const V2_TABS_CATEGORY_START_INDEX = Object.fromEntries(
-  new Map(V2_SUBCATEGORY_TABS.map(
-    (item, index) => [item.category, index]).reverse()
-  ).entries()
+    new Map(
+        V2_SUBCATEGORY_TABS.map((item, index) => [item.category, index])
+            .reverse(),
+        )
+        .entries(),
 );
 
 export const EMOJI_GROUP_TABS = _MakeGroupTabs(['emoji'], CATEGORY_TABS);

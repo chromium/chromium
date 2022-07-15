@@ -263,5 +263,5 @@ export class KeyboardRootNode extends BasicRootNode {
 
 BasicRootNode.builders.push({
   predicate: rootNode => rootNode.role === chrome.automation.RoleType.KEYBOARD,
-  builder: KeyboardRootNode.buildTree
+  builder: KeyboardRootNode.buildTree,
 });

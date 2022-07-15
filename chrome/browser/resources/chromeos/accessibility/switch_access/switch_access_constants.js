@@ -145,7 +145,7 @@ export const SAConstants = {
       PRIMARY: 'primary',
       // The ID for the ring showing a preview of the next focus, if the user
       // selects the current element.
-      PREVIEW: 'preview'
+      PREVIEW: 'preview',
     },
 
     /**

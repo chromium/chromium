@@ -99,7 +99,7 @@ class FingerprintSetup extends FingerprintSetupBase {
        */
       isChildAccount_: {
         type: Boolean,
-      }
+      },
     };
   }
 

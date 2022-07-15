@@ -276,7 +276,7 @@ function getTestNodeGroupWithOneNode() {
   const staticText = {
     sentenceStarts: [0, 7, 12],
     name: 'Hello. New. World.',
-    role: 'staticText'
+    role: 'staticText',
   };
   const node = {node: staticText, startChar: 0};
   return {nodes: [node], text: 'Hello. New. World.'};
@@ -286,14 +286,14 @@ function getTestNodeGroupWithMultiNodes() {
   const staticText1 = {
     name: 'Hello. New. ',
     role: 'staticText',
-    sentenceStarts: [0, 7]
+    sentenceStarts: [0, 7],
   };
   const node1 = {node: staticText1, startChar: 0};
 
   const staticText2 = {
     name: 'Beautiful. World.',
     role: 'staticText',
-    sentenceStarts: [0, 11]
+    sentenceStarts: [0, 11],
   };
   const node2 = {node: staticText2, startChar: 12};
 
@@ -307,7 +307,7 @@ function getTestNodeGroupWithSentenceSpanningAcrossMultiNodes() {
   const staticText2 = {
     name: ' world. New',
     role: 'staticText',
-    sentenceStarts: [8]
+    sentenceStarts: [8],
   };
   const node2 = {node: staticText2, startChar: 5};
 

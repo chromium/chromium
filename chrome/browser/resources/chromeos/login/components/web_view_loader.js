@@ -17,7 +17,7 @@
       '    e.textContent=el.textContent + "(" + el.href + ")";' +
       '  }' +
       '  el.parentNode.replaceChild(e,el);' +
-      '}'
+      '}',
 };
 
 const WEB_VIEW_FONTS_CSS = {
@@ -27,7 +27,7 @@ const WEB_VIEW_FONTS_CSS = {
         line-height: 20px !important;}
        body h2 {
          font-size: 15px !important;
-         line-height: 22px !important;}`
+         line-height: 22px !important;}`,
 };
 
 /**

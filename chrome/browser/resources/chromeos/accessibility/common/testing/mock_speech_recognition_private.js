@@ -60,7 +60,7 @@ class MockSpeechRecognitionPrivate {
         if (this.onStopListener_ === listener) {
           this.onStopListener_ = null;
         }
-      }
+      },
     };
 
     /**
@@ -76,7 +76,7 @@ class MockSpeechRecognitionPrivate {
         if (this.onResultListener_ === listener) {
           this.onResultListener_ = null;
         }
-      }
+      },
     };
 
     /**
@@ -92,7 +92,7 @@ class MockSpeechRecognitionPrivate {
         if (this.onErrorListener_ === listener) {
           this.onErrorListener_ = null;
         }
-      }
+      },
     };
   }
 
@@ -108,7 +108,7 @@ class MockSpeechRecognitionPrivate {
       // If speech recognition is already active when calling start(), the real
       // API will set chrome.runtime.lastError. Do the same for the mock API.
       chrome.runtime.lastError = {
-        message: 'Speech recognition already started'
+        message: 'Speech recognition already started',
       };
     }
 
@@ -136,7 +136,7 @@ class MockSpeechRecognitionPrivate {
       // If speech recognition is already inactive when calling stop(), the real
       // API will set chrome.runtime.lastError. Do the same for the mock API.
       chrome.runtime.lastError = {
-        message: 'Speech recognition already stopped'
+        message: 'Speech recognition already stopped',
       };
     }
 

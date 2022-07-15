@@ -79,7 +79,7 @@ Polymer({
       const syncDisabledBrowserTabsModel = {
         isTabSyncEnabled: false,
         browserTabOneMetadata: null,
-        browserTabTwoMetadata: null
+        browserTabTwoMetadata: null,
       };
       this.browserProxy_.setBrowserTabs(syncDisabledBrowserTabsModel);
       return;
@@ -88,7 +88,7 @@ Polymer({
     const browserTabsModel = {
       isTabSyncEnabled: this.isTabSyncEnabled_,
       browserTabOneMetadata: this.browserTabOneMetadata_,
-      browserTabTwoMetadata: this.browserTabTwoMetadata_
+      browserTabTwoMetadata: this.browserTabTwoMetadata_,
     };
     this.browserProxy_.setBrowserTabs(browserTabsModel);
   },

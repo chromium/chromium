@@ -92,7 +92,7 @@ ApiImplementation = class {
       'action': 'speak',
       'text': textString,
       queueMode,
-      properties
+      properties,
     };
 
     ContentExtensionBridge.send(message);

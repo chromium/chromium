@@ -241,7 +241,7 @@ export class PanelBackground {
       o.withString([
         node.name.substr(0, opt_start),
         node.name.substr(opt_start, opt_end - opt_start),
-        node.name.substr(opt_end)
+        node.name.substr(opt_end),
       ].join(', '));
       o.format('$role', node);
     } else {

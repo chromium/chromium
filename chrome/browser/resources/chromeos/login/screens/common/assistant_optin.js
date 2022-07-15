@@ -28,8 +28,11 @@ class AssistantOptin extends AssistantOptinBase {
 
   get EXTERNAL_API() {
     return [
-      'reloadContent', 'addSettingZippy', 'showNextScreen',
-      'onVoiceMatchUpdate', 'onValuePropUpdate'
+      'reloadContent',
+      'addSettingZippy',
+      'showNextScreen',
+      'onVoiceMatchUpdate',
+      'onValuePropUpdate',
     ];
   }
 

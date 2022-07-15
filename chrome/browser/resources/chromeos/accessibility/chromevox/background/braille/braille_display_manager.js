@@ -36,7 +36,7 @@ export class BrailleDisplayManager {
     this.displayState_ = {
       available: false,
       textRowCount: 0,
-      textColumnCount: 0
+      textColumnCount: 0,
     };
 
     /** @private {!ExpandingBrailleTranslator.ExpansionType} valueExpansion */
@@ -232,7 +232,7 @@ export class BrailleDisplayManager {
     this.realDisplayState_ = {
       available: newState.available,
       textRowCount: newState.textRowCount || 0,
-      textColumnCount: newState.textColumnCount || 0
+      textColumnCount: newState.textColumnCount || 0,
     };
     if (newState.available) {
       // Update the dimensions of the virtual braille captions display to those

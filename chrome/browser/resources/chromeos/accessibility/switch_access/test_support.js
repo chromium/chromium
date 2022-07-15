@@ -25,7 +25,7 @@
 
   const focusRingState = {
     'primary': {'role': '', 'name': ''},
-    'preview': {'role': '', 'name': ''}
+    'preview': {'role': '', 'name': ''},
   };
   let expectedType = '';
   let expectedRole = '';

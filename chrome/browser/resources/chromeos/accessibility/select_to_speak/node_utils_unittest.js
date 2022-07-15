@@ -34,14 +34,14 @@ AX_TEST_F(
       const invisibleNode1 = {
         root: {},
         parent: {role: ''},
-        state: {invisible: true}
+        state: {invisible: true},
       };
       // Currently nodes aren't actually marked 'invisible', so we need to
       // navigate up their tree.
       const invisibleNode2 = {
         root: {},
         parent: {role: 'window', state: {invisible: true}},
-        state: {}
+        state: {},
       };
       const invisibleNode3 = {root: {}, parent: invisibleNode2, state: {}};
       const invisibleNode4 = {root: {}, parent: invisibleNode3, state: {}};
@@ -58,7 +58,7 @@ AX_TEST_F(
       const normalNode1 = {
         root: {},
         parent: {role: 'window', state: {}},
-        state: {}
+        state: {},
       };
       const normalNode2 = {root: {}, parent: {normalNode1}, state: {}};
       assertEquals(
@@ -127,7 +127,7 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     state: {},
     role: 'rootWebArea',
     state: {},
-    location: {left: 0, top: 0, width: 600, height: 600}
+    location: {left: 0, top: 0, width: 600, height: 600},
   };
   const container1 = {
     root: rootNode,
@@ -135,14 +135,14 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     role: 'staticText',
     name: 'one two',
     state: {},
-    location: {left: 0, top: 0, width: 200, height: 200}
+    location: {left: 0, top: 0, width: 200, height: 200},
   };
   const container2 = {
     root: rootNode,
     parent: rootNode,
     state: {},
     role: 'genericContainer',
-    location: {left: 0, top: 0, width: 200, height: 200}
+    location: {left: 0, top: 0, width: 200, height: 200},
   };
   const node1 = {
     root: rootNode,
@@ -150,7 +150,7 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     name: 'one',
     role: 'inlineTextBox',
     state: {},
-    location: {left: 50, top: 0, width: 50, height: 50}
+    location: {left: 50, top: 0, width: 50, height: 50},
   };
   const node2 = {
     root: rootNode,
@@ -158,7 +158,7 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     name: 'two',
     role: 'inlineTextBox',
     state: {},
-    location: {left: 0, top: 50, width: 50, height: 50}
+    location: {left: 0, top: 50, width: 50, height: 50},
   };
   const node3 = {
     root: rootNode,
@@ -166,7 +166,7 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     value: 'text',
     role: 'textField',
     state: {},
-    location: {left: 0, top: 0, width: 25, height: 25}
+    location: {left: 0, top: 0, width: 25, height: 25},
   };
 
   // Set up relationships between nodes.
@@ -230,7 +230,7 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     parent: container2,
     name: 'four',
     state: {},
-    location: {left: 0, top: 50, width: 50, height: 50}
+    location: {left: 0, top: 50, width: 50, height: 50},
   };
   container2.firstChild = node4;
   assertTrue(NodeUtils.findAllMatching(rootNode, rect, result));
@@ -261,7 +261,7 @@ AX_TEST_F(
         root: {},
         state: {},
         role: 'rootWebArea',
-        location: {left: 0, top: 0, width: 600, height: 600}
+        location: {left: 0, top: 0, width: 600, height: 600},
       };
       const checkbox = {
         root: rootNode,
@@ -269,7 +269,7 @@ AX_TEST_F(
         role: 'checkBox',
         state: {},
         location: {left: 0, top: 0, width: 200, height: 200},
-        checked: 'true'
+        checked: 'true',
       };
       rootNode.children = [checkbox];
       rootNode.firstChild = checkbox;
@@ -304,7 +304,7 @@ AX_TEST_F(
         name: 'Hello, world',
         children: [child1, child2],
         role: 'staticText',
-        state: {}
+        state: {},
       };
       child1.parent = root;
       child2.parent = root;
@@ -345,7 +345,7 @@ AX_TEST_F(
         role: 'staticText',
         state: {},
         firstChild: child1,
-        lastChild: child3
+        lastChild: child3,
       };
       child1.parent = child4;
       child2.parent = child4;
@@ -361,7 +361,7 @@ AX_TEST_F(
         role: 'staticText',
         state: {},
         firstChild: child5,
-        lastChild: child6
+        lastChild: child6,
       };
       child5.parent = child7;
       child6.parent = child7;
@@ -372,7 +372,7 @@ AX_TEST_F(
         role: 'genericContainer',
         state: {},
         firstChild: child4,
-        lastChild: child7
+        lastChild: child7,
       };
       child4.parent = root;
       child7.parent = root;
@@ -408,30 +408,30 @@ AX_TEST_F(
       const gNode1 = {
         role: 'genericContainer',
         parent: svgRootNode,
-        unclippedLocation: {left: 300, top: 10, width: 100, height: 50}
+        unclippedLocation: {left: 300, top: 10, width: 100, height: 50},
       };
       const gNode2 = {
         role: 'genericContainer',
         parent: svgRootNode,
-        unclippedLocation: {left: 20, top: 10, width: 100, height: 50}
+        unclippedLocation: {left: 20, top: 10, width: 100, height: 50},
       };
       const textNode1 = {
         role: 'staticText',
         parent: gNode2,
         unclippedLocation: {left: 50, top: 10, width: 20, height: 50},
-        name: 'one'
+        name: 'one',
       };
       const textNode2 = {
         role: 'staticText',
         parent: gNode1,
         unclippedLocation: {left: 300, top: 10, width: 20, height: 50},
-        name: 'two'
+        name: 'two',
       };
       const textNode3 = {
         role: 'staticText',
         parent: gNode1,
         unclippedLocation: {left: 350, top: 10, width: 20, height: 50},
-        name: 'three'
+        name: 'three',
       };
 
       const nodes = [textNode3, textNode2, textNode1];
@@ -450,13 +450,13 @@ AX_TEST_F(
         role: 'staticText',
         parent: svg1RootNode,
         unclippedLocation: {left: 0, top: 10, width: 20, height: 50},
-        name: 'SVG 1 Node 1'
+        name: 'SVG 1 Node 1',
       };
       const svg1Node2 = {
         role: 'staticText',
         parent: svg1RootNode,
         unclippedLocation: {left: 50, top: 10, width: 20, height: 50},
-        name: 'SVG 1 Node 2'
+        name: 'SVG 1 Node 2',
       };
       const textNode2 = {role: 'staticText', name: 'Text Node 2'};
       const svg2RootNode = {role: 'svgRoot'};
@@ -464,19 +464,24 @@ AX_TEST_F(
         role: 'staticText',
         parent: svg2RootNode,
         unclippedLocation: {left: 300, top: 10, width: 20, height: 50},
-        name: 'SVG 2 Node 1'
+        name: 'SVG 2 Node 1',
       };
       const svg2Node2 = {
         role: 'staticText',
         parent: svg2RootNode,
         unclippedLocation: {left: 350, top: 10, width: 20, height: 50},
-        name: 'SVG 2 Node 2'
+        name: 'SVG 2 Node 2',
       };
       const textNode3 = {role: 'staticText', name: 'Text Node 3'};
 
       const nodes = [
-        textNode1, svg1Node2, svg1Node1, textNode2, svg2Node2, svg2Node1,
-        textNode3
+        textNode1,
+        svg1Node2,
+        svg1Node1,
+        textNode2,
+        svg2Node2,
+        svg2Node1,
+        textNode3,
       ];
       NodeUtils.sortSvgNodesByReadingOrder(nodes);
 

@@ -19,7 +19,7 @@ const PowerConsumerType = {
   CROSTINI: 2,
   ARC: 3,
   CHROME: 4,
-  SYSTEM: 5
+  SYSTEM: 5,
 };
 
 const devicePixelRatio = window.devicePixelRatio;
@@ -407,8 +407,17 @@ var invalidDataText = loadTimeData.getString('invalidData');
 var offlineText = loadTimeData.getString('offlineText');
 
 var plotColors = [
-  'Red', 'Blue', 'Green', 'Gold', 'CadetBlue', 'LightCoral', 'LightSlateGray',
-  'Peru', 'DarkRed', 'LawnGreen', 'Tan'
+  'Red',
+  'Blue',
+  'Green',
+  'Gold',
+  'CadetBlue',
+  'LightCoral',
+  'LightSlateGray',
+  'Peru',
+  'DarkRed',
+  'LawnGreen',
+  'Tan',
 ];
 
 /**
@@ -566,7 +575,7 @@ function showBatteryChargeData({powerSupplyData, systemResumedData}) {
   var chargePlot = [{
     name: loadTimeData.getString('batteryChargePercentageHeader'),
     color: 'Blue',
-    data: []
+    data: [],
   }];
   var dischargeRateTimeData = [];
   var dischargeRateAbsTime = [];
@@ -574,18 +583,18 @@ function showBatteryChargeData({powerSupplyData, systemResumedData}) {
     {
       name: loadTimeData.getString('dischargeRateLegendText'),
       color: 'Red',
-      data: []
+      data: [],
     },
     {
       name: loadTimeData.getString('movingAverageLegendText'),
       color: 'Green',
-      data: []
+      data: [],
     },
     {
       name: loadTimeData.getString('binnedAverageLegendText'),
       color: 'Blue',
-      data: []
-    }
+      data: [],
+    },
   ];
   var minDischargeRate = 1000;   // A high unrealistic number to begin with.
   var maxDischargeRate = -1000;  // A low unrealistic number to begin with.
@@ -638,7 +647,7 @@ function showBatteryChargeData({powerSupplyData, systemResumedData}) {
   var canvases = addCanvases(
       [
         loadTimeData.getString('batteryChargePercentageHeader'),
-        loadTimeData.getString('batteryDischargeRateHeader')
+        loadTimeData.getString('batteryDischargeRateHeader'),
       ],
       plotsDiv);
 

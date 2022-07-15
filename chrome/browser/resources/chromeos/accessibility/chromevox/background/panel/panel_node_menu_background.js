@@ -68,7 +68,7 @@ export class PanelNodeMenuBackground {
     this.walker_ = new AutomationTreeWalker(root, constants.Dir.FORWARD, {
       visit(node) {
         return !AutomationPredicate.shouldIgnoreNode(node);
-      }
+      },
     });
     this.nodeCount_ = 0;
     this.findMoreNodes_();

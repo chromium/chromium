@@ -68,7 +68,7 @@ Polymer({
             type: 'DedicatedCharger',
             port: 0,
             connected: false,
-            power: 'high'
+            power: 'high',
           },
           {
             id: '1',
@@ -76,7 +76,7 @@ Polymer({
             type: 'DedicatedCharger',
             port: 0,
             connected: false,
-            power: 'high'
+            power: 'high',
           },
           {
             id: '2',
@@ -85,7 +85,7 @@ Polymer({
             port: 0,
             connected: false,
             power: 'low',
-            variablePower: true
+            variablePower: true,
           },
           {
             id: '3',
@@ -94,7 +94,7 @@ Polymer({
             port: 0,
             connected: false,
             power: 'low',
-            variablePower: true
+            variablePower: true,
           },
           {
             id: '4',
@@ -102,7 +102,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 0,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '5',
@@ -110,7 +110,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 1,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '6',
@@ -118,7 +118,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 2,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '7',
@@ -126,7 +126,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 3,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
         ];
       },

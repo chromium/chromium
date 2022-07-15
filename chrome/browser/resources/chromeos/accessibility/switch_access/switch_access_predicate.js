@@ -241,7 +241,7 @@ export const SwitchAccessPredicate = {
     return {
       leaf: SwitchAccessPredicate.leaf(scope, cache),
       root: SwitchAccessPredicate.root(scope),
-      visit: SwitchAccessPredicate.visit(scope, cache)
+      visit: SwitchAccessPredicate.visit(scope, cache),
     };
   },
 
@@ -281,5 +281,5 @@ export const SwitchAccessPredicate = {
   visit(scope, cache) {
     return node => node.role !== RoleType.DESKTOP &&
         SwitchAccessPredicate.isInteresting(node, scope, cache);
-  }
+  },
 };

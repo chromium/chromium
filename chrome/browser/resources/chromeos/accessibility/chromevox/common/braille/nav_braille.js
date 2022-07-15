@@ -72,7 +72,7 @@ NavBraille = class {
     return new NavBraille({
       text: Spannable.fromJson(json.spannable),
       startIndex: json.startIndex,
-      endIndex: json.endIndex
+      endIndex: json.endIndex,
     });
   }
 
@@ -104,7 +104,7 @@ NavBraille = class {
     return {
       spannable: this.text.toJson(),
       startIndex: this.startIndex,
-      endIndex: this.endIndex
+      endIndex: this.endIndex,
     };
   }
 };

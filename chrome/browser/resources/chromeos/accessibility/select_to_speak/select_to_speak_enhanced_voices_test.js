@@ -27,7 +27,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
     this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
       {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
       {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
-      {type: 'boolean', key: this.enhancedNetworkVoicesPolicyKey_, value: true}
+      {type: 'boolean', key: this.enhancedNetworkVoicesPolicyKey_, value: true},
     ]);
     this.mockSettingsPrivate_.allowSetPref();
     chrome.settingsPrivate = this.mockSettingsPrivate_;
@@ -35,7 +35,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
     chrome.i18n = {
       getMessage(msgid) {
         return msgid;
-      }
+      },
     };
   }
 
@@ -88,7 +88,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });
@@ -115,7 +115,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });
@@ -142,7 +142,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });
@@ -172,7 +172,7 @@ AX_TEST_F(
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,
-        screenY: textNode.location.top + 1
+        screenY: textNode.location.top + 1,
       };
       this.triggerReadMouseSelectedText(event, event);
     });

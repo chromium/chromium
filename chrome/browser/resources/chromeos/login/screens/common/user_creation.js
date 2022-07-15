@@ -13,7 +13,9 @@
  */
 const UserCreationScreenElementBase = Polymer.mixinBehaviors(
     [
-      OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior
+      OobeI18nBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
     ],
     Polymer.Element);
 

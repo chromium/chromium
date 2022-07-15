@@ -150,7 +150,7 @@ export const RectUtil = {
         top: outer.top,
         left: outer.left,
         width: outer.width,
-        height: (subtrahend.top - outer.top)
+        height: (subtrahend.top - outer.top),
       };
     }
 
@@ -159,7 +159,7 @@ export const RectUtil = {
         top: RectUtil.bottom(subtrahend),
         left: outer.left,
         width: outer.width,
-        height: (RectUtil.bottom(outer) - RectUtil.bottom(subtrahend))
+        height: (RectUtil.bottom(outer) - RectUtil.bottom(subtrahend)),
       };
     }
 
@@ -168,7 +168,7 @@ export const RectUtil = {
         top: outer.top,
         left: outer.left,
         width: (subtrahend.left - outer.left),
-        height: outer.height
+        height: outer.height,
       };
     }
 
@@ -177,7 +177,7 @@ export const RectUtil = {
         top: outer.top,
         left: RectUtil.right(subtrahend),
         width: (RectUtil.right(outer) - RectUtil.right(subtrahend)),
-        height: outer.height
+        height: outer.height,
       };
     }
 
@@ -365,5 +365,5 @@ export const RectUtil = {
       result = RectUtil.union(result, rects[i]);
     }
     return result;
-  }
+  },
 };

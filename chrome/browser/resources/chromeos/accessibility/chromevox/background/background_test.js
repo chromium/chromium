@@ -1294,7 +1294,8 @@ AX_TEST_F(
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(undefined, {
         url: `${
-            testRunnerParams.testServerBaseUrl}accessibility/in_page_links.html`
+            testRunnerParams
+                .testServerBaseUrl}accessibility/in_page_links.html`,
       });
       mockFeedback.call(doCmd('nextObject'))
           .expectSpeech('Jump', 'Internal link')
@@ -2765,7 +2766,7 @@ AX_TEST_F(
             Object.defineProperty(group, 'role', {
               get() {
                 return chrome.automation.RoleType.PANE;
-              }
+              },
             });
           })
           .call(simulateHitTestResult(group))
@@ -2795,12 +2796,12 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusOnUnknown', async function() {
   Object.defineProperty(group1, 'role', {
     get() {
       return chrome.automation.RoleType.UNKNOWN;
-    }
+    },
   });
   Object.defineProperty(group2, 'role', {
     get() {
       return chrome.automation.RoleType.UNKNOWN;
-    }
+    },
   });
 
   const evt2 = new CustomAutomationEvent(EventType.FOCUS, group2);
@@ -2982,13 +2983,13 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AudioVideo', async function() {
   Object.defineProperty(audio, 'role', {
     get() {
       return chrome.automation.RoleType.AUDIO;
-    }
+    },
   });
 
   Object.defineProperty(video, 'role', {
     get() {
       return chrome.automation.RoleType.VIDEO;
-    }
+    },
   });
 
   mockFeedback.call(doCmd('nextObject'))
@@ -3130,12 +3131,12 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ImageAnnotations', async function() {
   Object.defineProperty(namedImg, 'imageAnnotation', {
     get() {
       return 'foo';
-    }
+    },
   });
   Object.defineProperty(unnamedImg, 'imageAnnotation', {
     get() {
       return 'foo';
-    }
+    },
   });
 
   mockFeedback.call(doCmd('nextObject'))
@@ -3211,7 +3212,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ContainerButtons', async function() {
   Object.defineProperty(group, 'clickable', {
     get() {
       return true;
-    }
+    },
   });
 
   mockFeedback.call(doCmd('nextObject'))
@@ -3549,7 +3550,7 @@ AX_TEST_F(
             keyCode: KeyCode.RIGHT,
             metaKey: true,
             preventDefault: () => {},
-            stopPropagation: () => {}
+            stopPropagation: () => {},
           });
       const nextObjectBraille = BrailleCommandHandler.onBrailleKeyEvent.bind(
           BrailleCommandHandler, {command: BrailleKeyCommand.PAN_RIGHT});

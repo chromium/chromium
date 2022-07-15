@@ -17,7 +17,7 @@ constants.Dir = {
   FORWARD: 'forward',
 
   /** Search from right to left. */
-  BACKWARD: 'backward'
+  BACKWARD: 'backward',
 };
 
 /**

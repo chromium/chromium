@@ -27,8 +27,14 @@ export const /** number */ UNITBASE_MEMORY = 1024;
 export const INFO_PAGE_PRECISION = 2;
 
 export const /** !Array<string> */ CPU_COLOR_SET = [
-  '#2fa2ff', '#ff93e2', '#a170d0', '#fe6c6c', '#2561a4', '#15b979', '#fda941',
-  '#79dbcd'
+  '#2fa2ff',
+  '#ff93e2',
+  '#a170d0',
+  '#fe6c6c',
+  '#2561a4',
+  '#15b979',
+  '#fda941',
+  '#79dbcd',
 ];
 
 export const /** !Array<string> */ MEMORY_COLOR_SET =
