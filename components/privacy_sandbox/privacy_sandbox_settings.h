@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -17,6 +16,7 @@
 
 class HostContentSettingsMap;
 class PrefService;
+class GURL;
 
 namespace content_settings {
 class CookieSettings;
@@ -203,8 +203,7 @@ class PrivacySandboxSettings : public KeyedService {
   // provided as a parameter to allow callers to cache it between calls.
   bool IsPrivacySandboxEnabledForContext(
       const GURL& url,
-      const absl::optional<url::Origin>& top_frame_origin,
-      const ContentSettingsForOneType& cookie_settings) const;
+      const absl::optional<url::Origin>& top_frame_origin) const;
 
   void SetTopicsDataAccessibleFromNow() const;
 

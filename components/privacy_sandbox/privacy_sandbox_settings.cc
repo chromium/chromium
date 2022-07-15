@@ -109,14 +109,8 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
     const absl::optional<url::Origin>& top_frame_origin) const {
   // If the Topics API is disabled completely, it is not available in any
   // context.
-  if (!IsTopicsAllowed())
-    return false;
-
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
-
-  return IsPrivacySandboxEnabledForContext(url, top_frame_origin,
-                                           cookie_settings);
+  return IsTopicsAllowed() &&
+         IsPrivacySandboxEnabledForContext(url, top_frame_origin);
 }
 
 bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
@@ -188,30 +182,22 @@ base::Time PrivacySandboxSettings::TopicsDataAccessibleSince() const {
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
-
   return IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
-                                           top_frame_origin, cookie_settings);
+                                           top_frame_origin);
 }
 
 bool PrivacySandboxSettings::ShouldSendConversionReport(
     const url::Origin& impression_origin,
     const url::Origin& conversion_origin,
     const url::Origin& reporting_origin) const {
-  // Re-using the |cookie_settings| allows this function to be faster
-  // than simply calling IsConversionMeasurementAllowed() twice
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
-
   // The |reporting_origin| needs to have been accessible in both impression
   // and conversion contexts. These are both checked when they occur, but
   // user settings may have changed between then and when the conversion report
   // is sent.
-  return IsPrivacySandboxEnabledForContext(
-             reporting_origin.GetURL(), impression_origin, cookie_settings) &&
+  return IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
+                                           impression_origin) &&
          IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
-                                           conversion_origin, cookie_settings);
+                                           conversion_origin);
 }
 
 void PrivacySandboxSettings::SetFledgeJoiningAllowed(
@@ -312,10 +298,8 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
 bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) {
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
   return IsPrivacySandboxEnabledForContext(auction_party.GetURL(),
-                                           top_frame_origin, cookie_settings);
+                                           top_frame_origin);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
@@ -330,8 +314,7 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
   cookie_settings_->GetCookieSettings(&cookie_settings);
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
-    if (IsPrivacySandboxEnabledForContext(party, top_frame_origin,
-                                          cookie_settings)) {
+    if (IsPrivacySandboxEnabledForContext(party, top_frame_origin)) {
       allowed_parties.push_back(party);
     }
   }
@@ -341,13 +324,10 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 bool PrivacySandboxSettings::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
-
   // Ensures that Shared Storage is only allowed if both Privacy Sandbox is
   // enabled and full cookie access is enabled for this context.
   return IsPrivacySandboxEnabledForContext(accessing_origin.GetURL(),
-                                           top_frame_origin, cookie_settings);
+                                           top_frame_origin);
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
@@ -436,8 +416,7 @@ PrivacySandboxSettings::PrivacySandboxSettings() = default;
 
 bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
     const GURL& url,
-    const absl::optional<url::Origin>& top_frame_origin,
-    const ContentSettingsForOneType& cookie_settings) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   if (!IsPrivacySandboxEnabled())
     return false;
 
