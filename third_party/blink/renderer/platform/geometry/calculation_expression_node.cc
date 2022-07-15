@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 #include "base/notreached.h"
 
@@ -434,8 +435,8 @@ float CalculationExpressionAnchorQueryNode::Evaluate(
         }
         break;
     }
+    return FloatValueForLength(fallback_, max_value, anchor_evaluator);
   }
-  // TODO(crbug.com/1309178): Support fallback.
   return 0;
 }
 

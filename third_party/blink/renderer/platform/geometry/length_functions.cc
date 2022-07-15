@@ -35,7 +35,9 @@ int IntValueForLength(const Length& length, int maximum_value) {
   return ValueForLength(length, LayoutUnit(maximum_value)).ToInt();
 }
 
-float FloatValueForLength(const Length& length, float maximum_value) {
+float FloatValueForLength(const Length& length,
+                          float maximum_value,
+                          const Length::AnchorEvaluator* anchor_evaluator) {
   switch (length.GetType()) {
     case Length::kFixed:
       return length.GetFloatValue();
@@ -45,7 +47,8 @@ float FloatValueForLength(const Length& length, float maximum_value) {
     case Length::kAuto:
       return static_cast<float>(maximum_value);
     case Length::kCalculated:
-      return length.NonNanCalculatedValue(LayoutUnit(maximum_value));
+      return length.NonNanCalculatedValue(LayoutUnit(maximum_value),
+                                          anchor_evaluator);
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:

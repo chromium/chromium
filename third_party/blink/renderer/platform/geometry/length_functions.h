@@ -42,7 +42,10 @@ class LengthSize;
 struct LengthPoint;
 
 PLATFORM_EXPORT int IntValueForLength(const Length&, int maximum_value);
-PLATFORM_EXPORT float FloatValueForLength(const Length&, float maximum_value);
+PLATFORM_EXPORT float FloatValueForLength(
+    const Length&,
+    float maximum_value,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 PLATFORM_EXPORT LayoutUnit
 MinimumValueForLengthInternal(const Length&,
                               LayoutUnit maximum_value,
