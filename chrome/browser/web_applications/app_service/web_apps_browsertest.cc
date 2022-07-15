@@ -61,13 +61,13 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
       {chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
           "numbers.csv")});
   std::vector<std::string> content_types({"text/csv"});
-  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+  apps::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, std::move(file_paths), std::move(content_types));
   const int32_t event_flags =
       apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent),
+      app_id, event_flags, apps::ConvertIntentToMojomIntent(intent),
       apps::mojom::LaunchSource::kFromSharesheet,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
   run_loop.Run();
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
             return nullptr;
           }));
 
-  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+  apps::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, /*file_paths=*/std::vector<base::FilePath>(),
       /*mime_types=*/std::vector<std::string>(),
       /*share_text=*/"Message",
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
       apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent),
+      app_id, event_flags, apps::ConvertIntentToMojomIntent(intent),
       apps::mojom::LaunchSource::kFromSharesheet,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
   run_loop.Run();

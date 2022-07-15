@@ -123,7 +123,9 @@ apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom();
 // Create an intent struct with filesystem:// type URLs from the file paths and
 // mime types of a list of files. This util has to live under chrome/ because it
 // uses fileapis and cannot be included in components/.
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
+// TODO(crbug.com/1253219): Use FilePaths in intents to avoid dependency on
+// File Manager.
+apps::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types);
@@ -132,7 +134,7 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
 // mime types of a list of files, and the share text and title. This util has to
 // live under chrome/ because it uses fileapis and cannot be included in
 // components/.
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
+apps::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,

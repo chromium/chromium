@@ -27,6 +27,7 @@
 #include "chrome/browser/webshare/store_files_task.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -365,23 +366,23 @@ void SharesheetClient::ShowSharesheet(
       sharesheet::LaunchSource::kWebShare, std::move(intent),
       std::move(delivered_callback));
 #else
-  apps::mojom::IntentPtr intent =
-      file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
+  apps::IntentPtr intent =
+      file_paths.empty() ? apps_util::MakeShareIntent(text, title)
                          : apps_util::CreateShareIntentFromFiles(
                                profile, file_paths, content_types, text, title);
-  if (intent->files.has_value() && intent->files->size() == file_paths.size()) {
+  if (!intent->files.empty() && intent->files.size() == file_paths.size()) {
     for (size_t index = 0; index < file_paths.size(); ++index) {
-      (*intent->files)[index]->mime_type = content_types[index];
-      (*intent->files)[index]->file_size = file_sizes[index];
+      (intent->files)[index]->mime_type = content_types[index];
+      (intent->files)[index]->file_size = file_sizes[index];
     }
   }
-  DCHECK(intent->share_text.has_value() || !intent->files->empty());
+  DCHECK(intent->share_text.has_value() || !intent->files.empty());
 
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
-  sharesheet_service->ShowBubble(web_contents, std::move(intent),
-                                 sharesheet::LaunchSource::kWebShare,
-                                 std::move(delivered_callback));
+  sharesheet_service->ShowBubble(
+      web_contents, apps::ConvertIntentToMojomIntent(intent),
+      sharesheet::LaunchSource::kWebShare, std::move(delivered_callback));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

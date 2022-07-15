@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
   const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
-  apps::mojom::IntentPtr intent;
+  apps::IntentPtr intent;
   {
     const base::FilePath first_svg =
         StoreSharedFile(directory, "first.svg", "picture");
@@ -295,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
         /*share_title=*/"Elements");
   }
 
-  content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
+  content::WebContents* const web_contents = LaunchAppWithIntent(
+      app_id, apps::ConvertIntentToMojomIntent(intent), share_target_url());
   EXPECT_EQ("picture", ReadTextContent(web_contents, "graphs"));
 
   EXPECT_EQ("Elements", ReadTextContent(web_contents, "headline"));
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
-  apps::mojom::IntentPtr intent;
+  apps::IntentPtr intent;
   {
     const base::FilePath first_weba =
         StoreSharedFile(directory, "first.weba", "a");
@@ -332,8 +333,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
     intent->share_title = "";
   }
 
-  content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
+  content::WebContents* const web_contents = LaunchAppWithIntent(
+      app_id, apps::ConvertIntentToMojomIntent(intent), share_target_url());
   EXPECT_EQ("a b c", ReadTextContent(web_contents, "notes"));
   EXPECT_EQ(NumRecentFiles(web_contents), 0U);
 

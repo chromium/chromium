@@ -650,25 +650,22 @@ apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1253219): Use FilePaths in intents to avoid dependency on
-// File Manager.
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
+apps::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types) {
   auto file_urls = apps::GetFileSystemUrls(profile, file_paths);
-  return CreateShareIntentFromFiles(file_urls, mime_types);
+  return MakeShareIntent(file_urls, mime_types);
 }
 
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
+apps::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
     const std::string& share_text,
     const std::string& share_title) {
   auto file_urls = apps::GetFileSystemUrls(profile, file_paths);
-  return CreateShareIntentFromFiles(file_urls, mime_types, share_text,
-                                    share_title);
+  return MakeShareIntent(file_urls, mime_types, share_text, share_title);
 }
 
 base::flat_map<std::string, std::string> CreateArcIntentExtras(

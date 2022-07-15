@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -246,9 +247,10 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
           << expected_total_files;
       return nullptr;
     }
-    return apps_util::CreateShareIntentFromFiles(
-        profile_, share_file_paths, share_file_mime_types, std::string(),
-        share_info_->title);
+    return apps::ConvertIntentToMojomIntent(
+        apps_util::CreateShareIntentFromFiles(
+            profile_, share_file_paths, share_file_mime_types, std::string(),
+            share_info_->title));
   }
 
   // Sharing text

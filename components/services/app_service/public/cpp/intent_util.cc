@@ -128,6 +128,23 @@ apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
   return intent;
 }
 
+apps::IntentPtr MakeShareIntent(const GURL& filesystem_url,
+                                const std::string& mime_type,
+                                const GURL& drive_share_url,
+                                bool is_directory) {
+  auto intent = std::make_unique<apps::Intent>(kIntentActionSend);
+  if (!is_directory) {
+    intent->mime_type = mime_type;
+    intent->files = std::vector<apps::IntentFilePtr>{};
+    auto file = std::make_unique<apps::IntentFile>(filesystem_url);
+    intent->files.push_back(std::move(file));
+  }
+  if (!drive_share_url.is_empty()) {
+    intent->drive_share_url = drive_share_url;
+  }
+  return intent;
+}
+
 apps::IntentPtr MakeShareIntent(const std::string& text,
                                 const std::string& title) {
   auto intent = std::make_unique<apps::Intent>(kIntentActionSend);
