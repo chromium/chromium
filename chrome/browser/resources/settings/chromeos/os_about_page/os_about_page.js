@@ -778,6 +778,16 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   onReportIssueClick_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getReportIssueLabel_() {
+    return loadTimeData.getBoolean('isOsFeedbackEnabled') ?
+        this.i18nAdvanced('aboutSendFeedback') :
+        this.i18nAdvanced('aboutReportAnIssue');
+  }
   // </if>
 
   /**

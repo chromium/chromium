@@ -245,6 +245,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutProductLogoAlt", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"aboutReportAnIssue", IDS_SETTINGS_ABOUT_PAGE_REPORT_AN_ISSUE},
+    {"aboutSendFeedback", IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK},
 #endif
     {"aboutDiagnostics", IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS},
     {"aboutFirmwareUpdates", IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES},
@@ -462,6 +463,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isFirmwareUpdaterAppEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+
+  html_source->AddBoolean(
+      "isOsFeedbackEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kOsFeedback));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);

@@ -32,6 +32,9 @@
     <message name="IDS_SETTINGS_ABOUT_PAGE_REPORT_AN_ISSUE" desc="Text of the button which allows the user to report an issue with Chrome.">
       Report an issue
     </message>
+    <message name="IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK" desc="Text of the button which allows the user to send feedback with Chrome.">
+      Send feedback
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">

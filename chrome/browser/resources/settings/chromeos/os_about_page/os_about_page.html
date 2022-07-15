@@ -165,7 +165,7 @@
       <cr-link-row class="hr" id="reportIssue"
           on-click="onReportIssueClick_"
           hidden="[[!prefs.feedback_allowed.value]]"
-          label="$i18n{aboutReportAnIssue}" external
+          label="[[getReportIssueLabel_()]]" external
           deep-link-focus-id$="[[Setting.kReportAnIssue]]">
       </cr-link-row>
 </if>
