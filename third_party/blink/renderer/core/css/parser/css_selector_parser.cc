@@ -405,8 +405,7 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
     return CSSSelector::PseudoType::kPseudoWebKitCustomElement;
   if (name.StartsWith("-internal-"))
     return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
-  if (RuntimeEnabledFeatures::CustomStatePseudoClassEnabled() &&
-      name.StartsWith("--"))
+  if (name.StartsWith("--"))
     return CSSSelector::PseudoType::kPseudoState;
 
   return CSSSelector::PseudoType::kPseudoUnknown;

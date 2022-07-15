@@ -786,10 +786,6 @@
       status: "experimental",
     },
     {
-      name: "CustomStatePseudoClass",
-      status: "stable",
-    },
-    {
       name: "Database",
       status: "stable",
     },

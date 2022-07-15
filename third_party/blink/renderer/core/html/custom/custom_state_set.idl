@@ -4,8 +4,7 @@
 
 // https://wicg.github.io/custom-state-pseudo-class/#customstateset
 [
-  Exposed=Window,
-  RuntimeEnabled=CustomStatePseudoClass
+  Exposed=Window
 ]
 interface CustomStateSet {
   setlike<DOMString>;

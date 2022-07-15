@@ -26,7 +26,7 @@ interface ElementInternals {
 
   // Custom state
   // https://wicg.github.io/custom-state-pseudo-class/#dom-elementinternals-states
-  [RuntimeEnabled=CustomStatePseudoClass, MeasureAs=ElementInternalsStates]
+  [MeasureAs=ElementInternalsStates]
   readonly attribute CustomStateSet states;
 
   // Access to shadowRoot from custom elements. See crbug.com/1042130 and
