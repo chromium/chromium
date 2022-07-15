@@ -24,12 +24,22 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
   void AddReceiver(
       mojo::PendingReceiver<mojom::WebBundleParserFactory> receiver);
 
-  void WaitUntilParseMetadataCalled(base::OnceClosure closure);
+  void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
 
-  void RunMetadataCallback(mojom::BundleMetadataPtr metadata);
+  void WaitUntilParseMetadataCalled(
+      base::OnceCallback<void(int64_t offset)> callback);
+
+  void RunIntegrityBlockCallback(
+      mojom::BundleIntegrityBlockPtr integrity_block,
+      mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
+
+  void RunMetadataCallback(int64_t expected_metadata_offset,
+                           mojom::BundleMetadataPtr metadata,
+                           mojom::BundleMetadataParseErrorPtr error = nullptr);
 
   void RunResponseCallback(mojom::BundleResponseLocationPtr expected_parse_args,
-                           mojom::BundleResponsePtr response);
+                           mojom::BundleResponsePtr response,
+                           mojom::BundleResponseParseErrorPtr error = nullptr);
 
  private:
   // mojom::WebBundleParserFactory implementation.
@@ -41,7 +51,8 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
   std::unique_ptr<MockWebBundleParser> parser_;
   mojo::ReceiverSet<mojom::WebBundleParserFactory> receivers_;
-  base::OnceClosure wait_parse_metadata_callback_;
+  base::OnceClosure wait_parse_integrity_block_callback_;
+  base::OnceCallback<void(int64_t offset)> wait_parse_metadata_callback_;
 };
 
 }  // namespace web_package

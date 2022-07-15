@@ -69,7 +69,8 @@ class MockWebBundleReaderFactoryImpl final : public MockWebBundleReaderFactory {
     base::test::TestFuture<web_package::mojom::BundleMetadataParseErrorPtr>
         future;
     reader->ReadMetadata(future.GetCallback());
-    factory_->RunMetadataCallback(std::move(metadata));
+    factory_->RunMetadataCallback(/*expected_metadata_offset=*/-1,
+                                  std::move(metadata));
     std::move(callback).Run(future.Take());
   }
 

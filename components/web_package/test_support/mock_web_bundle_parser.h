@@ -20,11 +20,18 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
 
   ~MockWebBundleParser() override;
 
-  void RunMetadataCallback(mojom::BundleMetadataPtr metadata);
-  void RunResponseCallback(mojom::BundleResponsePtr response);
+  void RunIntegrityBlockCallback(
+      mojom::BundleIntegrityBlockPtr integrity_block,
+      mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
+  void RunMetadataCallback(
+      mojom::BundleMetadataPtr metadata,
+      web_package::mojom::BundleMetadataParseErrorPtr error = nullptr);
+  void RunResponseCallback(mojom::BundleResponsePtr response,
+                           mojom::BundleResponseParseErrorPtr error = nullptr);
 
-  void WaitUntilParseMetadataCalled(base::OnceClosure closure);
-
+  void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
+  void WaitUntilParseMetadataCalled(
+      base::OnceCallback<void(int64_t offset)> callback);
   void WaitUntilParseResponseCalled(
       base::OnceCallback<void(mojom::BundleResponseLocationPtr)> callback);
 
@@ -38,10 +45,13 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
 
   mojo::Receiver<mojom::WebBundleParser> receiver_;
 
+  ParseIntegrityBlockCallback integrity_block_callback_;
   ParseMetadataCallback metadata_callback_;
   ParseResponseCallback response_callback_;
+  int64_t parse_metadata_args_;
   mojom::BundleResponseLocationPtr parse_response_args_;
-  base::OnceClosure wait_parse_metadata_callback_;
+  base::OnceClosure wait_parse_integrity_block_callback_;
+  base::OnceCallback<void(int64_t offset)> wait_parse_metadata_callback_;
   base::OnceCallback<void(mojom::BundleResponseLocationPtr)>
       wait_parse_response_callback_;
 };

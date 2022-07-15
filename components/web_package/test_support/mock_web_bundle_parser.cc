@@ -14,22 +14,39 @@ MockWebBundleParser::MockWebBundleParser(
 
 MockWebBundleParser::~MockWebBundleParser() = default;
 
+void MockWebBundleParser::RunIntegrityBlockCallback(
+    mojom::BundleIntegrityBlockPtr integrity_block,
+    mojom::BundleIntegrityBlockParseErrorPtr error) {
+  std::move(integrity_block_callback_)
+      .Run(std::move(integrity_block), std::move(error));
+}
+
 void MockWebBundleParser::RunMetadataCallback(
-    mojom::BundleMetadataPtr metadata) {
-  std::move(metadata_callback_).Run(std::move(metadata), nullptr);
+    mojom::BundleMetadataPtr metadata,
+    web_package::mojom::BundleMetadataParseErrorPtr error) {
+  std::move(metadata_callback_).Run(std::move(metadata), std::move(error));
 }
 
 void MockWebBundleParser::RunResponseCallback(
-    mojom::BundleResponsePtr response) {
-  std::move(response_callback_).Run(std::move(response), nullptr);
+    mojom::BundleResponsePtr response,
+    mojom::BundleResponseParseErrorPtr error) {
+  std::move(response_callback_).Run(std::move(response), std::move(error));
+}
+
+void MockWebBundleParser::WaitUntilParseIntegrityBlockCalled(
+    base::OnceClosure closure) {
+  if (integrity_block_callback_.is_null())
+    wait_parse_integrity_block_callback_ = std::move(closure);
+  else
+    std::move(closure).Run();
 }
 
 void MockWebBundleParser::WaitUntilParseMetadataCalled(
-    base::OnceClosure closure) {
+    base::OnceCallback<void(int64_t offset)> callback) {
   if (metadata_callback_.is_null())
-    wait_parse_metadata_callback_ = std::move(closure);
+    wait_parse_metadata_callback_ = std::move(callback);
   else
-    std::move(closure).Run();
+    std::move(callback).Run(parse_metadata_args_);
 }
 
 void MockWebBundleParser::WaitUntilParseResponseCalled(
@@ -42,14 +59,17 @@ void MockWebBundleParser::WaitUntilParseResponseCalled(
 
 void MockWebBundleParser::ParseIntegrityBlock(
     ParseIntegrityBlockCallback callback) {
-  NOTREACHED();
+  integrity_block_callback_ = std::move(callback);
+  if (!wait_parse_integrity_block_callback_.is_null())
+    std::move(wait_parse_integrity_block_callback_).Run();
 }
 
 void MockWebBundleParser::ParseMetadata(int64_t offset,
                                         ParseMetadataCallback callback) {
   metadata_callback_ = std::move(callback);
+  parse_metadata_args_ = offset;
   if (!wait_parse_metadata_callback_.is_null())
-    std::move(wait_parse_metadata_callback_).Run();
+    std::move(wait_parse_metadata_callback_).Run(parse_metadata_args_);
 }
 
 void MockWebBundleParser::ParseResponse(uint64_t response_offset,
