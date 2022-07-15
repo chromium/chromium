@@ -123,6 +123,8 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   if (devices.empty()) {
     QP_LOG(VERBOSE) << __func__ << ": No devices saved to the user's account";
     base::Value::List saved_devices_list;
+    ash::quick_pair::RecordSavedDevicesCount(
+        /*num_devices=*/saved_devices_list.size());
     FireWebUIListener(kSavedDevicesListMessage,
                       base::Value(std::move(saved_devices_list)));
     loading_saved_device_page_ = false;
@@ -227,6 +229,8 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
         /*account_key=*/account_key));
   }
 
+  ash::quick_pair::RecordSavedDevicesCount(
+      /*num_devices=*/saved_devices_list.size());
   FireWebUIListener(kSavedDevicesListMessage,
                     base::Value(std::move(saved_devices_list)));
   QP_LOG(VERBOSE) << __func__ << ": Sending device list";

@@ -864,6 +864,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount"
+    units="devices" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the number of Fast Pair devices saved to a user's account. Emitted
+    following parsing the data fetched from the Footprints server to determine
+    the number of active devices, if any.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
