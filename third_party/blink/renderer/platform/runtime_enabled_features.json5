@@ -1039,9 +1039,7 @@
     },
     {
       name: "FetchUploadStreaming",
-      origin_trial_feature_name: "FetchUploadStreaming",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // Also enabled when blink::features::kFileHandlingAPI is overridden
