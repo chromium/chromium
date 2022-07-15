@@ -89,6 +89,10 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     navigation_initiator_origin_ = navigation_initiator_origin;
   }
 
+  void SetMayReadLocalFiles(bool may_read_local_files) {
+    may_read_local_files_ = may_read_local_files;
+  }
+
   const base::Value::Dict* result() const;
   const base::Value::Dict* error() const;
   int received_responses_count() const { return received_responses_count_; }
@@ -105,6 +109,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
   bool AllowUnsafeOperations() override;
   bool IsTrusted() override;
+  bool MayReadLocalFiles() override;
 
   int last_sent_id_ = 0;
   int waiting_for_command_result_id_ = 0;
@@ -123,6 +128,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   bool allow_unsafe_operations_ = true;
   bool is_trusted_ = true;
   absl::optional<url::Origin> navigation_initiator_origin_;
+  bool may_read_local_files_ = true;
 };
 
 }  // namespace content

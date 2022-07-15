@@ -1131,6 +1131,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_TRUE(HasExistingNotification("Page.frameStartedLoading"));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NavigationToFileUrlRequiresFileAccess) {
+  Attach();
+
+  std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
+  GURL test_url = GetTestUrl("devtools", "navigation.html");
+  params->SetStringKey("url", test_url.spec());
+  ASSERT_TRUE(SendCommand("Page.navigate", params->GetDict().Clone(), true));
+
+  Detach();
+  SetMayReadLocalFiles(false);
+
+  Attach();
+
+  ASSERT_FALSE(SendCommand("Page.navigate", params->GetDict().Clone(), true));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
