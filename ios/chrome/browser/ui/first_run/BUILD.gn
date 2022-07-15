@@ -163,10 +163,8 @@ source_set("static_file_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/icons",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
-    "//ios/third_party/material_components_ios",
     "//ios/web/common:web_view_creation_util",
   ]
 }

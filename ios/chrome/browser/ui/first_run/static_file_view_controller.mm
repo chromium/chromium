@@ -6,12 +6,9 @@
 
 #import <WebKit/WebKit.h>
 
-#import <MaterialComponents/MDCAppBarViewController.h>
-
 #include "base/check.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
-#import "ios/chrome/browser/ui/material_components/utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/web_view_creation_util.h"
@@ -27,8 +24,6 @@
   BOOL _headerLaidOutForRTL;
   // The web view used to display the static content.
   WKWebView* _webView;
-  // The header.
-  MDCAppBarViewController* _appBarViewController;
 }
 
 // Called when the back button is pressed.
@@ -44,15 +39,10 @@
   DCHECK(URL);
   self = [super init];
   if (self) {
-    _appBarViewController = [[MDCAppBarViewController alloc] init];
     _browserState = browserState;
     _URL = URL;
   }
   return self;
-}
-
-- (void)dealloc {
-  [_webView scrollView].delegate = nil;
 }
 
 #pragma mark - UIViewController
@@ -73,33 +63,19 @@
   [_webView setBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   [self.view addSubview:_webView];
 
-  ConfigureAppBarViewControllerWithCardStyle(_appBarViewController);
-  _appBarViewController.headerView.trackingScrollView = [_webView scrollView];
-  [_webView scrollView].delegate = _appBarViewController;
-
-  // Add the app bar at the end.
-  [self addChildViewController:_appBarViewController];
-  // Match the width of the parent view.
-  CGRect frame = _appBarViewController.view.frame;
-  frame.origin.x = 0;
-  frame.size.width =
-      _appBarViewController.parentViewController.view.bounds.size.width;
-  _appBarViewController.view.frame = frame;
-  [self.view addSubview:_appBarViewController.view];
-  [_appBarViewController didMoveToParentViewController:self];
-
-  // Create a custom Back bar button item, as Material Navigation Bar deprecated
-  // the back arrow with a shaft.
+  // Create a custom Back bar button item.
   self.navigationItem.leftBarButtonItem =
       [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
                                           target:self
                                           action:@selector(back)];
+  [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 #pragma mark - Actions
 
 - (void)back {
   [self.navigationController popViewControllerAnimated:YES];
+  [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 @end
