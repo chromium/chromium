@@ -270,7 +270,7 @@ class FramesExtensionBindingsApiTest : public ExtensionBindingsApiTest {
 };
 
 // This tests that web pages with iframes or child windows pointing at
-// chrome-extenison:// urls, both web_accessible and nonexistent pages, don't
+// chrome-extension:// urls, both web_accessible and nonexistent pages, don't
 // get improper extensions bindings injected while they briefly still point at
 // about:blank and are still scriptable by their parent.
 //
