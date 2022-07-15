@@ -837,8 +837,11 @@ class ObfuscatedFileUtilTest : public testing::Test,
     ASSERT_TRUE(db != nullptr);
 
     // Destroy it.
-    ofu()->DestroyDirectoryDatabase(url.storage_key(),
-                                    GetTypeString(url.type()));
+    (is_non_default_bucket())
+        ? ofu()->DestroyDirectoryDatabaseForBucket(url.bucket().value(),
+                                                   GetTypeString(url.type()))
+        : ofu()->DestroyDirectoryDatabaseForStorageKey(
+              url.storage_key(), GetTypeString(url.type()));
     ASSERT_TRUE(ofu()->directories_.empty());
   }
 
@@ -1836,7 +1839,10 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
   EXPECT_EQ(10, file_info.size);
 
   // Destroy database to make inconsistency between database and filesystem.
-  ofu()->DestroyDirectoryDatabase(storage_key(), type_string());
+  (is_non_default_bucket())
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
+                                                     type_string());
 
   // Try to get file info of broken file.
   EXPECT_FALSE(PathExists(kPath1));
@@ -1856,7 +1862,10 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
   EXPECT_TRUE(created);
 
   // Destroy again.
-  ofu()->DestroyDirectoryDatabase(storage_key(), type_string());
+  (is_non_default_bucket())
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
+                                                     type_string());
 
   // Repair broken `kPath1`.
   context = NewContext(nullptr);
@@ -1874,7 +1883,10 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
                                   FileSystemOperation::CopyOrMoveOptionSet(),
                                   true /* copy */));
 
-  ofu()->DestroyDirectoryDatabase(storage_key(), type_string());
+  (is_non_default_bucket())
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
+                                                     type_string());
   context = NewContext(nullptr);
   created = false;
   EXPECT_EQ(base::File::FILE_OK,

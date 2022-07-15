@@ -24,6 +24,9 @@
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -85,8 +88,14 @@ class FileStreamDataPipeGetterTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    base::FilePath temp_path = temp_dir_.GetPath();
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, temp_path, base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
+        quota_manager_proxy_.get(), temp_path);
     base::RunLoop run_loop;
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
@@ -159,6 +168,8 @@ class FileStreamDataPipeGetterTest : public testing::Test {
   const std::string test_data_;
 
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 };
 

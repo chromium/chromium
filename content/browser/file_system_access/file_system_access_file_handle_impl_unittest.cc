@@ -30,6 +30,9 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,15 +94,21 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   void SetupHelper(storage::FileSystemType type, bool is_incognito) {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        is_incognito, dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+
     if (is_incognito) {
       file_system_context_ =
           storage::CreateIncognitoFileSystemContextForTesting(
               base::ThreadTaskRunnerHandle::Get(),
-              base::ThreadTaskRunnerHandle::Get(),
-              /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+              base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_.get(),
+              dir_.GetPath());
     } else {
       file_system_context_ = storage::CreateFileSystemContextForTesting(
-          /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+          quota_manager_proxy_.get(), dir_.GetPath());
     }
 
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
@@ -134,6 +143,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;

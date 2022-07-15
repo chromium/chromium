@@ -1349,8 +1349,14 @@ class CopyOrMoveOperationDelegateTestHelper {
   void SetUp() {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath();
-    file_system_context_ =
-        storage::CreateFileSystemContextForTesting(nullptr, base_dir);
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+    // Prepare file system.
+    file_system_context_ = storage::CreateFileSystemContextForTesting(
+        quota_manager_proxy_.get(), base_dir);
 
     // Prepare the origin's root directory.
     FileSystemBackend* backend =
@@ -1453,6 +1459,8 @@ class CopyOrMoveOperationDelegateTestHelper {
   FileSystemURL error_url_;
 
   base::test::TaskEnvironment task_environment_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<FileSystemContext> file_system_context_;
 };
 

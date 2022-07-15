@@ -22,6 +22,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -57,8 +60,14 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
     ASSERT_TRUE(test_file.IsValid() && base::PathExists(test_file_path_));
     test_fd_ = base::ScopedFD(test_file.TakePlatformFile());
 
+    base::FilePath temp_path = temp_dir_.GetPath();
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, temp_path, base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr /*quota_manager_proxy=*/, temp_dir_.GetPath());
+        quota_manager_proxy_.get(), temp_path);
 
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
@@ -114,6 +123,8 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
   base::ScopedFD test_fd_;
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<ShareInfoFileStreamAdapter> stream_adapter_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   storage::FileSystemURL url_;
   std::string test_data_;

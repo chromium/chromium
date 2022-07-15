@@ -17,6 +17,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,8 +43,14 @@ class FileStreamForwarderTest : public testing::Test {
     ASSERT_TRUE(dest_file.IsValid());
     dest_fd_ = base::ScopedFD(dest_file.TakePlatformFile());
 
+    base::FilePath temp_path = temp_dir_.GetPath();
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, temp_path, base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     context_ = storage::CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
+        quota_manager_proxy_.get(), temp_path);
 
     // Prepare a file system.
     constexpr char kURLOrigin[] = "http://origin/";
@@ -75,6 +84,8 @@ class FileStreamForwarderTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath dest_file_path_;
   base::ScopedFD dest_fd_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> context_;
   storage::FileSystemURL url_;
   std::string test_data_;

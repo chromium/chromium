@@ -36,6 +36,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_blob_util.h"
+#include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -248,10 +249,11 @@ void CannedSyncableFileSystem::SetUp(QuotaMode quota_mode) {
       base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
 
   if (quota_mode == QUOTA_ENABLED) {
-    quota_manager_ = base::MakeRefCounted<QuotaManager>(
-        false /* is_incognito */, data_dir_.GetPath(), io_task_runner_.get(),
-        /*quota_change_callback=*/base::DoNothing(), storage_policy.get(),
-        storage::GetQuotaSettingsFunc());
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, data_dir_.GetPath(), io_task_runner_.get(),
+        storage_policy.get());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), io_task_runner_.get());
   }
 
   std::vector<std::string> additional_allowed_schemes;
@@ -267,7 +269,7 @@ void CannedSyncableFileSystem::SetUp(QuotaMode quota_mode) {
       io_task_runner_, file_task_runner_,
       storage::ExternalMountPoints::CreateRefCounted(),
       std::move(storage_policy),
-      quota_manager_.get() ? quota_manager_->proxy() : nullptr,
+      quota_manager_.get() ? quota_manager_proxy_.get() : nullptr,
       std::move(additional_backends),
       std::vector<storage::URLRequestAutoMountHandler>(), data_dir_.GetPath(),
       options);

@@ -550,9 +550,6 @@ TEST_P(FileSystemQuotaClientTest, DeleteOriginTest) {
   const int64_t file_paths_cost_temporary_foo_https =
       ComputeFilePathsCostForOriginAndType(kFiles, "https://foo.com/",
                                            kFileSystemTypeTemporary);
-  const int64_t file_paths_cost_persistent_foo =
-      ComputeFilePathsCostForOriginAndType(kFiles, "http://foo.com/",
-                                           kFileSystemTypePersistent);
   const int64_t file_paths_cost_temporary_bar =
       ComputeFilePathsCostForOriginAndType(kFiles, "http://bar.com/",
                                            kFileSystemTypeTemporary);
@@ -603,22 +600,6 @@ TEST_P(FileSystemQuotaClientTest, DeleteOriginTest) {
                      ? 32 + file_paths_cost_persistent_bar_https
                      : 0),
             GetBucketUsage(quota_client, bar_https_temp_bucket));
-
-  if (!persistent_quota_is_temporary_quota()) {
-    auto bar_perm_bucket =
-        GetBucket("http://bar.com/", kDefaultBucketName, kPersistent);
-    EXPECT_EQ(0, GetBucketUsage(quota_client, bar_perm_bucket));
-
-    auto foo_perm_bucket =
-        GetBucket("http://foo.com/", kDefaultBucketName, kPersistent);
-    EXPECT_EQ(4 + file_paths_cost_persistent_foo,
-              GetBucketUsage(quota_client, foo_perm_bucket));
-
-    auto bar_https_perm_bucket =
-        GetBucket("https://bar.com/", kDefaultBucketName, kPersistent);
-    EXPECT_EQ(32 + file_paths_cost_persistent_bar_https,
-              GetBucketUsage(quota_client, bar_https_perm_bucket));
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(FileSystemQuotaClientTests,

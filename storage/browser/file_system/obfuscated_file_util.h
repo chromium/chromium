@@ -46,6 +46,41 @@ class QuotaBackendImplTest;
 class SandboxOriginDatabaseInterface;
 class SpecialStoragePolicy;
 
+// Class representing the key for directories_. NOTE: The BucketLocator value is
+// optional due to usage of ObfuscatedFileUtil where the type is not kTemporary
+// (i.e. kPersistent or kSyncable). For all non-temporary types, expect the
+// bucket member value to be absl::nullopt. The class is implemented as such to
+// avoid mapping the same StorageKey to potentially different bucket values,
+// which would cause directories_ lookup errors.
+class DatabaseKey {
+ public:
+  DatabaseKey();
+  ~DatabaseKey();
+
+  // Copyable and movable
+  DatabaseKey(const DatabaseKey& other);
+  DatabaseKey& operator=(const DatabaseKey& other);
+  DatabaseKey(DatabaseKey&& other);
+  DatabaseKey& operator=(DatabaseKey&& other);
+
+  DatabaseKey(const blink::StorageKey& storage_key,
+              const absl::optional<BucketLocator>& bucket,
+              const std::string& type);
+
+  const blink::StorageKey& storage_key() const { return storage_key_; }
+  const absl::optional<BucketLocator>& bucket() const { return bucket_; }
+  const std::string& type() const { return type_; }
+
+  bool operator==(const DatabaseKey& other) const;
+  bool operator!=(const DatabaseKey& other) const;
+  bool operator<(const DatabaseKey& other) const;
+
+ private:
+  blink::StorageKey storage_key_;
+  absl::optional<BucketLocator> bucket_;
+  std::string type_;
+};
+
 // This file util stores directory information in LevelDB to obfuscate
 // and to neutralize virtual file paths given by arbitrary apps.
 // Files are stored with two-level isolation: per-origin and per-type.
@@ -205,19 +240,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   bool DeleteDirectoryForStorageKeyAndType(const blink::StorageKey& storage_key,
                                            const std::string& type_string);
 
-  // Frees resources used by a StorageKey's filesystem.
-  void CloseFileSystemForStorageKeyAndType(const blink::StorageKey& storage_key,
-                                           const std::string& type_string);
-
   // This method and all methods of its returned class must be called only on
   // the FILE thread.  The caller is responsible for deleting the returned
   // object.
   std::unique_ptr<AbstractStorageKeyEnumerator> CreateStorageKeyEnumerator();
 
-  // Deletes a directory database from the database list in the ObfuscatedFSFU
-  // and destroys the database on the disk.
-  void DestroyDirectoryDatabase(const blink::StorageKey& storage_key,
-                                const std::string& type_string);
+  // Deletes a directory database from the database list and destroys the
+  // database on the disk corresponding to the provided StorageKey and type.
+  void DestroyDirectoryDatabaseForStorageKey(
+      const blink::StorageKey& storage_key,
+      const std::string& type_string);
+
+  // Deletes a directory database from the database list and destroys the
+  // database on the disk corresponding to the provided bucket locator and type.
+  void DestroyDirectoryDatabaseForBucket(const BucketLocator& bucket_locator,
+                                         const std::string& type_string);
 
   // Computes a cost for storing a given file in the obfuscated FSFU.
   // As the cost of a file is independent of the cost of its parent directories,
@@ -228,6 +265,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
 
   // This will rewrite the databases to remove traces of deleted data from disk.
   void RewriteDatabases();
+
+  // This function removes the key-value pair from default_buckets_ keyed at
+  // `storage_key`. Called when a default bucket is deleted from Quota
+  // management and the default_buckets_ cache needs to be updated to reflect
+  // that change in state.
+  void DeleteDefaultBucketForStorageKey(const blink::StorageKey& storage_key);
 
   bool is_incognito() { return is_incognito_; }
 
@@ -301,8 +344,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   base::FilePath DataPathToLocalPath(const FileSystemURL& url,
                                      const base::FilePath& data_file_path);
 
-  std::string GetDirectoryDatabaseKey(const blink::StorageKey& storage_key,
-                                      const std::string& type_string);
+  // Deletes a directory database from the database list and destroys the
+  // database on the disk.
+  void DestroyDirectoryDatabaseHelper(
+      const absl::optional<BucketLocator>& bucket_locator,
+      const blink::StorageKey& storage_key,
+      const std::string& type_string);
 
   // This returns nullptr if `create` flag is false and a filesystem does not
   // exist for the given `url`.
@@ -327,6 +374,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
                             const blink::StorageKey& storage_key,
                             FileSystemType type);
 
+  // Given a StorageKey, retrieve its default bucket either from the
+  // default_buckets_ in-memory structure or via GetOrCreateBucketSync(). NOTE:
+  // this function may use base::ScopedAllowBaseSyncPrimitives and call
+  // QuotaManagerProxy::GetOrCreateBucketSync() which relies on a blocking
+  // base::WaitableEvent.
+  QuotaErrorOr<BucketLocator> GetOrCreateDefaultBucket(
+      const blink::StorageKey& storage_key);
+
   void MarkUsed();
   void DropDatabases();
 
@@ -348,7 +403,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<std::string, std::unique_ptr<SandboxDirectoryDatabase>> directories_;
+  // Keeps tracks of previously-seen default buckets mapped to their
+  // corresponding StorageKey. Should remain in parallel with directories_.
+  std::map<blink::StorageKey, BucketLocator> default_buckets_;
+  std::map<DatabaseKey, std::unique_ptr<SandboxDirectoryDatabase>> directories_;
   std::unique_ptr<SandboxOriginDatabaseInterface> origin_database_;
   scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
   base::FilePath file_system_directory_;
