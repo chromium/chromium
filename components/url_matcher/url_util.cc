@@ -411,20 +411,15 @@ bool FilterToComponents(const std::string& filter,
 void AddFilters(URLMatcher* matcher,
                 bool allow,
                 base::MatcherStringPattern::ID* id,
-                const base::ListValue* patterns,
+                const base::Value::List& patterns,
                 std::map<base::MatcherStringPattern::ID,
                          url_matcher::util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  base::Value::ConstListView patterns_list = patterns->GetListDeprecated();
-  size_t size = std::min(kMaxFiltersAllowed, patterns_list.size());
+  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < size; ++i) {
-    std::string pattern;
-    if (patterns_list[i].is_string()) {
-      pattern = patterns_list[i].GetString();
-    } else {
-      DCHECK(false);
-    }
+    DCHECK(patterns[i].is_string());
+    const std::string pattern = patterns[i].GetString();
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(pattern, &components.scheme, &components.host,
@@ -480,7 +475,7 @@ void AddFilters(URLMatcher* matcher,
 }
 
 void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                     const base::ListValue* patterns) {
+                     const base::Value::List& patterns) {
   base::MatcherStringPattern::ID id(0);
   AddFilters(matcher, true, &id, patterns);
 }

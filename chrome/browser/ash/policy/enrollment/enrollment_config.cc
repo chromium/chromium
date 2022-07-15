@@ -117,17 +117,15 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   // Gather enrollment signals from various sources.
   const base::Value::Dict& device_state =
       local_state.GetValueDict(prefs::kServerBackedDeviceState);
-  std::string device_state_mode;
-  std::string device_state_management_domain;
-  bool is_license_packaged_with_device = false;
-  std::string license_type;
 
-  device_state_mode = GetString(device_state, kDeviceStateMode);
-  device_state_management_domain =
+  const std::string device_state_mode =
+      GetString(device_state, kDeviceStateMode);
+  const std::string device_state_management_domain =
       GetString(device_state, kDeviceStateManagementDomain);
-  is_license_packaged_with_device =
+  const bool is_license_packaged_with_device =
       device_state.FindBool(kDeviceStatePackagedLicense).value_or(false);
-  license_type = GetString(device_state, kDeviceStateLicenseType);
+  const std::string license_type =
+      GetString(device_state, kDeviceStateLicenseType);
 
   config.is_license_packaged_with_device = is_license_packaged_with_device;
 

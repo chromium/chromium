@@ -164,9 +164,9 @@ bool FullscreenController::ShouldExitFullscreenBeforeLock() {
 
   // Always exit full screen if the allowlist policy is unset.
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  const auto* url_allow_list =
-      prefs->GetList(prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
-  if (url_allow_list->GetListDeprecated().size() == 0)
+  const auto& url_allow_list = prefs->GetValueList(
+      prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
+  if (url_allow_list.size() == 0)
     return true;
 
   // Get the URL of the active window from the shell delegate.
@@ -176,8 +176,7 @@ bool FullscreenController::ShouldExitFullscreenBeforeLock() {
 
   // Check if it is allowed by user pref to keep full screen for the active URL.
   url_matcher::URLMatcher url_matcher;
-  url_matcher::util::AddAllowFilters(
-      &url_matcher, &base::Value::AsListValue(*url_allow_list));
+  url_matcher::util::AddAllowFilters(&url_matcher, url_allow_list);
   return url_matcher.MatchURL(url).empty();
 }
 

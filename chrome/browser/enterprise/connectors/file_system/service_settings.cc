@@ -200,19 +200,21 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
   }
 
   // Add the URL patterns to the matcher and store the condition set IDs.
-  const base::Value* url_list = url_settings_value.FindListKey(kKeyUrlList);
-  if (!url_list) {
+  const base::Value* url_list_value =
+      url_settings_value.FindListKey(kKeyUrlList);
+  if (!url_list_value) {
     DLOG(ERROR) << "Can't find " << kKeyUrlList << url_settings_value;
     return false;
   }
 
-  for (const base::Value& url : url_list->GetListDeprecated())
+  const base::Value::List& url_list = url_list_value->GetList();
+
+  for (const base::Value& url : url_list)
     CHECK(url.is_string());
 
   // This pre-increments the id by size of url_list_value.
   URLMatchingID pre_id = *id;
-  url_matcher::util::AddFilters(url_matcher_.get(), enabled, id,
-                                &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(url_matcher_.get(), enabled, id, url_list);
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
   if (!mime_types)

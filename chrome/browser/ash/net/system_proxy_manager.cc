@@ -407,8 +407,9 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
   if (primary_profile_) {
     request.set_active_principal_name(
         primary_profile_->GetPrefs()
-            ->Get(prefs::kKerberosActivePrincipalName)
-            ->GetString());
+            ->GetValue(prefs::kKerberosActivePrincipalName)
+            // TODO (https://crbug.com/1344857) Maybe call GetString directly.
+            .GetString());
   }
   SystemProxyClient::Get()->SetAuthenticationDetails(
       request, base::BindOnce(&SystemProxyManager::OnSetAuthenticationDetails,

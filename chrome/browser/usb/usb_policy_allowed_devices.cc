@@ -72,18 +72,14 @@ bool UsbPolicyAllowedDevices::IsDeviceAllowed(
 }
 
 void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
-  const base::Value* pref_value = pref_change_registrar_.prefs()->Get(
-      prefs::kManagedWebUsbAllowDevicesForUrls);
+  const base::Value::List& pref_list =
+      pref_change_registrar_.prefs()->GetValueList(
+          prefs::kManagedWebUsbAllowDevicesForUrls);
   usb_device_ids_to_urls_.clear();
 
-  // A policy has not been assigned.
-  if (!pref_value) {
-    return;
-  }
-
   // The pref value has already been validated by the policy handler, so it is
-  // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetListDeprecated()) {
+  // safe to assume that |pref_list| follows the policy template.
+  for (const auto& item : pref_list) {
     const base::Value* urls_list = item.FindKey(kPrefUrlsKey);
     std::set<url::Origin> parsed_set;
 

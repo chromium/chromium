@@ -30,17 +30,12 @@ EnterpriseAuthenticationAppLinkManager::
     ~EnterpriseAuthenticationAppLinkManager() = default;
 
 void EnterpriseAuthenticationAppLinkManager::OnPolicyUpdated() {
-  const base::Value* authentication_urls_policy =
-      pref_service_->GetList(prefs::kEnterpriseAuthAppLinkPolicy);
-  if (authentication_urls_policy == nullptr) {
-    url_matcher_.reset(nullptr);
-    return;
-  }
+  const base::Value::List& authentication_urls_policy =
+      pref_service_->GetValueList(prefs::kEnterpriseAuthAppLinkPolicy);
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(
-      url_matcher_.get(),
-      &base::Value::AsListValue(*authentication_urls_policy));
+  url_matcher::util::AddAllowFilters(url_matcher_.get(),
+                                     authentication_urls_policy);
 }
 
 bool EnterpriseAuthenticationAppLinkManager::IsEnterpriseAuthenticationUrl(

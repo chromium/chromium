@@ -684,8 +684,7 @@ void DownloadPrefs::UpdateAutoOpenByPolicy() {
 
   PrefService* prefs = profile_->GetPrefs();
   for (const auto& extension :
-       prefs->GetList(prefs::kDownloadExtensionsToOpenByPolicy)
-           ->GetListDeprecated()) {
+       prefs->GetValueList(prefs::kDownloadExtensionsToOpenByPolicy)) {
     base::FilePath::StringType extension_string =
         StringToFilePathString(extension.GetString());
     auto_open_by_policy_.insert(extension_string);
@@ -697,18 +696,19 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
       std::make_unique<policy::URLBlocklist>();
 
   PrefService* prefs = profile_->GetPrefs();
-  const auto* list = prefs->GetList(prefs::kDownloadAllowedURLsForOpenByPolicy);
+  const auto& list =
+      prefs->GetValueList(prefs::kDownloadAllowedURLsForOpenByPolicy);
 
   // We only need to configure |allowed_urls| if something is set by policy,
   // otherwise the default object does what we want.
-  if (list->GetListDeprecated().size() != 0) {
-    allowed_urls->Allow(&base::Value::AsListValue(*list));
+  if (list.size() != 0) {
+    allowed_urls->Allow(list);
 
     // Since we only want to auto-open for the specified urls, block everything
     // else.
-    auto blocked = std::make_unique<base::ListValue>();
-    blocked->Append("*");
-    allowed_urls->Block(blocked.get());
+    auto blocked = base::Value::List();
+    blocked.Append("*");
+    allowed_urls->Block(blocked);
   }
 
   auto_open_allowed_by_urls_.swap(allowed_urls);

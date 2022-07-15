@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
@@ -24,7 +25,6 @@
 class PrefService;
 
 namespace base {
-class ListValue;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -55,11 +55,11 @@ class POLICY_EXPORT URLBlocklist {
   // URLs matching one of the |filters| will be blocked. The filter format is
   // documented at
   // http://www.chromium.org/administrators/url-blocklist-filter-format.
-  void Block(const base::ListValue* filters);
+  void Block(const base::Value::List& filters);
 
   // URLs matching one of the |filters| will be allowed. If a URL is both
   // Blocked and Allowed, Allow takes precedence.
-  void Allow(const base::ListValue* filters);
+  void Allow(const base::Value::List& filters);
 
   // Returns true if the URL is blocked.
   bool IsURLBlocked(const GURL& url) const;

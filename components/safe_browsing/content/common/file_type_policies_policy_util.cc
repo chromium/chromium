@@ -43,7 +43,7 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
   const std::string lower_extension = base::ToLowerASCII(extension);
 
   if (heuristic_overrides) {
-    base::ListValue domains_for_extension;
+    base::Value::List domains_for_extension;
     for (const base::Value& entry : heuristic_overrides->GetListDeprecated()) {
       const base::DictionaryValue& extension_domain_patterns_dict =
           base::Value::AsDictionaryValue(entry);
@@ -62,11 +62,10 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
       }
     }
 
-    if (!domains_for_extension.GetListDeprecated().empty()) {
+    if (!domains_for_extension.empty()) {
       url_matcher::URLMatcher matcher;
       base::MatcherStringPattern::ID id(0);
-      url_matcher::util::AddFilters(&matcher, true, &id,
-                                    &domains_for_extension);
+      url_matcher::util::AddFilters(&matcher, true, &id, domains_for_extension);
       auto matching_set_size = matcher.MatchURL(normalized_url).size();
       return matching_set_size > 0;
     }

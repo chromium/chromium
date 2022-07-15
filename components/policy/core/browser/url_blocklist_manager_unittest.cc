@@ -96,9 +96,9 @@ bool IsMatch(const std::string& pattern, const std::string& url) {
   URLBlocklist blocklist;
 
   // Add the pattern to blocklist.
-  base::Value blocked(base::Value::Type::LIST);
+  base::Value::List blocked;
   blocked.Append(pattern);
-  blocklist.Block(&base::Value::AsListValue(blocked));
+  blocklist.Block(blocked);
 
   return blocklist.IsURLBlocked(GURL(url));
 }
@@ -111,23 +111,23 @@ policy::URLBlocklist::URLBlocklistState GetMatch(const std::string& pattern,
   URLBlocklist blocklist;
 
   // Add the pattern to list.
-  base::Value blocked(base::Value::Type::LIST);
+  base::Value::List blocked;
   blocked.Append(pattern);
 
   if (use_allowlist) {
-    blocklist.Allow(&base::Value::AsListValue(blocked));
+    blocklist.Allow(blocked);
   } else {
-    blocklist.Block(&base::Value::AsListValue(blocked));
+    blocklist.Block(blocked);
   }
 
   return blocklist.GetURLBlocklistState(GURL(url));
 }
 
 TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
-                               base::Value::ToUniquePtrValue(std::move(list)));
+                               std::make_unique<base::Value>(std::move(list)));
   auto manager = std::make_unique<URLBlocklistManager>(
       &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
   task_environment_.RunUntilIdle();
@@ -219,14 +219,14 @@ TEST_F(URLBlocklistManagerTest, Filtering) {
   EXPECT_FALSE(IsMatch("123.123.123.123", "http://123.123.123.124/"));
 
   // Test exceptions to path prefixes, and most specific matches.
-  base::Value blocked(base::Value::Type::LIST);
-  base::Value allowed(base::Value::Type::LIST);
+  base::Value::List blocked;
+  base::Value::List allowed;
   blocked.Append("s.xxx.com/a");
   allowed.Append("s.xxx.com/a/b");
   blocked.Append("https://s.xxx.com/a/b/c");
   allowed.Append("https://s.xxx.com/a/b/c/d");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://s.xxx.com/a")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://s.xxx.com/a/x")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("https://s.xxx.com/a/x")));
@@ -244,20 +244,20 @@ TEST_F(URLBlocklistManagerTest, Filtering) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://xxx.com/a/b")));
 
   // Open an exception.
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("google.com");
-  allowed.ClearList();
+  allowed.clear();
   allowed.Append("plus.google.com");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://google.com/")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.google.com/")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://plus.google.com/")));
 
   // Open an exception only when using https for mail.
-  allowed.ClearList();
+  allowed.clear();
   allowed.Append("https://mail.google.com");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://google.com/")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://mail.google.com/")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.google.com/")));
@@ -266,21 +266,21 @@ TEST_F(URLBlocklistManagerTest, Filtering) {
 
   // Match exactly "google.com", only for http. Subdomains without exceptions
   // are still blocked.
-  allowed.ClearList();
+  allowed.clear();
   allowed.Append("http://.google.com");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://google.com/")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("https://google.com/")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.google.com/")));
 
   // A smaller path match in an exact host overrides a longer path for hosts
   // that also match subdomains.
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("yyy.com/aaa");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  allowed.ClearList();
+  blocklist.Block(blocked);
+  allowed.clear();
   allowed.Append(".yyy.com/a");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://yyy.com")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://yyy.com/aaa")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://yyy.com/aaa2")));
@@ -289,35 +289,35 @@ TEST_F(URLBlocklistManagerTest, Filtering) {
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.yyy.com/aaa2")));
 
   // If the exact entry is both allowed and blocked, allowing takes precedence.
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("example.com");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  allowed.ClearList();
+  blocklist.Block(blocked);
+  allowed.clear();
   allowed.Append("example.com");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://example.com")));
 
   // Devtools should not be blocked.
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  allowed.ClearList();
+  blocklist.Block(blocked);
+  allowed.clear();
   allowed.Append("devtools://*");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("devtools://something.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("https://something.com")));
 }
 
 TEST_F(URLBlocklistManagerTest, QueryParameters) {
   URLBlocklist blocklist;
-  base::Value blocked(base::Value::Type::LIST);
-  base::Value allowed(base::Value::Type::LIST);
+  base::Value::List blocked;
+  base::Value::List allowed;
 
   // Block domain and all subdomains, for any filtered scheme.
   blocked.Append("youtube.com");
   allowed.Append("youtube.com/watch?v=XYZ");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
 
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com/watch?v=123")));
@@ -331,9 +331,9 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_FALSE(
       blocklist.IsURLBlocked(GURL("http://youtube.com/watch?foo=bar&v=XYZ")));
 
-  allowed.ClearList();
+  allowed.clear();
   allowed.Append("youtube.com/watch?av=XYZ&ag=123");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com/watch?av=123")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com/watch?av=XYZ")));
@@ -350,9 +350,9 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_TRUE(blocklist.IsURLBlocked(
       GURL("http://youtube.com/watch?av=XYZ&ag=123&ag=1234")));
 
-  allowed.ClearList();
+  allowed.clear();
   allowed.Append("youtube.com/watch?foo=bar*&vid=2*");
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com/watch?vid=2")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube.com/watch?foo=bar")));
@@ -365,9 +365,9 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_FALSE(blocklist.IsURLBlocked(
       GURL("http://youtube.com/watch?vid=234&foo=bar23")));
 
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("youtube1.com/disallow?v=44678");
-  blocklist.Block(&base::Value::AsListValue(blocked));
+  blocklist.Block(blocked);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube1.com")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube1.com?v=123")));
   // Path does not match
@@ -381,9 +381,9 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_TRUE(blocklist.IsURLBlocked(
       GURL("http://youtube1.com/disallow?v=4467&v=123&v=44678")));
 
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("youtube1.com/disallow?g=*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
+  blocklist.Block(blocked);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube1.com")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube1.com?ag=123")));
   EXPECT_TRUE(
@@ -391,9 +391,9 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_TRUE(
       blocklist.IsURLBlocked(GURL("http://youtube1.com/disallow?ag=13&g=123")));
 
-  blocked.ClearList();
+  blocked.clear();
   blocked.Append("youtube2.com/disallow?a*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
+  blocklist.Block(blocked);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube2.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(
       GURL("http://youtube2.com/disallow?b=123&a21=467")));
@@ -402,12 +402,12 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
   EXPECT_FALSE(
       blocklist.IsURLBlocked(GURL("http://youtube2.com/disallow?baba=true")));
 
-  allowed.ClearList();
-  blocked.ClearList();
+  allowed.clear();
+  blocked.clear();
   blocked.Append("youtube3.com");
   allowed.Append("youtube3.com/watch?fo*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube3.com")));
   EXPECT_TRUE(
       blocklist.IsURLBlocked(GURL("http://youtube3.com/watch?b=123&a21=467")));
@@ -421,22 +421,22 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
       blocklist.IsURLBlocked(GURL("http://youtube3.com/watch?foreign=true")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube3.com/watch?fold")));
 
-  allowed.ClearList();
-  blocked.ClearList();
+  allowed.clear();
+  blocked.clear();
   blocked.Append("youtube4.com");
   allowed.Append("youtube4.com?*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube4.com")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube4.com/?hello")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube4.com/?foo")));
 
-  allowed.ClearList();
-  blocked.ClearList();
+  allowed.clear();
+  blocked.clear();
   blocked.Append("youtube5.com?foo=bar");
   allowed.Append("youtube5.com?foo1=bar1&foo2=bar2&");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("http://youtube5.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://youtube5.com/?foo=bar&a=b")));
   // More specific filter is given precedence.
@@ -447,15 +447,15 @@ TEST_F(URLBlocklistManagerTest, QueryParameters) {
 TEST_F(URLBlocklistManagerTest, BlockAllWithExceptions) {
   URLBlocklist blocklist;
 
-  base::Value blocked(base::Value::Type::LIST);
-  base::Value allowed(base::Value::Type::LIST);
+  base::Value::List blocked;
+  base::Value::List allowed;
   blocked.Append("*");
   allowed.Append(".www.google.com");
   allowed.Append("plus.google.com");
   allowed.Append("https://mail.google.com");
   allowed.Append("https://very.safe/path");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://random.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://google.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://s.www.google.com")));
@@ -472,11 +472,11 @@ TEST_F(URLBlocklistManagerTest, BlockAllWithExceptions) {
 
 TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   URLBlocklist blocklist;
-  base::Value blocked(base::Value::Type::LIST);
+  base::Value::List blocked;
 
   // Blocklist everything:
   blocked.Append("*");
-  blocklist.Block(&base::Value::AsListValue(blocked));
+  blocklist.Block(blocked);
 
   // Internal NTP and extension URLs are not blocked by the "*":
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.google.com")));
@@ -497,10 +497,10 @@ TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
 
   // Unless they are explicitly on the blocklist:
   blocked.Append("chrome-extension://*");
-  base::Value allowed(base::Value::Type::LIST);
+  base::Value::List allowed;
   allowed.Append("chrome-extension://abc");
-  blocklist.Block(&base::Value::AsListValue(blocked));
-  blocklist.Allow(&base::Value::AsListValue(allowed));
+  blocklist.Block(blocked);
+  blocklist.Allow(allowed);
 
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("http://www.google.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome-extension://xyz")));

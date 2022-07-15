@@ -99,7 +99,7 @@ URL_MATCHER_EXPORT void AddFilters(
     url_matcher::URLMatcher* matcher,
     bool allow,
     base::MatcherStringPattern::ID* id,
-    const base::ListValue* patterns,
+    const base::Value::List& patterns,
     std::map<base::MatcherStringPattern::ID,
              url_matcher::util::FilterComponents>* filters = nullptr);
 
@@ -121,7 +121,7 @@ URL_MATCHER_EXPORT void AddFilters(
              url_matcher::util::FilterComponents>* filters = nullptr);
 
 URL_MATCHER_EXPORT void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                                        const base::ListValue* patterns);
+                                        const base::Value::List& patterns);
 
 URL_MATCHER_EXPORT void AddAllowFilters(
     url_matcher::URLMatcher* matcher,

@@ -241,7 +241,7 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
     return;
 
   url_matcher::util::AddFilters(matcher_.get(), enabled, id,
-                                &base::Value::AsListValue(*url_list));
+                                url_list->GetList());
 
   if (enabled)
     enabled_patterns_settings_[*id] = std::move(setting);

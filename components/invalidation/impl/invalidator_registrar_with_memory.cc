@@ -123,8 +123,8 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
   if (migrate_old_prefs) {
     MigratePrefs(prefs_, sender_id_);
   }
-  const base::Value* pref_data =
-      prefs_->Get(kTopicsToHandler)->FindDictKey(sender_id_);
+  const base::Value::Dict* pref_data =
+      prefs_->GetValueDict(kTopicsToHandler).FindDict(sender_id_);
   if (!pref_data) {
     DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
     update->SetKey(sender_id_, base::Value(base::Value::Type::DICTIONARY));
@@ -133,7 +133,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
   if (!base::FeatureList::IsEnabled(kRestoreInterestingTopicsFeature))
     return;
-  for (auto it : pref_data->DictItems()) {
+  for (auto it : *pref_data) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
       const std::string* handler = it.second.FindStringKey(kHandler);
