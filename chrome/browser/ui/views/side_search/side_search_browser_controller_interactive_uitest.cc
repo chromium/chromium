@@ -6,14 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
@@ -24,51 +20,22 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/side_search/side_search_browsertest.h"
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/test/test_extension_dir.h"
-#include "net/dns/mock_host_resolver.h"
-#include "services/network/test/test_url_loader_factory.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
-#include "ui/views/view_utils.h"
-
-namespace {
-
-constexpr char kSearchMatchPath[] = "/search-match";
-constexpr char kNonMatchPath[] = "/non-match";
-
-ui::MouseEvent GetDummyEvent() {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                        base::TimeTicks::Now(), 0, 0);
-}
-
-bool IsSearchURLMatch(const GURL& url) {
-  // Test via path prefix match as the embedded test server ensures that all
-  // URLs are using the same host and paths are made unique via appending a
-  // monotonically increasing value to the end of their paths.
-  return url.path().find(kSearchMatchPath) != std::string::npos;
-}
-
-}  // namespace
 
 class SideSearchBrowserControllerTest
-    : public InProcessBrowserTest,
+    : public SideSearchBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
   // InProcessBrowserTest:
@@ -87,198 +54,6 @@ class SideSearchBrowserControllerTest
   void TearDown() override {
     InProcessBrowserTest::TearDown();
     scoped_feature_list_.Reset();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->RegisterDefaultHandler(
-        base::BindRepeating(&SideSearchBrowserControllerTest::HandleRequest,
-                            base::Unretained(this)));
-    embedded_test_server()->StartAcceptingConnections();
-
-    InProcessBrowserTest::SetUpOnMainThread();
-    auto* config = SideSearchConfig::Get(browser()->profile());
-    // Basic configuration for testing that allows navigations to URLs with
-    // paths prefixed with `kSearchMatchPath` to proceed within the side panel,
-    // and only allows showing the side panel on non-matching pages.
-    config->SetShouldNavigateInSidePanelCallback(
-        base::BindRepeating(IsSearchURLMatch));
-    config->SetCanShowSidePanelForURLCallback(base::BindRepeating(
-        [](const GURL& url) { return !IsSearchURLMatch(url); }));
-    config->SetGenerateSideSearchURLCallback(
-        base::BindRepeating([](const GURL& url) { return url; }));
-    SetIsSidePanelSRPAvailableAt(browser(), 0, true);
-  }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  void ActivateTabAt(Browser* browser, int index) {
-    browser->tab_strip_model()->ActivateTabAt(index);
-  }
-
-  void AppendTab(Browser* browser, const GURL& url) {
-    chrome::AddTabAt(browser, url, -1, true);
-    SetIsSidePanelSRPAvailableAt(
-        browser, browser->tab_strip_model()->GetTabCount() - 1, true);
-  }
-
-  void NavigateActiveTab(Browser* browser, const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
-  }
-
-  content::WebContents* GetActiveSidePanelWebContents(Browser* browser) {
-    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
-        browser->tab_strip_model()->GetActiveWebContents());
-    return tab_contents_helper->side_panel_contents_for_testing();
-  }
-
-  void NavigateActiveSideContents(Browser* browser, const GURL& url) {
-    auto* side_contents = GetActiveSidePanelWebContents(browser);
-    content::TestNavigationObserver nav_observer(side_contents);
-    side_contents->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(url));
-    nav_observer.Wait();
-    if (SideSearchConfig::Get(browser->profile())
-            ->ShouldNavigateInSidePanel(url)) {
-      // If allowed to proceed in the side panel the side contents committed URL
-      // should have been updated to reflect.
-      EXPECT_EQ(url, side_contents->GetLastCommittedURL());
-    } else {
-      // If redirected to the tab contents ensure we observe the correct
-      // committed URL in the tab.
-      auto* tab_contents = browser->tab_strip_model()->GetActiveWebContents();
-      content::TestNavigationObserver tab_observer(tab_contents);
-      tab_observer.Wait();
-      EXPECT_EQ(url, tab_contents->GetLastCommittedURL());
-    }
-  }
-
-  void NotifyButtonClick(Browser* browser) {
-    views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
-        .NotifyClick(GetDummyEvent());
-    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
-  }
-
-  void NotifyCloseButtonClick(Browser* browser) {
-    ASSERT_TRUE(GetSidePanelFor(browser)->GetVisible());
-    views::test::ButtonTestApi(GetSideButtonClosePanelFor(browser))
-        .NotifyClick(GetDummyEvent());
-    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
-  }
-
-  void NotifyReadLaterButtonClick(Browser* browser) {
-    views::test::ButtonTestApi(GetReadLaterButtonFor(browser))
-        .NotifyClick(GetDummyEvent());
-  }
-
-  void SetIsSidePanelSRPAvailableAt(Browser* browser,
-                                    int index,
-                                    bool is_available) {
-    SideSearchConfig::Get(browser->profile())
-        ->set_is_side_panel_srp_available(is_available);
-  }
-
-  BrowserView* BrowserViewFor(Browser* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser);
-  }
-
-  views::Button* GetSidePanelButtonFor(Browser* browser) {
-    views::View* button_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kSideSearchButtonElementId, browser->window()->GetElementContext());
-    return button_view ? views::AsViewClass<views::Button>(button_view)
-                       : nullptr;
-  }
-
-  views::Button* GetReadLaterButtonFor(Browser* browser) {
-    views::View* button_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kReadLaterButtonElementId, browser->window()->GetElementContext());
-    return button_view ? views::AsViewClass<views::Button>(button_view)
-                       : nullptr;
-  }
-
-  // Extract the testing of the entrypoint when the side panel is open into its
-  // own method as this will vary depending on whether or not the DSE support
-  // flag is enabled. For e.g. when DSE support is enabled and the side panel is
-  // open the omnibox button is hidden while if DSE support is disabled the
-  // toolbar button is visible.
-  void TestSidePanelOpenEntrypointState(Browser* browser) {
-    // If the side panel is visible and DSE support is enabled then the
-    // entrypoint should be hidden. Otherwise the entrypoint should be visible.
-    if (side_search::IsDSESupportEnabled(browser->profile())) {
-      EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
-    } else {
-      EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
-    }
-  }
-
-  views::Button* GetSideButtonClosePanelFor(Browser* browser) {
-    views::View* button_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kSidePanelCloseButtonElementId,
-            browser->window()->GetElementContext());
-    return button_view ? views::AsViewClass<views::Button>(button_view)
-                       : nullptr;
-  }
-
-  virtual SidePanel* GetSidePanelFor(Browser* browser) {
-    return BrowserViewFor(browser)->side_search_side_panel_for_testing();
-  }
-
-  content::WebContents* GetSidePanelContentsFor(Browser* browser, int index) {
-    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
-        browser->tab_strip_model()->GetWebContentsAt(index));
-    return tab_contents_helper->side_panel_contents_for_testing();
-  }
-
-  void NavigateToMatchingAndNonMatchingSearchPage(Browser* browser) {
-    // The side panel button should never be visible on the matched search page.
-    NavigateActiveTab(browser, GetMatchingSearchUrl());
-    EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
-    EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
-
-    // The side panel button should be visible if on a non-matched page and the
-    // current tab has previously encountered a matched search page.
-    NavigateActiveTab(browser, GetNonMatchingUrl());
-    EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
-    EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
-  }
-
-  void NavigateToMatchingSearchPageAndOpenSidePanel(Browser* browser) {
-    NavigateToMatchingAndNonMatchingSearchPage(browser);
-
-    NotifyButtonClick(browser);
-    TestSidePanelOpenEntrypointState(browser);
-    EXPECT_TRUE(GetSidePanelFor(browser)->GetVisible());
-    EXPECT_TRUE(
-        content::WaitForLoadStop(GetActiveSidePanelWebContents(browser)));
-  }
-
- protected:
-  GURL GetMatchingSearchUrl() {
-    // Ensure that each returned matching URL is unique.
-    static int id = 1;
-    return embedded_test_server()->GetURL(
-        base::StrCat({kSearchMatchPath, base::NumberToString(id++)}));
-  }
-
-  GURL GetNonMatchingUrl() {
-    // Ensure that each returned non-matching URL is unique.
-    static int id = 1;
-    return embedded_test_server()->GetURL(
-        base::StrCat({kNonMatchPath, base::NumberToString(id++)}));
-  }
-
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_OK);
-    return std::move(http_response);
   }
 
   base::HistogramTester histogram_tester_;
