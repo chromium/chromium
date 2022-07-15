@@ -14,21 +14,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/guid.h"
-#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -57,13 +51,10 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -248,9 +239,29 @@ class PersonalDataManagerTestBase {
         /*image_fetcher=*/nullptr, is_incognito);
 
     personal_data->AddObserver(&personal_data_observer_);
-    AccountInfo account_info;
-    account_info.email = use_sync_transport_mode ? kSyncTransportAccountEmail
-                                                 : kPrimaryAccountEmail;
+    std::string email = use_sync_transport_mode ? kSyncTransportAccountEmail
+                                                : kPrimaryAccountEmail;
+    // Set the account in both IdentityManager and SyncService.
+    CoreAccountInfo account_info;
+    signin::ConsentLevel consent_level = use_sync_transport_mode
+                                             ? signin::ConsentLevel::kSignin
+                                             : signin::ConsentLevel::kSync;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    identity_test_env_.ClearPrimaryAccount();
+    account_info = identity_test_env_.SetPrimaryAccount(email, consent_level);
+#else
+    // In ChromeOS-Ash, clearing/resetting the primary account is not supported.
+    // So if an account already exists, reuse it (and make sure it matches).
+    if (identity_test_env_.identity_manager()->HasPrimaryAccount(
+            consent_level)) {
+      account_info =
+          identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+              consent_level);
+      ASSERT_EQ(account_info.email, email);
+    } else {
+      account_info = identity_test_env_.SetPrimaryAccount(email, consent_level);
+    }
+#endif
     sync_service_.SetAccountInfo(account_info);
     sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
     personal_data->OnSyncServiceInitialized(&sync_service_);
@@ -313,14 +324,6 @@ class PersonalDataManagerTestBase {
     run_loop.Run();
   }
 
-  AccountInfo SetActiveSecondaryAccount() {
-    AccountInfo account_info;
-    account_info.email = kSyncTransportAccountEmail;
-    account_info.account_id = CoreAccountId("account_id");
-    sync_service_.SetAccountInfo(account_info);
-    sync_service_.SetHasSyncConsent(false);
-    return account_info;
-  }
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
   ScopedFeatureListWrapper scoped_features_;
@@ -352,12 +355,12 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   void ResetPersonalDataManager(UserMode user_mode,
-                                bool use_account_server_storage = false) {
+                                bool use_sync_transport_mode = false) {
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     PersonalDataManagerTestBase::ResetPersonalDataManager(
-        user_mode, use_account_server_storage, personal_data_.get());
+        user_mode, use_sync_transport_mode, personal_data_.get());
   }
 
   void ResetProfiles() {
@@ -571,6 +574,18 @@ class PersonalDataManagerTest : public PersonalDataManagerHelper,
   void SetUp() override {
     SetUpTest();
     ResetPersonalDataManager(USER_MODE_NORMAL);
+  }
+  void TearDown() override { TearDownTest(); }
+};
+
+class PersonalDataManagerSyncTransportModeTest
+    : public PersonalDataManagerHelper,
+      public testing::Test {
+ protected:
+  void SetUp() override {
+    SetUpTest();
+    ResetPersonalDataManager(USER_MODE_NORMAL,
+                             /*use_sync_transport_mode=*/true);
   }
   void TearDown() override { TearDownTest(); }
 };
@@ -1330,6 +1345,8 @@ TEST_F(PersonalDataManagerTest, UpdateVerifiedProfilesOrigin) {
 }
 
 // Test that ensure local data is not lost on sign-in.
+// Clearing/changing the primary account is not supported on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Set up the experiment flags.
   base::test::ScopedFeatureList scoped_features;
@@ -1337,13 +1354,10 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
       /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
       /*disabled_features=*/{});
 
-// ClearPrimaryAccount is not supported on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(AutofillSyncSigninState::kSignedOut,
             personal_data_->GetSyncSigninState());
-#endif
   EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
 
   // Add local card.
@@ -1372,6 +1386,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
   EXPECT_EQ(0, local_card.Compare(*personal_data_->GetCreditCards()[0]));
 }
+#endif
 
 TEST_F(PersonalDataManagerTest, AddProfilesAndCreditCards) {
   AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
@@ -5540,12 +5555,11 @@ TEST_F(
 
 // Tests that Wallet addresses do NOT get converted if they're stored in
 // ephemeral storage.
-TEST_F(PersonalDataManagerTest, DoNotConvertWalletAddressesInEphemeralStorage) {
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       DoNotConvertWalletAddressesInEphemeralStorage) {
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/true);
   ASSERT_FALSE(personal_data_->IsSyncFeatureEnabled());
 
   // Add a local profile.
@@ -6005,12 +6019,13 @@ TEST_F(PersonalDataManagerTest, ExcludeServerSideCards) {
 // Sync Transport mode is only for Win, Mac, and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode) {
-  // Set up PersonalDataManager in transport mode.
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/true);
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       ServerCardsShowInTransportMode) {
   SetUpThreeCardTypes();
-  AccountInfo active_info = SetActiveSecondaryAccount();
+
+  CoreAccountInfo active_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
 
   // Opt-in to seeing server card in sync transport mode.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
@@ -6038,12 +6053,13 @@ TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode) {
 
 // Make sure that the opt in is necessary to show server cards if the
 // appropriate feature is disabled.
-TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode_NeedOptIn) {
-  // Set up PersonalDataManager in transport mode.
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/true);
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       ServerCardsShowInTransportMode_NeedOptIn) {
   SetUpThreeCardTypes();
-  AccountInfo active_info = SetActiveSecondaryAccount();
+
+  CoreAccountInfo active_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
 
   // The server cards should not be available at first. The user needs to
   // accept the opt-in offer.
@@ -6251,8 +6267,9 @@ TEST_F(
 // Sanity check that the mode where we use the regular, persistent storage for
 // cards still works.
 TEST_F(PersonalDataManagerTest, UsePersistentServerStorage) {
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/false);
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
   SetUpThreeCardTypes();
 
   // include_server_cards is set to false, therefore no server cards should be
@@ -6267,10 +6284,8 @@ TEST_F(PersonalDataManagerTest, UsePersistentServerStorage) {
 }
 
 // Verify that PDM can switch at runtime between the different storages.
-TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
+TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
   // Start with account storage.
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/true);
   SetUpThreeCardTypes();
 
   // Check that we do have 2 server cards, as expected.
@@ -6305,10 +6320,8 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
 
 // Sanity check that the mode where we use the regular, persistent storage for
 // cards still works.
-TEST_F(PersonalDataManagerTest, UseCorrectStorageForDifferentCards) {
-  ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_account_server_storage=*/true);
-
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       UseCorrectStorageForDifferentCards) {
   // Add a server card.
   CreditCard server_card;
   test::SetCreditCardInfo(&server_card, "Server Card",
@@ -6446,18 +6459,18 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
   // GetPrimaryAccountInfo() is called.
-  identity_test_env_.SetPrimaryAccount(kPrimaryAccountEmail,
-                                       signin::ConsentLevel::kSync);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  std::string sync_account_email =
+      identity_test_env_.identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
+  ASSERT_FALSE(sync_account_email.empty());
 
-  // Make the sync service return a non-empty AccountInfo when
-  // GetAccountInfo() is called.
-  AccountInfo active_info;
-  active_info.email = kSyncTransportAccountEmail;
-  sync_service_.SetAccountInfo(active_info);
+  // Make the sync service returns consistent AccountInfo when GetAccountInfo()
+  // is called.
+  ASSERT_EQ(sync_service_.GetAccountInfo().email, sync_account_email);
 
   // The Active Sync AccountInfo should be returned.
-  EXPECT_EQ(kSyncTransportAccountEmail,
+  EXPECT_EQ(sync_account_email,
             personal_data_->GetAccountInfoForPaymentsServer().email);
 
   // The Active Sync AccountInfo should still be returned even if
@@ -6467,7 +6480,7 @@ TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
     scoped_features.InitAndDisableFeature(
         features::kAutofillEnableAccountWalletStorage);
 
-    EXPECT_EQ(kSyncTransportAccountEmail,
+    EXPECT_EQ(sync_account_email,
               personal_data_->GetAccountInfoForPaymentsServer().email);
   }
 }
@@ -6631,7 +6644,8 @@ TEST_F(PersonalDataManagerMigrationTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       ShouldShowCardsFromAccountOption) {
   // The method should return false if one of these is not respected:
   //   * The sync_service is not null
   //   * The sync feature is not enabled
@@ -6641,12 +6655,6 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   // independently, one by one.
 
   // Set everything up so that the proposition should be shown.
-  // Set an active secondary account.
-  AccountInfo active_info;
-  active_info.email = kPrimaryAccountEmail;
-  active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAccountInfo(active_info);
-  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -6659,23 +6667,24 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   WaitForOnPersonalDataChanged();
 
   // Set the feature to enabled.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_features(
+      features::kAutofillEnableAccountWalletStorage);
 
   // Make sure the function returns true.
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user already opted-in. Check that the function now returns
   // false.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
+  CoreAccountId account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       true);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, false);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       false);
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function now returns
@@ -6706,7 +6715,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 }
 #else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       ShouldShowCardsFromAccountOption) {
   // The method should return false if one of these is not respected:
   //   * The sync_service is not null
   //   * The sync feature is not enabled
@@ -6716,12 +6726,6 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   // independently, one by one.
 
   // Set everything up so that the proposition should be shown on Desktop.
-  // Set an an active secondary account.
-  AccountInfo active_info;
-  active_info.email = kPrimaryAccountEmail;
-  active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAccountInfo(active_info);
-  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -6744,13 +6748,16 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 
   // Set that the user already opted-in. Check that the function still returns
   // false.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
+  CoreAccountId account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       true);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, false);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       false);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function still
@@ -6782,12 +6789,11 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
-  // Make a non-primary account available with both a refresh token and cookie
-  // for the first few tests.
-  identity_test_env_.SetPrimaryAccount("test@gmail.com",
-                                       signin::ConsentLevel::kSync);
-  sync_service_.SetHasSyncConsent(false);
+TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
+  // Make sure a non-sync-consented account is available for the first tests.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(sync_service_.HasSyncConsent());
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
 
@@ -6795,10 +6801,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // account info is not empty, the kAutofillEnableAccountWalletStorage feature
   // is enabled and the Wallet data type is active for the sync service.
   {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
-        /*disabled_features=*/{});
+    base::test::ScopedFeatureList scoped_features(
+        features::kAutofillEnableAccountWalletStorage);
 
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
               personal_data_->GetSyncSigninState());
@@ -6808,9 +6812,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // kAutofillEnableAccountWalletStorage feature is disabled.
   {
     base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableAccountWalletStorage});
+    scoped_features.InitAndDisableFeature(
+        features::kAutofillEnableAccountWalletStorage);
 
     EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
               personal_data_->GetSyncSigninState());
@@ -6819,10 +6822,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // Check that the sync state is |SignedIn| if the sync service does not have
   // wallet data active.
   {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
-        /*disabled_features=*/{});
+    base::test::ScopedFeatureList scoped_features(
+        features::kAutofillEnableAccountWalletStorage);
     sync_service_.SetActiveDataTypes(syncer::ModelTypeSet());
 
     EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
@@ -6859,8 +6860,7 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // feature is enabled even if the kAutofillEnableAccountWalletStorage feature
   // is enabled.
   {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitAndEnableFeature(
+    base::test::ScopedFeatureList scoped_features(
         features::kAutofillEnableAccountWalletStorage);
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
               personal_data_->GetSyncSigninState());
@@ -6870,14 +6870,19 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
 // On mobile, no dedicated opt-in is required for WalletSyncTransport - the
 // user is always considered opted-in and thus this test doesn't make sense.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
+TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   // kSignedInAndWalletSyncTransportEnabled
   ///////////////////////////////////////////////////////////
-  // Make a primary account with no sync consent available to be in Sync
-  // Transport for Wallet mode.
-  CoreAccountInfo active_info = identity_test_env_.MakePrimaryAccountAvailable(
-      kSyncTransportAccountEmail, signin::ConsentLevel::kSignin);
+  // Make sure a primary account with no sync consent is available so
+  // AUTOFILL_WALLET_DATA can run in sync-transport mode.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
+  CoreAccountInfo active_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
   sync_service_.SetAccountInfo(active_info);
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetActiveDataTypes(

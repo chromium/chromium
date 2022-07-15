@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -44,12 +43,11 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database_service.h"
@@ -435,6 +433,9 @@ class FormDataImporterTestBase {
     // reference to `personal_data_manager_` that otherwise points to garbage.
     form_data_importer_.reset();
 
+    if (personal_data_manager_) {
+      personal_data_manager_->Shutdown();
+    }
     personal_data_manager_ = std::make_unique<PersonalDataManager>("en", "US");
     personal_data_manager_->set_auto_accept_address_imports_for_testing(true);
     personal_data_manager_->Init(
@@ -442,7 +443,7 @@ class FormDataImporterTestBase {
         /*account_database=*/nullptr,
         /*pref_service=*/prefs_.get(),
         /*local_state=*/prefs_.get(),
-        /*identity_manager=*/nullptr,
+        /*identity_manager=*/identity_test_env_.identity_manager(),
         /*history_service=*/nullptr,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
@@ -485,6 +486,12 @@ class FormDataImporterTestBase {
     // Reset the deduping pref to its default value.
     personal_data_manager_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionDeduped, 0);
+  }
+
+  void TearDownHelper() {
+    if (personal_data_manager_) {
+      personal_data_manager_->Shutdown();
+    }
   }
 
   // Helper method that will add credit card fields in |form|, according to the
@@ -652,6 +659,7 @@ class FormDataImporterTestBase {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::unique_ptr<PrefService> prefs_;
+  signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<AutofillWebDataService> autofill_database_service_;
   scoped_refptr<WebDatabaseService> web_database_;
   raw_ptr<AutofillTable> autofill_table_;  // weak ref
@@ -683,6 +691,8 @@ class FormDataImporterTest
     InitializeFeatures();
     SetUpHelper();
   }
+
+  void TearDown() override { TearDownHelper(); }
 
   void InitializeFeatures() {
     support_for_apartment_numbers_ = std::get<0>(GetParam());
@@ -4474,6 +4484,7 @@ class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
                                              public testing::Test {
  private:
   void SetUp() override { SetUpHelper(); }
+  void TearDown() override { TearDownHelper(); }
 };
 
 TEST_F(FormDataImporterNonParameterizedTest,

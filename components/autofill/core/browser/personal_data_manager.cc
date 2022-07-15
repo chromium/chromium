@@ -574,23 +574,12 @@ void PersonalDataManager::OnSyncShutdown(syncer::SyncService* sync_service) {
 CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
   // Return the account of the active signed-in user irrespective of whether
   // they enabled sync or not.
-  // However if there is no |sync_service_| (e.g. in incognito), return the
-  // latest cached AccountInfo of the user's primary account, which is empty if
-  // the user has disabled sync.
-  // In both cases, the AccountInfo will be empty if the user is not signed in.
-  return sync_service_ ? sync_service_->GetAccountInfo()
-                       : identity_manager_->GetPrimaryAccountInfo(
-                             signin::ConsentLevel::kSync);
+  return identity_manager_->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
 }
 
-// TODO(crbug.com/903914): Clean up this function so that it's more clear what
-// it's checking. It should not check the database helper.
 bool PersonalDataManager::IsSyncFeatureEnabled() const {
-  if (!sync_service_)
-    return false;
-
-  return !sync_service_->GetAccountInfo().IsEmpty() &&
-         !database_helper_->IsUsingAccountStorageForServerData();
+  return sync_service_ && sync_service_->IsSyncFeatureEnabled();
 }
 
 void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
