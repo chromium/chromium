@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "cc/base/switches.h"
@@ -122,6 +123,9 @@ bool AddCommandLineArgsFromConfig(const base::Value& config,
 
 bool UpdateCommandLineFromConfigFile(const base::Value& config,
                                      base::CommandLine* command_line) {
+  // The FieldTrialList should be initialized only after config is loaded.
+  DCHECK(base::FieldTrialList::GetInstance());
+
   if (!AddCommandLineArgsFromConfig(config, command_line))
     return false;
 

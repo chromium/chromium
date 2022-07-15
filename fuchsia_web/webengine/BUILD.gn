@@ -320,6 +320,7 @@ executable("web_engine_exe") {
     ":switches",
     ":web_engine_core",
     "//base",
+    "//components/fuchsia_component_support",
     "//content/public/app",
   ]
   sources = [ "web_engine_main.cc" ]
