@@ -905,6 +905,10 @@ std::u16string BrowserAccessibility::GetNameAsString16() const {
   return node_->GetNameUTF16();
 }
 
+const std::string& BrowserAccessibility::GetDescription() const {
+  return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
+}
+
 std::u16string BrowserAccessibility::GetHypertext() const {
   // Overloaded by platforms which require a hypertext accessibility text
   // implementation.
@@ -1351,6 +1355,10 @@ bool BrowserAccessibility::HasTextStyle(ax::mojom::TextStyle text_style) const {
 
 ax::mojom::NameFrom BrowserAccessibility::GetNameFrom() const {
   return node_->GetNameFrom();
+}
+
+ax::mojom::DescriptionFrom BrowserAccessibility::GetDescriptionFrom() const {
+  return GetData().GetDescriptionFrom();
 }
 
 const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()

@@ -446,6 +446,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool HasAction(ax::mojom::Action action) const override;
   bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
   ax::mojom::NameFrom GetNameFrom() const override;
+  ax::mojom::DescriptionFrom GetDescriptionFrom() const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
   AXPosition CreatePositionAt(
       int offset,
@@ -483,6 +484,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::unique_ptr<ChildIterator> ChildrenEnd() override;
 
   const std::string& GetName() const override;
+  const std::string& GetDescription() const override;
   std::u16string GetHypertext() const override;
   const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
       const override;

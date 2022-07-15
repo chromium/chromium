@@ -525,7 +525,8 @@ void TabbedPane::AddTabInternal(size_t index,
                                 std::unique_ptr<View> contents) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);
-  contents->GetViewAccessibility().OverrideName(title);
+  if (!title.empty())
+    contents->GetViewAccessibility().OverrideName(title);
   contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTabPanel);
 
   tab_strip_->AddChildViewAt(std::make_unique<Tab>(this, title, contents.get()),

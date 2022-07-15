@@ -99,10 +99,71 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual void FireFocusAfterMenuClose();
 
   void OverrideRole(const ax::mojom::Role role);
-  void OverrideName(const std::string& name);
-  void OverrideName(const std::u16string& name);
-  void OverrideDescription(const std::string& description);
-  void OverrideDescription(const std::u16string& description);
+
+  // Sets the accessible name to the specified string value.
+  // By default the source type of the name is attribute. This source is
+  // appropriate for most use cases where a View is providing a non-empty flat
+  // string as the accessible name. If a View has a need to remove the
+  // accessible name, the string should be empty and the source of the name
+  // should instead be kAttributeExplicitlyEmpty. Note that the name source
+  // types were created based on needs associated with web content
+  // accessibility, and assistive technologies may make decisions based on that
+  // supposition. For instance, kTitle implies that the source of the name will
+  // be presented as a tooltip, such as would result from the HTML 'title'
+  // attribute or the SVG <title> element.
+  void OverrideName(
+      const std::string& name,
+      const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
+  void OverrideName(
+      const std::u16string& name,
+      const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
+
+  // Sets the accessible label source by establishing a relationship between
+  // this View and another view, such as a Label. By default the source type of
+  // the name is "related element." This default should cover most, if not all,
+  // of the use cases for Views. Note that the name source types were created
+  // based on needs associated with web content accessibility, and assistive
+  // technologies may make decisions based on that supposition. For instance,
+  // kTitle implies that the source of the name will be presented as a tooltip,
+  // such as would result from the HTML 'title' attribute or the SVG <title>
+  // element.
+  void OverrideLabelledBy(const View* labelled_by_view,
+                          const ax::mojom::NameFrom name_from =
+                              ax::mojom::NameFrom::kRelatedElement);
+
+  // Sets the accessible description to the specified string value.
+  // By default the source type of the description is aria-description. While
+  // Views technically don't support ARIA, aria-description is the closest
+  // existing DescriptionFrom source for Views providing a flat string
+  // description. And assistive technologies already know how to recognize this
+  // source type. Therefore, Views are encouraged to go with this default unless
+  // they have a specific reason not to. If a View has a need to remove the
+  // accessible description, the string should be empty and the source of the
+  // description should instead be kAttributeExplicitlyEmpty. If a View never
+  // had an accessible description, there is no need to override it with an
+  // empty string.
+  void OverrideDescription(const std::string& description,
+                           const ax::mojom::DescriptionFrom description_from =
+                               ax::mojom::DescriptionFrom::kAriaDescription);
+  void OverrideDescription(const std::u16string& description,
+                           const ax::mojom::DescriptionFrom description_from =
+                               ax::mojom::DescriptionFrom::kAriaDescription);
+
+  // Sets the accessible description source by establishing a relationship
+  // between this View and another view, such as a Label. By default the source
+  // type of the description is "related element." This default should cover
+  // most, if not all, of the use cases for Views. Note that the description
+  // source types were created based on needs associated with web content
+  // accessibility, and assistive technologies may make decisions based on that
+  // supposition. For instance, kTitle implies that the source of the
+  // description will be presented as a tooltip, such as would result from the
+  // HTML 'title' attribute or the SVG <title> element. See also
+  // OverrideDescription, which allows a View to provide a flat string
+  // description which is appropriate in cases where there is not one single
+  // Label/View containing the entire description.
+  void OverrideDescribedBy(const View* described_by_view,
+                           const ax::mojom::DescriptionFrom description_from =
+                               ax::mojom::DescriptionFrom::kRelatedElement);
 
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
@@ -147,8 +208,6 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual bool IsAccessibilityEnabled() const;
 
   void OverrideBounds(const gfx::RectF& bounds);
-  void OverrideLabelledBy(View* labelled_by_view);
-  void OverrideDescribedBy(View* described_by_view);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 
   // Override information provided to users by screen readers when describing

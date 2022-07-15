@@ -49,9 +49,10 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
   auto* bubble_frame_view = static_cast<views::BubbleFrameView*>(
       GetWidget()->non_client_view()->frame_view());
   bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
-  GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
-      message_text_);
-
+  if (!message_text_.empty()) {
+    GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+        message_text_);
+  }
   // On some platforms, the platform accessibility API automatically
   // calculates the name of the native window based on the child RootView.
   // We override that calculation here so that we can present both the
