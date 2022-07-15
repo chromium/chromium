@@ -4,9 +4,15 @@
 
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 
+#import "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "base/time/time.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
+#import "components/keyed_service/core/service_access_type.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
@@ -14,6 +20,7 @@
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_util.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
@@ -21,6 +28,7 @@
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,6 +39,10 @@ namespace {
 // The prefix of domain name that can be removed. It is used when generating the
 // follow item text.
 const std::string kRemovablePrefix = "www.";
+const int kVisitHostoryExclusiveDurationInHours = 1;
+const int kVisitHostoryDurationInDays = 14;
+const int kDefaultDailyVisitMin = 3;
+const int kDefaultNumVisitMin = 3;
 
 }  // namespace.
 
@@ -90,14 +102,16 @@ void FollowTabHelper::PageLoaded(
   // (FollowIPHCoordinator), so this class won't need to access browser_state
   // anymore, which brings convinience to testing.
 
-  // Do not show follow IPH when browsing in incognito.
+  // Do not update follow menu option and do not show IPH when browsing in
+  // incognito.
   if (web_state->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
 
-  // Do not show follow IPH when browsing Chrome URLs, such as NTP, flags,
-  // version, sad tab, etc.
-  if (UrlHasChromeScheme(web_state->GetVisibleURL())) {
+  // Do not update follow menu option and do not show IPH when browsing non
+  // http,https URLs and Chrome URLs, such as NTP, flags, version, sad tab, etc.
+  const GURL& url = web_state->GetVisibleURL();
+  if (UrlHasChromeScheme(url) || !url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
@@ -107,17 +121,47 @@ void FollowTabHelper::PageLoaded(
     case web::PageLoadCompletionStatus::SUCCESS:
       FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
           web_state, base::BindOnce(^(FollowWebPageURLs* web_page_urls) {
+            // Update follow menu option if needed.
             if (follow_menu_updater_ && should_update_follow_item_) {
               UpdateFollowMenuItem(web_page_urls);
             }
+
+            // Show follow in-product help (IPH) if eligible.
             BOOL channel_recommended =
                 ios::GetChromeBrowserProvider()
                     .GetFollowProvider()
                     ->GetRecommendedStatus(web_page_urls);
-            if (channel_recommended) {
-              DCHECK(follow_iph_presenter_);
-              [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-            }
+
+            // Do not show follow IPH if the site is not recommended.
+            if (!channel_recommended)
+              return;
+
+            // Check if the site has enough visit count.
+            history::HistoryService* history_service =
+                ios::HistoryServiceFactory::GetForBrowserState(
+                    ChromeBrowserState::FromBrowserState(
+                        web_state_->GetBrowserState()),
+                    ServiceAccessType::EXPLICIT_ACCESS);
+            // Ignore any visits within the last hour so that we do not count
+            // the current visit to the page.
+            auto end_time = base::Time::Now() -
+                            base::Hours(kVisitHostoryExclusiveDurationInHours);
+            auto begin_time =
+                base::Time::Now() - base::Days(kVisitHostoryDurationInDays);
+
+            base::CancelableTaskTracker tracker;
+
+            // get history service
+            history_service->GetDailyVisitsToHost(
+                url, begin_time, end_time,
+                base::BindOnce(^(history::DailyVisitsResult result) {
+                  if (result.total_visits >= kDefaultNumVisitMin &&
+                      result.days_with_visits >= kDefaultDailyVisitMin) {
+                    DCHECK(follow_iph_presenter_);
+                    [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
+                  }
+                }),
+                &tracker);
           }));
   }
 }
