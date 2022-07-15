@@ -7,6 +7,7 @@ import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -46,25 +47,41 @@ export class NotificationTester extends PolymerElement {
         },
       },
       /*
-      @type {!boolean}
+      @type {boolean}
       */
       showTypeSpecificDesc: {type: Boolean},
       /*
-      @type {!boolean}
+      @type {boolean}
       */
       showProgressOptions: {type: Boolean},
       /*
-      @type {!boolean}
+      @type {boolean}
       */
       showMultiOptions: {type: Boolean},
       /*
-      @type {!boolean}
+      @type {boolean}
       */
       showDisplaySource: {type: Boolean},
       /*
-      @type {!boolean}
+      @type {boolean}
       */
       showOriginURL: {type: Boolean},
+      /*
+      @type {boolean}
+      */
+      generatingDelayedNotification: {type: Boolean, value: false},
+      /*
+      @type {number}
+      */
+      countdownDisplayTime: {type: String},
+      /*
+      @type {boolean}
+      */
+      delayTimeInvalid: {type: Boolean},
+      /*
+      @type {string}
+      */
+      notificationDelayTime: {type: String, value: '0'},
       /*
        * @private
        */
@@ -164,7 +181,30 @@ export class NotificationTester extends PolymerElement {
         parseInt(this.notifMetadata.richDataProgress, BASE_TEN);
 
     // Send notification data to C++
-    chrome.send('generateNotificationForm', [this.notifMetadata]);
+    const NUM_MS_IN_S = 1000;
+    if (!this.delayTimeInvalid) {
+      // If the user enters 0 or leaves the delay time field blank, generate
+      // notifications synchronously.
+      const timedInputValueNumber =
+          parseInt(this.notificationDelayTime, BASE_TEN);
+      if (timedInputValueNumber === 0 ||
+          this.notificationDelayTime.length === 0) {
+        chrome.send('generateNotificationForm', [this.notifMetadata]);
+      } else {
+        this.startDelayedNotificationCountdown(timedInputValueNumber);
+
+        // Enable synchronous generation while delayed notification generation
+        // is underway.
+        this.notificationDelayTime = '';
+        // Create a deep copy of the current state of this.notifMetadata to
+        // ensure it won't be modified before chrome.send() is called.
+        const notifMetadataCopy =
+            JSON.parse(JSON.stringify(this.notifMetadata));
+        setTimeout(
+            chrome.send, timedInputValueNumber * NUM_MS_IN_S,
+            'generateNotificationForm', [notifMetadataCopy]);
+      }
+    }
   }
 
   onClickReset() {
@@ -215,6 +255,22 @@ export class NotificationTester extends PolymerElement {
     }
 
     this.notifMetadata.notifierType = NotifierType.WEB_PAGE;
+  }
+
+  // Start a countdown from the given number in seconds. Used for delayed
+  // notification generation.
+  startDelayedNotificationCountdown(startTime) {
+    // Note that setInterval initially delays before executing the function.
+    const ONE_SECOND = 1000;  // milliseconds.
+    this.countdownDisplayTime = startTime;
+    this.generatingDelayedNotification = true;
+    const countdownTimer = setInterval(() => {
+      this.countdownDisplayTime--;
+      if (this.countdownDisplayTime <= 0) {
+        clearInterval(countdownTimer);
+        this.generatingDelayedNotification = false;
+      }
+    }, ONE_SECOND);
   }
 }
 

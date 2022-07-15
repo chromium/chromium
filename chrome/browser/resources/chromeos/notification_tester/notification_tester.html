@@ -4,6 +4,7 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    prefers-color-scheme: light;
   }
 
   app-header {
@@ -64,6 +65,39 @@
     justify-content: center;
   }
 
+  cr-input {
+    --cr-input-background-color: rgba(255, 255, 255, 0);
+    --cr-input-padding-bottom: 0;
+    --cr-input-padding-top: 0;
+    --cr-primary-text-color: auto;
+    --cr-input-error-display: none;
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+  }
+
+  .delayed-notification {
+    gap: 1%;
+    margin-top: 3px;
+  }
+
+  #delayed-notification-input {
+    width: 3rem;
+  }
+
+  .error {
+    color: rgb(217, 48, 37);
+    font-size: 0.9rem;
+    max-width: 32rem;
+  }
+
+  .countdown {
+    color: rgb(0, 0, 0);
+    font-size: 1rem;
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+
   cr-radio-button {
     padding: 0 auto;
     --cr-radio-button-label-spacing: 10px;
@@ -81,7 +115,7 @@
     font-size: 1rem;
     font-weight: bold;
     margin-inline-end: 0.25em;
-    margin-top: 1em;
+    margin-top: 0.5em;
     padding: 0.25em 0.5em;
     width: max-content;
   }
@@ -228,9 +262,33 @@
           <cr-radio-button name="3" label="3"></cr-radio-button>
         </cr-radio-group>
       </div>
-
     </div>
     <div class="config-form">
+      <h2> Generation Settings </h2>
+
+      <div class="form-item delayed-notification">
+        <p class="countdown">Generate after</p>
+        <template is="dom-if" if="[[!generatingDelayedNotification]]">
+          <cr-input id="delayed-notification-input" type="number" min="0"
+            max="10" placeholder="0" value="{{notificationDelayTime}}"
+            auto-validate="true" invalid="{{delayTimeInvalid}}">
+          </cr-input>
+        </template>
+        <div class="countdown" hidden$="[[!generatingDelayedNotification]]">
+          <strong>[[countdownDisplayTime]]</strong>
+        </div>
+        <p class="countdown">seconds</p>
+        <div class="error" hidden$="[[!delayTimeInvalid]]">
+          Error: Enter a number from 0
+          to 10.
+        </div>
+      </div>
+
+      <div class="form-item error">
+        Note: Notifications generated while a delayed notification is
+        underway may not appear synchronously.
+      </div>
+
       <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
         Generate </button>
       <button type="button" id="resetFormBtn" on-click="onClickReset">
