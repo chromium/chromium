@@ -94,7 +94,6 @@ void AXPlatformNode::RemoveAXModeObserver(AXModeObserver* observer) {
 
 // static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
-  // Note: this is only called on Windows, and in tests.
   AXMode new_ax_mode(ax_mode_);
   new_ax_mode |= mode_flags;
 
@@ -108,7 +107,6 @@ void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
 
 // static
 void AXPlatformNode::SetAXMode(AXMode new_mode) {
-  // Note: this is only called on Windows.
   ax_mode_ = new_mode;
 }
 
