@@ -345,6 +345,27 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), time_launch_started, delay);
 
+  auto* overview_controller = Shell::Get()->overview_controller();
+  if (!overview_controller->InOverviewSession()) {
+    // Note: it is the intention that we don't leave overview mode when
+    // launching a saved desk. However, if something goes wrong when launching a
+    // window and the correct properties aren't applied, then we may find that
+    // we have left overview mode.
+    //
+    // The `SavedDeskPresenter` is indirectly owned by the overview session, so
+    // if we get here, `this` is gone and we must not access any member
+    // functions or variables.
+
+    // Bare minimum code to remove save & recall desks.
+    if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
+      auto* desk_model =
+          Shell::Get()->desks_templates_delegate()->GetDeskModel();
+      desk_model->DeleteEntry(uuid, base::DoNothing());
+    }
+
+    return;
+  }
+
   DesksBarView* desks_bar_view = const_cast<DesksBarView*>(
       overview_session_->GetGridWithRootWindow(root_window)->desks_bar_view());
   desks_bar_view->NudgeDeskName(desk_index);
