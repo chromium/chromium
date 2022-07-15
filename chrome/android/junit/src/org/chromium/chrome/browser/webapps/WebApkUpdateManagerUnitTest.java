@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -53,8 +54,11 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -75,19 +79,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Unit tests for WebApkUpdateManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
 public class WebApkUpdateManagerUnitTest {
     @Rule
     public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public final TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "com.webapk.test_package";

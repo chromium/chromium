@@ -204,6 +204,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             destroyFetcher();
         }
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)
+                && TextUtils.isEmpty(mInfo.manifestId())) {
+            RecordHistogram.recordBooleanHistogram(
+                    "WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade", needsUpgrade);
+        }
+
         if (!needsUpgrade) {
             if (!mStorage.didPreviousUpdateSucceed() || mStorage.shouldForceUpdate()) {
                 onFinishedUpdate(mStorage, WebApkInstallResult.SUCCESS, false /* relaxUpdates */);
@@ -336,6 +342,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private void buildUpdateRequestAndSchedule(WebappInfo info, String primaryIconUrl,
             String splashIconUrl, boolean isManifestStale, boolean appIdentityUpdateSupported,
             List<Integer> updateReasons) {
+        recordWebApkUpdateUniqueIdHistogram(mInfo, mFetchedInfo);
+
         Callback<Boolean> callback = (success) -> {
             if (!success) {
                 onFinishedUpdate(mStorage, WebApkInstallResult.FAILURE, false /* relaxUpdates*/);
@@ -346,6 +354,18 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         String updateRequestPath = mStorage.createAndSetUpdateRequestFilePath(info);
         encodeIconsInBackground(updateRequestPath, info, primaryIconUrl, splashIconUrl,
                 isManifestStale, appIdentityUpdateSupported, updateReasons, callback);
+    }
+
+    private void recordWebApkUpdateUniqueIdHistogram(WebappInfo oldInfo, WebappInfo fetchedInfo) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)) return;
+        if (fetchedInfo == null) return;
+
+        String baseName = "WebApk.Update.UniqueId"
+                + (TextUtils.isEmpty(oldInfo.manifestId()) ? "Empty" : "Same");
+        RecordHistogram.recordBooleanHistogram(baseName + ".ManifestUrl",
+                TextUtils.equals(oldInfo.manifestUrl(), fetchedInfo.manifestUrl()));
+        RecordHistogram.recordBooleanHistogram(
+                baseName + ".StartUrl", TextUtils.equals(oldInfo.url(), fetchedInfo.url()));
     }
 
     /** Schedules update for when WebAPK is not running. */

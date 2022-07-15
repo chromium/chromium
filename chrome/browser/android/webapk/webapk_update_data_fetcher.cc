@@ -14,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,9 +51,11 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 jlong JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& java_start_url,
     const JavaParamRef<jstring>& java_scope_url,
     const JavaParamRef<jstring>& java_web_manifest_url,
     const JavaParamRef<jstring>& java_web_manifest_id) {
+  GURL start_url(base::android::ConvertJavaStringToUTF8(env, java_start_url));
   GURL scope(base::android::ConvertJavaStringToUTF8(env, java_scope_url));
   GURL web_manifest_url(
       base::android::ConvertJavaStringToUTF8(env, java_web_manifest_url));
@@ -62,16 +65,18 @@ jlong JNI_WebApkUpdateDataFetcher_Initialize(
         GURL(base::android::ConvertJavaStringToUTF8(env, java_web_manifest_id));
   }
   WebApkUpdateDataFetcher* fetcher = new WebApkUpdateDataFetcher(
-      env, obj, scope, web_manifest_url, web_manifest_id);
+      env, obj, start_url, scope, web_manifest_url, web_manifest_id);
   return reinterpret_cast<intptr_t>(fetcher);
 }
 
 WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
                                                  jobject obj,
+                                                 const GURL& start_url,
                                                  const GURL& scope,
                                                  const GURL& web_manifest_url,
                                                  const GURL& web_manifest_id)
     : content::WebContentsObserver(nullptr),
+      start_url_(start_url),
       scope_(scope),
       web_manifest_url_(web_manifest_url),
       web_manifest_id_(web_manifest_id),
@@ -165,12 +170,16 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     return;
   }
 
+  GURL new_manifest_id(webapps::ShortcutInfo::GetManifestId(data.manifest));
   // If the fetched manifest id is different from the current one, we also
   // continue observing as the id is the identity for the application. We
   // will treat the manifest with different id as the one of another WebAPK.
   if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
-      !web_manifest_id_.is_empty() &&
-      web_manifest_id_ != webapps::ShortcutInfo::GetManifestId(data.manifest)) {
+      !web_manifest_id_.is_empty() && web_manifest_id_ != new_manifest_id) {
+    UMA_HISTOGRAM_BOOLEAN("WebApk.UniqueId.FoundDifferentId.ManifestUrl",
+                          web_manifest_url_ == data.manifest_url);
+    UMA_HISTOGRAM_BOOLEAN("WebApk.UniqueId.FoundDifferentId.StartUrl",
+                          start_url_ == data.manifest.start_url);
     return;
   }
 

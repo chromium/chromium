@@ -74,7 +74,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
 
         mTab.addObserver(this);
         mNativePointer = WebApkUpdateDataFetcherJni.get().initialize(WebApkUpdateDataFetcher.this,
-                mOldInfo.scopeUrl(), mOldInfo.manifestUrl(), mOldInfo.manifestId());
+                mOldInfo.url(), mOldInfo.scopeUrl(), mOldInfo.manifestUrl(), mOldInfo.manifestId());
         WebApkUpdateDataFetcherJni.get().start(
                 mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
         return true;
@@ -169,8 +169,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
 
     @NativeMethods
     interface Natives {
-        long initialize(WebApkUpdateDataFetcher caller, String scope, String webManifestUrl,
-                String webManifestId);
+        long initialize(WebApkUpdateDataFetcher caller, String startUrl, String scope,
+                String webManifestUrl, String webManifestId);
         void replaceWebContents(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller,
                 WebContents webContents);
         void destroy(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller);

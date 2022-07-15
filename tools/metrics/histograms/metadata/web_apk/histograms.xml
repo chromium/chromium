@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="LegacyIdentifierType">
+  <variant name="ManifestUrl"/>
+  <variant name="StartUrl"/>
+</variants>
+
 <variants name="WebApkDistributorType">
   <variant name=".Browser" summary="Installed by Chrome"/>
   <variant name=".DevicePolicy" summary="Installed by device policy"/>
@@ -354,6 +359,53 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time point when a request to update a WebAPK is sent to the
     WebAPK Server.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Update.UniqueIdDifferent.{LegacyIdentifierType}"
+    enum="Boolean" expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
+  </owner>
+  <summary>
+    When WebApkUpdateDataFetcher found a valid manifest that contains a
+    different id than the installed WebAPK, record whether each of the
+    {LegacyIdentifierType} was the same.
+  </summary>
+  <token key="LegacyIdentifierType" variants="LegacyIdentifierType"/>
+</histogram>
+
+<histogram name="WebApk.Update.UniqueId{SameOrEmpty}.{LegacyIdentifierType}"
+    enum="Boolean" expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
+  </owner>
+  <summary>
+    When WebAPK updates with empty or same UniqueId, record whether each of the
+    {LegacyIdentifierType} was the same.
+  </summary>
+  <token key="SameOrEmpty">
+    <variant name="Empty"/>
+    <variant name="Same"/>
+  </token>
+  <token key="LegacyIdentifierType" variants="LegacyIdentifierType"/>
+</histogram>
+
+<histogram name="WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade" enum="Boolean"
+    expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
+  </owner>
+  <summary>
+    For WebAPK unique ID migration, record whether an update is neede (with
+    non-empty update reason). This only records for the first legacy update that
+    updates the WebAPK from an empty id.
   </summary>
 </histogram>
 

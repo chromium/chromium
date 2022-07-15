@@ -31,6 +31,7 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
  public:
   WebApkUpdateDataFetcher(JNIEnv* env,
                           jobject obj,
+                          const GURL& start_url,
                           const GURL& scope,
                           const GURL& web_manifest_url,
                           const GURL& web_manifest_id);
@@ -76,6 +77,9 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
 
   // Points to the Java object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+
+  // The WebAPK's current start url. Used for recording UMA.
+  const GURL start_url_;
 
   // The detector will only fetch the URL within the scope of the WebAPK.
   const GURL scope_;

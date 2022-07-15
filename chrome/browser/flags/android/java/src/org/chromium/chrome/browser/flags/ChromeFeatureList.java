@@ -582,9 +582,10 @@ public abstract class ChromeFeatureList {
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =
             "WebApkInstallCompleteNotification";
+    public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
     public static final String WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT =
             "WebApkTrampolineOnInitialIntent";
-    public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
+    public static final String WEB_APK_UNIQUE_ID = "WebApkUniqueId";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
     public static final String FEED_ABLATION = "FeedAblation";

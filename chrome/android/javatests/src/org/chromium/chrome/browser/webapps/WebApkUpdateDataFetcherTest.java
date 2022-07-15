@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -232,7 +233,7 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures({"WebApkUniqueId"})
+    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithDifferentManifestUrlSameId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);
@@ -253,7 +254,7 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures({"WebApkUniqueId"})
+    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithDifferentManifestId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);
@@ -275,7 +276,7 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures({"WebApkUniqueId"})
+    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithEmptyOldManifestId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);
