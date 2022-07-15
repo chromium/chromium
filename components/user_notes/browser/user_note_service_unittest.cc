@@ -558,7 +558,8 @@ TEST_F(UserNoteServiceTest, OnFrameNavigated) {
 }
 
 // After a navigation to a document that has user notes in the foreground, the
-// service should request the notes UI to show itself.
+// service should request the notes UI to show itself and fetch the notes
+// metadata.
 // TODO(crbug.com/1313967): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
@@ -573,7 +574,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
 
   // Configure UI mock.
   auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, Invalidate).Times(1);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(1);
@@ -633,13 +634,6 @@ TEST_F(UserNoteServiceTest,
   EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
   EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
 
-  // Configure UI mock.
-  auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
-  EXPECT_CALL(*mock_ui, FocusNote).Times(0);
-  EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
-  EXPECT_CALL(*mock_ui, Show).Times(0);
-
   // Configure service delegate mock.
   EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
   EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_)).Times(0);
@@ -676,8 +670,9 @@ TEST_F(UserNoteServiceTest,
       GetAllFramesInUse(), GetAllFramesInUse()[0], std::move(snapshot));
 }
 
-// After a navigation to a document that doesn't have user notes, the service
-// should not request the notes UI to show itself.
+// After a navigation to a document that doesn't have user notes but is in the
+// active tab, the service should not request the notes UI to show itself, but
+// should Invalidate the notes displayed in the UI.
 // TODO(crbug.com/1313967): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
@@ -692,15 +687,75 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
 
   // Configure UI mock.
   auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, Invalidate).Times(1);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(0);
 
   // Configure service delegate mock.
   EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
+  EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_))
+      .Times(1)
+      .WillOnce(Invoke([&mock_ui](const content::RenderFrameHost* frame) {
+        return mock_ui.get();
+      }));
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_))
+      .Times(1)
+      .WillOnce(
+          Invoke([](const content::RenderFrameHost* frame) { return true; }));
+
+  // Configure storage mock.
+  EXPECT_CALL(*storage_, GetNoteMetadataForUrls).Times(0);
+  EXPECT_CALL(*storage_, GetNotesById).Times(0);
+
+  // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
+      .Times(1)
+      .WillOnce(Invoke(mock_service_.get(),
+                       &MockUserNoteService::
+                           CallBaseClassOnNoteMetadataFetchedForNavigation));
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
+
+  // Create a non-empty metadata snapshot.
+  UserNoteMetadataSnapshot snapshot;
+  GURL url =
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetLastCommittedURL();
+  snapshot.AddEntry(
+      url, note_ids_[0],
+      std::make_unique<UserNoteMetadata>(base::Time::Now(), base::Time::Now(),
+                                         /*min_note_version=*/1));
+
+  // Simulate the service receiving the empty metadata snapshot after a
+  // navigation.
+  note_service_->OnNoteMetadataFetchedForNavigation(
+      GetAllFramesInUse(), GetAllFramesInUse()[0], UserNoteMetadataSnapshot());
+}
+
+// After a navigation to a document that doesn't have user notes, but isn't in
+// the foreground, the service should not request the notes UI to show itself
+// nor to Invalidate the notes.
+// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// no longer automatically shown on navigation.
+TEST_F(UserNoteServiceTest,
+       OnNoteMetadataFetchedForNavigationNoNotesBackground) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  AddNewInstanceToManager(manager, note_ids_[0]);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
+
+  // Configure service delegate mock.
+  EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
   EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_)).Times(0);
-  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_)).Times(0);
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_))
+      .Times(1)
+      .WillOnce(
+          Invoke([](const content::RenderFrameHost* frame) { return false; }));
 
   // Configure storage mock.
   EXPECT_CALL(*storage_, GetNoteMetadataForUrls).Times(0);

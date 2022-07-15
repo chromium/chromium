@@ -128,6 +128,8 @@ class UserNoteService : public KeyedService,
       OnNoteMetadataFetchedForNavigationSomeNotesBackground);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest,
                            OnNoteMetadataFetchedForNavigationNoNotes);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest,
+                           OnNoteMetadataFetchedForNavigationNoNotesBackground);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteMetadataFetched);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteModelsFetched);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnFrameChangesApplied);

@@ -384,23 +384,37 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     const std::vector<content::RenderFrameHost*>& all_frames,
     const content::RenderFrameHost* navigated_frame,
     UserNoteMetadataSnapshot metadata_snapshot) {
-  if (metadata_snapshot.IsEmpty()) {
-    // No notes to show.
-    return;
-  }
-
-  // TODO(crbug.com/1313967): For now, automatically activate User Notes UI when
-  // the user navigates to a page with notes. Before launch though, this should
-  // be changed to a popup / notification that the user must interact with to
-  // launch the notes UI.
   DCHECK(all_frames.size() == 1u);
+
   if (delegate_->IsFrameInActiveTab(all_frames[0])) {
     UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(all_frames[0]);
     DCHECK(ui);
-    ui->Show();
+
+    // TODO(crbug.com/1313967): For now, always invalidate the UI if the tab is
+    // in the foreground. This is to fix edge cases around back/forward
+    // navigations, where the Page (and attached UserNoteManager) is kept alive
+    // in the BFCache. If the notes didn't change on disk by the time the user
+    // does a back/forward navigation, Invalidate() will never get called
+    // because there won't be any diff between the instances in the Page and the
+    // notes on disk. Ideally, Invalidate() should only be called if this is a
+    // back/forward navigation and the notes didn't change, but there's no way
+    // to know whether the notes changed until further down the callback stack.
+    // Since Invalidate() is cheap enough, always calling it here is considered
+    // an acceptable fix for now.
+    ui->Invalidate();
+
+    if (!metadata_snapshot.IsEmpty()) {
+      // TODO(crbug.com/1313967): For now, automatically activate User Notes UI
+      // when the user navigates to a page with notes. Before launch though,
+      // this should be changed to a popup / notification that the user must
+      // interact with to launch the notes UI.
+      ui->Show();
+    }
   }
 
-  OnNoteMetadataFetched(all_frames, std::move(metadata_snapshot));
+  if (!metadata_snapshot.IsEmpty()) {
+    OnNoteMetadataFetched(all_frames, std::move(metadata_snapshot));
+  }
 }
 
 void UserNoteService::OnNoteMetadataFetched(
