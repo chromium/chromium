@@ -25,11 +25,10 @@ import org.chromium.ui.test.util.UiDisableIf;
 
 /** An integration test for PaymentRequestEvent.changePaymentMethod(). */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-blink-features=PaymentMethodChangeEvent,PaymentHandlerChangePaymentMethod"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-blink-features=PaymentMethodChangeEvent"})
 @MediumTest
 public class PaymentHandlerChangePaymentMethodTest {
-
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule

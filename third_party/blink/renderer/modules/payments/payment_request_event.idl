@@ -20,7 +20,7 @@
     [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] readonly attribute FrozenArray<PaymentShippingOption>? shippingOptions;
 
     [CallWith=ScriptState] Promise<WindowClient?> openWindow(USVString url);
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=PaymentHandlerChangePaymentMethod] Promise<PaymentRequestDetailsUpdate?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
+    [CallWith=ScriptState, RaisesException] Promise<PaymentRequestDetailsUpdate?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<PaymentResponse> response);
     [CallWith=ScriptState, RaisesException, RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] Promise<PaymentRequestDetailsUpdate?> changeShippingAddress(AddressInit shippingAddress);
     [CallWith=ScriptState, RaisesException, RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] Promise<PaymentRequestDetailsUpdate> changeShippingOption(DOMString shippingOption);
