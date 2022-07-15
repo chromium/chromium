@@ -7,6 +7,10 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/i18n/string_compare.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,8 +20,66 @@
 #include "components/user_prefs/user_prefs.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/webauthn_api.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace {
+
+// CredentialComparator compares two credentials based on their RP ID's eTLD +
+// 1, then on the label-reversed RP ID, then on user.name, and finally on
+// credential ID if the previous values are equal.
+class CredentialComparator {
+ public:
+  CredentialComparator() {
+    UErrorCode error = U_ZERO_ERROR;
+    collator_.reset(
+        icu::Collator::createInstance(icu::Locale::getDefault(), error));
+  }
+
+  bool operator()(const device::DiscoverableCredentialMetadata& a,
+                  const device::DiscoverableCredentialMetadata& b) {
+    UCollationResult relation = base::i18n::CompareString16WithCollator(
+        *collator_, ETLDPlus1(a.rp_id), ETLDPlus1(b.rp_id));
+    if (relation != UCOL_EQUAL) {
+      return relation == UCOL_LESS;
+    }
+
+    relation = base::i18n::CompareString16WithCollator(
+        *collator_, LabelReverse(a.rp_id), LabelReverse(b.rp_id));
+    if (relation != UCOL_EQUAL) {
+      return relation == UCOL_LESS;
+    }
+
+    relation = base::i18n::CompareString16WithCollator(
+        *collator_, base::UTF8ToUTF16(a.user.name.value_or("")),
+        base::UTF8ToUTF16(b.user.name.value_or("")));
+    if (relation != UCOL_EQUAL) {
+      return relation == UCOL_LESS;
+    }
+
+    return a.cred_id < b.cred_id;
+  }
+
+ private:
+  static std::u16string ETLDPlus1(const std::string& rp_id) {
+    std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+        rp_id, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (domain.empty()) {
+      domain = rp_id;
+    }
+    return base::UTF8ToUTF16(domain);
+  }
+
+  static std::u16string LabelReverse(const std::string& rp_id) {
+    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+        rp_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::reverse(parts.begin(), parts.end());
+    return base::UTF8ToUTF16(base::JoinString(parts, "."));
+  }
+
+  std::unique_ptr<icu::Collator> collator_;
+};
 
 bool ContainsUserCreatedCredential(
     const std::vector<device::DiscoverableCredentialMetadata> credentials) {
@@ -72,6 +134,7 @@ class CredentialPresenceCacher : public ProfileObserver {
           kHasPlatformCredentialsPref,
           ContainsUserCreatedCredential(credentials));
     }
+    std::sort(credentials.begin(), credentials.end(), CredentialComparator());
     std::move(callback_).Run(std::move(credentials));
   }
 

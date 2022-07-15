@@ -123,6 +123,54 @@ TEST_F(LocalCredentialManagementTest, CacheIsUsed) {
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kHasPlatformCredentialsPref));
 }
 
+TEST_F(LocalCredentialManagementTest, Sorting) {
+  constexpr uint8_t kCredId1[] = {1};
+  constexpr uint8_t kCredId2[] = {2};
+  constexpr uint8_t kCredId3[] = {3};
+  constexpr uint8_t kCredId4[] = {4};
+  constexpr uint8_t kCredId5[] = {5};
+  constexpr uint8_t kCredId6[] = {6};
+  constexpr uint8_t kCredId7[] = {7};
+
+  api_.InjectDiscoverableCredential(
+      kCredId7, {"zzz.de", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId2, {"zzz.de", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId3, {"www.example.co.uk", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId4, {"foo.www.example.co.uk", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId5, {"foo.example.co.uk", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId6, {"aardvark.us", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(
+      kCredId1, {"example.co.uk", absl::nullopt, absl::nullopt},
+      {{1, 2, 3, 4}, "user2", absl::nullopt, absl::nullopt});
+
+  const std::vector<device::DiscoverableCredentialMetadata> result =
+      Enumerate().value();
+  ASSERT_EQ(result.size(), 7u);
+  EXPECT_EQ(result[0].rp_id, "aardvark.us");
+  // Despite starting with other characters, all entries for example.co.uk
+  // should be sorted together.
+  EXPECT_EQ(result[1].rp_id, "example.co.uk");
+  EXPECT_EQ(result[2].rp_id, "foo.example.co.uk");
+  EXPECT_EQ(result[3].rp_id, "www.example.co.uk");
+  EXPECT_EQ(result[4].rp_id, "foo.www.example.co.uk");
+  EXPECT_EQ(result[5].rp_id, "zzz.de");
+  EXPECT_EQ(result[6].rp_id, "zzz.de");
+  // The two zzz.de entries have the same RP ID and user.name, thus they should
+  // be sorted by credential ID.
+  EXPECT_EQ(result[6].cred_id[0], 7);
+}
+
 }  // namespace
 
 #endif
