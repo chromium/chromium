@@ -94,7 +94,15 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             int32_t event_flags,
                             LaunchSource launch_source,
                             WindowInfoPtr window_info) {
-  // TODO(crbug.com/1253250): Add the implementation.
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->Launch(
+      CreateCrosapiLaunchParamsWithEventFlags(
+          proxy_, app_id, event_flags, launch_source,
+          window_info ? window_info->display_id : display::kInvalidDisplayId),
+      base::DoNothing());
 }
 
 void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
