@@ -153162,7 +153162,7 @@
       ]
      ],
      "target-text-text-decoration-001.html": [
-      "1709ce70816a9f384b2ad86d74e03284aea7b50e",
+      "d90d5d96630d05ab88430b88fe4a4ad8985a6fac",
       [
        null,
        [
@@ -283435,7 +283435,7 @@
       []
      ],
      "target-text-text-decoration-001-ref.html": [
-      "b15f74c1dac7da3000f9f9fcc71ba86d5336a072",
+      "0ee37b1e8aadfed3945bfecc6dbe77e783def5a1",
       []
      ],
      "target-text-two-words-ref.html": [
@@ -315418,6 +315418,58 @@
          ],
          "worker.sub.js": [
           "ffee312d21e094e9c3ff2627bd74c77b9700717e",
+          []
+         ]
+        }
+       },
+       "defer-script": {
+        "README.md": [
+         "ac5c91c9a2eab22e4815cab7a7603359d2faceb4",
+         []
+        ],
+        "resources": {
+         "async-script-1.js": [
+          "267f324aa650154ff8fc787124132774b91e2259",
+          []
+         ],
+         "defer-script-1.js": [
+          "1a0524f4fbd271f9ffed2d8d37d75682620def47",
+          []
+         ],
+         "defer-script-2.js": [
+          "d644e37f182bb3211659f5a5543b44e16550e74f",
+          []
+         ],
+         "document-open-write-close.js": [
+          "80703d5c0ef1cebdaf9e5b91ff42d75e92c494a5",
+          []
+         ],
+         "document-open-write.js": [
+          "178c374df6999fce51a557701842a857cdae46f9",
+          []
+         ],
+         "document-write-close.js": [
+          "7cdde0d78ffa1ec13a6d47a12883b8f7ed957321",
+          []
+         ],
+         "document-write-iframe.sub.html": [
+          "e3022e3bf1f9a6a8e49337e57250b5e77416d63b",
+          []
+         ],
+         "document-write.js": [
+          "413a9bc6210f52b305356373f58623dd2e6e392e",
+          []
+         ],
+         "helper.js": [
+          "89c6d1e8282097b5258588f688ae9fd2cbd69ad7",
+          []
+         ],
+         "sync-script-1.js": [
+          "726b56346e8c32c79028540085e09806d3105527",
+          []
+         ],
+         "sync-script-2.js": [
+          "ba2edfbf270583ab62e32647fcd234f7b039ed83",
           []
          ]
         }
@@ -375980,7 +376032,7 @@
      },
      "content-visibility": {
       "animation-display-lock.html": [
-       "d30cf0df2cd9e1a31d38d54a9bc23b32c6533626",
+       "7960ba0f59dbaa5f9ce8a7f23b05111d9731c4ed",
        [
         null,
         {}
@@ -376171,6 +376223,16 @@
        [
         null,
         {}
+       ]
+      ],
+      "content-visibility-auto-state-changed.html": [
+       "d1076459d4b4d52e423f2ed8722ead69451ca73e",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
        ]
       ],
       "content-visibility-img.html": [
@@ -408142,6 +408204,289 @@
        }
       ]
      ],
+     "insertparagraph-in-inline-editing-host.tentative.html": [
+      "0df107c08044ac93a2d8a3626c234bcedb62a330",
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=inline&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=inline&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=inline-block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=inline-block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=list-item&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=list-item&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=table-cell&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=normal&display=table-cell&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=inline&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=inline&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=inline-block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=inline-block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=list-item&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=list-item&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=table-cell&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre&display=table-cell&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=inline&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=inline&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=inline-block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=inline-block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=list-item&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=list-item&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=table-cell&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-line&display=table-cell&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=inline&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=inline&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=inline-block&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=inline-block&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=list-item&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=list-item&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=table-cell&method=enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-inline-editing-host.tentative.html?white-space=pre-wrap&display=table-cell&method=shift-enter",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "insertparagraph-with-white-space-style.tentative.html": [
       "496c073b5f81721ed5b40d3fbfe23d9a2fc5a9b2",
       [
@@ -439156,6 +439501,13 @@
          ]
         ]
        },
+       "navigate-cross-origin-iframe-to-same-url-with-fragment-fire-load-event.html": [
+        "f74bbfd7d3f935dde2df07f86d3300bd9c0cba60",
+        [
+         null,
+         {}
+        ]
+       ],
        "navigate-cross-origin-iframe-to-same-url-with-fragment.html": [
         "ed228ad59b55fa16c2fd22d3f0fdd4b618950989",
         [
@@ -477474,6 +477826,43 @@
          {}
         ]
        ],
+       "defer-script": {
+        "async-script-2.html": [
+         "f7377d847adc04163e50c6a51294363b5a45de35",
+         [
+          null,
+          {}
+         ]
+        ],
+        "async-script.html": [
+         "ea6c546781106d5c76589c49f7db3e82096b7a74",
+         [
+          null,
+          {}
+         ]
+        ],
+        "defer-script-xml.xhtml": [
+         "9d02ff39f517c8c5c68c94e3e56fe8e44f88ffd8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "defer-script.html": [
+         "62c3a74014f080f056ae636cd38669a488f212ff",
+         [
+          null,
+          {}
+         ]
+        ],
+        "document-write.html": [
+         "63e251bae5c0a0274481c196c0a942e88e8a3f2d",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "emptyish-script-elements.html": [
         "37f4a87c95ea21fdadee85575ad24e7fed9fba55",
         [

@@ -3410,6 +3410,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/prefers-color-scheme-svg-image.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/gradient/gradient-eval-001.tentative.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-composite.https.html [ Failure ]
