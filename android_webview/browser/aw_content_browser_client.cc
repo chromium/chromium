@@ -688,6 +688,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
           ->IsEnterpriseAuthenticationUrl(gurl)) {
     bool success = client_bridge->SendBrowseIntent(url);
     if (success) {
+      *ignore_navigation = true;
       return true;
     }
   }
