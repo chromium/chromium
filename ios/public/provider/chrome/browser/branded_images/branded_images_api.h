@@ -12,14 +12,6 @@ namespace provider {
 
 // Enumeration corresponding to the different branded images.
 enum class BrandedImage {
-  // The image to use for the "account and activity" item on the clear
-  // browsing data settings screen.
-  kClearBrowsingDataAccountActivity,
-
-  // The image to use for the "account and activity" item on the clear
-  // browsing data settings screen.
-  kClearBrowsingDataSiteData,
-
   // The image corresponding to the application logo for the what's new
   // promo.
   kWhatsNewLogo,

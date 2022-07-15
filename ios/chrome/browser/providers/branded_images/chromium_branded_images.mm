@@ -16,16 +16,6 @@ namespace provider {
 
 UIImage* GetBrandedImage(BrandedImage branded_image) {
   switch (branded_image) {
-    case BrandedImage::kClearBrowsingDataAccountActivity: {
-      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
-    }
-
-    case BrandedImage::kClearBrowsingDataSiteData: {
-      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
-    }
-
     case BrandedImage::kWhatsNewLogo: {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
       return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();
