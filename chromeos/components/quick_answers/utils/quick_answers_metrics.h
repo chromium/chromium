@@ -29,6 +29,19 @@ enum class TtsEngineEvent {
   kMaxValue = TTS_EVENT_OTHER
 };
 
+// Enumeration of dictionary intent source type.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Also remember to update the QuickAnswersDictionaryIntentSource enum
+// listing in tools/metrics/histograms/enums.xml.
+enum class DictionaryIntentSource {
+  kTextClassifier = 0,
+  kHunspell = 1,
+
+  kMaxValue = kHunspell,
+};
+
 // Record the status of loading quick answers with status and duration.
 void RecordLoadingStatus(LoadStatus status, const base::TimeDelta duration);
 
@@ -58,6 +71,9 @@ void RecordNetworkError(IntentType intent_type);
 
 // Record the TTS engine event types as they occur in quick answers.
 void RecordTtsEngineEvent(TtsEngineEvent event);
+
+// Record the source type of dictionary intent.
+void RecordDictionaryIntentSource(DictionaryIntentSource source);
 
 }  // namespace quick_answers
 

@@ -80917,6 +80917,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="21" label="QUIC_CHROMIUM_CLIENT_SESSION_CLOSE_SESSION_ON_ERROR"/>
 </enum>
 
+<enum name="QuickAnswersDictionaryIntentSource">
+  <int value="0" label="kTextClassifier"/>
+  <int value="1" label="kHunspell"/>
+</enum>
+
 <enum name="QuickAnswersExitPoint">
   <int value="0" label="kUnspecified"/>
   <int value="1" label="KContextMenuDismiss"/>

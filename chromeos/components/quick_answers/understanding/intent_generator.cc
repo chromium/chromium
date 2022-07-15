@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -210,6 +211,9 @@ void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
                         QuickAnswersState::Get()->application_locale()));
+
+    // Record intent source type for dictionary intent.
+    RecordDictionaryIntentSource(DictionaryIntentSource::kHunspell);
     return;
   }
 
@@ -276,6 +280,10 @@ void IntentGenerator::AnnotationCallback(
               entity_str,
               RewriteIntent(request.selected_text, entity_str, it->second),
               QuickAnswersState::Get()->application_locale()));
+
+      // Record intent source type for dictionary intent.
+      if (it->second == IntentType::kDictionary)
+        RecordDictionaryIntentSource(DictionaryIntentSource::kTextClassifier);
       return;
     }
   }

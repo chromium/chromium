@@ -23,6 +23,8 @@ const char kQuickAnswerSelectedContentLength[] =
 const char kQuickAnswersRequestTextLength[] = "QuickAnswers.RequestTextLength";
 const char kQuickAnswersTtsEngineEvent[] =
     "QuickAnswers.TextToSpeech.EngineEvent";
+const char kQuickAnswersDictionaryIntentSource[] =
+    "QuickAnswers.DictionaryIntent.Source";
 
 const char kDurationSuffix[] = ".Duration";
 const char kDefinitionSuffix[] = ".Definition";
@@ -125,6 +127,10 @@ void RecordNetworkError(IntentType intent_type) {
 
 void RecordTtsEngineEvent(TtsEngineEvent event) {
   base::UmaHistogramEnumeration(kQuickAnswersTtsEngineEvent, event);
+}
+
+void RecordDictionaryIntentSource(DictionaryIntentSource source) {
+  base::UmaHistogramEnumeration(kQuickAnswersDictionaryIntentSource, source);
 }
 
 }  // namespace quick_answers
