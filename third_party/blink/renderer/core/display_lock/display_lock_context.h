@@ -348,6 +348,8 @@ class CORE_EXPORT DisplayLockContext final
 
   bool SubtreeHasTopLayerElement() const;
 
+  void ScheduleStateChangeEventIfNeeded();
+
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;

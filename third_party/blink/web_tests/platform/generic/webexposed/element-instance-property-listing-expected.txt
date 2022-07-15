@@ -191,6 +191,7 @@ namespace http://www.w3.org/1999/xhtml
     property onchange
     property onclick
     property onclose
+    property oncontentvisibilityautostatechanged
     property oncontextlost
     property oncontextmenu
     property oncontextrestored
@@ -1411,6 +1412,7 @@ namespace http://www.w3.org/2000/svg
     property onchange
     property onclick
     property onclose
+    property oncontentvisibilityautostatechanged
     property oncontextlost
     property oncontextmenu
     property oncontextrestored

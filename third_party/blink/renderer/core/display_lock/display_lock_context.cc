@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_changed_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -290,6 +291,9 @@ void DisplayLockContext::Lock() {
   // layout objects, since otherwise they would be hoisted out of our subtree.
   DetachDescendantTopLayerElements();
 
+  // Schedule ContentVisibilityAutoStateChanged event if needed.
+  ScheduleStateChangeEventIfNeeded();
+
   if (!element_->GetLayoutObject())
     return;
 
@@ -518,6 +522,17 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
   }
 }
 
+void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
+  if (state_ == EContentVisibility::kAuto &&
+      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangedEventEnabled() &&
+      !IsShapingDeferred()) {
+    element_->EnqueueEvent(
+        *ContentVisibilityAutoStateChangedEvent::Create(
+            event_type_names::kContentvisibilityautostatechanged, is_locked_),
+        TaskType::kMiscPlatformAPI);
+  }
+}
+
 void DisplayLockContext::NotifyForcedUpdateScopeEnded(ForcedPhase phase) {
   forced_info_.end(phase);
 }
@@ -563,6 +578,9 @@ void DisplayLockContext::Unlock() {
   // of |element_| in the AX cache.
   if (AXObjectCache* cache = element_->GetDocument().ExistingAXObjectCache())
     cache->ChildrenChanged(element_);
+
+  // Schedule ContentVisibilityAutoStateChanged event if needed.
+  ScheduleStateChangeEventIfNeeded();
 
   auto* layout_object = element_->GetLayoutObject();
   // We might commit without connecting, so there is no layout object yet.

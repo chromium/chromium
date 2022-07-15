@@ -54,6 +54,8 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(change, kChange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(click, kClick)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(close, kClose)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contentvisibilityautostatechanged,
+                                         kContentvisibilityautostatechanged)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextmenu, kContextmenu)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextlost, kContextlost)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextrestored, kContextrestored)

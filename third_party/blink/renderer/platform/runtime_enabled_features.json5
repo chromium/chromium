@@ -466,6 +466,10 @@
       status:  {"Android": "stable", "default": "experimental"},
     },
     {
+      name: "ContentVisibilityAutoStateChangedEvent",
+      status: "experimental",
+    },
+    {
       name: "ContextMenu",
       status: "experimental",
     },

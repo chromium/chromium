@@ -175,6 +175,7 @@
     "onchange",
     "onclick",
     "onclose",
+    "oncontentvisibilityautostatechanged",
     "oncontextlost",
     "oncontextmenu",
     "oncontextrestored",

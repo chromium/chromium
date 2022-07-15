@@ -42,6 +42,7 @@
     attribute EventHandler onchange;
     attribute EventHandler onclick;
     attribute EventHandler onclose;
+    [RuntimeEnabled=ContentVisibilityAutoStateChangedEvent] attribute EventHandler oncontentvisibilityautostatechanged;
     attribute EventHandler oncontextlost;
     attribute EventHandler oncontextmenu;
     attribute EventHandler oncontextrestored;
