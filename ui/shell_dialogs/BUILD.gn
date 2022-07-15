@@ -83,6 +83,7 @@ component("shell_dialogs") {
       "execute_select_file_win.h",
       "select_file_dialog_win.cc",
       "select_file_dialog_win.h",
+      "select_file_utils_win.h",
     ]
   }
 
@@ -152,8 +153,8 @@ test("shell_dialogs_unittests") {
 
   if (is_win) {
     sources += [
-      "execute_select_file_win_unittest.cc",
       "select_file_dialog_win_unittest.cc",
+      "select_file_utils_win_unittest.cc",
     ]
   }
 

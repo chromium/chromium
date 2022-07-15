@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
@@ -18,6 +17,7 @@
 #include "base/win/shortcut.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/base_shell_dialog_win.h"
+#include "ui/shell_dialogs/select_file_utils_win.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
@@ -29,12 +29,6 @@ bool IsDirectory(const base::FilePath& path) {
   base::File::Info file_info;
   return base::GetFileInfo(path, &file_info) ? file_info.is_directory
                                              : path.EndsWithSeparator();
-}
-
-// Given |extension|, if it's not empty, then remove the leading dot.
-std::wstring GetExtensionWithoutLeadingDot(const std::wstring& extension) {
-  DCHECK(extension.empty() || extension[0] == L'.');
-  return extension.empty() ? extension : extension.substr(1);
 }
 
 // Sets which path is going to be open when the dialog will be shown. If
@@ -51,7 +45,9 @@ bool SetDefaultPath(IFileDialog* file_dialog,
     default_folder = default_path;
   } else {
     default_folder = default_path.DirName();
-    default_file_name = GetSanitizedFileName(default_path.BaseName());
+    std::wstring sanitized = RemoveEnvVarFromFileName<wchar_t>(
+        default_path.BaseName().value(), std::wstring(L"%"));
+    default_file_name = base::FilePath(sanitized);
   }
 
   // Do not fail the file dialog operation if the specified folder is invalid.
@@ -331,73 +327,6 @@ bool ExecuteSaveFile(HWND owner,
 }
 
 }  // namespace
-
-// This function takes the output of a SaveAs dialog: a filename, a filter and
-// the extension originally suggested to the user (shown in the dialog box) and
-// returns back the filename with the appropriate extension appended. If the
-// user requests an unknown extension and is not using the 'All files' filter,
-// the suggested extension will be appended, otherwise we will leave the
-// filename unmodified. |filename| should contain the filename selected in the
-// SaveAs dialog box and may include the path, |filter_selected| should be
-// '*.something', for example '*.*' or it can be blank (which is treated as
-// *.*). |suggested_ext| should contain the extension without the dot (.) in
-// front, for example 'jpg'.
-std::wstring AppendExtensionIfNeeded(const std::wstring& filename,
-                                     const std::wstring& filter_selected,
-                                     const std::wstring& suggested_ext) {
-  DCHECK(!filename.empty());
-  std::wstring return_value = filename;
-
-  // If we wanted a specific extension, but the user's filename deleted it or
-  // changed it to something that the system doesn't understand, re-append.
-  // Careful: Checking net::GetMimeTypeFromExtension() will only find
-  // extensions with a known MIME type, which many "known" extensions on Windows
-  // don't have.  So we check directly for the "known extension" registry key.
-  std::wstring file_extension(
-      GetExtensionWithoutLeadingDot(base::FilePath(filename).Extension()));
-  std::wstring key(L"." + file_extension);
-  if (!(filter_selected.empty() || filter_selected == L"*.*") &&
-      !base::win::RegKey(HKEY_CLASSES_ROOT, key.c_str(), KEY_READ).Valid() &&
-      file_extension != suggested_ext) {
-    if (return_value.back() != L'.')
-      return_value.append(L".");
-    return_value.append(suggested_ext);
-  }
-
-  // Strip any trailing dots, which Windows doesn't allow.
-  size_t index = return_value.find_last_not_of(L'.');
-  if (index < return_value.size() - 1)
-    return_value.resize(index + 1);
-
-  return return_value;
-}
-
-base::FilePath GetSanitizedFileName(const base::FilePath& file_name) {
-  base::StringTokenizerT<std::wstring, std::wstring::const_iterator> t(
-      file_name.value(), L"%");
-  t.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
-  std::wstring result;
-  bool token_valid = t.GetNext();
-  while (token_valid) {
-    // Append substring before the first "%".
-    result.append(t.token());
-    // Done if we are reaching the end delimiter,
-    if (!t.GetNext()) {
-      break;
-    }
-    std::wstring string_after_first_percent = t.token();
-    token_valid = t.GetNext();
-    // If there are no other "%", append the string after
-    // the first "%". Otherwise, remove the string between
-    // the "%" and continue handing the remaining string.
-    if (!token_valid) {
-      result.append(L"%");
-      result.append(string_after_first_percent);
-      break;
-    }
-  }
-  return base::FilePath(result);
-}
 
 void ExecuteSelectFile(
     SelectFileDialog::Type type,

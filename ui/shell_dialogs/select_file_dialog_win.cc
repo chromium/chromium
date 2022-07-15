@@ -27,6 +27,7 @@
 #include "ui/shell_dialogs/base_shell_dialog_win.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/select_file_utils_win.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
@@ -83,7 +84,8 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
   result.reserve(file_ext.size() + 1);
 
   for (size_t i = 0; i < file_ext.size(); ++i) {
-    std::u16string ext = file_ext[i];
+    std::u16string ext =
+        RemoveEnvVarFromFileName<char16_t>(file_ext[i], std::u16string(u"%"));
     std::u16string desc;
     if (i < ext_desc.size())
       desc = ext_desc[i];
