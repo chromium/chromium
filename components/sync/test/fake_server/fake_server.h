@@ -27,7 +27,7 @@
 #include "components/sync/protocol/client_commands.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace switches {
@@ -65,6 +65,12 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   class Observer {
    public:
     virtual ~Observer() = default;
+
+    // Called whenever a commit command is received by FakeServer. Note that
+    // Commit command may fail and hence it's not guaranteed that OnCommit()
+    // will be called. However, before any OnCommit() call there will be a
+    // corresponding OnWillCommit() call.
+    virtual void OnWillCommit() {}
 
     // Called after FakeServer has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.
@@ -279,6 +285,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   void LogForTestFailure(const base::Location& location,
                          const std::string& title,
                          const std::string& body);
+
+  // Notifies observers about an ongoing commit.
+  void OnWillCommit();
 
   // List used to implement LogForTestFailure().
   std::vector<std::unique_ptr<testing::ScopedTrace>> gtest_scoped_traces_;

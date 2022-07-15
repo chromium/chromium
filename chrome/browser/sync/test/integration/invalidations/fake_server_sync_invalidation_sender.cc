@@ -17,42 +17,6 @@ namespace {
 // components/sync/invalidations/sync_invalidations_service_impl.cc.
 const char kSyncInvalidationsAppId[] = "com.google.chrome.sync.invalidations";
 
-std::map<std::string, syncer::ModelTypeSet> GetTokenToInterestedDataTypesMap(
-    const std::vector<sync_pb::SyncEntity>& device_info_entities) {
-  std::map<std::string, syncer::ModelTypeSet> result;
-  std::map<std::string, base::Time> token_to_mtime;
-  for (const sync_pb::SyncEntity& entity : device_info_entities) {
-    const sync_pb::InvalidationSpecificFields& invalidation_fields =
-        entity.specifics().device_info().invalidation_fields();
-    const std::string& token = invalidation_fields.instance_id_token();
-    if (token.empty()) {
-      continue;
-    }
-
-    // If several DeviceInfos have the same FCM registration token, select the
-    // latest updated one. This may happen after resetting sync engine and
-    // changing cache GUID without signout.
-    // TODO(crbug.com/1325295): remove once fixed.
-    const base::Time last_updated = syncer::ProtoTimeToTime(
-        entity.specifics().device_info().last_updated_timestamp());
-    if (token_to_mtime.find(token) != token_to_mtime.end() &&
-        token_to_mtime[token] >= last_updated) {
-      continue;
-    }
-
-    token_to_mtime[token] = last_updated;
-    result[token] = syncer::ModelTypeSet();
-    for (const int field_number :
-         invalidation_fields.interested_data_type_ids()) {
-      const syncer::ModelType data_type =
-          syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
-      DCHECK(syncer::IsRealDataType(data_type));
-      result[token].Put(data_type);
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
@@ -90,14 +54,18 @@ void FakeServerSyncInvalidationSender::RemoveFCMHandler(
   base::Erase(fcm_handlers_, fcm_handler);
 }
 
+void FakeServerSyncInvalidationSender::OnWillCommit() {
+  token_to_interested_data_types_.clear();
+  UpdateTokenToInterestedDataTypesMap();
+}
+
 void FakeServerSyncInvalidationSender::OnCommit(
     const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
-  const std::map<std::string, syncer::ModelTypeSet>
-      token_to_interested_data_types_map = GetTokenToInterestedDataTypesMap(
-          fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO));
-
-  for (const auto& token_and_data_types : token_to_interested_data_types_map) {
+  // Update token to interested data types mapping. This is needed to support
+  // newly added DeviceInfos during commit request.
+  UpdateTokenToInterestedDataTypesMap();
+  for (const auto& token_and_data_types : token_to_interested_data_types_) {
     const std::string& token = token_and_data_types.first;
 
     // Send the invalidation only for interested types.
@@ -158,6 +126,40 @@ syncer::FCMHandler* FakeServerSyncInvalidationSender::GetFCMHandlerByToken(
     }
   }
   return nullptr;
+}
+
+void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
+  std::map<std::string, base::Time> token_to_mtime;
+  for (const sync_pb::SyncEntity& entity :
+       fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO)) {
+    const sync_pb::InvalidationSpecificFields& invalidation_fields =
+        entity.specifics().device_info().invalidation_fields();
+    const std::string& token = invalidation_fields.instance_id_token();
+    if (token.empty()) {
+      continue;
+    }
+
+    // If several DeviceInfos have the same FCM registration token, select the
+    // latest updated one. This may happen after resetting sync engine and
+    // changing cache GUID without signout.
+    // TODO(crbug.com/1325295): remove once fixed.
+    const base::Time last_updated = syncer::ProtoTimeToTime(
+        entity.specifics().device_info().last_updated_timestamp());
+    if (token_to_mtime.find(token) != token_to_mtime.end() &&
+        token_to_mtime[token] >= last_updated) {
+      continue;
+    }
+
+    token_to_mtime[token] = last_updated;
+    token_to_interested_data_types_[token] = syncer::ModelTypeSet();
+    for (const int field_number :
+         invalidation_fields.interested_data_type_ids()) {
+      const syncer::ModelType data_type =
+          syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+      DCHECK(syncer::IsRealDataType(data_type));
+      token_to_interested_data_types_[token].Put(data_type);
+    }
+  }
 }
 
 }  // namespace fake_server
