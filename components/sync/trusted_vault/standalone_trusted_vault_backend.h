@@ -120,28 +120,6 @@ class StandaloneTrustedVaultBackend
 
   void SetClockForTesting(base::Clock* clock);
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. Exposed publicly for testing.
-  enum class TrustedVaultDownloadKeysStatusForUMA {
-    kSuccess = 0,
-    // Deprecated in favor of the more fine-grained buckets.
-    kDeprecatedMembershipNotFoundOrCorrupted = 1,
-    kNoNewKeys = 2,
-    kKeyProofsVerificationFailed = 3,
-    kAccessTokenFetchingFailure = 4,
-    kOtherError = 5,
-    kMemberNotFound = 6,
-    kMembershipNotFound = 7,
-    kMembershipCorrupted = 8,
-    kMembershipEmpty = 9,
-    kNoPrimaryAccount = 10,
-    kDeviceNotRegistered = 11,
-    kThrottledClientSide = 12,
-    kCorruptedLocalDeviceRegistration = 13,
-    kAborted = 14,
-    kMaxValue = kAborted
-  };
-
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 

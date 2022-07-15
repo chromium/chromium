@@ -37,8 +37,6 @@ void RecordTrustedVaultDeviceRegistrationState(
                                 registration_state);
 }
 
-// Records url fetch response status (combined http and net error code).
-// Either |http_status| or |net_error| must be non zero.
 void RecordTrustedVaultURLFetchResponse(
     int http_response_code,
     int net_error,
@@ -56,6 +54,11 @@ void RecordTrustedVaultURLFetchResponse(
         base::StrCat({"Sync.TrustedVaultURLFetchResponse", ".", suffix}),
         value);
   }
+}
+
+void RecordTrustedVaultDownloadKeysStatus(
+    TrustedVaultDownloadKeysStatusForUMA status) {
+  base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
 }
 
 }  // namespace syncer

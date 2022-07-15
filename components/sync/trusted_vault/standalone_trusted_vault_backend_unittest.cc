@@ -23,6 +23,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
@@ -964,9 +965,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
-      /*sample=*/
-      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
-          kSuccess,
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
 }
 
@@ -1010,9 +1009,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*last_key_version=*/0);
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
-      /*sample=*/
-      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
-          kOtherError,
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kOtherError,
       /*expected_bucket_count=*/1);
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
@@ -1281,9 +1278,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultVerifyDeviceRegistrationState",
-      /*sample=*/
-      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
-          kNoNewKeys,
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
       /*expected_bucket_count=*/1);
 }
 

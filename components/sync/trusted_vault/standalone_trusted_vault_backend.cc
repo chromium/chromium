@@ -142,8 +142,7 @@ void UpgradeToVersion1(sync_pb::LocalTrustedVault* local_trusted_vault) {
 }
 
 void RecordVerifyRegistrationStatus(
-    StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA
-        status) {
+    TrustedVaultDownloadKeysStatusForUMA status) {
   base::UmaHistogramEnumeration(
       "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
 }
@@ -164,7 +163,7 @@ StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
     ~PendingTrustedRecoveryMethod() = default;
 
 // static
-StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA
+TrustedVaultDownloadKeysStatusForUMA
 StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
     TrustedVaultDownloadKeysStatus response_status) {
   switch (response_status) {
@@ -829,8 +828,7 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
 
   if (status_for_uma.has_value()) {
-    base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus",
-                                  *status_for_uma);
+    RecordTrustedVaultDownloadKeysStatus(*status_for_uma);
   }
 
   const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
