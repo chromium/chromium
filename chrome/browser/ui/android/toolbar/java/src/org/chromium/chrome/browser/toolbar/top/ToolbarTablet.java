@@ -31,6 +31,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -69,6 +70,10 @@ import java.util.Collection;
 @SuppressLint("Instantiatable")
 public class ToolbarTablet
         extends ToolbarLayout implements OnClickListener, View.OnLongClickListener {
+    @VisibleForTesting
+    static final BooleanCachedFieldTrialParameter GTS_ENABLE_LAUNCH_POLISH =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false);
     private ObjectAnimator mTabSwitcherModeAnimation;
 
     /**
@@ -839,8 +844,7 @@ public class ToolbarTablet
     }
 
     private boolean isTabletGridTabSwitcherPolishEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false);
+        return GTS_ENABLE_LAUNCH_POLISH.getValue();
     }
 
     @VisibleForTesting
