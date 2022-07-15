@@ -57,7 +57,7 @@ const base::Feature kWebViewJavaJsBridgeMojo{"WebViewJavaJsBridgeMojo",
 
 // When enabled, connections using legacy TLS 1.0/1.1 versions are allowed.
 const base::Feature kWebViewLegacyTlsSupport{"WebViewLegacyTlsSupport",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Measure the number of pixels occupied by one or more WebViews as a
 // proportion of the total screen size. Depending on the number of
