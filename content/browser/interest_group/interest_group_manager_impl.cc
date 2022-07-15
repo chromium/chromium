@@ -20,6 +20,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -298,11 +299,16 @@ void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
       .Then(std::move(callback));
 }
 
-void InterestGroupManagerImpl::UpdateInterestGroup(blink::InterestGroup group) {
+void InterestGroupManagerImpl::UpdateInterestGroup(
+    const url::Origin& owner,
+    const std::string& name,
+    InterestGroupUpdate update,
+    base::OnceCallback<void(bool)> callback) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kUpdate,
-                              group.owner.Serialize(), group.name);
+                              owner.Serialize(), name);
   impl_.AsyncCall(&InterestGroupStorage::UpdateInterestGroup)
-      .WithArgs(std::move(group));
+      .WithArgs(owner, name, std::move(update))
+      .Then(std::move(callback));
 }
 
 void InterestGroupManagerImpl::ReportUpdateFailed(const url::Origin& owner,

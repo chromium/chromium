@@ -64,8 +64,7 @@ bool InterestGroup::Ad::operator==(const Ad& other) const {
   return render_url == other.render_url && metadata == other.metadata;
 }
 
-InterestGroup::InterestGroup()
-    : priority(0.0), execution_mode(ExecutionMode::kCompatibilityMode) {}
+InterestGroup::InterestGroup() = default;
 
 InterestGroup::InterestGroup(
     base::Time expiry,
@@ -104,15 +103,15 @@ bool InterestGroup::IsValid() const {
   if (owner.scheme() != url::kHttpsScheme)
     return false;
 
-  if (!priority || !std::isfinite(*priority))
+  if (!std::isfinite(priority))
     return false;
 
-  if (!execution_mode ||
-      (*execution_mode !=
-           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode &&
-       *execution_mode !=
-           blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode))
+  if (execution_mode !=
+          blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode &&
+      execution_mode !=
+          blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
     return false;
+  }
 
   if (bidding_url && !IsUrlAllowed(*bidding_url, *this))
     return false;
@@ -157,10 +156,8 @@ size_t InterestGroup::EstimateSize() const {
   size += owner.Serialize().size();
   size += name.size();
 
-  // priority and execution_mode are not stored as nullable, so only count the
-  // value size.
-  size += sizeof(decltype(priority)::value_type);
-  size += sizeof(decltype(execution_mode)::value_type);
+  size += sizeof(priority);
+  size += sizeof(execution_mode);
 
   if (bidding_url)
     size += bidding_url->spec().length();

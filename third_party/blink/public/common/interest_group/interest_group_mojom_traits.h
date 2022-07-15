@@ -50,15 +50,12 @@ struct BLINK_COMMON_EXPORT
   }
 
   static double priority(const blink::InterestGroup& interest_group) {
-    DCHECK(interest_group.priority);
-    return interest_group.priority.value_or(0);
+    return interest_group.priority;
   }
 
   static blink::InterestGroup::ExecutionMode execution_mode(
       const blink::InterestGroup& interest_group) {
-    DCHECK(interest_group.execution_mode);
-    return interest_group.execution_mode.value_or(
-        blink::InterestGroup::ExecutionMode::kCompatibilityMode);
+    return interest_group.execution_mode;
   }
 
   static const absl::optional<GURL>& bidding_url(

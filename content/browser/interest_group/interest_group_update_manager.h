@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -167,18 +168,23 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
       std::string name,
       data_decoder::DataDecoder::ValueOrError result);
 
+  // Updates the specified interest group with the information in `update`.
+  // On completion, invoked OnUpdateInterestGroupCompleted() asynchronously,
+  // with a bool indicated whether or not the update succeeded.
+  void UpdateInterestGroup(const url::Origin& owner,
+                           const std::string& name,
+                           InterestGroupUpdate update);
+
+  // This method finishes the current update and invokes either
+  // ReportUpdateFailed() or OnOneUpdateCompleted().
+  void OnUpdateInterestGroupCompleted(const url::Origin& owner,
+                                      const std::string& name,
+                                      bool success);
+
   // Called after a single interest group update finishes. Should be called
   // after any database operations (if performed) or clearing of
   // `owners_to_update_`.
   void OnOneUpdateCompleted();
-
-  // Updates the interest group of the same name based on the information in
-  // the provided group. This does not update the interest group expiration
-  // time or user bidding signals. Silently fails if the interest group does
-  // not exist.
-  //
-  // This method finishes the current update and calls OnOneUpdateCompleted().
-  void UpdateInterestGroup(blink::InterestGroup group);
 
   // Processes update failure, and if `delay_type` isn't kNoInternet, modifies
   // the update rate limits stored in the database.

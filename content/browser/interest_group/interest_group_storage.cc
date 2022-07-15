@@ -23,6 +23,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "sql/database.h"
@@ -471,6 +472,7 @@ bool DoCreateOrMarkAdReferenced(sql::Database& db,
                                        now);
 }
 
+// Takes a blink::InterestGroup, or InterestGroupUpdate.
 bool DoCreateOrMarkInterestGroupAndAdsReferenced(
     sql::Database& db,
     const blink::InterestGroup& data,
@@ -731,10 +733,8 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(3, Serialize(data.owner));
   join_group.BindString(4, Serialize(joining_origin));
   join_group.BindString(5, data.name);
-  join_group.BindDouble(6, data.priority.value_or(0));
-  join_group.BindInt(
-      7, static_cast<int>(data.execution_mode.value_or(
-             blink::InterestGroup::ExecutionMode::kCompatibilityMode)));
+  join_group.BindDouble(6, data.priority);
+  join_group.BindInt(7, static_cast<int>(data.execution_mode));
   join_group.BindString(8, Serialize(joining_url));
   join_group.BindString(9, Serialize(data.bidding_url));
   join_group.BindString(10, Serialize(data.bidding_wasm_helper_url));
@@ -804,10 +804,8 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindTime(0, now);
   store_group.BindTime(
       1, now + InterestGroupStorage::kUpdateSucceededBackoffPeriod);
-  store_group.BindDouble(2, group.priority.value_or(0));
-  store_group.BindInt(
-      3, static_cast<int>(group.execution_mode.value_or(
-             blink::InterestGroup::ExecutionMode::kCompatibilityMode)));
+  store_group.BindDouble(2, group.priority);
+  store_group.BindInt(3, static_cast<int>(group.execution_mode));
   store_group.BindString(4, Serialize(group.bidding_url));
   store_group.BindString(5, Serialize(group.bidding_wasm_helper_url));
   store_group.BindString(6, Serialize(group.daily_update_url));
@@ -822,7 +820,9 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
 }
 
 bool DoUpdateInterestGroup(sql::Database& db,
-                           const blink::InterestGroup& update,
+                           const url::Origin& owner,
+                           const std::string& name,
+                           InterestGroupUpdate update,
                            base::Time now) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
@@ -838,7 +838,7 @@ bool DoUpdateInterestGroup(sql::Database& db,
   // verify the interest group is valid before writing it to the database.
 
   blink::InterestGroup stored_group;
-  if (!DoLoadInterestGroup(db, update.owner, update.name, stored_group,
+  if (!DoLoadInterestGroup(db, owner, name, stored_group,
                            /*joining_origin=*/nullptr,
                            /*last_updated=*/nullptr)) {
     return false;
@@ -848,23 +848,27 @@ bool DoUpdateInterestGroup(sql::Database& db,
   if (stored_group.expiry < now)
     return false;
   if (update.priority)
-    stored_group.priority = update.priority;
+    stored_group.priority = *update.priority;
   if (update.execution_mode)
-    stored_group.execution_mode = update.execution_mode;
+    stored_group.execution_mode = *update.execution_mode;
   if (update.bidding_url)
-    stored_group.bidding_url = update.bidding_url;
-  if (update.bidding_wasm_helper_url)
-    stored_group.bidding_wasm_helper_url = update.bidding_wasm_helper_url;
-  if (update.trusted_bidding_signals_url)
+    stored_group.bidding_url = std::move(update.bidding_url);
+  if (update.bidding_wasm_helper_url) {
+    stored_group.bidding_wasm_helper_url =
+        std::move(update.bidding_wasm_helper_url);
+  }
+  if (update.trusted_bidding_signals_url) {
     stored_group.trusted_bidding_signals_url =
-        update.trusted_bidding_signals_url;
-  if (update.trusted_bidding_signals_keys)
+        std::move(update.trusted_bidding_signals_url);
+  }
+  if (update.trusted_bidding_signals_keys) {
     stored_group.trusted_bidding_signals_keys =
-        update.trusted_bidding_signals_keys;
+        std::move(update.trusted_bidding_signals_keys);
+  }
   if (update.ads)
-    stored_group.ads = update.ads;
+    stored_group.ads = std::move(update.ads);
   if (update.ad_components)
-    stored_group.ad_components = update.ad_components;
+    stored_group.ad_components = std::move(update.ad_components);
 
   if (!stored_group.IsValid()) {
     // TODO(behamilton): Report errors to devtools.
@@ -876,7 +880,7 @@ bool DoUpdateInterestGroup(sql::Database& db,
 
   // Updates do not change the expiration time so we do not need to refresh the
   // referenced field for fields that didn't change.
-  if (!DoCreateOrMarkInterestGroupAndAdsReferenced(db, update, now))
+  if (!DoCreateOrMarkInterestGroupAndAdsReferenced(db, stored_group, now))
     return false;
   return transaction.Commit();
 }
@@ -1785,16 +1789,20 @@ void InterestGroupStorage::LeaveInterestGroup(const url::Origin& owner,
     DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
 }
 
-void InterestGroupStorage::UpdateInterestGroup(
-    const blink::InterestGroup group) {
+bool InterestGroupStorage::UpdateInterestGroup(const url::Origin& owner,
+                                               const std::string& name,
+                                               InterestGroupUpdate update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
-    return;
+    return false;
 
-  if (!DoUpdateInterestGroup(*db_, group, base::Time::Now())) {
+  bool success =
+      DoUpdateInterestGroup(*db_, owner, name, update, base::Time::Now());
+  if (!success) {
     DLOG(ERROR) << "Could not update interest group: "
                 << db_->GetErrorMessage();
   }
+  return success;
 }
 
 void InterestGroupStorage::ReportUpdateFailed(const url::Origin& owner,

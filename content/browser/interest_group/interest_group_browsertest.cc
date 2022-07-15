@@ -443,7 +443,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     base::Value::Dict dict;
     dict.Set("name", group.name);
     dict.Set("owner", group.owner.Serialize());
-    dict.Set("priority", *group.priority);
+    dict.Set("priority", group.priority);
     if (group.bidding_url)
       dict.Set("biddingLogicUrl", group.bidding_url->spec());
     if (group.bidding_wasm_helper_url)

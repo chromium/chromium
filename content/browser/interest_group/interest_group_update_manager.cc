@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
@@ -29,6 +30,8 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace content {
 
 namespace {
 
@@ -99,7 +102,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyExecutionMode(
     const base::Value::Dict& dict,
-    blink::InterestGroup& interest_group_update) {
+    InterestGroupUpdate& interest_group_update) {
   const std::string* maybe_execution_mode = dict.FindString("executionMode");
   if (!maybe_execution_mode)
     return true;
@@ -117,7 +120,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // completed.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsKeys(
     const base::Value::Dict& dict,
-    blink::InterestGroup& interest_group_update) {
+    InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_update_trusted_bidding_signals_keys =
       dict.FindList("trustedBiddingSignalsKeys");
   if (!maybe_update_trusted_bidding_signals_keys)
@@ -167,7 +170,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the `ads` list JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAds(const base::Value::Dict& dict,
-                                blink::InterestGroup& interest_group_update) {
+                                InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("ads");
   if (!maybe_ads)
     return true;
@@ -183,7 +186,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // returns true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAdComponents(
     const base::Value::Dict& dict,
-    blink::InterestGroup& interest_group_update) {
+    InterestGroupUpdate& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("adComponents");
   if (!maybe_ads)
     return true;
@@ -195,7 +198,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
-absl::optional<blink::InterestGroup> ParseUpdateJson(
+absl::optional<InterestGroupUpdate> ParseUpdateJson(
     const url::Origin& owner,
     const std::string& name,
     const data_decoder::DataDecoder::ValueOrError& result) {
@@ -210,9 +213,7 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
   if (!ValidateNameAndOwnerIfPresent(owner, name, *dict)) {
     return absl::nullopt;
   }
-  blink::InterestGroup interest_group_update;
-  interest_group_update.owner = owner;
-  interest_group_update.name = name;
+  InterestGroupUpdate interest_group_update;
   const base::Value* maybe_priority_value = dict->Find("priority");
   if (maybe_priority_value) {
     // If the field is specified, it must be an integer or a double.
@@ -247,20 +248,10 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
   if (!TryToCopyAdComponents(*dict, interest_group_update)) {
     return absl::nullopt;
   }
-  if (!interest_group_update.IsValid()) {
-    return absl::nullopt;
-  }
-  // If not specified by the update make sure the field is not specified.
-  // This must occur after the IsValid check since priority is required for a
-  // valid interest group, while an update should just keep the existing value.
-  if (!maybe_priority_value)
-    interest_group_update.priority.reset();
   return interest_group_update;
 }
 
 }  // namespace
-
-namespace content {
 
 InterestGroupUpdateManager::InterestGroupUpdateManager(
     InterestGroupManagerImpl* manager,
@@ -468,25 +459,41 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerJsonParse(
   DCHECK_EQ(owner, owners_to_update_.FrontOwner());
   DCHECK_GT(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);
-  absl::optional<blink::InterestGroup> interest_group_update =
+  absl::optional<InterestGroupUpdate> interest_group_update =
       ParseUpdateJson(owner, name, result);
   if (!interest_group_update) {
     ReportUpdateFailed(owner, name, UpdateDelayType::kParseFailure);
     return;
   }
-  UpdateInterestGroup(std::move(*interest_group_update));
+  UpdateInterestGroup(owner, name, std::move(*interest_group_update));
+}
+
+void InterestGroupUpdateManager::UpdateInterestGroup(
+    const url::Origin& owner,
+    const std::string& name,
+    InterestGroupUpdate update) {
+  manager_->UpdateInterestGroup(
+      owner, name, std::move(update),
+      base::BindOnce(
+          &InterestGroupUpdateManager::OnUpdateInterestGroupCompleted,
+          weak_factory_.GetWeakPtr(), owner, name));
+}
+
+void InterestGroupUpdateManager::OnUpdateInterestGroupCompleted(
+    const url::Origin& owner,
+    const std::string& name,
+    bool success) {
+  if (!success) {
+    ReportUpdateFailed(owner, name, UpdateDelayType::kParseFailure);
+    return;
+  }
+  OnOneUpdateCompleted();
 }
 
 void InterestGroupUpdateManager::OnOneUpdateCompleted() {
   DCHECK_GT(num_in_flight_updates_, 0);
   --num_in_flight_updates_;
   MaybeContinueUpdatingCurrentOwner();
-}
-
-void InterestGroupUpdateManager::UpdateInterestGroup(
-    blink::InterestGroup group) {
-  manager_->UpdateInterestGroup(std::move(group));
-  OnOneUpdateCompleted();
 }
 
 void InterestGroupUpdateManager::ReportUpdateFailed(

@@ -531,7 +531,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   double GetPriority(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
       if (interest_group.interest_group.name == name) {
-        return interest_group.interest_group.priority.value();
+        return interest_group.interest_group.priority;
       }
     }
     return 0;
@@ -1504,8 +1504,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
-  ASSERT_TRUE(group.priority.has_value());
-  EXPECT_EQ(group.priority.value(), 2.0);
+  EXPECT_EQ(group.priority, 2.0);
   EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
 }
 

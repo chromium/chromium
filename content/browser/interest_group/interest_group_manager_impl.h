@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/interest_group_update_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -297,11 +298,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Updates the interest group of the same name based on the information in
   // the provided group. This does not update the interest group expiration
-  // time or user bidding signals. Silently fails if the interest group does
-  // not exist.
+  // time or user bidding signals.
+  //
+  // `callback` is invoked asynchronously on completion, with a bool indicating
+  // success or failure.
   //
   // To be called only by `update_manager_`.
-  void UpdateInterestGroup(blink::InterestGroup group);
+  void UpdateInterestGroup(const url::Origin& owner,
+                           const std::string& name,
+                           InterestGroupUpdate update,
+                           base::OnceCallback<void(bool)> callback);
 
   // Modifies the update rate limits stored in the database, with a longer delay
   // for parse failure.

@@ -12,6 +12,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
@@ -62,11 +63,14 @@ class CONTENT_EXPORT InterestGroupStorage {
   void LeaveInterestGroup(const url::Origin& owner,
                           const std::string& name,
                           const url::Origin& main_frame);
-  // Updates the interest group of the same name based on the information in
-  // the provided group. This does not update the interest group expiration
-  // time or user bidding signals. Silently fails if the interest group does
-  // not exist.
-  void UpdateInterestGroup(blink::InterestGroup group);
+  // Updates the interest group `name` of `owner` with the populated fields of
+  // `update`.
+  //
+  // If it fails for any reason (e.g., the interest group does not exist, or the
+  // data in `update` is not valid), returns false.
+  bool UpdateInterestGroup(const url::Origin& owner,
+                           const std::string& name,
+                           InterestGroupUpdate update);
   // Report that updating of the interest group with owner `owner` and name
   // `name` failed. With the exception of parse failures, the rate limit
   // duration for failed updates is shorter than for those that succeed -- for
