@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -98,41 +96,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {
       JourneyLogger::CheckoutFunnelStep::kCompleted, 0U);
 }
 
-class JourneyLoggerBasicCardTest : public JourneyLoggerTest {
- public:
-  JourneyLoggerBasicCardTest() {
-    feature_list_.InitAndEnableFeature(features::kPaymentRequestBasicCard);
-  }
-
-  JourneyLoggerBasicCardTest(const JourneyLoggerBasicCardTest&) = delete;
-  JourneyLoggerBasicCardTest& operator=(const JourneyLoggerBasicCardTest&) =
-      delete;
-
-  ~JourneyLoggerBasicCardTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(JourneyLoggerBasicCardTest, BasicCardOnly) {
-  CreateAndAddCreditCardForProfile(CreateAndAddAutofillProfile());
-  base::HistogramTester histogram_tester;
-
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "testBasicCard()"));
-  WaitForObservedEvent();
-
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(), "abort()"));
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
-}
-
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
   base::HistogramTester histogram_tester;
   SetUpForGpay();
@@ -217,50 +180,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    JourneyLoggerBasicCardTest,
-    UKMCheckoutEventsNotRecordedForAppOriginWhenNoAppInvoked) {
-  CreateAndAddCreditCardForProfile(CreateAndAddAutofillProfile());
-
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "testBasicCard()"));
-  WaitForObservedEvent();
-
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(), "abort()"));
-
-  // UKM for merchant's website origin.
-  auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PaymentRequest_CheckoutEvents::kEntryName);
-  size_t num_entries = entries.size();
-  EXPECT_EQ(1u, num_entries);
-  test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0], main_frame_url());
-
-  // No UKM for payment app's scope since the request got aborted before
-  // invoking a payment app.
-  entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PaymentApp_CheckoutEvents::kEntryName);
-  num_entries = entries.size();
-  EXPECT_EQ(0u, num_entries);
-}
-
-class JourneyLoggerPaymentHandlerTest : public JourneyLoggerTest {
- public:
-  JourneyLoggerPaymentHandlerTest() {
-    feature_list_.InitAndDisableFeature(features::kPaymentRequestBasicCard);
-  }
-
-  JourneyLoggerPaymentHandlerTest(const JourneyLoggerPaymentHandlerTest&) =
-      delete;
-  JourneyLoggerPaymentHandlerTest& operator=(
-      const JourneyLoggerPaymentHandlerTest&) = delete;
-
-  ~JourneyLoggerPaymentHandlerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    JourneyLoggerPaymentHandlerTest,
+    JourneyLoggerTest,
     UKMCheckoutEventsNotRecordedForAppOriginWhenNoAppInvoked) {
   std::string a_payment_method;
   InstallPaymentApp("a.com", "/nickpay.com/app.js", &a_payment_method);
