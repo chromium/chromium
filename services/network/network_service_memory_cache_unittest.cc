@@ -618,15 +618,15 @@ TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, EvictLeastRecentlyUsed) {
-  const int kBodySize = kMaxPerEntrySize;
+  constexpr size_t kBodySize = kMaxPerEntrySize;
 
   // Stores two responses to consume the full budget of the in-memory cache.
   ResourceRequest request1 = CreateRequest(
-      base::StringPrintf("/cacheable?id=1&body-size=%d", kBodySize));
+      base::StringPrintf("/cacheable?id=1&body-size=%zu", kBodySize));
   StoreResponseToMemoryCache(request1);
 
   ResourceRequest request2 = CreateRequest(
-      base::StringPrintf("/cacheable?id=2&body-size=%d", kBodySize));
+      base::StringPrintf("/cacheable?id=2&body-size=%zu", kBodySize));
   StoreResponseToMemoryCache(request2);
 
   ASSERT_TRUE(CanServeFromMemoryCache(request1));
@@ -634,12 +634,13 @@ TEST_F(NetworkServiceMemoryCacheTest, EvictLeastRecentlyUsed) {
 
   // Stores the third response. It should evict the first stored response.
   ResourceRequest request3 = CreateRequest(
-      base::StringPrintf("/cacheable?id=3&body-size=%d", kBodySize));
+      base::StringPrintf("/cacheable?id=3&body-size=%zu", kBodySize));
   StoreResponseToMemoryCache(request3);
 
   ASSERT_FALSE(CanServeFromMemoryCache(request1));
   ASSERT_TRUE(CanServeFromMemoryCache(request2));
   ASSERT_TRUE(CanServeFromMemoryCache(request3));
+  ASSERT_EQ(memory_cache().total_bytes(), kBodySize * 2);
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, Clear) {

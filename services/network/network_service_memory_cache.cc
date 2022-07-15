@@ -365,7 +365,7 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   if (validation_type != net::VALIDATION_NONE) {
     RecordEntryStatus(EntryStatus::kStale);
     // The cached response is stale, erase it from the in-memory cache.
-    entries_.Erase(it);
+    EraseEntry(it);
     return absl::nullopt;
   }
 
@@ -440,12 +440,17 @@ uint64_t NetworkServiceMemoryCache::GetNextTraceId() {
   return (reinterpret_cast<uint64_t>(this) << 32) | next_trace_id_++;
 }
 
+void NetworkServiceMemoryCache::EraseEntry(CacheMap::iterator it) {
+  DCHECK(it != entries_.end());
+  DCHECK_GE(total_bytes_, it->second->content->size());
+  total_bytes_ -= it->second->content->size();
+  entries_.Erase(it);
+}
+
 void NetworkServiceMemoryCache::ShrinkToTotalBytes() {
   while (!entries_.empty() && total_bytes_ > max_total_bytes_) {
-    auto it = entries_.rbegin();
-    DCHECK_GE(total_bytes_, it->second->content->size());
-    total_bytes_ -= it->second->content->size();
-    entries_.Erase(it);
+    auto it = --entries_.end();
+    EraseEntry(it);
   }
 }
 

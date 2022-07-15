@@ -116,6 +116,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // Used for tracing.
   uint64_t GetNextTraceId();
 
+  // Erases a single entry.
+  void EraseEntry(CacheMap::iterator it);
+
   // Erases least recently used entries from the in-memory cache until
   // `total_bytes_` becomes less than `max_total_bytes_`.
   void ShrinkToTotalBytes();
