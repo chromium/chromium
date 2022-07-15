@@ -80,7 +80,7 @@ ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
 int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
   if (!rfh)
     return kInvalidFrameId;
-  if (rfh->GetParentOrOuterDocument())
+  if (!rfh->IsInPrimaryMainFrame())
     return rfh->GetFrameTreeNodeId();
   return kTopFrameId;
 }
@@ -88,7 +88,7 @@ int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetFrameId(
     content::NavigationHandle* navigation_handle) {
-  return !navigation_handle->GetParentFrameOrOuterDocument()
+  return navigation_handle->IsInPrimaryMainFrame()
              ? kTopFrameId
              : navigation_handle->GetFrameTreeNodeId();
 }
@@ -129,10 +129,13 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
   content::RenderFrameHost* rfh =
       web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
 
-  // Fail if the frame is not active (e.g. in prerendering or in the
+  // Fail if the frame is not active or in prerendering (e.g. in the
   // back/forward cache).
-  if (!rfh || !rfh->IsActive())
+  if (!rfh || (!rfh->IsActive() &&
+               !rfh->IsInLifecycleState(
+                   content::RenderFrameHost::LifecycleState::kPrerendering))) {
     return nullptr;
+  }
 
   return rfh;
 }
