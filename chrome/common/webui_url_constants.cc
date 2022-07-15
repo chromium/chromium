@@ -300,6 +300,8 @@ const char kChromeUIBluetoothPairingURL[] = "chrome://bluetooth-pairing/";
 const char kChromeUICertificateManagerDialogURL[] =
     "chrome://certificate-manager/";
 const char kChromeUICertificateManagerHost[] = "certificate-manager";
+const char kChromeUICloudUploadHost[] = "cloud-upload-dialog";
+const char kChromeUICloudUploadURL[] = "chrome://cloud-upload-dialog/";
 const char kChromeUIConfirmPasswordChangeHost[] = "confirm-password-change";
 const char kChromeUIConfirmPasswordChangeUrl[] =
     "chrome://confirm-password-change";
@@ -420,6 +422,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUIBluetoothPairingHost,
     kChromeUIBorealisCreditsHost,
     kChromeUICertificateManagerHost,
+    kChromeUICloudUploadHost,
     kChromeUICrostiniCreditsHost,
     kChromeUICrostiniInstallerHost,
     kChromeUICryptohomeHost,

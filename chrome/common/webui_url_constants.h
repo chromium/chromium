@@ -279,6 +279,8 @@ extern const char kChromeUIBluetoothPairingHost[];
 extern const char kChromeUIBluetoothPairingURL[];
 extern const char kChromeUICertificateManagerDialogURL[];
 extern const char kChromeUICertificateManagerHost[];
+extern const char kChromeUICloudUploadHost[];
+extern const char kChromeUICloudUploadURL[];
 extern const char kChromeUIConfirmPasswordChangeHost[];
 extern const char kChromeUIConfirmPasswordChangeUrl[];
 extern const char kChromeUICrostiniInstallerHost[];

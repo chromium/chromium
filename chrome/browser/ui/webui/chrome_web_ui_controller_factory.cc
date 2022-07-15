@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
@@ -949,6 +950,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
   }
+  if (url.host_piece() == chrome::kChromeUICloudUploadHost) {
+    if (!ash::features::IsUploadOfficeToCloudEnabled()) {
+      return nullptr;
+    }
+    return &NewWebUI<chromeos::cloud_upload::CloudUploadDialogUI>;
+  }
   if (url.host_piece() == chrome::kChromeUINotificationTesterHost)
     return &NewWebUI<chromeos::NotificationTesterUI>;
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
@@ -1575,6 +1582,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIEmojiPickerURL),
       GURL(chrome::kOsUIEmojiPickerURL),
       GURL(ash::file_manager::kChromeUIFileManagerURL),
+      GURL(chrome::kChromeUICloudUploadURL),
       GURL(chrome::kChromeUIFlagsURL),
       GURL(chrome::kOsUIFlagsURL),
       GURL(chrome::kOsUIGpuURL),

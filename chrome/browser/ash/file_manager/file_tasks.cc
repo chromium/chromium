@@ -49,6 +49,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -900,6 +901,12 @@ bool ExecuteFileTask(Profile* profile,
   // this will always open on the current desktop, regardless of which profile
   // owns the files, so return TASK_RESULT_OPENED.
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
+
+  if (IsFilesAppId(task.app_id) &&
+      (parsed_action_id == "upload-office-to-drive")) {
+    return chromeos::cloud_upload::CloudUploadDialog::Show();
+  }
+
   if (ShouldBeOpenedWithBrowser(task.app_id, parsed_action_id)) {
     const bool result =
         OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
