@@ -153,8 +153,6 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   if (!open_in_external_preview &&
       (printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kExtension)) {
-    if (printer_type == mojom::PrinterType::kExtension)
-      settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
     if (!settings_->requested_media().size_microns.IsEmpty()) {
       float device_microns_per_device_unit =
