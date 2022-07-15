@@ -230,6 +230,7 @@ constexpr const char* BuildArch() {
 int UpdaterMain(int argc, const char* const* argv) {
 #if BUILDFLAG(IS_WIN)
   CHECK(EnableSecureDllLoading());
+  EnableProcessHeapMetadataProtection();
 #endif
 
   base::PlatformThread::SetName("UpdaterMain");

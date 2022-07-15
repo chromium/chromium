@@ -512,6 +512,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 
 ProcessExitResult WMain(HMODULE module) {
   CHECK(EnableSecureDllLoading());
+  EnableProcessHeapMetadataProtection();
 
   CommandString cmd_line_args;
   ProcessExitResult args_result = BuildCommandLineArguments(

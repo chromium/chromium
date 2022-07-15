@@ -272,4 +272,8 @@ TEST(WinUtil, EnableSecureDllLoading) {
   EXPECT_TRUE(EnableSecureDllLoading());
 }
 
+TEST(WinUtil, EnableProcessHeapMetadataProtection) {
+  EXPECT_TRUE(EnableProcessHeapMetadataProtection());
+}
+
 }  // namespace updater

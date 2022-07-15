@@ -865,4 +865,16 @@ bool EnableSecureDllLoading() {
   return set_default_dll_directories(directory_flags);
 }
 
+bool EnableProcessHeapMetadataProtection() {
+  if (!::HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, nullptr,
+                            0)) {
+    LOG(ERROR) << __func__
+               << ": Failed to enable heap metadata protection: " << std::hex
+               << HRESULTFromLastError();
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace updater

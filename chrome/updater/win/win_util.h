@@ -272,6 +272,12 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 // applied.
 [[nodiscard]] bool EnableSecureDllLoading();
 
+// Enables metadata protection in the heap manager. This allows for the process
+// to be terminated immediately when a buffer overflow or illegal heap
+// operations are detected. This call enables protection for the entire process
+// and cannot be reversed.
+bool EnableProcessHeapMetadataProtection();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_
