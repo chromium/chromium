@@ -277,25 +277,16 @@ bool DrawingBuffer::MarkContentsChanged() {
   return false;
 }
 
-void DrawingBuffer::ResetBuffersToAutoClear() {
-  GLuint buffers = GL_COLOR_BUFFER_BIT;
-  if (want_depth_)
-    buffers |= GL_DEPTH_BUFFER_BIT;
-  if (want_stencil_ || has_implicit_stencil_buffer_)
-    buffers |= GL_STENCIL_BUFFER_BIT;
-  SetBuffersToAutoClear(buffers);
+bool DrawingBuffer::BufferClearNeeded() const {
+  return buffer_clear_needed_;
 }
 
-void DrawingBuffer::SetBuffersToAutoClear(GLbitfield buffers) {
+void DrawingBuffer::SetBufferClearNeeded(bool flag) {
   if (preserve_drawing_buffer_ == kDiscard) {
-    buffers_to_auto_clear_ = buffers;
+    buffer_clear_needed_ = flag;
   } else {
-    DCHECK_EQ(0u, buffers_to_auto_clear_);
+    DCHECK(!buffer_clear_needed_);
   }
-}
-
-GLbitfield DrawingBuffer::GetBuffersToAutoClear() const {
-  return buffers_to_auto_clear_;
 }
 
 gpu::gles2::GLES2Interface* DrawingBuffer::ContextGL() {
@@ -497,7 +488,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
                      weak_factory_.GetWeakPtr(), std::move(registered));
 
   contents_changed_ = false;
-  ResetBuffersToAutoClear();
+  if (preserve_drawing_buffer_ == kDiscard) {
+    SetBufferClearNeeded(true);
+  }
   return true;
 }
 
@@ -604,7 +597,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   front_color_buffer_ = color_buffer_for_mailbox;
 
   contents_changed_ = false;
-  ResetBuffersToAutoClear();
+  if (preserve_drawing_buffer_ == kDiscard) {
+    SetBufferClearNeeded(true);
+  }
   return true;
 }
 
@@ -1804,8 +1799,10 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
                                 size_.width(), size_.height(), GL_FALSE,
                                 GL_FALSE, GL_FALSE);
   }
-  ResetBuffersToAutoClear();
   contents_changed_ = false;
+  if (preserve_drawing_buffer_ == kDiscard) {
+    SetBufferClearNeeded(true);
+  }
 }
 
 scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(

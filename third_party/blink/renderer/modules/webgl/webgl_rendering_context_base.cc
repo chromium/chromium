@@ -1506,10 +1506,8 @@ WebGLRenderingContextBase::ClearIfComposited(
   if (isContextLost())
     return kSkipped;
 
-  GLbitfield buffers_needing_clearing =
-      GetDrawingBuffer()->GetBuffersToAutoClear();
-
-  if (buffers_needing_clearing == 0 || (mask && framebuffer_binding_) ||
+  if (!GetDrawingBuffer()->BufferClearNeeded() ||
+      (mask && framebuffer_binding_) ||
       (rasterizer_discard_enabled_ && caller == kClearCallerDrawOrClear))
     return kSkipped;
 
@@ -1567,11 +1565,7 @@ WebGLRenderingContextBase::ClearIfComposited(
   {
     ScopedDisableRasterizerDiscard scoped_disable(this,
                                                   rasterizer_discard_enabled_);
-    // If the WebGL 2.0 clearBuffer APIs already have been used to
-    // selectively clear some of the buffers, don't destroy those
-    // results.
-    GetDrawingBuffer()->ClearFramebuffers(clear_mask &
-                                          buffers_needing_clearing);
+    GetDrawingBuffer()->ClearFramebuffers(clear_mask);
   }
 
   // Call the DrawingBufferClient method to restore scissor test, mask, and
@@ -1579,7 +1573,7 @@ WebGLRenderingContextBase::ClearIfComposited(
   DrawingBufferClientRestoreScissorTest();
   DrawingBufferClientRestoreMaskAndClearValues();
 
-  GetDrawingBuffer()->SetBuffersToAutoClear(0);
+  GetDrawingBuffer()->SetBufferClearNeeded(false);
 
   return combined_clear ? kCombinedClear : kJustClear;
 }
@@ -1621,7 +1615,7 @@ void WebGLRenderingContextBase::RestoreColorMask() {
 
 void WebGLRenderingContextBase::MarkLayerComposited() {
   if (!isContextLost())
-    GetDrawingBuffer()->ResetBuffersToAutoClear();
+    GetDrawingBuffer()->SetBufferClearNeeded(true);
 }
 
 bool WebGLRenderingContextBase::UsingSwapChain() const {

@@ -1098,16 +1098,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   gfx::Rect GetTextureSourceSubRectangle(GLsizei width, GLsizei height);
 
-  enum ClearBufferCaller {
-    kClearBufferiv,
-    kClearBufferuiv,
-    kClearBufferfv,
-    kClearBufferfi
-  };
-  void UpdateBuffersToAutoClear(ClearBufferCaller caller,
-                                GLenum buffer,
-                                GLint drawbuffer);
-
   /* WebGLRenderingContextBase overrides */
   unsigned GetMaxWebGLLocationLength() const override { return 1024; }
   bool ValidateCapability(const char* function_name, GLenum) override;
