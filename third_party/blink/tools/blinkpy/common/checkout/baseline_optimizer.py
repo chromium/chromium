@@ -89,13 +89,20 @@ class BaselineOptimizer(object):
 
         baseline_name = self._default_port.output_filename(
             test_name, self._default_port.BASELINE_SUFFIX, extension)
-        non_virtual_baseline_name = self._virtual_base(baseline_name)
-        if non_virtual_baseline_name:
-            # The baseline belongs to a virtual suite.
+        non_virtual_test_name = self._virtual_test_base(test_name)
+        if non_virtual_test_name:
+            # The test belongs to a virtual suite.
             _log.debug('Optimizing virtual fallback path.')
             self._patch_virtual_subtree(test_name, extension, baseline_name)
             succeeded &= self._optimize_subtree(test_name, baseline_name)
-            self._optimize_virtual_root(test_name, extension, baseline_name)
+
+            # Update the non-virtual baseline name
+            non_virtual_baseline_name = self._default_port.output_filename(
+                non_virtual_test_name, self._default_port.BASELINE_SUFFIX,
+                extension)
+            self._optimize_virtual_root(test_name, extension, baseline_name,
+                                        non_virtual_baseline_name)
+
         else:
             # The given baseline is already non-virtual.
             non_virtual_baseline_name = baseline_name
@@ -112,7 +119,7 @@ class BaselineOptimizer(object):
     def _optimize_flag_specific_baselines(self, test_name, extension):
         """Optimize flag-specific baselines."""
         flag_specific = self._flag_spec_port.flag_specific_config_name()
-        non_virtual_test_name = self._virtual_base(test_name)
+        non_virtual_test_name = self._virtual_test_base(test_name)
         if non_virtual_test_name:
             _log.debug(
                 'Optimizing flag-specific virtual fallback path '
@@ -137,7 +144,7 @@ class BaselineOptimizer(object):
         baselines = port.expected_baselines(test_name,
                                             extension,
                                             all_baselines=True)
-        non_virtual_test_name = self._virtual_base(test_name)
+        non_virtual_test_name = self._virtual_test_base(test_name)
         if non_virtual_test_name:
             baselines.extend(
                 port.expected_baselines(non_virtual_test_name,
@@ -320,7 +327,7 @@ class BaselineOptimizer(object):
         where the two arguments are the absolute paths to the virtual platform
         baseline and the non-virtual fallback respectively.
         """
-        actual_test_name = self._virtual_base(test_name)
+        actual_test_name = self._virtual_test_base(test_name)
         assert actual_test_name, '%s is not a virtual test.' % test_name
 
         for directory in self._directories_immediately_preceding_root():
@@ -360,13 +367,15 @@ class BaselineOptimizer(object):
         self._walk_immediate_predecessors_of_virtual_root(
             test_name, extension, baseline_name, patcher)
 
-    def _optimize_virtual_root(self, test_name, extension, baseline_name):
+    def _optimize_virtual_root(self, test_name, extension, baseline_name,
+                               non_virtual_baseline_name):
         virtual_root_baseline_path = self._filesystem.join(
             self._generic_baselines_dir, baseline_name)
         if self._filesystem.exists(virtual_root_baseline_path):
             _log.debug(
                 'Virtual root baseline found. Checking if we can remove it.')
-            self._try_to_remove_virtual_root(test_name, baseline_name,
+            self._try_to_remove_virtual_root(test_name,
+                                             non_virtual_baseline_name,
                                              virtual_root_baseline_path)
         else:
             _log.debug(
@@ -374,7 +383,7 @@ class BaselineOptimizer(object):
             )
             self._unpatch_virtual_subtree(test_name, extension, baseline_name)
 
-    def _try_to_remove_virtual_root(self, test_name, baseline_name,
+    def _try_to_remove_virtual_root(self, test_name, non_virtual_baseline_name,
                                     virtual_root_baseline_path):
         # See if all the successors of the virtual root (i.e. all non-virtual
         # platforms) have the same baseline as the virtual root. If so, the
@@ -385,7 +394,7 @@ class BaselineOptimizer(object):
 
         # Read the base (non-virtual) results.
         results_by_directory = self.read_results_by_directory(
-            test_name, self._virtual_base(baseline_name))
+            test_name, non_virtual_baseline_name)
         results_by_port_name = self._results_by_port_name(results_by_directory)
 
         for port_name in self._ports.keys():
@@ -439,12 +448,13 @@ class BaselineOptimizer(object):
         relative_baseline_root = self._baseline_root()
         return relative_paths + [relative_baseline_root]
 
-    def _virtual_base(self, baseline_name):
-        """Returns the base (non-virtual) version of baseline_name, or None if
-        baseline_name is not virtual."""
-        # Note: port.lookup_virtual_test_base in fact expects a test_name,
-        # but baseline_name also works here.
-        return self._default_port.lookup_virtual_test_base(baseline_name)
+    def _virtual_test_base(self, test_name):
+        """Returns the base (non-virtual) version of test_name, or None if
+        test_name is not virtual."""
+        # This function should only accept a test name. Use baseline won't work
+        # because some bases in VirtualTestSuites are full test name which has
+        # .html as extension.
+        return self._default_port.lookup_virtual_test_base(test_name)
 
     def _join_directory(self, directory, baseline_name):
         """Returns the absolute path to the baseline in the given directory."""
@@ -597,11 +607,11 @@ class BaselineOptimizer(object):
         # Implicit extra result at the root.
         return len(search_path) - 1, search_path[-1]
 
-    def _remove_extra_result_at_root(self, test_name, baseline_name):
+    def _remove_extra_result_at_root(self, test_name,
+                                     non_virtual_baseline_name):
         """Removes extra result at the non-virtual root."""
-        assert not self._virtual_base(baseline_name), \
-            'A virtual baseline is passed in.'
-        path = self._join_directory(self._baseline_root(), baseline_name)
+        path = self._join_directory(self._baseline_root(),
+                                    non_virtual_baseline_name)
         if (self._filesystem.exists(path)
                 and ResultDigest(self._filesystem, path,
                                  self._is_reftest(test_name)).is_extra_result):

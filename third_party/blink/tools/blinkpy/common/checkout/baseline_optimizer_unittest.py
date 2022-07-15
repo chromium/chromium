@@ -122,7 +122,8 @@ class BaselineOptimizerTest(unittest.TestCase):
         self.fs.write_text_file(
             self.fs.join(web_tests_dir, 'VirtualTestSuites'),
             '[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
-            '"bases": ["fast/canvas"], "args": ["--foo"]}]')
+            '"bases": ["fast/canvas", "slow/canvas/mock-test.html"], '
+            '"args": ["--foo"]}]')
         self.fs.write_text_file(
             self.fs.join(web_tests_dir, 'FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
@@ -413,6 +414,20 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/linux/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_all_pass_testharness_falls_back_to_full_base_name(self):
+        # The all-PASS baseline needs to be preserved in this case.
+        self._assert_optimization(
+            {
+                'platform/generic/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/linux/slow/canvas': '1',
+            }, {
+                'platform/generic/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/linux/slow/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/slow/canvas')
 
     def test_empty_at_root(self):
         self._assert_optimization({'platform/generic': ''}, {'platform/generic': None})
