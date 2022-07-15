@@ -75,9 +75,13 @@ extern const char kLauncherContinueSectionHidden[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherFeedbackOnContinueSectionSent[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLauncherLastContinueRequestTime[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherResultEverLaunched[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherSearchNormalizerParameters[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLauncherUseLongContinueDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDeviceSystemWideTracingEnabled[];
 

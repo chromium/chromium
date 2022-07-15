@@ -176,6 +176,11 @@ const char kLauncherContinueSectionHidden[] =
 const char kLauncherFeedbackOnContinueSectionSent[] =
     "ash.launcher.continue_section_removal_feedback_sent";
 
+// A time pref indicating the last time a request was made to update the
+// Continue section.
+const char kLauncherLastContinueRequestTime[] =
+    "launcher.last_continue_request_time";
+
 // Boolean pref recording whether a search result has ever been launched from
 // the Chrome OS launcher.
 const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
@@ -184,6 +189,9 @@ const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
 // scores for the launcher normalizer.
 const char kLauncherSearchNormalizerParameters[] =
     "launcher.search_normalizer_parameters";
+
+// Whether or not to use a long delay for Continue section requests.
+const char kLauncherUseLongContinueDelay[] = "launcher.use_long_continue_delay";
 
 // Boolean pref indicating whether system-wide trace collection using the
 // Perfetto system tracing service is allowed.

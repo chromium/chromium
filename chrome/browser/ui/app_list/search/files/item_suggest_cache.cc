@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -40,9 +41,6 @@ namespace {
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 
-// TODO(crbug.com/1034842): Investigate:
-//  - enterprise policies that should limit this traffic.
-//  - settings that should disable drive results.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("launcher_item_suggest", R"(
       semantics {
@@ -70,6 +68,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
+}
+
+base::Time GetLastRequestTime(Profile* profile) {
+  return profile->GetPrefs()->GetTime(
+      chromeos::prefs::kLauncherLastContinueRequestTime);
+}
+
+void SetLastRequestTime(Profile* profile, const base::Time& time) {
+  profile->GetPrefs()->SetTime(
+      chromeos::prefs::kLauncherLastContinueRequestTime, time);
 }
 
 //------------------
@@ -168,6 +176,7 @@ constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
 constexpr base::FeatureParam<bool> ItemSuggestCache::kMultipleQueriesPerSession;
+constexpr base::FeatureParam<int> ItemSuggestCache::kLongDelayMinutes;
 
 ItemSuggestCache::Result::Result(
     const std::string& id,
@@ -193,12 +202,10 @@ ItemSuggestCache::Results::~Results() = default;
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<void()> on_results_updated,
-    base::TimeDelta min_time_between_updates)
+    base::RepeatingCallback<void()> on_results_updated)
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      min_time_between_updates_(min_time_between_updates),
       multiple_queries_per_session_(
           app_list_features::IsSuggestedFilesEnabled() ||
           kMultipleQueriesPerSession.Get()),
@@ -239,14 +246,19 @@ std::string ItemSuggestCache::GetRequestBody() {
   return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
 }
 
+base::TimeDelta ItemSuggestCache::GetDelay() {
+  bool use_long_delay = profile_->GetPrefs()->GetBoolean(
+      chromeos::prefs::kLauncherUseLongContinueDelay);
+  return base::Minutes(use_long_delay ? kLongDelayMinutes.Get()
+                                      : kShortDelayMinutes);
+}
+
 void ItemSuggestCache::UpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_start_time_ = base::TimeTicks::Now();
 
-  const auto& now = base::Time::Now();
-  if (now - time_of_last_update_ < min_time_between_updates_)
+  if (base::Time::Now() - GetLastRequestTime(profile_) < GetDelay())
     return;
-  time_of_last_update_ = now;
 
   // Make no requests and exit in these cases:
   // - Item suggest has been disabled via experiment.
@@ -298,6 +310,7 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
 
   // Make a new request. This destroys any existing |url_loader_| which will
   // cancel that request if it is in-progress.
+  SetLastRequestTime(profile_, base::Time::Now());
   made_request_ = true;
   url_loader_ = MakeRequestLoader(token_info.token);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
@@ -321,6 +334,8 @@ void ItemSuggestCache::OnSuggestionsReceived(
       if (net_error == net::ERR_INSUFFICIENT_RESOURCES) {
         LogStatus(Status::kResponseTooLarge);
       } else {
+        // Note that requests ending in kNetError don't count towards
+        // ItemSuggest QPS, but the last request time is still updated.
         LogStatus(Status::kNetError);
       }
     } else {
@@ -365,6 +380,11 @@ void ItemSuggestCache::OnJsonParsed(
     LogStatus(Status::kJsonConversionFailure);
   } else if (results->results.empty()) {
     LogStatus(Status::kNoResultsInResponse);
+    if (!results_) {
+      // Make sure that |results_| is non-null to indicate that an update was
+      // successful.
+      results_ = std::move(results.value());
+    }
   } else {
     LogStatus(Status::kOk);
     LogLatency(base::TimeTicks::Now() - update_start_time_);
