@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_LAYOUT_ALGORITHM_H_
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace gfx {
@@ -40,6 +41,11 @@ class VttCueLayoutAlgorithm {
 
   VTTCueBox& cue_;
   float snap_to_lines_position_;
+
+  // |margin_| and |step_| are data members because they are accessed by
+  // multiple member functions, and we'd like to simplify their arguments.
+  [[maybe_unused]] LayoutUnit margin_;
+  [[maybe_unused]] LayoutUnit step_;
 };
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
@@ -74,8 +75,37 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
 
   // 1. Horizontal: Let full dimension be the height of video’s rendering area.
   //    Vertical: Let full dimension be the width of video’s rendering area.
-  [[maybe_unused]] const LayoutUnit full_dimension =
+  const LayoutUnit full_dimension =
       is_horizontal ? container.Size().Height() : container.Size().Width();
+
+  // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
+  // 11.1. Horizontal: Let margin be a user-agent-defined vertical length which
+  // will be used to define a margin at the top and bottom edges of the video
+  // into which cues will not be placed. In situations with overscan, this
+  // margin should be sufficient to place all cues within the title-safe area.
+  // In the absence of overscan, this value should be picked for aesthetics (to
+  // avoid text being aligned precisely on the bottom edge of the video, which
+  // can be ugly).
+  //       Vertical: Let margin be a user-agent-defined horizontal length ...
+  //
+  // 11.3. Let max dimension be full dimension - (2 × margin).
+  //
+  // TODO(crbug.com/1012242): Remove this. The latest specification does not
+  // have these steps.
+  const auto* settings = cue_.GetDocument().GetSettings();
+  const double margin_ratio =
+      settings ? settings->GetTextTrackMarginPercentage() / 100.0 : 0;
+  margin_ = LayoutUnit(full_dimension * margin_ratio);
+  [[maybe_unused]] const LayoutUnit max_dimension =
+      full_dimension - 2 * margin_;
+
+  // 2. Horizontal: Let step be the height of the first line box in boxes.
+  //    Vertical: Let step be the width of the first line box in boxes.
+  step_ = is_horizontal ? first_item.Size().height : first_item.Size().width;
+
+  // 3. If step is zero, then jump to the step labeled done positioning below.
+  if (step_ == LayoutUnit())
+    return;
 
   // TODO(crbug.com/1335309): Implement this.
 
