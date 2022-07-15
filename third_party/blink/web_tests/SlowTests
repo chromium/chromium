@@ -815,3 +815,5 @@ crbug.com/1301971 [ Debug Linux ] virtual/backface-visibility-interop/external/w
 
 crbug.com/1300811 [ Debug Mac ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]
 crbug.com/1300811 [ Debug Linux ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]
+
+crbug.com/1228246 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Slow ]
