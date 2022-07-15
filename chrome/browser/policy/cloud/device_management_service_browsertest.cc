@@ -209,14 +209,7 @@ class DeviceManagementServiceIntegrationTest
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Very flaky on ChromeOS: https://crbug.com/1262952
-#define MAYBE_Registration DISABLED_Registration
-#else
-#define MAYBE_Registration Registration
-#endif
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
-                       MAYBE_Registration) {
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, Registration) {
   PerformRegistration();
   EXPECT_FALSE(token_.empty());
 }
