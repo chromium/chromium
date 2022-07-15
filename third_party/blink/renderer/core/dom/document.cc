@@ -738,6 +738,9 @@ Document::Document(const DocumentInit& initializer,
       load_event_progress_(kLoadEventCompleted),
       is_freezing_in_progress_(false),
       script_runner_(MakeGarbageCollected<ScriptRunner>(this)),
+      script_runner_delayer_(MakeGarbageCollected<ScriptRunnerDelayer>(
+          script_runner_,
+          ScriptRunner::DelayReason::kMilestone)),
       xml_version_("1.0"),
       xml_standalone_(kStandaloneUnspecified),
       has_xml_declaration_(0),
@@ -803,6 +806,9 @@ Document::Document(const DocumentInit& initializer,
               ? MakeGarbageCollected<RenderBlockingResourceManager>(*this)
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
+    script_runner_delayer_->Activate();
+
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
     ProvideContextFeaturesToDocumentFrom(*this, *GetFrame()->GetPage());
@@ -6761,13 +6767,13 @@ void Document::MaybeExecuteDelayedAsyncScripts(
       // Notify the ScriptRunner if the first paint has been recorded and
       // we're delaying async scripts until first paint or finished parsing
       // (whichever comes first).
-      script_runner_->NotifyDelayedAsyncScriptsMilestoneReached();
+      script_runner_delayer_->Deactivate();
       break;
     case features::DelayAsyncScriptDelayType::kFinishedParsing:
       // Notify the ScriptRunner if we're finished parsing and we're delaying
       // async scripts until finished parsing occurs.
       if (milestone == MilestoneForDelayedAsyncScript::kFinishedParsing)
-        script_runner_->NotifyDelayedAsyncScriptsMilestoneReached();
+        script_runner_delayer_->Deactivate();
       break;
   }
 }
@@ -8052,6 +8058,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(css_target_);
   visitor->Trace(current_script_stack_);
   visitor->Trace(script_runner_);
+  visitor->Trace(script_runner_delayer_);
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);

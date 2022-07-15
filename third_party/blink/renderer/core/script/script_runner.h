@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -48,9 +49,37 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   ScriptRunner(const ScriptRunner&) = delete;
   ScriptRunner& operator=(const ScriptRunner&) = delete;
 
-  void QueueScriptForExecution(PendingScript*);
+  // Delays script evaluation after `ScriptRunnerDelayer::Activate()` until
+  // `ScriptRunnerDelayer::Deactivate()`.
+  //
+  // Each `DelayReason` value represents one reason to delay, and there should
+  // be at most one active `ScriptRunnerDelayer` for each `ScriptRunnerDelayer`
+  // for each `ScriptRunner`.
+  //
+  // Each script can choose to wait or not to wait for each `DelayReason` (See
+  // `DetermineDelayReasonsToWait()`), and are evaluated after all of its
+  // relevant `ScriptRunnerDelayer`s are deactivated.
+  //
+  // This can be spec-conformant (pretending that the loading of async scripts
+  // are not completed until `ScriptRunnerDelayer`s are deactivated), but be
+  // careful to avoid deadlocks and infinite delays.
+  //
+  // Currently this only affects async scripts and not in-order scripts.
+  enum class DelayReason : uint8_t {
+    // Script is loaded. Should be enabled for all scripts.
+    kLoad = 1 << 0,
+    // Milestone is reached as defined by https://crbug.com/1340837.
+    kMilestone = 1 << 1,
 
-  void NotifyDelayedAsyncScriptsMilestoneReached();
+    kTest1 = 1 << 6,
+    kTest2 = 1 << 7,
+  };
+  using DelayReasons = std::underlying_type<DelayReason>::type;
+
+  void QueueScriptForExecution(
+      PendingScript*,
+      absl::optional<DelayReasons> delay_reason_override_for_test =
+          absl::nullopt);
 
   void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
     task_runner_ = task_runner;
@@ -66,23 +95,43 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // Execute the given pending script.
   void ExecutePendingScript(PendingScript*);
 
+  friend class ScriptRunnerDelayer;
+  void AddDelayReason(DelayReason);
+  void RemoveDelayReason(DelayReason);
+  DelayReasons DetermineDelayReasonsToWait(PendingScript*);
+  void RemoveDelayReasonFromScript(PendingScript*, DelayReason);
+
   Member<Document> document_;
 
   // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
   // https://html.spec.whatwg.org/C/#set-of-scripts-that-will-execute-as-soon-as-possible
-  HeapHashSet<Member<PendingScript>> pending_async_scripts_;
-  HeapDeque<Member<PendingScript>> pending_delayed_async_scripts_;
+  // The value represents the `DelayReason`s that the script is waiting for
+  // before its evaluation.
+  HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // Scripts in |pending_delayed_async_scripts_| are delayed until the
-  // |NotifyDelayedAsyncScriptsMilestoneReached()| is called. After this point,
-  // the ScriptRunner no longer delays async scripts. This bool is used to
-  // ensure we don't continue delaying async scripts after this point. See the
-  // design doc:
-  // https://docs.google.com/document/u/1/d/1G-IUrT4enARZlsIrFQ4d4cRVe9MRTJASfWwolV09JZE/edit.
-  bool delay_async_script_milestone_reached_ = false;
+  DelayReasons active_delay_reasons_ = 0;
+};
+
+class CORE_EXPORT ScriptRunnerDelayer final
+    : public GarbageCollected<ScriptRunnerDelayer> {
+ public:
+  ScriptRunnerDelayer(ScriptRunner*, ScriptRunner::DelayReason);
+  ~ScriptRunnerDelayer() = default;
+  void Activate();
+  void Deactivate();
+
+  ScriptRunnerDelayer(const ScriptRunnerDelayer&) = delete;
+  ScriptRunnerDelayer& operator=(const ScriptRunnerDelayer&) = delete;
+
+  void Trace(Visitor*) const;
+
+ private:
+  WeakMember<ScriptRunner> script_runner_;
+  const ScriptRunner::DelayReason delay_reason_;
+  bool activated_ = false;
 };
 
 }  // namespace blink

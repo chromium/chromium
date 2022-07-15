@@ -439,4 +439,88 @@ TEST_F(ScriptRunnerTest, TryStreamWhenEnqueingScript) {
   QueueScriptForExecution(pending_script1);
 }
 
+TEST_F(ScriptRunnerTest, DelayReasons) {
+  // Script waiting only for loading.
+  MockPendingScript* pending_script1 =
+      MockPendingScript::CreateAsync(document_);
+
+  // Script waiting for one additional delay reason.
+  MockPendingScript* pending_script2 =
+      MockPendingScript::CreateAsync(document_);
+
+  // Script waiting for two additional delay reason.
+  MockPendingScript* pending_script3 =
+      MockPendingScript::CreateAsync(document_);
+
+  // Script waiting for an additional delay reason that is removed before load
+  // completion.
+  MockPendingScript* pending_script4 =
+      MockPendingScript::CreateAsync(document_);
+
+  using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
+  Checkpoint checkpoint;
+  ::testing::InSequence s;
+
+  EXPECT_CALL(checkpoint, Call(1));
+  EXPECT_CALL(*pending_script1, ExecuteScriptBlock(_));
+  EXPECT_CALL(checkpoint, Call(2));
+  EXPECT_CALL(checkpoint, Call(3));
+  EXPECT_CALL(*pending_script2, ExecuteScriptBlock(_));
+  EXPECT_CALL(checkpoint, Call(4));
+  EXPECT_CALL(checkpoint, Call(5));
+  EXPECT_CALL(*pending_script3, ExecuteScriptBlock(_));
+  EXPECT_CALL(checkpoint, Call(6));
+  EXPECT_CALL(checkpoint, Call(7));
+  EXPECT_CALL(*pending_script4, ExecuteScriptBlock(_));
+  EXPECT_CALL(checkpoint, Call(8));
+  EXPECT_CALL(checkpoint, Call(9));
+
+  auto* delayer1 = MakeGarbageCollected<ScriptRunnerDelayer>(
+      script_runner_, ScriptRunner::DelayReason::kTest1);
+  auto* delayer2 = MakeGarbageCollected<ScriptRunnerDelayer>(
+      script_runner_, ScriptRunner::DelayReason::kTest2);
+  delayer1->Activate();
+  delayer1->Activate();
+  delayer2->Activate();
+
+  script_runner_->QueueScriptForExecution(
+      pending_script1, static_cast<int>(ScriptRunner::DelayReason::kLoad));
+  script_runner_->QueueScriptForExecution(
+      pending_script2, static_cast<int>(ScriptRunner::DelayReason::kLoad) |
+                           static_cast<int>(ScriptRunner::DelayReason::kTest1));
+  script_runner_->QueueScriptForExecution(
+      pending_script3, static_cast<int>(ScriptRunner::DelayReason::kLoad) |
+                           static_cast<int>(ScriptRunner::DelayReason::kTest1) |
+                           static_cast<int>(ScriptRunner::DelayReason::kTest2));
+  script_runner_->QueueScriptForExecution(
+      pending_script4, static_cast<int>(ScriptRunner::DelayReason::kLoad) |
+                           static_cast<int>(ScriptRunner::DelayReason::kTest1));
+
+  NotifyScriptReady(pending_script1);
+  NotifyScriptReady(pending_script2);
+  NotifyScriptReady(pending_script3);
+
+  checkpoint.Call(1);
+  platform_->RunUntilIdle();
+  checkpoint.Call(2);
+  delayer1->Deactivate();
+  checkpoint.Call(3);
+  platform_->RunUntilIdle();
+
+  checkpoint.Call(4);
+  delayer2->Deactivate();
+  checkpoint.Call(5);
+  platform_->RunUntilIdle();
+
+  checkpoint.Call(6);
+  NotifyScriptReady(pending_script4);
+  checkpoint.Call(7);
+  platform_->RunUntilIdle();
+
+  checkpoint.Call(8);
+  delayer2->Deactivate();
+  checkpoint.Call(9);
+  platform_->RunUntilIdle();
+}
+
 }  // namespace blink

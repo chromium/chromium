@@ -215,6 +215,7 @@ class ScriptElementBase;
 class ScriptPromise;
 class ScriptRegexp;
 class ScriptRunner;
+class ScriptRunnerDelayer;
 class ScriptValue;
 class ScriptableDocumentParser;
 class ScriptedAnimationController;
@@ -2264,6 +2265,7 @@ class CORE_EXPORT Document : public ContainerNode,
   base::ElapsedTimer start_time_;
 
   Member<ScriptRunner> script_runner_;
+  Member<ScriptRunnerDelayer> script_runner_delayer_;
 
   HeapVector<Member<ScriptElementBase>> current_script_stack_;
 
