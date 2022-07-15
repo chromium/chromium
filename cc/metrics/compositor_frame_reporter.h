@@ -362,6 +362,11 @@ class CC_EXPORT CompositorFrameReporter {
   void CalculateStageLatencyPrediction(
       std::vector<base::TimeDelta>& previous_predictions);
 
+  // Sets EventLatency stage duration predictions based on previous trace
+  // durations using exponentially weighted averages.
+  void SetEventLatencyPredictions(
+      std::vector<base::TimeDelta>& predicted_latencies);
+
   ReporterType get_reporter_type() { return reporter_type_; }
 
   void set_reporter_type_to_impl() { reporter_type_ = ReporterType::kImpl; }

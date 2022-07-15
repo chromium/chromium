@@ -96,6 +96,9 @@ constexpr base::TimeDelta kHighLatencyMin = base::Milliseconds(75);
 
 // Number of stages of the current PipelineReporter
 constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
+// Number of dispatch stages of the current EventLatency
+constexpr int kNumDispatchStages =
+    static_cast<int>(EventMetrics::DispatchStage::kMaxValue) + 1;
 // Stores the weight of the most recent data point used in percentage when
 // predicting substages' latency. (It is stored and calculated in percentage
 // since TimeDelta calculate based on microseconds instead of nanoseconds,
@@ -1283,6 +1286,82 @@ void CompositorFrameReporter::CalculateStageLatencyPrediction(
           100;
     }
   }
+}
+
+void CompositorFrameReporter::SetEventLatencyPredictions(
+    std::vector<base::TimeDelta>& predicted_latencies) {
+  if (events_metrics_.empty())
+    return;
+
+  // TODO(crbug.com/1334827): Explore calculating predictions for multiple
+  // events.
+  auto& event_metrics = events_metrics_.front();
+
+  base::TimeTicks dispatch_start_time =
+      event_metrics->GetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kGenerated);
+
+  // Determine the last valid stage in case kRendererMainFinished or
+  // kRendererCompositorFinished stages do not exist, otherwise there is not
+  // enough information for the prediction.
+  EventMetrics::DispatchStage last_valid_stage =
+      EventMetrics::DispatchStage::kGenerated;
+  if (event_metrics->GetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererMainFinished) >
+      dispatch_start_time) {
+    last_valid_stage = EventMetrics::DispatchStage::kRendererMainFinished;
+  } else if (event_metrics->GetDispatchStageTimestamp(
+                 EventMetrics::DispatchStage::kRendererCompositorFinished) >
+             dispatch_start_time) {
+    last_valid_stage = EventMetrics::DispatchStage::kRendererCompositorFinished;
+  }
+
+  base::TimeTicks dispatch_end_time =
+      event_metrics->GetDispatchStageTimestamp(last_valid_stage);
+  base::TimeDelta total_dispatch_latency =
+      dispatch_end_time - dispatch_start_time;
+  if (total_dispatch_latency.is_negative())
+    return;
+
+  std::vector<base::TimeDelta> current_latencies(kNumDispatchStages,
+                                                 base::Microseconds(-1));
+  base::TimeTicks previous_timetick = dispatch_start_time;
+  for (auto stage = EventMetrics::DispatchStage::kGenerated;
+       stage <= last_valid_stage;
+       stage = static_cast<EventMetrics::DispatchStage>(
+           static_cast<int>(stage) + 1)) {
+    if (stage != EventMetrics::DispatchStage::kGenerated) {
+      base::TimeTicks current_timetick =
+          event_metrics->GetDispatchStageTimestamp(stage);
+      // Only update stage if the current_timetick is later than the
+      // previous_timetick.
+      if (current_timetick > previous_timetick) {
+        base::TimeDelta stage_duration = current_timetick - previous_timetick;
+        current_latencies[static_cast<int>(stage) - 1] = stage_duration;
+        previous_timetick = current_timetick;
+      }
+    }
+  }
+  current_latencies[kNumDispatchStages - 1] = total_dispatch_latency;
+
+  // Calculate new predictions.
+  base::TimeDelta total_predicted_duration = base::Microseconds(0);
+  for (int i = 0; i < kNumDispatchStages - 1; i++) {
+    if (current_latencies[i].is_positive()) {
+      if (predicted_latencies[i].is_negative()) {
+        predicted_latencies[i] = current_latencies[i];
+      } else {
+        predicted_latencies[i] =
+            (kWeightOfCurStageInPercent * current_latencies[i] +
+             (100 - kWeightOfCurStageInPercent) * predicted_latencies[i]) /
+            100;
+      }
+    }
+    if (predicted_latencies[i].is_positive()) {
+      total_predicted_duration += predicted_latencies[i];
+    }
+  }
+  predicted_latencies[kNumDispatchStages - 1] = total_predicted_duration;
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(

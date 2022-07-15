@@ -85,11 +85,53 @@ class CompositorFrameReporterTest : public testing::Test {
     return metrics;
   }
 
+  // Sets up the dispatch durations of each EventMetrics according to
+  // stage_durations. Stages with a duration of -1 will be skipped.
+  std::unique_ptr<EventMetrics> SetupEventMetricsWithDispatchTimes(
+      std::unique_ptr<EventMetrics> metrics,
+      const std::vector<int>& stage_durations) {
+    if (metrics) {
+      int num_stages = stage_durations.size();
+      // Start indexing from 1 because the 0th index held duration from
+      // kGenerated to kArrivedInRendererCompositor, which was already used in
+      // when the EventMetrics was created.
+      for (int i = 1; i < num_stages; i++) {
+        if (stage_durations[i] >= 0) {
+          AdvanceNowByUs(stage_durations[i]);
+          metrics->SetDispatchStageTimestamp(
+              EventMetrics::DispatchStage(i + 1));
+        }
+      }
+    }
+    return metrics;
+  }
+
   std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
     const base::TimeTicks event_time = AdvanceNowByUs(3);
     AdvanceNowByUs(3);
     return SetupEventMetrics(
         EventMetrics::CreateForTesting(type, event_time, &test_tick_clock_));
+  }
+
+  // Creates EventMetrics with elements in stage_durations representing each
+  // dispatch stage's desired duration respectively, with the 0th index
+  // representing the duration from kGenerated to kArrivedInRendererCompositor.
+  // stage_durations must have at least 1 element for the first required stage
+  // Use -1 for stages that want to be skipped.
+  std::unique_ptr<EventMetrics> CreateScrollUpdateEventMetricsWithDispatchTimes(
+      bool is_inertial,
+      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
+      const std::vector<int>& stage_durations) {
+    DCHECK_GT((int)stage_durations.size(), 0);
+    const base::TimeTicks event_time = AdvanceNowByUs(3);
+    AdvanceNowByUs(stage_durations[0]);
+    // Creates a kGestureScrollUpdate event.
+    return SetupEventMetricsWithDispatchTimes(
+        ScrollUpdateEventMetrics::CreateForTesting(
+            ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+            is_inertial, scroll_update_type, /*delta=*/10.0f, event_time,
+            &test_tick_clock_),
+        stage_durations);
   }
 
   std::unique_ptr<EventMetrics> CreateScrollBeginMetrics() {
@@ -142,6 +184,16 @@ class CompositorFrameReporterTest : public testing::Test {
         /*layer_tree_host_id=*/1, trackers);
     reporter->set_tick_clock(&test_tick_clock_);
     return reporter;
+  }
+
+  std::vector<base::TimeDelta> IntToTimeDeltaVector(
+      std::vector<int> int_vector) {
+    std::vector<base::TimeDelta> timedelta_vector;
+    size_t vector_size = int_vector.size();
+    for (size_t i = 0; i < vector_size; i++) {
+      timedelta_vector.push_back(base::Microseconds(int_vector[i]));
+    }
+    return timedelta_vector;
   }
 
   // This should be defined before |pipeline_reporter_| so it is created before
@@ -922,6 +974,109 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
 
   EXPECT_EQ(expected_latency_predictions1, actual_latency_predictions1);
   EXPECT_EQ(expected_latency_predictions2, actual_latency_predictions2);
+
+  pipeline_reporter_ = nullptr;
+}
+
+// Tests that when a frame is presented to the user, event latency predictions
+// are reported properly.
+TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
+  std::vector<int> dispatch_times = {300, 300, 300, 300, 300};
+  std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
+      CreateScrollUpdateEventMetricsWithDispatchTimes(
+          false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          dispatch_times)};
+  EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
+  EventMetrics::List events_metrics = {
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs))};
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
+
+  int kNumDispatchStages =
+      static_cast<int>(EventMetrics::DispatchStage::kMaxValue) + 1;
+
+  // Test with no previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions1 =
+      IntToTimeDeltaVector(std::vector<int>{300, 300, 300, 300, 300, 1500});
+  std::vector<base::TimeDelta> actual_dispatch_predictions1(
+      kNumDispatchStages, base::Microseconds(-1));
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions1);
+
+  // Test with all previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions2 =
+      IntToTimeDeltaVector(std::vector<int>{262, 300, 412, 225, 450, 1649});
+  std::vector<base::TimeDelta> actual_dispatch_predictions2 =
+      IntToTimeDeltaVector(std::vector<int>{250, 300, 450, 200, 500, 1600});
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions2);
+
+  // Test with some previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions3 =
+      IntToTimeDeltaVector(std::vector<int>{375, 450, 300, 300, 300, 1725});
+  std::vector<base::TimeDelta> actual_dispatch_predictions3 =
+      IntToTimeDeltaVector(std::vector<int>{400, 500, 300, -1, -1, 1200});
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions3);
+
+  for (int i = 0; i < kNumDispatchStages; i++) {
+    EXPECT_EQ(expected_dispatch_predictions1[i],
+              actual_dispatch_predictions1[i]);
+    EXPECT_EQ(expected_dispatch_predictions2[i],
+              actual_dispatch_predictions2[i]);
+    EXPECT_EQ(expected_dispatch_predictions3[i],
+              actual_dispatch_predictions3[i]);
+  }
+
+  pipeline_reporter_ = nullptr;
+}
+
+// Tests that when a new frame with missing dispatch stages is presented to the
+// user, event latency predictions are reported properly.
+TEST_F(CompositorFrameReporterTest,
+       EventLatencyDispatchPredictionsWithMissingStages) {
+  // Invalid EventLatency stage durations will cause program to crash, validity
+  // checked in event_latency_tracing_recorder.cc.
+  std::vector<int> dispatch_times = {400, 600, 700, -1, -1};
+  std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
+      CreateScrollUpdateEventMetricsWithDispatchTimes(
+          false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          dispatch_times)};
+  EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
+  EventMetrics::List events_metrics = {
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs))};
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
+
+  int kNumDispatchStages =
+      static_cast<int>(EventMetrics::DispatchStage::kMaxValue) + 1;
+
+  // Test with no previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions1 =
+      IntToTimeDeltaVector(std::vector<int>{400, 600, 700, -1, -1, 1700});
+  std::vector<base::TimeDelta> actual_dispatch_predictions1(
+      kNumDispatchStages, base::Microseconds(-1));
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions1);
+
+  // Test with all previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions2 =
+      IntToTimeDeltaVector(std::vector<int>{250, 375, 475, 200, 500, 1800});
+  std::vector<base::TimeDelta> actual_dispatch_predictions2 =
+      IntToTimeDeltaVector(std::vector<int>{200, 300, 400, 200, 500, 1600});
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions2);
+
+  // Test with some previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch_predictions3 =
+      IntToTimeDeltaVector(std::vector<int>{400, 525, 745, -1, -1, 1670});
+  std::vector<base::TimeDelta> actual_dispatch_predictions3 =
+      IntToTimeDeltaVector(std::vector<int>{400, 500, 760, -1, -1, 1660});
+  pipeline_reporter_->SetEventLatencyPredictions(actual_dispatch_predictions3);
+
+  for (int i = 0; i < kNumDispatchStages; i++) {
+    EXPECT_EQ(expected_dispatch_predictions1[i],
+              actual_dispatch_predictions1[i]);
+    EXPECT_EQ(expected_dispatch_predictions2[i],
+              actual_dispatch_predictions2[i]);
+    EXPECT_EQ(expected_dispatch_predictions3[i],
+              actual_dispatch_predictions3[i]);
+  }
 
   pipeline_reporter_ = nullptr;
 }
