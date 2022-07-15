@@ -14,10 +14,11 @@ import {EventSourceState} from '../event_source.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
-import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatParser} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputRulesStr} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
+import {OutputAction, OutputContextOrder, OutputEarconAction, OutputEventType, OutputNodeSpan, OutputSelectionSpan, OutputSpeechProperties} from './output_types.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;

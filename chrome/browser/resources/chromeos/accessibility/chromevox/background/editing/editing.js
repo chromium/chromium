@@ -15,6 +15,7 @@ import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/sp
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Color} from '../color.js';
 import {Output} from '../output/output.js';
+import {OutputEventType, OutputNodeSpan} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';

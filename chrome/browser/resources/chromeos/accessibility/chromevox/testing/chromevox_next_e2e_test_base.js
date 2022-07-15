@@ -123,7 +123,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
           '/chromevox/background/gesture_command_handler.js');
       await importModule(
           'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
-
+      await importModule(
+          'OutputContextOrder', '/chromevox/background/output/output_types.js');
       // For tests, enable announcement of events we trigger via automation.
       BaseAutomationHandler.announceActions = true;
 

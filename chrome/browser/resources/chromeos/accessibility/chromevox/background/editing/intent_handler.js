@@ -9,6 +9,7 @@
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Output} from '../output/output.js';
 import {OutputRoleInfo} from '../output/output_role_info.js';
+import {OutputEventType} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 

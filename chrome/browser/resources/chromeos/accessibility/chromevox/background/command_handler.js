@@ -28,6 +28,7 @@ import {TypingEcho} from './editing/editable_text_base.js';
 import {EventSourceState} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {Output} from './output/output.js';
+import {OutputEventType} from './output/output_types.js';
 import {PhoneticData} from './phonetic_data.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';

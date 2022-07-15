@@ -9,6 +9,7 @@ import {CursorRange} from '../../common/cursors/range.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {Output} from './output/output.js';
+import {OutputEventType} from './output/output_types.js';
 
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 

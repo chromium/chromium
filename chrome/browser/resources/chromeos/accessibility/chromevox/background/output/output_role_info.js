@@ -6,6 +6,8 @@
  * @fileoverview Roel information for the Output module.
  */
 
+import {OutputContextOrder} from './output_types.js';
+
 /**
  * Metadata about supported automation roles.
  * @const {Object<{msgId: string,

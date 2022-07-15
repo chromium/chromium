@@ -55,6 +55,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'PointerHandler', '/chromevox/background/pointer_handler.js');
     await importModule('Cursor', '/common/cursors/cursor.js');
+    await importModule(
+        'OutputAction', '/chromevox/background/output/output_types.js');
 
     this.forceContextualLastOutput();
   }

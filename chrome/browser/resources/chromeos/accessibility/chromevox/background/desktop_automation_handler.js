@@ -18,6 +18,7 @@ import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TextEditHandler} from './editing/editing.js';
 import {EventSourceState} from './event_source.js';
 import {Output} from './output/output.js';
+import {OutputEventType} from './output/output_types.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;

@@ -6,19 +6,11 @@
  * @fileoverview Definitions of all types related to output.
  */
 
-goog.provide('OutputAction');
-goog.provide('OutputContextOrder');
-goog.provide('OutputEarconAction');
-goog.provide('OutputEventType');
-goog.provide('OutputNodeSpan');
-goog.provide('OutputSelectionSpan');
-goog.provide('OutputSpeechProperties');
-
 /**
  * The ordering of contextual output.
  * @enum {string}
  */
-OutputContextOrder = {
+export const OutputContextOrder = {
   // The (ancestor) context comes before the node output.
   FIRST: 'first',
   // The (ancestor) context comes before the node output when moving forward,
@@ -35,7 +27,7 @@ OutputContextOrder = {
 /**
  * Used to annotate utterances with speech properties.
  */
-OutputSpeechProperties = class {
+export class OutputSpeechProperties {
   constructor() {
     /** @private {!Object} */
     this.properties_ = {};
@@ -56,21 +48,21 @@ OutputSpeechProperties = class {
     }
     return clone;
   }
-};
+}
 
 /**
  * Custom actions performed while rendering an output string.
  */
-OutputAction = class {
+export class OutputAction {
   constructor() {}
 
   run() {}
-};
+}
 
 /**
  * Action to play an earcon.
  */
-OutputEarconAction = class extends OutputAction {
+export class OutputEarconAction extends OutputAction {
   /**
    * @param {string} earconId
    * @param {chrome.automation.Rect=} opt_location
@@ -93,12 +85,12 @@ OutputEarconAction = class extends OutputAction {
   toJSON() {
     return {earconId: this.earconId};
   }
-};
+}
 
 /**
  * Annotation for text with a selection inside it.
  */
-OutputSelectionSpan = class {
+export class OutputSelectionSpan {
   /**
    * @param {number} startIndex
    * @param {number} endIndex
@@ -108,14 +100,14 @@ OutputSelectionSpan = class {
     this.startIndex = startIndex < endIndex ? startIndex : endIndex;
     this.endIndex = endIndex > startIndex ? endIndex : startIndex;
   }
-};
+}
 
 /**
  * Wrapper for automation nodes as annotations.  Since the
  * {@code AutomationNode} constructor isn't exposed in the API, this class is
  * used to allow instanceof checks on these annotations.
  */
-OutputNodeSpan = class {
+export class OutputNodeSpan {
   /**
    * @param {!AutomationNode} node
    * @param {number=} opt_offset Offsets into the node's text. Defaults to 0.
@@ -124,12 +116,12 @@ OutputNodeSpan = class {
     this.node = node;
     this.offset = opt_offset ? opt_offset : 0;
   }
-};
+}
 
 /**
  * Possible events handled by ChromeVox internally.
  * @enum {string}
  */
-OutputEventType = {
+export const OutputEventType = {
   NAVIGATE: 'navigate'
 };

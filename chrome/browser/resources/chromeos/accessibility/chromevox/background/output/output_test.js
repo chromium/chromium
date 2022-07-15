@@ -105,6 +105,9 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
     await importModule('CursorRange', '/common/cursors/range.js');
     await importModule('Cursor', '/common/cursors/cursor.js');
+    await importModule(
+        ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
+        '/chromevox/background/output/output_types.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();

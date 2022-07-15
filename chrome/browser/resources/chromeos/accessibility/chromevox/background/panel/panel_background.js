@@ -9,6 +9,7 @@
 import {CursorRange} from '../../../common/cursors/range.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+import {OutputEventType} from '../output/output_types.js';
 
 import {ISearch} from './i_search.js';
 import {ISearchHandler} from './i_search_handler.js';
