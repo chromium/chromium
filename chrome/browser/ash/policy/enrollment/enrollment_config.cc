@@ -32,9 +32,8 @@ bool GetMachineFlag(chromeos::system::StatisticsProvider* statistics_provider,
   return value;
 }
 
-std::string GetString(const base::Value& dict, base::StringPiece key) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
+  const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
@@ -116,21 +115,19 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   // signal present that indicates the device should enroll.
 
   // Gather enrollment signals from various sources.
-  const base::Value* device_state =
-      local_state.GetDictionary(prefs::kServerBackedDeviceState);
+  const base::Value::Dict& device_state =
+      local_state.GetValueDict(prefs::kServerBackedDeviceState);
   std::string device_state_mode;
   std::string device_state_management_domain;
   bool is_license_packaged_with_device = false;
   std::string license_type;
 
-  if (device_state) {
-    device_state_mode = GetString(*device_state, kDeviceStateMode);
-    device_state_management_domain =
-        GetString(*device_state, kDeviceStateManagementDomain);
-    is_license_packaged_with_device =
-        device_state->FindBoolPath(kDeviceStatePackagedLicense).value_or(false);
-    license_type = GetString(*device_state, kDeviceStateLicenseType);
-  }
+  device_state_mode = GetString(device_state, kDeviceStateMode);
+  device_state_management_domain =
+      GetString(device_state, kDeviceStateManagementDomain);
+  is_license_packaged_with_device =
+      device_state.FindBool(kDeviceStatePackagedLicense).value_or(false);
+  license_type = GetString(device_state, kDeviceStateLicenseType);
 
   config.is_license_packaged_with_device = is_license_packaged_with_device;
 
