@@ -825,7 +825,7 @@ TEST_F(VerdictCacheManagerTest, TestGetExpiredPageLoadToken) {
       cache_manager_->GetPageLoadToken(url);
   ASSERT_TRUE(token.has_token_value());
 
-  task_environment_.FastForwardBy(base::Minutes(6));
+  task_environment_.FastForwardBy(base::Minutes(11));
   token = cache_manager_->GetPageLoadToken(url);
   // Token is not found because it has already expired.
   ASSERT_FALSE(token.has_token_value());

@@ -54,7 +54,7 @@ const int kCacheDurationUpperBoundSecond = 7 * 24 * 60 * 60;  // 7 days
 const int kPageLoadTokenBytes = 32;
 
 // The expiration time of a page load token.
-const int kPageLoadTokenExpireMinute = 5;
+const int kPageLoadTokenExpireMinute = 10;
 
 // A helper class to include all match params. It is used as a centralized
 // place to determine if the current cache entry should be considered as a
