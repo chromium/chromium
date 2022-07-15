@@ -2267,6 +2267,19 @@ const FeatureEntry::FeatureVariation kWebFeedAwarenessVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kFeedCloseRefresh_Open[] = {
+    {"require_interaction", "false"}};
+
+const FeatureEntry::FeatureParam kFeedCloseRefresh_Interact[] = {
+    {"require_interaction", "true"}};
+
+const FeatureEntry::FeatureVariation kFeedCloseRefreshVariations[] = {
+    {"Open", kFeedCloseRefresh_Open, std::size(kFeedCloseRefresh_Open),
+     nullptr},
+    {"Interact", kFeedCloseRefresh_Interact,
+     std::size(kFeedCloseRefresh_Interact), nullptr},
+};
+
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_Immediate[] = {
     {"conditional_tab_strip_session_time_ms", "0"}};
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_60Minutes[] = {
@@ -4691,6 +4704,11 @@ const FeatureEntry kFeatureEntries[] = {
          kInterestFeedV2ClickAndViewActionsConditionalUploadDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2ClicksAndViewsConditionalUpload)},
+    {"feed-close-refresh", flag_descriptions::kFeedCloseRefreshName,
+     flag_descriptions::kFeedCloseRefreshDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedCloseRefresh,
+                                    kFeedCloseRefreshVariations,
+                                    "FeedCloseRefresh")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"password-import", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,
