@@ -2372,6 +2372,10 @@ void DocumentLoader::CommitNavigation() {
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
+  if (!response_.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
+    Deprecation::CountDeprecation(frame_->DomWindow(),
+                                  mojom::blink::WebFeature::kExpectCTHeader);
+  }
 
   // Clear the user activation state.
   // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.

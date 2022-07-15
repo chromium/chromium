@@ -467,6 +467,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     case DeprecationIssueType::kEventPath:
       type = protocol::Audits::DeprecationIssueTypeEnum::EventPath;
       break;
+    case DeprecationIssueType::kExpectCTHeader:
+      type = protocol::Audits::DeprecationIssueTypeEnum::ExpectCTHeader;
+      break;
     case DeprecationIssueType::kGeolocationInsecureOrigin:
       type =
           protocol::Audits::DeprecationIssueTypeEnum::GeolocationInsecureOrigin;

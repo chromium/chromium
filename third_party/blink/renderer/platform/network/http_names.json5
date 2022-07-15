@@ -36,6 +36,7 @@
     "Document-Policy",
     "Document-Policy-Report-Only",
     "ETag",
+    "Expect-CT",
     "Expires",
     "Date",
     "Feature-Policy",
