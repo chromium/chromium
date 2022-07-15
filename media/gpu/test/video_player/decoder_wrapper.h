@@ -135,7 +135,7 @@ class DecoderWrapper {
 
   // Fires the specified event, and returns true if the caller should continue
   // decoding.
-  bool FireEvent(VideoPlayerEvent event);
+  bool FireEvent(VideoPlayer::Event event);
 
   SEQUENCE_CHECKER(parent_sequence_checker_);
   SEQUENCE_CHECKER(worker_sequence_checker_);

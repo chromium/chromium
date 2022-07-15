@@ -31,24 +31,24 @@ struct DecoderWrapperConfig;
 // Default timeout used when waiting for events.
 constexpr base::TimeDelta kDefaultEventWaitTimeout = base::Seconds(30);
 
-enum class VideoPlayerEvent : size_t {
-  kInitialized,
-  kFrameDecoded,
-  kFlushing,
-  kFlushDone,
-  kResetting,
-  kResetDone,
-  kConfigInfo,  // A config info was encountered in an H.264/HEVC video stream.
-  kNewBuffersRequested,
-  kNumEvents,
-};
-
 // The video player provides a framework to build video decode accelerator tests
 // upon. It provides methods to manipulate video playback, and wait for specific
 // events to occur.
 class VideoPlayer {
  public:
-  using EventCallback = base::RepeatingCallback<bool(VideoPlayerEvent)>;
+  enum class Event : size_t {
+    kInitialized,
+    kFrameDecoded,
+    kFlushing,
+    kFlushDone,
+    kResetting,
+    kResetDone,
+    kConfigInfo,  // A config info was encountered in an H.264/HEVC video
+                  // stream.
+    kNewBuffersRequested,
+    kNumEvents,
+  };
+  using EventCallback = base::RepeatingCallback<bool(Event)>;
 
   VideoPlayer(const VideoPlayer&) = delete;
   VideoPlayer& operator=(const VideoPlayer&) = delete;
@@ -79,7 +79,7 @@ class VideoPlayer {
   void Play();
   // Play the video asynchronously. Automatically pause decoding when |event|
   // occurs.
-  void PlayUntil(VideoPlayerEvent event);
+  void PlayUntil(Event event);
   // Reset the decoder to the beginning of the video stream.
   void Reset();
   // Flush the decoder.
@@ -89,7 +89,7 @@ class VideoPlayer {
   // occurred since last calling this function will be taken into account. All
   // events with different types will be consumed. Will return false if the
   // specified timeout is exceeded while waiting for the events.
-  bool WaitForEvent(VideoPlayerEvent event, size_t times = 1);
+  bool WaitForEvent(Event event, size_t times = 1);
   // Helper function to wait for a FlushDone event.
   bool WaitForFlushDone();
   // Helper function to wait for a ResetDone event.
@@ -98,7 +98,7 @@ class VideoPlayer {
   bool WaitForFrameDecoded(size_t times);
 
   // Get the number of times the specified event occurred.
-  size_t GetEventCount(VideoPlayerEvent event) const;
+  size_t GetEventCount(Event event) const;
   // Helper function to get the number of ResetDone events thrown.
   size_t GetResetDoneCount() const;
   // Helper function to get the number of FlushDone events thrown.
@@ -114,7 +114,7 @@ class VideoPlayer {
 
   // Notify the video player an event has occurred (e.g. frame decoded). Returns
   // whether |decoder_wrapper_| should continue decoding frames.
-  bool NotifyEvent(VideoPlayerEvent event);
+  bool NotifyEvent(Event event);
 
   std::unique_ptr<DecoderWrapper> decoder_wrapper_;
 
@@ -124,13 +124,13 @@ class VideoPlayer {
   base::ConditionVariable event_cv_;
 
   // NotifyEvent() will store events here for WaitForEvent() to process.
-  base::queue<VideoPlayerEvent> video_player_events_ GUARDED_BY(event_lock_);
+  base::queue<Event> video_player_events_ GUARDED_BY(event_lock_);
 
   size_t video_player_event_counts_[static_cast<size_t>(
-      VideoPlayerEvent::kNumEvents)] GUARDED_BY(event_lock_){};
+      Event::kNumEvents)] GUARDED_BY(event_lock_){};
 
   // Set by PlayUntil() to automatically pause decoding once this event occurs.
-  absl::optional<VideoPlayerEvent> play_until_;
+  absl::optional<Event> play_until_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

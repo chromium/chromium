@@ -17,21 +17,21 @@ namespace test {
 
 namespace {
 // Get the name of the specified video player |event|.
-const char* EventName(VideoPlayerEvent event) {
+const char* EventName(VideoPlayer::Event event) {
   switch (event) {
-    case VideoPlayerEvent::kInitialized:
+    case VideoPlayer::Event::kInitialized:
       return "Initialized";
-    case VideoPlayerEvent::kFrameDecoded:
+    case VideoPlayer::Event::kFrameDecoded:
       return "FrameDecoded";
-    case VideoPlayerEvent::kFlushing:
+    case VideoPlayer::Event::kFlushing:
       return "Flushing";
-    case VideoPlayerEvent::kFlushDone:
+    case VideoPlayer::Event::kFlushDone:
       return "FlushDone";
-    case VideoPlayerEvent::kResetting:
+    case VideoPlayer::Event::kResetting:
       return "Resetting";
-    case VideoPlayerEvent::kResetDone:
+    case VideoPlayer::Event::kResetDone:
       return "ResetDone";
-    case VideoPlayerEvent::kConfigInfo:
+    case VideoPlayer::Event::kConfigInfo:
       return "ConfigInfo";
     default:
       return "Unknown";
@@ -70,7 +70,7 @@ bool VideoPlayer::Initialize(const Video* video) {
   decoder_wrapper_->Initialize(video);
 
   // Wait until the video decoder is initialized.
-  if (!WaitForEvent(VideoPlayerEvent::kInitialized))
+  if (!WaitForEvent(Event::kInitialized))
     return false;
 
   return true;
@@ -81,10 +81,10 @@ void VideoPlayer::Play() {
   DVLOGF(4);
 
   // Play until the end of the video.
-  PlayUntil(VideoPlayerEvent::kNumEvents);
+  PlayUntil(Event::kNumEvents);
 }
 
-void VideoPlayer::PlayUntil(VideoPlayerEvent event) {
+void VideoPlayer::PlayUntil(Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
@@ -106,7 +106,7 @@ void VideoPlayer::Flush() {
   decoder_wrapper_->Flush();
 }
 
-bool VideoPlayer::WaitForEvent(VideoPlayerEvent sought_event, size_t times) {
+bool VideoPlayer::WaitForEvent(Event sought_event, size_t times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(times, 1u);
   DVLOGF(4) << "Event: " << EventName(sought_event);
@@ -138,18 +138,18 @@ bool VideoPlayer::WaitForEvent(VideoPlayerEvent sought_event, size_t times) {
 }
 
 bool VideoPlayer::WaitForFlushDone() {
-  return WaitForEvent(VideoPlayerEvent::kFlushDone);
+  return WaitForEvent(Event::kFlushDone);
 }
 
 bool VideoPlayer::WaitForResetDone() {
-  return WaitForEvent(VideoPlayerEvent::kResetDone);
+  return WaitForEvent(Event::kResetDone);
 }
 
 bool VideoPlayer::WaitForFrameDecoded(size_t times) {
-  return WaitForEvent(VideoPlayerEvent::kFrameDecoded, times);
+  return WaitForEvent(Event::kFrameDecoded, times);
 }
 
-size_t VideoPlayer::GetEventCount(VideoPlayerEvent event) const {
+size_t VideoPlayer::GetEventCount(Event event) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(event_lock_);
@@ -165,15 +165,15 @@ void VideoPlayer::WaitForRenderer() {
 }
 
 size_t VideoPlayer::GetFlushDoneCount() const {
-  return GetEventCount(VideoPlayerEvent::kFlushDone);
+  return GetEventCount(Event::kFlushDone);
 }
 
 size_t VideoPlayer::GetResetDoneCount() const {
-  return GetEventCount(VideoPlayerEvent::kResetDone);
+  return GetEventCount(Event::kResetDone);
 }
 
 size_t VideoPlayer::GetFrameDecodedCount() const {
-  return GetEventCount(VideoPlayerEvent::kFrameDecoded);
+  return GetEventCount(Event::kFrameDecoded);
 }
 
 VideoPlayer::VideoPlayer(
@@ -190,7 +190,7 @@ VideoPlayer::VideoPlayer(
           config)),
       event_cv_(&event_lock_) {}
 
-bool VideoPlayer::NotifyEvent(VideoPlayerEvent event) {
+bool VideoPlayer::NotifyEvent(Event event) {
   base::AutoLock auto_lock(event_lock_);
   video_player_events_.push(event);
   video_player_event_counts_[static_cast<size_t>(event)]++;
