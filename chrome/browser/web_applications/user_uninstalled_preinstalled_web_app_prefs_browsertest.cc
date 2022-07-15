@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -23,8 +23,17 @@
 
 namespace web_app {
 
-using UserUninstalledPreinstalledWebAppPrefsBrowserTest =
-    WebAppControllerBrowserTest;
+class UserUninstalledPreinstalledWebAppPrefsBrowserTest
+    : public WebAppControllerBrowserTest {
+ public:
+  UserUninstalledPreinstalledWebAppPrefsBrowserTest() = default;
+  ~UserUninstalledPreinstalledWebAppPrefsBrowserTest() override = default;
+
+  void SetUp() override {
+    PreinstalledWebAppManager::SkipStartupForTesting();
+    WebAppControllerBrowserTest::SetUp();
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
                        BasicOperations) {
@@ -103,9 +112,8 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url2));
 }
 
-// TODO(crbug.com/1341391): Flakily crashes on Mac, Windows, Chrome OS, Linux.
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
-                       DISABLED_PrefsPropagateProperlyOnDefaultUninstall) {
+                       PrefsPropagateProperlyOnDefaultUninstall) {
   auto app_info1 = std::make_unique<WebAppInstallInfo>();
   app_info1->start_url = GURL("https://example_url1.com/");
   app_info1->title = u"Example App1";
@@ -121,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   AppId app_id2 =
       test::InstallWebApp(profile(), std::move(app_info2),
                           /*overwrite_existing_manifest_fields=*/false,
-                          webapps::WebappInstallSource::ARC);
+                          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   // Verify that the prefs aren't filled just on installation.
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
