@@ -2852,10 +2852,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
          StyleRef().OverflowY() == EOverflow::kVisible)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kExplicitOverflowVisibleOnReplacedElement);
-      if (StyleRef().GetObjectFit() == EObjectFit::kNone ||
-          StyleRef().GetObjectFit() == EObjectFit::kCover ||
-          StyleRef().ObjectPosition() !=
-              LengthPoint(Length::Percent(50.0), Length::Percent(50.0))) {
+      if (!StyleRef().ObjectPropertiesPreventReplacedOverflow()) {
         UseCounter::Count(
             GetDocument(),
             WebFeature::

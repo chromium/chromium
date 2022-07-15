@@ -2325,6 +2325,25 @@ class ComputedStyle : public ComputedStyleBase,
            OverflowX() != EOverflow::kClip;
   }
 
+  // Returns true if object-fit, object-position and object-view-box would avoid
+  // replaced contents overflow.
+  bool ObjectPropertiesPreventReplacedOverflow() const {
+    if (GetObjectFit() == EObjectFit::kNone ||
+        GetObjectFit() == EObjectFit::kCover) {
+      return false;
+    }
+
+    if (ObjectPosition() !=
+        LengthPoint(Length::Percent(50.0), Length::Percent(50.0))) {
+      return false;
+    }
+
+    if (ObjectViewBox())
+      return false;
+
+    return true;
+  }
+
   bool IsDisplayTableRowOrColumnType() const {
     return Display() == EDisplay::kTableRow ||
            Display() == EDisplay::kTableRowGroup ||

@@ -26,6 +26,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -101,6 +102,21 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
                              : ComputedStyleInitialValues::InitialZoom();
   if (Style() && StyleRef().EffectiveZoom() != old_zoom)
     IntrinsicSizeChanged();
+
+  if ((IsLayoutImage() || IsVideo() || IsCanvas()) && !ClipsToContentBox() &&
+      !StyleRef().ObjectPropertiesPreventReplacedOverflow()) {
+    static constexpr const char kErrorMessage[] =
+        "Specifying 'overflow: visible' on img, video and canvas tags may "
+        "cause them to produce visual content outside of the element bounds. "
+        "See "
+        "https://github.com/WICG/shared-element-transitions/blob/main/"
+        "debugging_overflow_on_images.md for details.";
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning, kErrorMessage);
+    constexpr bool kDiscardDuplicates = true;
+    GetDocument().AddConsoleMessage(console_message, kDiscardDuplicates);
+  }
 }
 
 void LayoutReplaced::UpdateLayout() {
