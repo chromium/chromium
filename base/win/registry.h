@@ -76,9 +76,6 @@ class BASE_EXPORT RegKey {
   // determined.
   DWORD GetValueCount() const;
 
-  // Returns the last write time.
-  FILETIME GetLastWriteTime() const;
-
   // Determines the nth value's name.
   LONG GetValueNameAt(DWORD index, std::wstring* name) const;
 

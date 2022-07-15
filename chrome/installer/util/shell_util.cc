@@ -42,13 +42,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/values.h"
-#include "base/win/access_token.h"
 #include "base/win/default_apps_util.h"
 #include "base/win/pe_image.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/shortcut.h"
-#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/chrome_constants.h"
@@ -94,8 +92,6 @@ enum RegistrationConfirmationLevel {
 };
 
 const wchar_t kReinstallCommand[] = L"ReinstallCommand";
-
-constexpr wchar_t kRegHash[] = L"Hash";
 
 const wchar_t kRegProgId[] = L"ProgId";
 
@@ -1649,37 +1645,6 @@ bool DeleteFileExtensionsForProgId(const std::wstring& prog_id) {
   return ShellUtil::DeleteApplicationClass(prog_id);
 }
 
-std::wstring GetSID() {
-  std::wstring result;
-  absl::optional<base::win::AccessToken> current_process =
-      base::win::AccessToken::FromProcess(GetCurrentProcess(), false);
-  if (!current_process)
-    return result;
-
-  absl::optional<std::wstring> sid = current_process->User().ToSddlString();
-  if (!sid)
-    return result;
-
-  result = *sid;
-  return result;
-}
-
-std::wstring GetCurrentDateTimeForHashing() {
-  SYSTEMTIME system_time;
-  ::GetSystemTime(&system_time);
-  // The user choice hash function uses the registry write time as an input into
-  // the hash function. Considering only time down to the minute significantly
-  // increases the chance that the computed hash and registry write time are the
-  // same. If the registry write occurs near a minute boundary, the hash will
-  // likely need to be recomputed and rewritten.
-  system_time.wSecond = 0;
-  system_time.wMilliseconds = 0;
-  FILETIME file_time;
-  ::SystemTimeToFileTime(&system_time, &file_time);
-  return base::StringPrintf(L"%08lx%08lx", file_time.dwHighDateTime,
-                            file_time.dwLowDateTime);
-}
-
 // The user choice hash function uses a shell32 wide string as a salt. This
 // function attempts to extract that string.
 std::wstring GetShellUserChoiceSalt() {
@@ -1796,54 +1761,6 @@ std::wstring ComputeUserChoiceHash(const std::wstring& extension,
   uint32_t input[] = {result[0] ^ result[2], result[1] ^ result[3]};
   return base::UTF8ToWide(base::Base64Encode(
       base::span<uint8_t>(reinterpret_cast<uint8_t*>(input), sizeof(input))));
-}
-
-bool IsUserChoiceHashValid(const base::win::RegKey& user_choice_reg_key,
-                           const std::wstring& extension,
-                           const std::wstring& sid,
-                           const std::wstring& prog_id,
-                           const std::wstring& salt) {
-  // Manually validate the hash instead of using
-  // IApplicationAssociationRegistration because
-  // IApplicationAssociationRegistration may trigger a UI notification and reset
-  // all of the defaults upon encountering an invalid hash.
-  FILETIME last_write_time = user_choice_reg_key.GetLastWriteTime();
-  SYSTEMTIME last_write_system_time;
-  ::FileTimeToSystemTime(&last_write_time, &last_write_system_time);
-  // The hash computation aligns the time to minute boundaries.
-  last_write_system_time.wSecond = 0;
-  last_write_system_time.wMilliseconds = 0;
-  ::SystemTimeToFileTime(&last_write_system_time, &last_write_time);
-  std::wstring last_write_time_string =
-      base::StringPrintf(L"%08lx%08lx", last_write_time.dwHighDateTime,
-                         last_write_time.dwLowDateTime);
-  std::wstring current_hash;
-  if (user_choice_reg_key.ReadValue(kRegHash, &current_hash) != ERROR_SUCCESS)
-    return false;
-
-  std::wstring expected_hash = ComputeUserChoiceHash(
-      extension, sid, prog_id, last_write_time_string, salt);
-  return current_hash == expected_hash;
-}
-
-bool WriteUserChoiceValues(base::win::RegKey& user_choice_reg_key,
-                           const std::wstring& extension,
-                           const std::wstring& sid,
-                           const std::wstring& prog_id,
-                           const std::wstring& salt) {
-  // Allow 5 retries in the event the hash is computed near a minute boundary.
-  for (int i = 0; i < 5; ++i) {
-    std::wstring datetime = GetCurrentDateTimeForHashing();
-    std::wstring hash =
-        ComputeUserChoiceHash(extension, sid, prog_id, datetime, salt);
-    user_choice_reg_key.WriteValue(kRegHash, hash.c_str());
-    user_choice_reg_key.WriteValue(kRegProgId, prog_id.c_str());
-    if (IsUserChoiceHashValid(user_choice_reg_key, extension, sid, prog_id,
-                              salt)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace
@@ -2402,75 +2319,6 @@ bool ShellUtil::MakeChromeDefault(int shell_change,
   // file associations.
   SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
   return ret;
-}
-
-bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
-                                          const base::FilePath& chrome_exe,
-                                          bool elevate_if_not_admin) {
-  DCHECK(!(shell_change & SYSTEM_LEVEL) || IsUserAnAdmin());
-
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
-
-  if (!install_static::SupportsSetAsDefaultBrowser())
-    return false;
-
-  if (!RegisterChromeBrowser(chrome_exe, std::wstring(),
-                             elevate_if_not_admin)) {
-    return false;
-  }
-
-  std::wstring suffix;
-  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
-    return false;
-
-  std::wstring prog_id = GetBrowserProgId(suffix);
-
-  std::wstring sid = GetSID();
-  if (sid.empty())
-    return false;
-
-  std::wstring shell_salt = GetShellUserChoiceSalt();
-  if (shell_salt.empty())
-    return false;
-
-  base::win::RegKey url_associations_key(
-      HKEY_CURRENT_USER,
-      L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations",
-      KEY_ALL_ACCESS);
-  for (size_t i = 0; kBrowserProtocolAssociations[i] != nullptr; ++i) {
-    std::wstring subkey_path(
-        base::StrCat({kBrowserProtocolAssociations[i], L"\\UserChoice"}));
-    // Deleting the key works around the deny set value ACL on UserChoice.
-    url_associations_key.DeleteKey(subkey_path.c_str());
-    base::win::RegKey key(url_associations_key.Handle(), subkey_path.c_str(),
-                          KEY_READ | KEY_WRITE);
-    if (!WriteUserChoiceValues(key, kBrowserProtocolAssociations[i], sid,
-                               prog_id, shell_salt)) {
-      return false;
-    }
-  }
-
-  base::win::RegKey file_extensions_key(
-      HKEY_CURRENT_USER,
-      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts",
-      KEY_ALL_ACCESS);
-  for (size_t i = 0; kDefaultFileAssociations[i] != nullptr; ++i) {
-    std::wstring subkey_path(
-        base::StrCat({kDefaultFileAssociations[i], L"\\UserChoice"}));
-    // Deleting the key works around the deny set value ACL on UserChoice.
-    file_extensions_key.DeleteKey(subkey_path.c_str());
-    base::win::RegKey key(file_extensions_key.Handle(), subkey_path.c_str(),
-                          KEY_READ | KEY_WRITE);
-    if (!WriteUserChoiceValues(key, kDefaultFileAssociations[i], sid, prog_id,
-                               shell_salt)) {
-      return false;
-    }
-  }
-
-  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-
-  return true;
 }
 
 // static
@@ -3187,14 +3035,4 @@ std::wstring ShellUtil::ComputeUserChoiceHashForTesting(
     return std::wstring();
 
   return ComputeUserChoiceHash(extension, sid, prog_id, datetime, shell_salt);
-}
-
-// static
-std::wstring ShellUtil::GetCurrentProgIdForTesting(
-    const base::FilePath& chrome_exe) {
-  std::wstring suffix;
-  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
-    return std::wstring();
-
-  return GetBrowserProgId(suffix);
 }

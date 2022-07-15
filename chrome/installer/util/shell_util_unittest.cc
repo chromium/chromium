@@ -5,9 +5,7 @@
 #include "chrome/installer/util/shell_util.h"
 
 #include <cguid.h>
-#include <shobjidl.h>
 #include <stddef.h>
-#include <wrl/client.h>
 
 #include <memory>
 #include <string>
@@ -25,9 +23,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
-#include "base/win/com_init_util.h"
 #include "base/win/registry.h"
-#include "base/win/scoped_co_mem.h"
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "chrome/install_static/install_util.h"
@@ -1631,77 +1627,4 @@ TEST(ShellUtilTest, UserChoiceHashComputationTest) {
       ShellUtil::ComputeUserChoiceHashForTesting(
           L".html", L"S-1-5-21-2745944652-1798522384-4190209206-1001",
           L"ChromiumHTM.77HL62E3NQOIRZILVHSWMGHIQE", L"01d88bf3ee5fd000"));
-}
-
-namespace {
-
-std::wstring GetCurrentDefault(
-    IApplicationAssociationRegistration* registration,
-    const wchar_t* query,
-    ASSOCIATIONTYPE query_type,
-    ASSOCIATIONLEVEL query_level) {
-  base::win::ScopedCoMem<wchar_t> current_app;
-  if (FAILED(registration->QueryCurrentDefault(query, query_type, query_level,
-                                               &current_app))) {
-    return std::wstring();
-  }
-  return current_app.get();
-}
-
-}  // namespace
-
-TEST(ShellUtilTest, MakeChromeDefaultDirectly) {
-  // Direct default setting is only supported on Win10 or above.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    GTEST_SKIP();
-
-  base::win::AssertComInitialized();
-
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  registry_util::RegistryOverrideManager registry_overrides;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_overrides.OverrideRegistry(HKEY_CURRENT_USER));
-
-  Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
-  ASSERT_HRESULT_SUCCEEDED(
-      ::CoCreateInstance(CLSID_ApplicationAssociationRegistration, nullptr,
-                         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&registration)));
-
-  // IApplicationAssociationRegistration::SetAppAsDefault only works for
-  // "MSEdgeHTM" for http, https, .htm, and .html on Win10+ and serves as a
-  // convenient initial environment setup for this test.
-  ASSERT_HRESULT_SUCCEEDED(
-      registration->SetAppAsDefault(L"MSEdgeHTM", L"http", AT_URLPROTOCOL));
-  ASSERT_HRESULT_SUCCEEDED(
-      registration->SetAppAsDefault(L"MSEdgeHTM", L"https", AT_URLPROTOCOL));
-  ASSERT_HRESULT_SUCCEEDED(
-      registration->SetAppAsDefault(L"MSEdgeHTM", L".htm", AT_FILEEXTENSION));
-  ASSERT_HRESULT_SUCCEEDED(
-      registration->SetAppAsDefault(L"MSEdgeHTM", L".html", AT_FILEEXTENSION));
-
-  ASSERT_EQ(L"MSEdgeHTM", GetCurrentDefault(registration.Get(), L"http",
-                                            AT_URLPROTOCOL, AL_EFFECTIVE));
-  ASSERT_EQ(L"MSEdgeHTM", GetCurrentDefault(registration.Get(), L"https",
-                                            AT_URLPROTOCOL, AL_EFFECTIVE));
-  ASSERT_EQ(L"MSEdgeHTM", GetCurrentDefault(registration.Get(), L".htm",
-                                            AT_FILEEXTENSION, AL_EFFECTIVE));
-  ASSERT_EQ(L"MSEdgeHTM", GetCurrentDefault(registration.Get(), L".html",
-                                            AT_FILEEXTENSION, AL_EFFECTIVE));
-
-  base::FilePath chrome_exe(temp_dir.GetPath().Append(installer::kChromeExe));
-  ASSERT_TRUE(ShellUtil::MakeChromeDefaultDirectly(ShellUtil::CURRENT_USER,
-                                                   chrome_exe, false));
-  std::wstring prog_id = ShellUtil::GetCurrentProgIdForTesting(chrome_exe);
-
-  // If the expectations fail below, the default browser mechanism has changed
-  // and will need to be reexamined.
-  EXPECT_EQ(prog_id, GetCurrentDefault(registration.Get(), L"http",
-                                       AT_URLPROTOCOL, AL_EFFECTIVE));
-  EXPECT_EQ(prog_id, GetCurrentDefault(registration.Get(), L"https",
-                                       AT_URLPROTOCOL, AL_EFFECTIVE));
-  EXPECT_EQ(prog_id, GetCurrentDefault(registration.Get(), L".htm",
-                                       AT_FILEEXTENSION, AL_EFFECTIVE));
-  EXPECT_EQ(prog_id, GetCurrentDefault(registration.Get(), L".html",
-                                       AT_FILEEXTENSION, AL_EFFECTIVE));
 }

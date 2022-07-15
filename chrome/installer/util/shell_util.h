@@ -529,32 +529,15 @@ class ShellUtil {
   // TODO(benwells): Attempt to undo any changes that were successfully made.
   // http://crbug.com/83970
   //
-  // shell_change: Defines whether to register as default browser at system
+  // shell_change: Defined whether to register as default browser at system
   //               level or user level. If value has ShellChange::SYSTEM_LEVEL
   //               we should be running as admin user.
   // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: On Win7 if user is not admin, try to elevate for
+  // elevate_if_not_admin: On Vista if user is not admin, try to elevate for
   //                       Chrome registration.
   static bool MakeChromeDefault(int shell_change,
                                 const base::FilePath& chrome_exe,
                                 bool elevate_if_not_admin);
-
-  // Make Chrome the default browser. This function works by going through
-  // the url protocols and file associations that are related to general
-  // browsing, e.g. http, https, .html etc., and directly setting the relevant
-  // registry entries for each. If any of these fails the operation will return
-  // false to indicate failure, which is consistent with the return value of
-  // shell_integration::GetDefaultBrowser.
-  //
-  // shell_change: Defines whether to register as default browser at system
-  //               level or user level. If value has ShellChange::SYSTEM_LEVEL
-  //               we should be running as admin user.
-  // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: On Win7 if user is not admin, try to elevate for
-  //                       Chrome registration.
-  static bool MakeChromeDefaultDirectly(int shell_change,
-                                        const base::FilePath& chrome_exe,
-                                        bool elevate_if_not_admin);
 
   // Opens the Apps & Features page in the Windows settings in branded builds.
   //
@@ -876,9 +859,6 @@ class ShellUtil {
       const std::wstring& sid,
       const std::wstring& prog_id,
       const std::wstring& datetime);
-
-  static std::wstring GetCurrentProgIdForTesting(
-      const base::FilePath& chrome_exe);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
