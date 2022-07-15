@@ -40,8 +40,7 @@ ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result,
-    const JsLineOffsets& js_line_offsets,
-    int num_stack_entries_to_drop);
+    const JsLineOffsets& js_line_offsets);
 
 // Extracts client status and optionally return value from |value|. Expects
 // status and result to be in specific fields (see .cc) Other fields are

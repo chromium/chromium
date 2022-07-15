@@ -125,7 +125,9 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   // Only set during a flow.
   raw_ptr<DevtoolsClient> devtools_client_;
   int isolated_world_context_id_ = -1;
+
   std::unique_ptr<std::string> js_flow_;
+
   base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>
       callback_;
 

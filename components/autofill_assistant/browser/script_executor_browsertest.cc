@@ -454,6 +454,48 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, JsFlowNestedError) {
   Run(actions_response_1);
 }
 
+// Stack traces in async functions do not contain the call added by the wrapper.
+// We need to make sure that we do not remove an entry.
+IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, JsFlowAsyncError) {
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_js_flow()->set_js_flow(
+      "async function throwError() {\n"
+      "  await new Promise(r => setTimeout(r, 1));\n"
+      "  throw new Error();"
+      "}"
+      "await throwError();");
+
+  EXPECT_CALL(mock_service_, GetNextActions)
+      .WillOnce(DoAll(
+          WithArgs<3>(
+              [](const std::vector<ProcessedActionProto>& processed_actions) {
+                ASSERT_THAT(processed_actions, SizeIs(1));
+
+                const auto& processed_action = processed_actions[0];
+                EXPECT_THAT(processed_action,
+                            Property(&ProcessedActionProto::status,
+                                     UNEXPECTED_JS_ERROR));
+
+                const auto& unexpected_error_info =
+                    processed_action.status_details().unexpected_error_info();
+
+                EXPECT_THAT(unexpected_error_info.js_exception_locations(),
+                            ElementsAre(UnexpectedErrorInfoProto::JS_FLOW));
+                EXPECT_THAT(unexpected_error_info.js_exception_line_numbers(),
+                            ElementsAre(2));
+                EXPECT_THAT(unexpected_error_info.js_exception_column_numbers(),
+                            ElementsAre(8));
+              }),
+          RunOnceCallback<6>(net::HTTP_OK,
+                             ActionsResponseProto().SerializeAsString(),
+                             ServiceRequestSender::ResponseInfo{})));
+
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+
+  Run(actions_response);
+}
+
 IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, WaitForDomSucceeds) {
   WaitForDomProto wait_for_dom;
   wait_for_dom.mutable_wait_condition()

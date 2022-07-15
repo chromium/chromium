@@ -143,9 +143,9 @@ TEST(JsFlowUtilTest, ExtractFlowReturnValue) {
           .Build();
 
   std::unique_ptr<base::Value> out_flow_value;
-  ClientStatus status = ExtractFlowReturnValue(
-      devtools_status, devtools_result.get(), out_flow_value,
-      /* js_line_offsets= */ {}, /* num_stack_entries_to_drop= */ 0);
+  ClientStatus status =
+      ExtractFlowReturnValue(devtools_status, devtools_result.get(),
+                             out_flow_value, /* js_line_offsets= */ {});
   EXPECT_TRUE(status.ok());
   EXPECT_EQ(*out_flow_value, base::Value(12345));
 }

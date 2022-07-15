@@ -148,7 +148,7 @@ void JsFlowDevtoolsWrapper::OnJsFlowLibraryEvaluated(
     std::unique_ptr<runtime::EvaluateResult> result) {
   std::unique_ptr<base::Value> unused;
   init_status_ = js_flow_util::ExtractFlowReturnValue(
-      reply_status, result.get(), unused, {}, 0);
+      reply_status, result.get(), unused, /* js_line_offsets= */ {});
 
   if (init_status_.ok()) {
     VLOG(2) << "JS flow library (length " << js_flow_library_.length()

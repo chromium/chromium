@@ -103,11 +103,10 @@ ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result,
-    const JsLineOffsets& js_line_offsets,
-    int num_stack_entries_to_drop) {
-  ClientStatus status = CheckJavaScriptResult(
-      devtools_reply_status, devtools_result, __FILE__, __LINE__,
-      js_line_offsets, num_stack_entries_to_drop);
+    const JsLineOffsets& js_line_offsets) {
+  ClientStatus status =
+      CheckJavaScriptResult(devtools_reply_status, devtools_result, __FILE__,
+                            __LINE__, js_line_offsets);
   if (!status.ok()) {
     return status;
   }
