@@ -264,6 +264,9 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                                         std::ref(all_frame_data)));
   canvas->DrawSkottie(skottie(), gfx::Rect(size), t, std::move(all_frame_data),
                       color_map_, text_map_);
+  for (AnimationObserver& obs : observers_) {
+    obs.AnimationFramePainted(this, t);
+  }
 }
 
 void Animation::SetPlaybackSpeed(float playback_speed) {

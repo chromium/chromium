@@ -103,6 +103,10 @@ class TestAnimationObserver : public AnimationObserver {
     animation_resuming_ = true;
   }
 
+  void AnimationFramePainted(const Animation* animation, float t) override {
+    last_frame_painted_ = t;
+  }
+
   void Reset() {
     animation_cycle_ended_ = false;
     animation_will_start_playing_ = false;
@@ -114,12 +118,16 @@ class TestAnimationObserver : public AnimationObserver {
     return animation_will_start_playing_;
   }
   bool animation_resuming() const { return animation_resuming_; }
+  const absl::optional<float>& last_frame_painted() const {
+    return last_frame_painted_;
+  }
 
  private:
   base::ScopedObservation<Animation, AnimationObserver> observation_{this};
   bool animation_cycle_ended_ = false;
   bool animation_will_start_playing_ = false;
   bool animation_resuming_ = false;
+  absl::optional<float> last_frame_painted_;
 };
 
 class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
@@ -940,6 +948,39 @@ TEST_F(AnimationTest, PaintTest) {
   AdvanceClock(base::Milliseconds(1400));
   animation_->Paint(&canvas, NowTicks(), animation_->GetOriginalSize());
   IsAllSameColor(SK_ColorBLUE, canvas.GetBitmap());
+}
+
+TEST_F(AnimationTest, NotifiesObserverFramePainted) {
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(observer.last_frame_painted());
+  EXPECT_EQ(*observer.last_frame_painted(), 0.f);
+
+  AdvanceClock(kAnimationDuration / 4);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(observer.last_frame_painted());
+  EXPECT_FLOAT_EQ(*observer.last_frame_painted(), 0.25f);
+
+  AdvanceClock(kAnimationDuration / 4);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(observer.last_frame_painted());
+  EXPECT_FLOAT_EQ(*observer.last_frame_painted(), 0.5f);
+
+  AdvanceClock(kAnimationDuration / 2 - base::Milliseconds(1));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(observer.last_frame_painted());
+  EXPECT_NEAR(*observer.last_frame_painted(), 1.f, 1E-3);
+
+  AdvanceClock(base::Milliseconds(2));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(observer.last_frame_painted());
+  EXPECT_FLOAT_EQ(*observer.last_frame_painted(),
+                  base::Milliseconds(1) / kAnimationDuration);
 }
 
 TEST_F(AnimationTest, SetsPlaybackSpeed) {
