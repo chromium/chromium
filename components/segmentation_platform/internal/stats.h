@@ -119,6 +119,12 @@ void RecordModelExecutionDurationModel(SegmentId segment_id,
 void RecordModelExecutionDurationTotal(SegmentId segment_id,
                                        ModelExecutionStatus status,
                                        base::TimeDelta duration);
+// Records the total duration of on-demand segment selection which includes
+// running all the models associated with the client and computing result.
+void RecordOnDemandSegmentSelectionDuration(
+    const std::string& segmentation_key,
+    const SegmentSelectionResult& result,
+    base::TimeDelta duration);
 // Records the result value after successfully executing an ML model.
 void RecordModelExecutionResult(SegmentId segment_id, float result);
 // Records whether the result value of of executing an ML model was successfully

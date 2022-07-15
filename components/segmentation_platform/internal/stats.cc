@@ -472,6 +472,23 @@ void RecordModelExecutionDurationTotal(SegmentId segment_id,
       duration);
 }
 
+void RecordOnDemandSegmentSelectionDuration(
+    const std::string& segmentation_key,
+    const SegmentSelectionResult& result,
+    base::TimeDelta duration) {
+  std::string histogram_prefix =
+      base::StrCat({"SegmentationPlatform.SegmentSelectionOnDemand.Duration.",
+                    SegmentationKeyToUmaName(segmentation_key), "."});
+  base::UmaHistogramTimes(base::StrCat({histogram_prefix, "Any"}), duration);
+
+  std::string histogram_name = base::StrCat(
+      {histogram_prefix,
+       result.segment.has_value()
+           ? OptimizationTargetToHistogramVariant(result.segment.value())
+           : "None"});
+  base::UmaHistogramTimes(histogram_name, duration);
+}
+
 void RecordModelExecutionResult(SegmentId segment_id, float result) {
   base::UmaHistogramPercentage(
       "SegmentationPlatform.ModelExecution.Result." +

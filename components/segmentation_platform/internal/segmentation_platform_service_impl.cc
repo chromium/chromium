@@ -159,7 +159,19 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
 
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
   auto& selector = segment_selectors_.at(segmentation_key);
-  selector->GetSelectedSegmentOnDemand(input_context, std::move(callback));
+
+  // Wrap callback to record metrics.
+  auto wrapped_callback = base::BindOnce(
+      [](const std::string& segmentation_key, base::Time start_time,
+         SegmentSelectionCallback callback,
+         const SegmentSelectionResult& result) -> void {
+        stats::RecordOnDemandSegmentSelectionDuration(
+            segmentation_key, result, base::Time::Now() - start_time);
+        std::move(callback).Run(result);
+      },
+      segmentation_key, base::Time::Now(), std::move(callback));
+  selector->GetSelectedSegmentOnDemand(input_context,
+                                       std::move(wrapped_callback));
 }
 
 CallbackId
@@ -197,6 +209,8 @@ void SegmentationPlatformServiceImpl::OnTrigger(
   const TriggerType trigger = trigger_context->trigger_type();
   if (clients_for_trigger_.find(trigger) == clients_for_trigger_.end())
     return;
+  // This method is scheduled to be deprecated.
+  NOTREACHED();
   scoped_refptr<InputContext> input_context =
       base::MakeRefCounted<InputContext>(*trigger_context);
   for (const auto& segmentation_key : clients_for_trigger_[trigger]) {

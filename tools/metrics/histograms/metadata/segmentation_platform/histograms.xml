@@ -447,6 +447,27 @@ chromium-metrics-reviews@google.com.
   <token key="SegmentID" variants="SegmentationModel"/>
 </histogram>
 
+<histogram
+    name="SegmentationPlatform.SegmentSelectionOnDemand.Duration.{SegmentationKey}.{SelectedSegment}"
+    units="ms" expires_after="2022-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the duration for running on-demand segment selection for
+    {SegmentationKey} which includes feature process and model execution of all
+    the models associated with {SegmentationKey}.
+
+    Starts recording every time the on-demand segment selection method is called
+    for {SegmentationKey}. Records the duration when a {SelectedSegment} is
+    returned as the result.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
+  <token key="SelectedSegment" variants="SegmentationModel">
+    <variant name="Any"/>
+    <variant name="None"/>
+  </token>
+</histogram>
+
 <histogram name="SegmentationPlatform.SelectionFailedReason"
     enum="SegmentationSelectionFailureReason" expires_after="2022-12-11">
   <owner>ssid@chromium.org</owner>
