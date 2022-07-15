@@ -352,8 +352,14 @@ class BottomSheet extends FrameLayout
                 mContainerHeight = bottom - top;
 
                 if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
-                    if (mCurrentState == SheetState.HALF && !isHalfStateEnabled()) {
-                        setSheetState(SheetState.FULL, false);
+                    if (!isHalfStateEnabled()) {
+                        if (mCurrentState == SheetState.HALF) {
+                            setSheetState(SheetState.FULL, false);
+                        } else if (mCurrentState == SheetState.SCROLLING
+                                && mTargetState == SheetState.HALF) {
+                            // Let the animation resume to the full height.
+                            mTargetState = SheetState.FULL;
+                        }
                     }
                     invalidateContentDesiredHeight();
                     sizeAndPositionSheetInParent();

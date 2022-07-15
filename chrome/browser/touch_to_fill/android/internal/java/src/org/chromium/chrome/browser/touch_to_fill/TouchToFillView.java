@@ -329,9 +329,17 @@ class TouchToFillView implements BottomSheetContent {
 
     private @Px int getHeightWhenFullyExtended() {
         assert mContentView.getMeasuredHeight() > 0 : "ContentView hasn't been measured.";
-        return getHeightWithMargins(mContentView.findViewById(R.id.drag_handlebar), false)
-                + getSheetItemListHeightWithMargins(false)
-                + getHeightWithMargins(mContentView.findViewById(R.id.touch_to_fill_footer), false);
+        int height = getHeightWithMargins(mContentView.findViewById(R.id.drag_handlebar), false)
+                + getSheetItemListHeightWithMargins(false);
+        View footer = mContentView.findViewById(R.id.touch_to_fill_footer);
+        if (footer.getMeasuredHeight() == 0) {
+            // This can happen when bottom sheet container layout changes, apparently causing
+            // the footer layout to be invalidated. Measure the content view again.
+            remeasure(true);
+            footer.requestLayout();
+        }
+        height += getHeightWithMargins(footer, false);
+        return height;
     }
 
     private @Px int getSheetItemListHeightWithMargins(boolean showOnlyInitialItems) {
