@@ -334,15 +334,19 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
   return candidate_added;
 }
 
-void NGOutOfFlowLayoutPart::HandleFragmentation() {
-  if (!container_builder_->IsBlockFragmentationContextRoot() ||
-      has_block_fragmentation_)
+void NGOutOfFlowLayoutPart::HandleFragmentation(
+    ColumnBalancingInfo* column_balancing_info) {
+  if (!column_balancing_info &&
+      (!container_builder_->IsBlockFragmentationContextRoot() ||
+       has_block_fragmentation_))
     return;
 
   // Don't use the cache if we are handling fragmentation.
   allow_first_tier_oof_cache_ = false;
 
   if (container_builder_->Node().IsPaginatedRoot()) {
+    // Column balancing only affects multicols.
+    DCHECK(!column_balancing_info);
     HeapVector<NGLogicalOutOfFlowPositionedNode> candidates;
     ClearCollectionScope<HeapVector<NGLogicalOutOfFlowPositionedNode>> scope(
         &candidates);
@@ -359,24 +363,50 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
       container_builder_->AddOutOfFlowFragmentainerDescendant(candidate);
   }
 
-  while (container_builder_->HasOutOfFlowFragmentainerDescendants() ||
-         container_builder_->HasMulticolsWithPendingOOFs()) {
-    HandleMulticolsWithPendingOOFs(container_builder_);
-    if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
-      HeapVector<NGLogicalOOFNodeForFragmentation> fragmentainer_descendants;
-      ClearCollectionScope<HeapVector<NGLogicalOOFNodeForFragmentation>> scope(
-          &fragmentainer_descendants);
-      container_builder_->SwapOutOfFlowFragmentainerDescendants(
+#if DCHECK_IS_ON()
+  if (column_balancing_info) {
+    DCHECK(!column_balancing_info->columns.IsEmpty());
+    DCHECK(!column_balancing_info->out_of_flow_fragmentainer_descendants
+                .IsEmpty());
+  }
+#endif
+  base::AutoReset<ColumnBalancingInfo*> balancing_scope(&column_balancing_info_,
+                                                        column_balancing_info);
+
+  auto ShouldContinue = [&]() -> bool {
+    if (column_balancing_info_)
+      return column_balancing_info_->HasOutOfFlowFragmentainerDescendants();
+    return container_builder_->HasOutOfFlowFragmentainerDescendants() ||
+           container_builder_->HasMulticolsWithPendingOOFs();
+  };
+
+  while (ShouldContinue()) {
+    HeapVector<NGLogicalOOFNodeForFragmentation> fragmentainer_descendants;
+    ClearCollectionScope<HeapVector<NGLogicalOOFNodeForFragmentation>> scope(
+        &fragmentainer_descendants);
+    if (column_balancing_info_) {
+      column_balancing_info_->SwapOutOfFlowFragmentainerDescendants(
           &fragmentainer_descendants);
       DCHECK(!fragmentainer_descendants.IsEmpty());
+    } else {
+      HandleMulticolsWithPendingOOFs(container_builder_);
+      if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
+        container_builder_->SwapOutOfFlowFragmentainerDescendants(
+            &fragmentainer_descendants);
+        DCHECK(!fragmentainer_descendants.IsEmpty());
+      }
+    }
+    if (!fragmentainer_descendants.IsEmpty()) {
       LogicalOffset fragmentainer_progression = GetFragmentainerProgression(
           *container_builder_, GetFragmentainerType());
       LayoutFragmentainerDescendants(&fragmentainer_descendants,
                                      fragmentainer_progression);
     }
   }
-  for (auto& descendant : delayed_descendants_)
-    container_builder_->AddOutOfFlowFragmentainerDescendant(descendant);
+  if (!column_balancing_info_) {
+    for (auto& descendant : delayed_descendants_)
+      container_builder_->AddOutOfFlowFragmentainerDescendant(descendant);
+  }
 }
 
 // Retrieve the stored ContainingBlockInfo needed for placing positioned nodes.
@@ -1158,10 +1188,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             descendant.containing_block.Fragment()->GetLayoutObject());
         DCHECK(containing_block);
 
-        // We may try to lay out an OOF once we reach a column spanner. However,
-        // if the containing block has not finished lay out, we should wait to
-        // lay out the OOF in case its position is dependent on its containing
-        // block's final size.
+        // We may try to lay out an OOF once we reach a column spanner or when
+        // column balancing. However, if the containing block has not finished
+        // layout, we should wait to lay out the OOF in case its position is
+        // dependent on its containing block's final size.
         if (containing_block->PhysicalFragments().back().BreakToken()) {
           delayed_descendants_.push_back(descendant);
           continue;
@@ -1201,6 +1231,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       const NGPhysicalFragment* fragment = nullptr;
       if (index < num_children)
         fragment = children[index].fragment;
+      else if (column_balancing_info_)
+        column_balancing_info_->num_new_columns++;
 
       // Skip over any column spanners.
       if (!fragment || fragment->IsFragmentainerBox()) {
@@ -1210,12 +1242,17 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                                   fragmentainer_progression,
                                   &fragmented_descendants);
         // Retrieve the updated or newly added fragmentainer, and add its block
-        // contribution to the consumed block size.
-        fragment = children[index].fragment;
-        fragmentainer_consumed_block_size_ +=
-            fragment->Size()
-                .ConvertToLogical(container_builder_->Style().GetWritingMode())
-                .block_size;
+        // contribution to the consumed block size. Skip this if we are column
+        // balancing, though, since this is only needed when adding OOFs to the
+        // builder in the true layout pass.
+        if (!column_balancing_info_) {
+          fragment = children[index].fragment;
+          fragmentainer_consumed_block_size_ +=
+              fragment->Size()
+                  .ConvertToLogical(
+                      container_builder_->Style().GetWritingMode())
+                  .block_size;
+        }
       }
 
       // Extend |descendants_to_layout| if an OOF element fragments into a
@@ -1719,8 +1756,15 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
 
-  const NGBlockBreakToken* previous_break_token =
-      PreviousFragmentainerBreakToken(*container_builder_, original_index);
+  const NGBlockBreakToken* previous_break_token = nullptr;
+  if (!column_balancing_info_) {
+    // Note: We don't fetch this when column balancing because we don't actually
+    // create and add new fragments to the builder until a later layout pass.
+    // However, the break token is only needed when we are actually adding to
+    // the builder, so it is ok to leave this as nullptr in such cases.
+    previous_break_token =
+        PreviousFragmentainerBreakToken(*container_builder_, original_index);
+  }
   NGLayoutAlgorithmParams params(node, fragment_geometry, space,
                                  previous_break_token,
                                  /* early_break */ nullptr);
@@ -1816,6 +1860,38 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     }
   }
 
+  const auto& physical_fragment =
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
+  if (break_token) {
+    // We must continue layout in the next fragmentainer. Update any information
+    // in NodeToLayout, and add the node to |fragmented_descendants|.
+    NodeToLayout fragmented_descendant = descendant;
+    fragmented_descendant.break_token = break_token;
+    fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
+    fragmented_descendants->emplace_back(fragmented_descendant);
+  }
+
+  // Figure out if the current OOF affects column balancing. Then return since
+  // we don't want to add the OOFs to the builder until the current columns have
+  // completed layout.
+  if (column_balancing_info_) {
+    LayoutUnit space_shortage = CalculateSpaceShortage(
+        *fragmentainer_space, result, oof_offset.block_offset);
+    column_balancing_info_->PropagateSpaceShortage(space_shortage);
+    // We don't check the break appeal of the layout result to determine if
+    // there is a violating break because OOFs aren't affected by the various
+    // break rules. However, OOFs aren't pushed to the next fragmentainer if
+    // they don't fit (when they are monolithic). Use |has_violating_break| to
+    // tell the column algorithm when this happens so that it knows to attempt
+    // to expand the columns in such cases.
+    if (!column_balancing_info_->has_violating_break) {
+      if (space_shortage > LayoutUnit() && !physical_fragment.BreakToken())
+        column_balancing_info_->has_violating_break = true;
+    }
+    return;
+  }
+
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
@@ -1829,9 +1905,6 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
         additional_fixedpos_offset);
   }
   algorithm->AppendOutOfFlowResult(result);
-
-  const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
   // Copy the offset of the OOF node back to legacy such that it is relative
   // to its containing block rather than the fragmentainer that it is being
@@ -1861,16 +1934,6 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
             physical_fragment.Size()),
         *container, /* previous_container_break_token */ nullptr);
   }
-
-  const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
-  if (break_token) {
-    // We must continue layout in the next fragmentainer. Update any information
-    // in NodeToLayout, and add the node to |fragmented_descendants|.
-    NodeToLayout fragmented_descendant = descendant;
-    fragmented_descendant.break_token = break_token;
-    fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
-    fragmented_descendants->emplace_back(fragmented_descendant);
-  }
 }
 
 void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
@@ -1878,6 +1941,10 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     LogicalOffset offset,
     bool create_new_fragment,
     NGSimplifiedOOFLayoutAlgorithm* algorithm) {
+  // Don't update the builder when performing column balancing.
+  if (column_balancing_info_)
+    return;
+
   if (create_new_fragment) {
     const NGLayoutResult* new_result = algorithm->Layout();
     container_builder_->AddChild(
@@ -2181,6 +2248,11 @@ NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
   if (const auto* break_token = container_builder_->PreviousBreakToken())
     position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
   return position;
+}
+
+void NGOutOfFlowLayoutPart::ColumnBalancingInfo::PropagateSpaceShortage(
+    LayoutUnit space_shortage) {
+  UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage);
 }
 
 void NGOutOfFlowLayoutPart::MulticolChildInfo::Trace(Visitor* visitor) const {

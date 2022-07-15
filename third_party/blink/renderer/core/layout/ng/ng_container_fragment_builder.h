@@ -264,13 +264,16 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
           nullptr,
       LogicalOffset additional_fixedpos_offset = LogicalOffset());
   // Same as PropagateOOFPositionedInfo(), but only performs the propagation of
-  // OOF fragmentainer descendants.
+  // OOF fragmentainer descendants. If |out_list| is provided, any OOF
+  // fragmentainer descendants should be propagated there rather than to this
+  // builder.
   void PropagateOOFFragmentainerDescendants(
       const NGPhysicalFragment& fragment,
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LayoutUnit containing_block_adjustment,
-      const NGContainingBlock<LogicalOffset>* fixedpos_containing_block);
+      const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
+      HeapVector<NGLogicalOOFNodeForFragmentation>* out_list = nullptr);
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 

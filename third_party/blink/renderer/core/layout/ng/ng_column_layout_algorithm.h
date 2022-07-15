@@ -125,6 +125,11 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
     return !Node().IsFloatingOrOutOfFlowPositioned();
   }
 
+  // The sum of all the current column children's block-sizes, as if they were
+  // stacked, including any block-size that is added as a result of
+  // ClampedToValidFragmentainerCapacity().
+  LayoutUnit TotalColumnBlockSize() const;
+
   const NGColumnSpannerPath* spanner_path_ = nullptr;
 
   int used_column_count_;

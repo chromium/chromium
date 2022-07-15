@@ -534,7 +534,8 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
     LogicalOffset offset,
     LogicalOffset relative_offset,
     LayoutUnit containing_block_adjustment,
-    const NGContainingBlock<LogicalOffset>* fixedpos_containing_block) {
+    const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
+    HeapVector<NGLogicalOOFNodeForFragmentation>* out_list) {
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
   if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
     return;
@@ -655,28 +656,33 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
       fixedpos_containing_block_rel_offset =
           fixedpos_containing_block->RelativeOffset();
     }
+    NGLogicalOOFNodeForFragmentation oof_node(
+        descendant.Node(), static_position, new_inline_container,
+        /* needs_block_offset_adjustment */ false,
+        NGContainingBlock<LogicalOffset>(
+            containing_block_offset, containing_block_rel_offset,
+            containing_block_fragment, container_inside_column_spanner,
+            descendant.containing_block.RequiresContentBeforeBreaking()),
+        NGContainingBlock<LogicalOffset>(
+            fixedpos_containing_block_offset,
+            fixedpos_containing_block_rel_offset,
+            fixedpos_containing_block_fragment,
+            fixedpos_container_inside_column_spanner,
+            descendant.fixedpos_containing_block
+                .RequiresContentBeforeBreaking()),
+        new_fixedpos_inline_container);
 
-    AddOutOfFlowFragmentainerDescendant(
-        {descendant.Node(), static_position, new_inline_container,
-         /* needs_block_offset_adjustment */ false,
-         NGContainingBlock<LogicalOffset>(
-             containing_block_offset, containing_block_rel_offset,
-             containing_block_fragment, container_inside_column_spanner,
-             descendant.containing_block.RequiresContentBeforeBreaking()),
-         NGContainingBlock<LogicalOffset>(
-             fixedpos_containing_block_offset,
-             fixedpos_containing_block_rel_offset,
-             fixedpos_containing_block_fragment,
-             fixedpos_container_inside_column_spanner,
-             descendant.fixedpos_containing_block
-                 .RequiresContentBeforeBreaking()),
-         new_fixedpos_inline_container});
+    if (out_list) {
+      out_list->emplace_back(oof_node);
+    } else {
+      AddOutOfFlowFragmentainerDescendant(oof_node);
 
-    // Remove any descendants that were propagated to the next fragmentation
-    // context root (as a result of a column spanner).
-    if (remove_descendant) {
-      out_of_flow_fragmentainer_descendants.EraseAt(idx);
-      next_idx = idx;
+      // Remove any descendants that were propagated to the next fragmentation
+      // context root (as a result of a column spanner).
+      if (remove_descendant) {
+        out_of_flow_fragmentainer_descendants.EraseAt(idx);
+        next_idx = idx;
+      }
     }
   }
 }
