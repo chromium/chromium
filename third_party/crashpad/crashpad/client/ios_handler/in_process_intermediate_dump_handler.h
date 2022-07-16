@@ -139,10 +139,12 @@ class InProcessIntermediateDumpHandler final {
                                        bool is_dyld);
 
   //! \brief Extract and write Apple crashreporter_annotations_t data and
-  //!     Crashpad annotations.
-  static void WriteDataSegmentAnnotations(IOSIntermediateDumpWriter* writer,
-                                          const segment_command_64* segment_ptr,
-                                          vm_size_t slide);
+  //!     Crashpad annotations. Note that \a segment_vm_read_ptr has already
+  //!     been read via vm_read and may be dereferenced without a ScopedVMRead.
+  static void WriteDataSegmentAnnotations(
+      IOSIntermediateDumpWriter* writer,
+      const segment_command_64* segment_vm_read_ptr,
+      vm_size_t slide);
 
   //! \brief Write Crashpad annotations list.
   static void WriteCrashpadAnnotationsList(IOSIntermediateDumpWriter* writer,

@@ -1053,68 +1053,63 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
     return;
   }
 
-  const load_command* command_ptr = reinterpret_cast<const load_command*>(
-      reinterpret_cast<const mach_header_64*>(address) + 1);
+  const load_command* unsafe_command_ptr =
+      reinterpret_cast<const load_command*>(
+          reinterpret_cast<const mach_header_64*>(address) + 1);
 
-  ScopedVMRead<load_command> command;
-  if (!command.Read(command_ptr)) {
-    CRASHPAD_RAW_LOG("Invalid module command");
+  // Rather than using an individual ScopedVMRead for each load_command, load
+  // the entire block of commands at once.
+  ScopedVMRead<char> all_commands;
+  if (!all_commands.Read(unsafe_command_ptr, header->sizeofcmds)) {
+    CRASHPAD_RAW_LOG("Unable to read module load_commands.");
     return;
   }
+
+  // All the *_vm_read_ptr variables in the load_command loop below have been
+  // vm_read in `all_commands` above, and may be dereferenced without additional
+  // ScopedVMReads.
+  const load_command* command_vm_read_ptr =
+      reinterpret_cast<const load_command*>(all_commands.get());
 
   // Make sure that the basic load command structure doesn’t overflow the
   // space allotted for load commands, as well as iterating through ncmds.
   vm_size_t slide = 0;
   for (uint32_t cmd_index = 0, cumulative_cmd_size = 0;
-       cmd_index <= header->ncmds && cumulative_cmd_size < header->sizeofcmds;
-       ++cmd_index, cumulative_cmd_size += command->cmdsize) {
-    if (command->cmd == LC_SEGMENT_64) {
-      ScopedVMRead<segment_command_64> segment;
-      if (!segment.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_SEGMENT_64 segment");
-        return;
+       cmd_index < header->ncmds && cumulative_cmd_size < header->sizeofcmds;
+       ++cmd_index) {
+    if (command_vm_read_ptr->cmd == LC_SEGMENT_64) {
+      const segment_command_64* segment_vm_read_ptr =
+          reinterpret_cast<const segment_command_64*>(command_vm_read_ptr);
+      if (strcmp(segment_vm_read_ptr->segname, SEG_TEXT) == 0) {
+        WriteProperty(
+            writer, IntermediateDumpKey::kSize, &segment_vm_read_ptr->vmsize);
+        slide = address - segment_vm_read_ptr->vmaddr;
+      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0) {
+        WriteDataSegmentAnnotations(writer, segment_vm_read_ptr, slide);
       }
-      const segment_command_64* segment_ptr =
-          reinterpret_cast<const segment_command_64*>(command_ptr);
-      if (strcmp(segment->segname, SEG_TEXT) == 0) {
-        WriteProperty(writer, IntermediateDumpKey::kSize, &segment->vmsize);
-        slide = address - segment->vmaddr;
-      } else if (strcmp(segment->segname, SEG_DATA) == 0) {
-        WriteDataSegmentAnnotations(writer, segment_ptr, slide);
-      }
-    } else if (command->cmd == LC_ID_DYLIB) {
-      ScopedVMRead<dylib_command> dylib;
-      if (!dylib.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_ID_DYLIB segment");
-        return;
-      }
+    } else if (command_vm_read_ptr->cmd == LC_ID_DYLIB) {
+      const dylib_command* dylib_vm_read_ptr =
+          reinterpret_cast<const dylib_command*>(command_vm_read_ptr);
       WriteProperty(writer,
                     IntermediateDumpKey::kDylibCurrentVersion,
-                    &dylib->dylib.current_version);
-    } else if (command->cmd == LC_SOURCE_VERSION) {
-      ScopedVMRead<source_version_command> source_version;
-      if (!source_version.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_SOURCE_VERSION segment");
-        return;
-      }
+                    &dylib_vm_read_ptr->dylib.current_version);
+    } else if (command_vm_read_ptr->cmd == LC_SOURCE_VERSION) {
+      const source_version_command* source_version_vm_read_ptr =
+          reinterpret_cast<const source_version_command*>(command_vm_read_ptr);
       WriteProperty(writer,
                     IntermediateDumpKey::kSourceVersion,
-                    &source_version->version);
-    } else if (command->cmd == LC_UUID) {
-      ScopedVMRead<uuid_command> uuid;
-      if (!uuid.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_UUID segment");
-        return;
-      }
-      WriteProperty(writer, IntermediateDumpKey::kUUID, &uuid->uuid);
+                    &source_version_vm_read_ptr->version);
+    } else if (command_vm_read_ptr->cmd == LC_UUID) {
+      const uuid_command* uuid_vm_read_ptr =
+          reinterpret_cast<const uuid_command*>(command_vm_read_ptr);
+      WriteProperty(
+          writer, IntermediateDumpKey::kUUID, &uuid_vm_read_ptr->uuid);
     }
 
-    command_ptr = reinterpret_cast<const load_command*>(
-        reinterpret_cast<const uint8_t*>(command_ptr) + command->cmdsize);
-    if (!command.Read(command_ptr)) {
-      CRASHPAD_RAW_LOG("Invalid module command");
-      return;
-    }
+    cumulative_cmd_size += command_vm_read_ptr->cmdsize;
+    command_vm_read_ptr = reinterpret_cast<const load_command*>(
+        reinterpret_cast<const uint8_t*>(command_vm_read_ptr) +
+        command_vm_read_ptr->cmdsize);
   }
 
   WriteProperty(writer, IntermediateDumpKey::kFileType, &header->filetype);
@@ -1122,40 +1117,32 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
 
 void InProcessIntermediateDumpHandler::WriteDataSegmentAnnotations(
     IOSIntermediateDumpWriter* writer,
-    const segment_command_64* segment_ptr,
+    const segment_command_64* segment_vm_read_ptr,
     vm_size_t slide) {
-  ScopedVMRead<segment_command_64> segment;
-  if (!segment.Read(segment_ptr)) {
-    CRASHPAD_RAW_LOG("Unable to read SEG_DATA.");
-    return;
-  }
-  const section_64* section_ptr = reinterpret_cast<const section_64*>(
-      reinterpret_cast<uint64_t>(segment_ptr) + sizeof(segment_command_64));
-  for (uint32_t sect_index = 0; sect_index <= segment->nsects; ++sect_index) {
-    ScopedVMRead<section_64> section;
-    if (!section.Read(section_ptr)) {
-      CRASHPAD_RAW_LOG("Unable to read SEG_DATA section.");
-      return;
-    }
-    if (strcmp(section->sectname, "crashpad_info") == 0) {
+  const section_64* section_vm_read_ptr = reinterpret_cast<const section_64*>(
+      reinterpret_cast<uint64_t>(segment_vm_read_ptr) +
+      sizeof(segment_command_64));
+  for (uint32_t sect_index = 0; sect_index <= segment_vm_read_ptr->nsects;
+       ++sect_index) {
+    if (strcmp(section_vm_read_ptr->sectname, "crashpad_info") == 0) {
       ScopedVMRead<CrashpadInfo> crashpad_info;
-      if (crashpad_info.Read(section->addr + slide) &&
+      if (crashpad_info.Read(section_vm_read_ptr->addr + slide) &&
           crashpad_info->size() == sizeof(CrashpadInfo) &&
           crashpad_info->signature() == CrashpadInfo::kSignature &&
           crashpad_info->version() == 1) {
         WriteCrashpadAnnotationsList(writer, crashpad_info.get());
         WriteCrashpadSimpleAnnotationsDictionary(writer, crashpad_info.get());
       }
-    } else if (strcmp(section->sectname, "__crash_info") == 0) {
+    } else if (strcmp(section_vm_read_ptr->sectname, "__crash_info") == 0) {
       ScopedVMRead<crashreporter_annotations_t> crash_info;
-      if (!crash_info.Read(section->addr + slide) ||
+      if (!crash_info.Read(section_vm_read_ptr->addr + slide) ||
           (crash_info->version != 4 && crash_info->version != 5)) {
         continue;
       }
       WriteAppleCrashReporterAnnotations(writer, crash_info.get());
     }
-    section_ptr = reinterpret_cast<const section_64*>(
-        reinterpret_cast<uint64_t>(section_ptr) + sizeof(section_64));
+    section_vm_read_ptr = reinterpret_cast<const section_64*>(
+        reinterpret_cast<uint64_t>(section_vm_read_ptr) + sizeof(section_64));
   }
 }
 
