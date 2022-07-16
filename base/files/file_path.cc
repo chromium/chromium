@@ -104,7 +104,7 @@ bool IsPathAbsolute(StringPieceType path) {
   // Look for a pair of leading separators.
   return path.length() > 1 &&
       FilePath::IsSeparator(path[0]) &&
-      FilePath::IsSeparator(path[1]); 
+      FilePath::IsSeparator(path[1]);
 #else  // FILE_PATH_USES_DRIVE_LETTERS
   // Look for a separator in the first position.
   return path.length() > 0 && FilePath::IsSeparator(path[0]);
@@ -569,7 +569,7 @@ bool FilePath::IsAbsolute() const {
 }
 
 bool FilePath::IsNetwork() const {
-  return path_.length() > 1 && 
+  return path_.length() > 1 &&
         FilePath::IsSeparator(path_[0]) &&
         FilePath::IsSeparator(path_[1]);
 }
