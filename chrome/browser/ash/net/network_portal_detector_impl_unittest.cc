@@ -56,20 +56,25 @@ using ::testing::Mock;
 const char kStubEthernet[] = "stub_ethernet";
 const char kStubWireless1[] = "stub_wifi1";
 const char kStubWireless2[] = "stub_wifi2";
-const char kStubCellular[] = "stub_cellular";
 
 void ErrorCallbackFunction(const std::string& error_name,
                            const std::string& error_message) {
   LOG(ERROR) << "Shill Error: " << error_name << " : " << error_message;
 }
 
-class MockObserver : public NetworkPortalDetector::Observer {
+class FakeObserver : public NetworkPortalDetector::Observer {
  public:
-  virtual ~MockObserver() {}
+  void OnPortalDetectionCompleted(
+      const NetworkState* network,
+      const NetworkPortalDetector::CaptivePortalStatus status) override {
+    status_ = status;
+  }
 
-  MOCK_METHOD2(OnPortalDetectionCompleted,
-               void(const NetworkState* network,
-                    const NetworkPortalDetector::CaptivePortalStatus status));
+  NetworkPortalDetector::CaptivePortalStatus status() { return status_; }
+
+ private:
+  NetworkPortalDetector::CaptivePortalStatus status_ =
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
 };
 
 }  // namespace
@@ -109,6 +114,8 @@ class NetworkPortalDetectorImplTest
         std::make_unique<NetworkPortalDetectorImpl>(test_loader_factory());
     network_portal_detector_->Enable(false);
 
+    network_portal_detector()->AddObserver(&observer_);
+
     set_detector(network_portal_detector_->captive_portal_detector_.get());
 
     // Prevents flakiness due to message loop delays.
@@ -122,6 +129,7 @@ class NetworkPortalDetectorImplTest
   }
 
   void TearDown() override {
+    network_portal_detector()->RemoveObserver(&observer_);
     network_portal_detector_.reset();
     profile_ = nullptr;
     network_handler_test_helper_.reset();
@@ -166,14 +174,6 @@ class NetworkPortalDetectorImplTest
 
   NetworkPortalDetectorImpl* network_portal_detector() {
     return network_portal_detector_.get();
-  }
-
-  void AddObserver(NetworkPortalDetector::Observer* observer) {
-    network_portal_detector()->AddObserver(observer);
-  }
-
-  void RemoveObserver(NetworkPortalDetector::Observer* observer) {
-    network_portal_detector()->RemoveObserver(observer);
   }
 
   NetworkPortalDetectorImpl::State state() {
@@ -265,6 +265,8 @@ class NetworkPortalDetectorImplTest
     base::RunLoop().RunUntilIdle();
   }
 
+  FakeObserver& observer() { return observer_; }
+
  private:
   void AddService(const std::string& network_id, const std::string& type) {
     network_handler_test_helper_->service_test()->AddService(
@@ -279,7 +281,6 @@ class NetworkPortalDetectorImplTest
     AddService(kStubEthernet, shill::kTypeEthernet);
     AddService(kStubWireless1, shill::kTypeWifi);
     AddService(kStubWireless2, shill::kTypeWifi);
-    AddService(kStubCellular, shill::kTypeCellular);
   }
 
   void SetupNetworkHandler() {
@@ -294,6 +295,7 @@ class NetworkPortalDetectorImplTest
   std::unique_ptr<base::HistogramSamples> original_samples_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   TestingProfileManager test_profile_manager_;
+  FakeObserver observer_;
 };
 
 TEST_F(NetworkPortalDetectorImplTest, NoPortal) {
@@ -352,50 +354,25 @@ TEST_F(NetworkPortalDetectorImplTest, Portal) {
 
 TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
   ASSERT_EQ(State::STATE_IDLE, state());
-
-  MockObserver observer;
-  AddObserver(&observer);
-
-  NetworkPortalDetector::CaptivePortalStatus offline_status =
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
+  ASSERT_EQ(observer().status(),
+            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
 
   // WiFi is in online state.
-  {
-    // When transitioning to a connected state, the network will transition to
-    // connecting states which will set the default network to nullptr. This may
-    // get triggered multiple times.
-    EXPECT_CALL(observer, OnPortalDetectionCompleted(_, offline_status))
-        .Times(AnyNumber());
+  SetConnected(kStubWireless1);
+  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
-    // Expect a single transition to an online state.
-    EXPECT_CALL(observer,
-                OnPortalDetectionCompleted(
-                    _, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE))
-        .Times(1);
+  CompleteURLFetch(net::OK, 204, nullptr);
+  EXPECT_NE(State::STATE_IDLE, state());
 
-    SetConnected(kStubWireless1);
-    ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-    CompleteURLFetch(net::OK, 204, nullptr);
-    EXPECT_NE(State::STATE_IDLE, state());
-
-    // Check that observer was notified about online state.
-    Mock::VerifyAndClearExpectations(&observer);
-  }
+  EXPECT_EQ(observer().status(),
+            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
 
   // WiFi is turned off.
-  {
-    EXPECT_CALL(observer, OnPortalDetectionCompleted(nullptr, offline_status))
-        .Times(1);
+  SetDisconnected(kStubWireless1);
+  EXPECT_EQ(State::STATE_IDLE, state());
 
-    SetDisconnected(kStubWireless1);
-    ASSERT_EQ(State::STATE_IDLE, state());
-
-    // Check that observer was notified about offline state.
-    Mock::VerifyAndClearExpectations(&observer);
-  }
-
-  RemoveObserver(&observer);
+  EXPECT_EQ(observer().status(),
+            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, NetworkChanged) {
@@ -802,16 +779,15 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
   ASSERT_EQ(State::STATE_IDLE, state());
   set_delay_till_next_attempt(base::TimeDelta());
 
-  SetNetworkDeviceEnabled(shill::kTypeWifi, false);
-  SetConnected(kStubCellular);
+  SetConnected(kStubWireless1);
 
-  // First portal detection attempt for cellular1 uses 5sec timeout.
+  // First portal detection attempt uses 5sec timeout.
   CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
       5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
 
-  // Second portal detection attempt for cellular1 uses 10sec timeout.
+  // Second portal detection attempt uses 10sec timeout.
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   base::RunLoop().RunUntilIdle();
   CheckRequestTimeoutAndCompleteAttempt(
@@ -819,7 +795,7 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
       1 /* expected_no_response_result_count */,
       10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
 
-  // Third portal detection attempt for cellular1 uses 15sec timeout.
+  // Third portal detection attempt uses 15sec timeout.
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   base::RunLoop().RunUntilIdle();
   CheckRequestTimeoutAndCompleteAttempt(

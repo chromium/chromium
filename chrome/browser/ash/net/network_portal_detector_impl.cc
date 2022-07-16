@@ -378,11 +378,12 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     case captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL:
       status = CAPTIVE_PORTAL_STATUS_PORTAL;
       break;
-    default:
+    case captive_portal::RESULT_COUNT:
+      NOTREACHED();
       break;
   }
 
-  NET_LOG(EVENT) << "NetworkPortalDetector completed: id="
+  NET_LOG(EVENT) << "NetworkPortalDetector: AttemptCompleted: id="
                  << NetworkGuidId(default_network_id_) << ", result="
                  << captive_portal::CaptivePortalResultToString(result)
                  << ", status=" << status
@@ -425,7 +426,7 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     DetectionCompleted(network, status, response_code);
   }
 
-  // Observers (via DetectionCompleted) may already schedule new attempt.
+  // Observers (via DetectionCompleted) may already schedule a new attempt.
   if (is_idle())
     ScheduleAttempt(results.retry_after_delta);
 }
@@ -447,6 +448,11 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
     const NetworkState* network,
     const CaptivePortalStatus& status,
     int response_code) {
+  NET_LOG(EVENT) << "NetworkPortalDetector: DetectionCompleted: id="
+                 << (network ? NetworkGuidId(network->guid()) : "<none>")
+                 << ", status=" << status
+                 << ", response_code=" << response_code;
+
   default_portal_status_ = status;
   response_code_for_testing_ = response_code;
   if (network) {
