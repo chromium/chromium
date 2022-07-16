@@ -467,6 +467,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const AtomicString& prefix() const { return tag_name_.Prefix(); }
   const AtomicString& namespaceURI() const { return tag_name_.NamespaceURI(); }
 
+  bool IsHTMLWithTagName(const String& tag_name) const;
+
   const AtomicString& LocateNamespacePrefix(
       const AtomicString& namespace_uri) const;
 

@@ -88,14 +88,8 @@ WebString WebElement::GetIdAttribute() const {
 }
 
 bool WebElement::HasHTMLTagName(const WebString& tag_name) const {
-  // How to create                     class              nodeName localName
-  // createElement('input')            HTMLInputElement   INPUT    input
-  // createElement('INPUT')            HTMLInputElement   INPUT    input
-  // createElementNS(xhtmlNS, 'input') HTMLInputElement   INPUT    input
-  // createElementNS(xhtmlNS, 'INPUT') HTMLUnknownElement INPUT    INPUT
   const Element* element = ConstUnwrap<Element>();
-  return html_names::xhtmlNamespaceURI == element->namespaceURI() &&
-         element->localName() == String(tag_name).LowerASCII();
+  return element->IsHTMLWithTagName(String(tag_name));
 }
 
 bool WebElement::HasAttribute(const WebString& attr_name) const {

@@ -517,8 +517,18 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     return;
   }
 
-  if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    SerializeOtherScreenReaderAttributes(src, dst);
+  if (ui::IsImage(dst->role))
+    AddImageAnnotations(src, dst);
+
+  // If a link or web area isn't otherwise labeled and contains exactly one
+  // image (searching only to a max depth of 2), and the link doesn't have
+  // accessible text from an attribute like aria-label, then annotate the
+  // link/web area with the image's annotation, too.
+  if ((ui::IsLink(dst->role) || ui::IsPlatformDocument(dst->role)) &&
+      dst->GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
+    WebAXObject inner_image;
+    if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))
+      AddImageAnnotations(inner_image, dst);
   }
 
   if (dst->id == image_data_node_id_) {
@@ -541,51 +551,6 @@ void BlinkAXTreeSource::SerializeBoundingBoxAttributes(
   if (src.IsLineBreakingObject()) {
     dst->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                           true);
-  }
-}
-
-void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  blink::WebString display_style = src.ComputedStyleDisplay();
-  if (!display_style.IsEmpty()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kDisplay,
-                                  display_style.Utf8());
-  }
-
-  if (src.KeyboardShortcut().length() &&
-      !dst->HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts)) {
-    TruncateAndAddStringAttribute(dst,
-                                  ax::mojom::StringAttribute::kKeyShortcuts,
-                                  src.KeyboardShortcut().Utf8());
-  }
-
-  if (!src.AriaActiveDescendant().IsDetached()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                         src.AriaActiveDescendant().AxID());
-  }
-
-  if (ui::IsImage(dst->role))
-    AddImageAnnotations(src, dst);
-
-  // If a link or web area isn't otherwise labeled and contains exactly one
-  // image (searching only to a max depth of 2), and the link doesn't have
-  // accessible text from an attribute like aria-label, then annotate the
-  // link/web area with the image's annotation, too.
-  if ((ui::IsLink(dst->role) || ui::IsPlatformDocument(dst->role)) &&
-      dst->GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
-    WebAXObject inner_image;
-    if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))
-      AddImageAnnotations(inner_image, dst);
-  }
-
-  WebNode node = src.GetNode();
-  if (!node.IsNull() && node.IsElementNode()) {
-    WebElement element = node.To<WebElement>();
-    if (element.HasHTMLTagName("input") && element.HasAttribute("type")) {
-      TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kInputType,
-                                    element.GetAttribute("type").Utf8());
-    }
   }
 }
 

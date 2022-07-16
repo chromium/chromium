@@ -169,7 +169,6 @@ class WebAXObject {
   BLINK_EXPORT WebAXObject HitTest(const gfx::Point&) const;
   // Get the WebAXObject's bounds in frame-relative coordinates as a gfx::Rect.
   BLINK_EXPORT gfx::Rect GetBoundsInFrameCoordinates() const;
-  BLINK_EXPORT WebString KeyboardShortcut() const;
   BLINK_EXPORT WebString Language() const;
   BLINK_EXPORT WebAXObject InPageLinkTarget() const;
   BLINK_EXPORT WebVector<WebAXObject> RadioButtonsInGroup() const;
@@ -244,7 +243,6 @@ class WebAXObject {
 
   BLINK_EXPORT WebNode GetNode() const;
   BLINK_EXPORT WebDocument GetDocument() const;
-  BLINK_EXPORT WebString ComputedStyleDisplay() const;
   BLINK_EXPORT bool AccessibilityIsIgnored() const;
   BLINK_EXPORT bool AccessibilityIsIncludedInTree() const;
 

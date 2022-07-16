@@ -1409,6 +1409,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
                                              ui::AXNodeData* node_data) const;
   void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
+  void SerializeScreenReaderAttributes(ui::AXNodeData* node_data);
   void SerializeScrollAttributes(ui::AXNodeData* node_data);
   void SerializeSparseAttributes(ui::AXNodeData* node_data);
   void SerializeStyleAttributes(ui::AXNodeData* node_data);
@@ -1421,6 +1422,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
  private:
   bool ComputeCanSetFocusAttribute() const;
+  String KeyboardShortcut() const;
 
   mutable int last_modification_count_;
 
