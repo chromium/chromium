@@ -57,6 +57,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
       {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
       {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
+      {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
+      {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
 
   };
   source->AddLocalizedStrings(kStrings);
