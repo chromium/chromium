@@ -8,6 +8,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -103,15 +104,14 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-void PageHandler::PDFCreated(
-    bool return_as_stream,
-    std::unique_ptr<PrintToPDFCallback> callback,
-    print_to_pdf::PdfPrintManager::PrintResult print_result,
-    scoped_refptr<base::RefCountedMemory> data) {
+void PageHandler::PDFCreated(bool return_as_stream,
+                             std::unique_ptr<PrintToPDFCallback> callback,
+                             print_to_pdf::PdfPrintResult print_result,
+                             scoped_refptr<base::RefCountedMemory> data) {
   std::unique_ptr<base::DictionaryValue> response;
-  if (print_result != print_to_pdf::PdfPrintManager::PRINT_SUCCESS) {
+  if (print_result != print_to_pdf::PdfPrintResult::PRINT_SUCCESS) {
     callback->sendFailure(Response::ServerError(
-        print_to_pdf::PdfPrintManager::PrintResultToString(print_result)));
+        print_to_pdf::PdfPrintResultToString(print_result)));
     return;
   }
 

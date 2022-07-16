@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
@@ -61,37 +62,6 @@ void PdfPrintManager::BindPrintManagerHost(
   print_manager->BindReceiver(std::move(receiver), rfh);
 }
 
-// static
-std::string PdfPrintManager::PrintResultToString(PrintResult result) {
-  switch (result) {
-    case PRINT_SUCCESS:
-      return std::string();  // no error message
-    case PRINTING_FAILED:
-      return "Printing failed";
-    case INVALID_PRINTER_SETTINGS:
-      return "Show invalid printer settings error";
-    case INVALID_MEMORY_HANDLE:
-      return "Invalid memory handle";
-    case METAFILE_MAP_ERROR:
-      return "Map to shared memory error";
-    case METAFILE_INVALID_HEADER:
-      return "Invalid metafile header";
-    case METAFILE_GET_DATA_ERROR:
-      return "Get data from metafile error";
-    case SIMULTANEOUS_PRINT_ACTIVE:
-      return "The previous printing job hasn't finished";
-    case PAGE_RANGE_SYNTAX_ERROR:
-      return "Page range syntax error";
-    case PAGE_RANGE_INVALID_RANGE:
-      return "Page range is invalid (start > end)";
-    case PAGE_COUNT_EXCEEDED:
-      return "Page range exceeds page count";
-    default:
-      NOTREACHED();
-      return "Unknown PrintResult";
-  }
-}
-
 void PdfPrintManager::PrintToPdf(
     content::RenderFrameHost* rfh,
     const std::string& page_ranges,
@@ -100,13 +70,13 @@ void PdfPrintManager::PrintToPdf(
   DCHECK(callback);
 
   if (callback_) {
-    std::move(callback).Run(SIMULTANEOUS_PRINT_ACTIVE,
+    std::move(callback).Run(PdfPrintResult::SIMULTANEOUS_PRINT_ACTIVE,
                             base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
   if (!rfh->IsRenderFrameLive()) {
-    std::move(callback).Run(PRINTING_FAILED,
+    std::move(callback).Run(PdfPrintResult::PRINTING_FAILED,
                             base::MakeRefCounted<base::RefCountedString>());
     return;
   }
@@ -114,13 +84,13 @@ void PdfPrintManager::PrintToPdf(
   absl::variant<printing::PageRanges, PageRangeError> parsed_ranges =
       TextPageRangesToPageRanges(page_ranges);
   if (absl::holds_alternative<PageRangeError>(parsed_ranges)) {
-    PrintResult print_result;
+    PdfPrintResult print_result;
     switch (absl::get<PageRangeError>(parsed_ranges)) {
       case PageRangeError::kSyntaxError:
-        print_result = PAGE_RANGE_SYNTAX_ERROR;
+        print_result = PdfPrintResult::PAGE_RANGE_SYNTAX_ERROR;
         break;
       case PageRangeError::kInvalidRange:
-        print_result = PAGE_RANGE_INVALID_RANGE;
+        print_result = PdfPrintResult::PAGE_RANGE_INVALID_RANGE;
         break;
     }
     std::move(callback).Run(print_result,
@@ -146,26 +116,26 @@ void PdfPrintManager::OnDidPrintWithParams(
   if (result->is_failure_reason()) {
     switch (result->get_failure_reason()) {
       case printing::mojom::PrintFailureReason::kGeneralFailure:
-        ReleaseJob(PRINTING_FAILED);
+        ReleaseJob(PdfPrintResult::PRINTING_FAILED);
         return;
       case printing::mojom::PrintFailureReason::kInvalidPageRange:
-        ReleaseJob(PAGE_COUNT_EXCEEDED);
+        ReleaseJob(PdfPrintResult::PAGE_COUNT_EXCEEDED);
         return;
     }
   }
 
   auto& content = *result->get_params()->content;
   if (!content.metafile_data_region.IsValid()) {
-    ReleaseJob(INVALID_MEMORY_HANDLE);
+    ReleaseJob(PdfPrintResult::INVALID_MEMORY_HANDLE);
     return;
   }
   base::ReadOnlySharedMemoryMapping map = content.metafile_data_region.Map();
   if (!map.IsValid()) {
-    ReleaseJob(METAFILE_MAP_ERROR);
+    ReleaseJob(PdfPrintResult::METAFILE_MAP_ERROR);
     return;
   }
   data_ = std::string(static_cast<const char*>(map.memory()), map.size());
-  ReleaseJob(PRINT_SUCCESS);
+  ReleaseJob(PdfPrintResult::PRINT_SUCCESS);
 }
 
 void PdfPrintManager::GetDefaultPrintSettings(
@@ -184,7 +154,7 @@ void PdfPrintManager::ScriptedPrint(
 }
 
 void PdfPrintManager::ShowInvalidPrinterSettingsError() {
-  ReleaseJob(INVALID_PRINTER_SETTINGS);
+  ReleaseJob(PdfPrintResult::INVALID_PRINTER_SETTINGS);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -249,7 +219,7 @@ void PdfPrintManager::RenderFrameDeleted(
   }
 
   if (callback_) {
-    std::move(callback_).Run(PRINTING_FAILED,
+    std::move(callback_).Run(PdfPrintResult::PRINTING_FAILED,
                              base::MakeRefCounted<base::RefCountedString>());
   }
 
@@ -262,14 +232,14 @@ void PdfPrintManager::Reset() {
   data_.clear();
 }
 
-void PdfPrintManager::ReleaseJob(PrintResult result) {
+void PdfPrintManager::ReleaseJob(PdfPrintResult result) {
   if (!callback_) {
     DLOG(ERROR) << "ReleaseJob is called when callback_ is null. Check whether "
                    "ReleaseJob is called more than once.";
     return;
   }
 
-  DCHECK(result == PRINT_SUCCESS || data_.empty());
+  DCHECK(result == PdfPrintResult::PRINT_SUCCESS || data_.empty());
   std::move(callback_).Run(result, base::RefCountedString::TakeString(&data_));
   // TODO(https://crbug.com/1286556): In theory, this should not be needed. In
   // practice, nothing seems to restrict receiving incoming Mojo method calls
@@ -278,7 +248,8 @@ void PdfPrintManager::ReleaseJob(PrintResult result) {
   // This should probably be changed so that the browser pushes endpoints to the
   // renderer rather than the renderer connecting on-demand to the browser...
   if (printing_rfh_ && printing_rfh_->IsRenderFrameLive()) {
-    GetPrintRenderFrame(printing_rfh_)->PrintingDone(result == PRINT_SUCCESS);
+    GetPrintRenderFrame(printing_rfh_)
+        ->PrintingDone(result == PdfPrintResult::PRINT_SUCCESS);
   }
   Reset();
 }

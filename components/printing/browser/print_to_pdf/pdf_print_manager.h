@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "components/printing/browser/print_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,22 +25,8 @@ namespace print_to_pdf {
 class PdfPrintManager : public printing::PrintManager,
                         public content::WebContentsUserData<PdfPrintManager> {
  public:
-  enum PrintResult {
-    PRINT_SUCCESS,
-    PRINTING_FAILED,
-    INVALID_PRINTER_SETTINGS,
-    INVALID_MEMORY_HANDLE,
-    METAFILE_MAP_ERROR,
-    METAFILE_INVALID_HEADER,
-    METAFILE_GET_DATA_ERROR,
-    SIMULTANEOUS_PRINT_ACTIVE,
-    PAGE_RANGE_SYNTAX_ERROR,
-    PAGE_RANGE_INVALID_RANGE,
-    PAGE_COUNT_EXCEEDED,
-  };
-
   using PrintToPdfCallback =
-      base::OnceCallback<void(PrintResult,
+      base::OnceCallback<void(PdfPrintResult,
                               scoped_refptr<base::RefCountedMemory>)>;
 
   ~PdfPrintManager() override;
@@ -51,8 +38,6 @@ class PdfPrintManager : public printing::PrintManager,
       mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
           receiver,
       content::RenderFrameHost* rfh);
-
-  static std::string PrintResultToString(PrintResult result);
 
   void PrintToPdf(content::RenderFrameHost* rfh,
                   const std::string& page_ranges,
@@ -98,7 +83,7 @@ class PdfPrintManager : public printing::PrintManager,
 #endif
 
   void Reset();
-  void ReleaseJob(PrintResult result);
+  void ReleaseJob(PdfPrintResult result);
 
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
   PrintToPdfCallback callback_;

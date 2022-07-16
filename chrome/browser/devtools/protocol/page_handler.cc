@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -274,14 +275,13 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-void PageHandler::OnPDFCreated(
-    bool return_as_stream,
-    std::unique_ptr<PrintToPDFCallback> callback,
-    print_to_pdf::PdfPrintManager::PrintResult print_result,
-    scoped_refptr<base::RefCountedMemory> data) {
-  if (print_result != print_to_pdf::PdfPrintManager::PRINT_SUCCESS) {
+void PageHandler::OnPDFCreated(bool return_as_stream,
+                               std::unique_ptr<PrintToPDFCallback> callback,
+                               print_to_pdf::PdfPrintResult print_result,
+                               scoped_refptr<base::RefCountedMemory> data) {
+  if (print_result != print_to_pdf::PdfPrintResult::PRINT_SUCCESS) {
     callback->sendFailure(protocol::Response::ServerError(
-        print_to_pdf::PdfPrintManager::PrintResultToString(print_result)));
+        print_to_pdf::PdfPrintResultToString(print_result)));
     return;
   }
 

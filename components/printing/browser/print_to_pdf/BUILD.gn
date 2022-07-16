@@ -11,6 +11,8 @@ static_library("print_to_pdf") {
   sources = [
     "pdf_print_manager.cc",
     "pdf_print_manager.h",
+    "pdf_print_result.cc",
+    "pdf_print_result.h",
     "pdf_print_utils.cc",
     "pdf_print_utils.h",
   ]

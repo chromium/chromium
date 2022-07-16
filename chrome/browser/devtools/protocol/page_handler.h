@@ -85,7 +85,7 @@ class PageHandler : public protocol::Page::Backend {
 #if BUILDFLAG(ENABLE_PRINTING)
   void OnPDFCreated(bool return_as_stream,
                     std::unique_ptr<PrintToPDFCallback> callback,
-                    print_to_pdf::PdfPrintManager::PrintResult print_result,
+                    print_to_pdf::PdfPrintResult print_result,
                     scoped_refptr<base::RefCountedMemory> data);
 #endif
 
