@@ -7,12 +7,16 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "chromeos/ui/frame/multitask_menu/split_button.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
@@ -33,6 +37,9 @@ namespace {
 
 using ::chromeos::FrameCaptionButtonContainerView;
 using ::chromeos::FrameSizeButton;
+using ::chromeos::MultitaskBaseButton;
+using ::chromeos::MultitaskMenu;
+using ::chromeos::SplitButtonView;
 using ::chromeos::WindowStateType;
 
 class TestWidgetDelegate : public views::WidgetDelegateView {
@@ -137,7 +144,6 @@ class FrameSizeButtonTest : public AshTestBase {
     params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();
-
     return widget;
   }
 
@@ -669,6 +675,72 @@ TEST_P(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
   generator->ReleaseLeftButton();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
+}
+
+// Test multitask menu requires kFloatWindow feature to be enabled during setup.
+class MultitaskMenuTest : public FrameSizeButtonTest {
+ public:
+  MultitaskMenuTest() = default;
+
+  MultitaskMenuTest(const MultitaskMenuTest&) = delete;
+  MultitaskMenuTest& operator=(const MultitaskMenuTest&) = delete;
+
+  ~MultitaskMenuTest() override = default;
+
+  void SetUp() override {
+    // Ensure float feature is enabled.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kFloatWindow);
+    FrameSizeButtonTest::SetUp();
+  }
+
+  void ShowMultitaskMenu() {
+    DCHECK(size_button());
+    multitask_menu_ = static_cast<FrameSizeButton*>(size_button())
+                          ->GetMultitaskMenuForTesting();
+  }
+
+  MultitaskMenu* multitask_menu() { return multitask_menu_; }
+
+ private:
+  MultitaskMenu* multitask_menu_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test Float Button Functionality.
+TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
+  EXPECT_TRUE(window_state()->IsNormalStateType());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ShowMultitaskMenu();
+  generator->MoveMouseTo(
+      CenterPointInScreen(multitask_menu()->float_button_for_testing()));
+  generator->ClickLeftButton();
+  EXPECT_TRUE(window_state()->IsFloated());
+}
+
+// Test Half Button Functionality.
+TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
+  EXPECT_TRUE(window_state()->IsNormalStateType());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ShowMultitaskMenu();
+  generator->MoveMouseTo(multitask_menu()
+                             ->half_button_for_testing()
+                             ->GetBoundsInScreen()
+                             .left_center());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(window_state()->GetStateType() ==
+              WindowStateType::kPrimarySnapped);
+}
+
+// Test Full Button Functionality.
+TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
+  ASSERT_TRUE(window_state()->IsNormalStateType());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ShowMultitaskMenu();
+  generator->MoveMouseTo(
+      CenterPointInScreen(multitask_menu()->full_button_for_testing()));
+  generator->ClickLeftButton();
+  EXPECT_TRUE(window_state()->IsFullscreen());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

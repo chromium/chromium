@@ -212,6 +212,12 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
   views::FrameCaptionButton::OnGestureEvent(event);
 }
 
+const raw_ptr<MultitaskMenu> FrameSizeButton::GetMultitaskMenuForTesting() {
+  // Force creating Multitask Menu.
+  ShowMultitaskMenu();
+  return multitask_menu_;
+}
+
 void FrameSizeButton::StartSetButtonsToSnapModeTimer(
     const ui::LocatedEvent& event) {
   set_buttons_to_snap_mode_timer_event_location_ = event.location();
@@ -232,6 +238,18 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
       GetWidget()->GetNativeWindow(), this);
 }
 
+void FrameSizeButton::ShowMultitaskMenu() {
+  // Show Multitask Menu if float is enabled. Note here float flag is also used
+  // to represent other relatable UI/UX changes.
+  // TODO(shidi) Move this when long hover trigger (crbug.com/1330016) is
+  // implemented.
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    multitask_menu_ = new MultitaskMenu(
+        /*anchor=*/this, GetWidget()->GetNativeWindow());
+    multitask_menu_->ShowBubble();
+  }
+}
+
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
   in_snap_mode_ = true;
@@ -247,15 +265,7 @@ void FrameSizeButton::SetButtonsToSnapMode(
                               views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
                               animate);
   }
-  // Show Multitask Menu if float is enabled. Note here float flag is also used
-  // to represent other relatable UI/UX changes.
-  // TODO(shidi) Move this when long hover trigger (crbug.com/1330016) is
-  // implemented.
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
-    multitask_menu_ = std::make_unique<MultitaskMenu>(
-        /*anchor=*/this, GetWidget()->GetNativeWindow());
-    multitask_menu_->ShowBubble();
-  }
+  ShowMultitaskMenu();
 }
 
 void FrameSizeButton::UpdateSnapPreview(const ui::LocatedEvent& event) {

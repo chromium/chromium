@@ -525,6 +525,18 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ACCNAME_COLOR_CHOOSER_HEX_INPUT" desc="The accessible name for the color chooser hexadecimal input field">
         Hex color value
       </message>
+      <message name="IDS_APP_ACCNAME_HALF" desc="The accessible name for the Half button on Multitask Menu">
+        Half
+      </message>
+      <message name="IDS_APP_ACCNAME_PARTIAL" desc="The accessible name for the Partial button on the Multitask Menu">
+        Partial
+      </message>
+      <message name="IDS_APP_ACCNAME_FULL" desc="The accessible name for the Full button on the Multitask Menu">
+        Full
+      </message>
+      <message name="IDS_APP_ACCNAME_FLOAT_ON_TOP" desc="The accessible name for the Float on top button on the Multitask Menu">
+        Float on top
+      </message>
 
       <!-- Scroll Bar Context Menu Labels -->
       <message name="IDS_APP_SCROLLBAR_CXMENU_SCROLLHERE" desc="The label for the 'Scroll Here' item">

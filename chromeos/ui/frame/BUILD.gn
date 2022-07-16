@@ -47,8 +47,13 @@ source_set("frame") {
     "interior_resize_handler_targeter.h",
     "multitask_menu/float_controller_base.cc",
     "multitask_menu/float_controller_base.h",
+    "multitask_menu/multitask_button.cc",
+    "multitask_menu/multitask_button.h",
     "multitask_menu/multitask_menu.cc",
     "multitask_menu/multitask_menu.h",
+    "multitask_menu/multitask_menu_constants.h",
+    "multitask_menu/split_button.cc",
+    "multitask_menu/split_button.h",
   ]
 
   deps = [

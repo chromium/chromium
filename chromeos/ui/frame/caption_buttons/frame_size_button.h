@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // preview will be deleted and the button will be set back to its normal mode.
   void CancelSnap();
 
+  const raw_ptr<MultitaskMenu> GetMultitaskMenuForTesting();
+
   void set_delay_to_set_buttons_to_snap_mode(int delay_ms) {
     set_buttons_to_snap_mode_delay_ms_ = delay_ms;
   }
@@ -63,6 +65,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Animates the buttons adjacent to the size button to snap left and right.
   void AnimateButtonsToSnapMode();
 
+  void ShowMultitaskMenu();
   // Sets the buttons adjacent to the size button to snap left and right.
   // Passing in ANIMATE_NO progresses the animation (if any) to the end.
   void SetButtonsToSnapMode(FrameSizeButtonDelegate::Animate animate);
@@ -102,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   base::OneShotTimer set_buttons_to_snap_mode_timer_;
 
-  std::unique_ptr<MultitaskMenu> multitask_menu_;
+  raw_ptr<MultitaskMenu> multitask_menu_;
 
   // Whether the buttons adjacent to the size button snap the window left and
   // right.
