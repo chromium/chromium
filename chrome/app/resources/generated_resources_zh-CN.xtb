@@ -352,6 +352,7 @@
 <translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
+<translation id="1344377983938103876">正在打开 <ph name="URL" />…</translation>
 <translation id="134589511016534552">媒体标签页也会显示在“打开的标签页”部分中</translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -6940,6 +6941,7 @@
 <translation id="7753735457098489144">存储空间不足，安装失败。如需释放空间，请从设备存储空间中删除文件。</translation>
 <translation id="7754347746598978109">不允许使用 JavaScript</translation>
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
+<translation id="7755134875397410803">为了帮助您执行各种操作，Google 将会收到您使用 Google 助理时所在网站的网址和内容，以及您通过 Google 助理提交的信息。这些信息可能会存储在您的 Google 帐号中。您可在 Chrome 的“设置”中停用 Google 助理。<ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">您的父亲/母亲可为您取消屏蔽此网站</translation>
 <translation id="7757592200364144203">更改设备名称</translation>
 <translation id="7757739382819740102">附近的联系人可与您分享内容。必须经过批准。</translation>

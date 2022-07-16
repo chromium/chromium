@@ -13,6 +13,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
+<translation id="1385859895174722837">Assistant Google dans Chromium</translation>
 <translation id="1396446129537741364">Chromium essaie d'afficher les mots de passe.</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium!</translation>
 <translation id="1524282610922162960">Partager un onglet de Chromium</translation>
@@ -103,6 +104,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3474745554856756813">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet de basculer entre les profils Chromium</translation>
 <translation id="3509308970982693815">Veuillez fermer toutes les fenêtres Chromium et essayer de nouveau.</translation>
+<translation id="3518180795744733843">L'Assistant Google dans Chromium peut effectuer des actions dans différents sites Web pour vous</translation>
 <translation id="3533435340678213462">Afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chromium les prenne en compte.</translation>
 <translation id="3567254597502212821">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="3575459661164320785">Nous avons trouvé un logiciel nuisible sur votre ordinateur. Chromium peut le supprimer, restaurer vos paramètres et désactiver les extensions pour que votre navigateur puisse fonctionner normalement de nouveau.</translation>

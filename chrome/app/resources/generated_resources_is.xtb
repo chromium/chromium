@@ -355,6 +355,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Afrita efni tækisins með forritinu Skrár.</translation>
 <translation id="1343865611738742294">Veita Linux-forritum heimild til að opna USB-tæki. Linux man ekki eftir USB-tæki þegar það hefur verið fjarlægt.</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
+<translation id="1344377983938103876">Opnar <ph name="URL" />...</translation>
 <translation id="134589511016534552">Efnisflipar birtast einnig í hlutanum „Opnir flipar“</translation>
 <translation id="1346630054604077329">Staðfesta og endurræsa</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
@@ -6973,6 +6974,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7753735457098489144">Uppsetning mistókst vegna skorts á geymslurými. Eyddu skrám úr geymslu tækisins til að losa um pláss.</translation>
 <translation id="7754347746598978109">Mega ekki nota JavaScript</translation>
 <translation id="7754704193130578113">Spyrja hvar á að vista hverja skrá áður en niðurhal hefst</translation>
+<translation id="7755134875397410803">Google fær vefslóðir og innihald vefsvæða þar sem þú notar Hjálparann, auk upplýsinga sem þú sendir með Hjálparanum, til að auðvelda þér að ljúka verkefnum. Þessar upplýsingar gætu verið vistaðar á Google reikningnum þínum. Þú getur slökkt á Hjálparanum í stillingum Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Foreldri þitt getur opnað fyrir þetta</translation>
 <translation id="7757592200364144203">Breyta heiti tækis</translation>
 <translation id="7757739382819740102">Nálægir tengiliðir geta deilt með þér. Samþykkis er krafist.</translation>

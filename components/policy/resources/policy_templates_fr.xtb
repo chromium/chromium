@@ -108,6 +108,11 @@
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="1123650965531933634">Refuse par défaut l'autorisation de positionnement des fenêtres sur tous les sites</translation>
+<translation id="112496019059412872">Permet de contrôler si la fonctionnalité "Mémoriser le mot de passe" est activée ou non dans la boîte de dialogue d'authentification Kerberos. Les mots de passe sont stockés chiffrés sur le disque, et ne sont accessibles qu'au daemon du système Kerberos et pendant une session utilisateur.
+
+          Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent décider de mémoriser les mots de passe Kerberos afin de ne pas avoir à les saisir de nouveau. Les tickets Kerberos sont récupérés automatiquement, sauf si une authentification supplémentaire est requise (authentification à deux facteurs).
+
+          Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés et tous ceux qui l'ont été précédemment sont supprimés. Les utilisateurs doivent saisir leur mot de passe à chaque authentification auprès du système Kerberos. De manière générale, la fréquence d'authentification est comprise entre huit heures et plusieurs mois selon les paramètres du serveur.</translation>
 <translation id="1133622335785078255">Autoriser les utilisateurs à créer et utiliser des profils secondaires, et à utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="1133814529606590009">Si vous activez cette règle, la collecte de données anonymes incluant les URL, qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation, est toujours active.
 
@@ -4914,6 +4919,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle est désactivée, l'optimisation WPAD l'est également, et le temps de réponse des serveurs WPAD basés sur le DNS est alors plus long dans <ph name="PRODUCT_NAME" />.
 
       Que cette règle soit configurée ou non, les utilisateurs ne peuvent pas modifier le paramètre d'optimisation WPAD.</translation>
+<translation id="6365249741643189510">Cette règle autorise Projector à créer et transcrire un enregistrement d'écran et à l'importer dans Drive pour les utilisateurs gérés par une entreprise.
+      Cette règle n'affecte pas les utilisateurs de Family Link.
+      Cette règle n'affecte pas la règle <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> pour les utilisateurs de Family Link.
+
+      Si elle n'est pas configurée ou si elle est activée, Projector sera activé.
+      Si elle est désactivée, Projector sera désactivé.</translation>
 <translation id="6366574325767783825">Si cette règle est définie sur "True" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte la diffusion de contenus Web en tant que Signed HTTP Exchanges.
 
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
@@ -5039,6 +5050,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6518102411616460786">Attendre que la version sélectionnée rattrape la version installée lors du retour à une version antérieure</translation>
 <translation id="6520802717075138474">Importer les moteurs de recherche du navigateur par défaut à la première exécution</translation>
 <translation id="6521971538031711337">Empêcher l'utilisateur géré de configurer le nom d'hôte de l'appareil</translation>
+<translation id="652593254122955308">Délai avant la fermeture du profil inactif</translation>
 <translation id="6532026122543921610">Permet de définir le mode de détection automatique du fuseau horaire, sauf si la règle <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> désactive cette détection automatique. Notez que les utilisateurs ne peuvent pas modifier ce mode.
 
       Cette règle peut être définie sur les valeurs suivantes :
@@ -7225,6 +7237,13 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas définie, la configuration par défaut pour le bac à sable réseau sera utilisée. Celle-ci peut varier en fonction de la version de <ph name="PRODUCT_NAME" />, des tests en conditions réelles en cours et de la plate-forme.
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable réseau si la configuration des logiciels tiers qu'elles utilisent interfère avec le bac à sable.</translation>
 <translation id="8842208363354615697">Autoriser l'activation du mode HTTPS uniquement</translation>
+<translation id="8850156309475162935">Déclenche une action lorsque l'ordinateur est inactif.
+
+        Si cette règle est configurée sur un nombre positif, il indique un nombre de minutes. Passé ce délai sans entrée utilisateur, <ph name="PRODUCT_NAME" /> ferme toutes les fenêtres du navigateur et affiche l'outil de sélection des profils.
+
+        Si cette règle est inférieure à cinq ou qu'elle n'est pas configurée, rien ne se produit lorsque l'ordinateur est inactif.
+
+        Une "entrée utilisateur" est définie par les API du système d'exploitation et inclut, par exemple, déplacer la souris ou saisir sur le clavier.</translation>
 <translation id="885147810817138322">Proposer à l'utilisateur des recommandations de contenus multimédias</translation>
 <translation id="8852579753940989645">Activer la règle d'intégrité du code du moteur de rendu</translation>
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
@@ -7336,6 +7355,13 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8983537551095611459">Configurez la liste des identifiants d'extension exclus de la procédure de nettoyage des sessions Invité gérées restreintes</translation>
 <translation id="8983539044126123594">Permettre la connexion avec d'autres comptes Google</translation>
 <translation id="8992176907758534924">Interdire à tous les sites d'afficher des images</translation>
+<translation id="8994954504552592260">Active la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud. Cette règle permet de démarrer à distance la migration sans contact de plusieurs appareils d'une même entreprise. De plus, la migration sera aussi discrète que possible pour les utilisateurs finaux.
+
+      Si la règle est activée et que l'identifiant d'enregistrement a déjà été importé dans le DMServer, un Powerwash de l'appareil sera déclenché à distance.
+
+      Si la règle est désactivée ou si elle n'est pas définie, le Powerwash à distance ne sera pas déclenché, que l'identifiant d'enregistrement ait été importé ou non.
+
+      Cette vérification est déclenchée dès que l'écran de connexion est chargé, puis retentée toutes les heures (si l'écran de connexion reste affiché). Cela empêche le démarrage d'une migration lors d'une session utilisateur, ce qui risquerait de poser problème aux utilisateurs finaux.</translation>
 <translation id="9007632512838819703">Cette règle est obsolète (veuillez utiliser la règle <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> à la place).
 
       Permet de désactiver de façon forcée la vérification orthographique pour certaines langues. Les langues non reconnues dans cette liste sont ignorées.

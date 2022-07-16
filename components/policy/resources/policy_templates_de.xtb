@@ -108,6 +108,11 @@
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="1123650965531933634">Die Berechtigung für die Fensterpositionierung wird standardmäßig auf allen Websites verweigert</translation>
+<translation id="112496019059412872">Diese Richtlinie legt fest, ob die „Passwort speichern“-Funktion im Dialogfeld für die Kerberos-Authentifizierung aktiviert ist. Passwörter werden verschlüsselt auf dem Laufwerk gespeichert und sind nur für den Kerberos-System-Daemon während einer Nutzersitzung zugänglich.
+
+          Ist die Richtlinie aktiviert oder nicht konfiguriert, können Nutzer entscheiden, ob Kerberos-Passwörter gespeichert werden, sodass sie nicht wieder eingegeben werden müssen. Kerberos-Tickets werden automatisch abgerufen, sofern keine zusätzliche Authentifizierung erforderlich ist (Bestätigung in zwei Schritten).
+
+          Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle zuvor gespeicherten Passwörter werden gelöscht. Nutzer müssen ihr Passwort dann jedes Mal eingeben, wenn eine Authentifizierung beim Kerberos-System erforderlich ist. Je nach Servereinstellungen kann das alle 8 Stunden oder alle paar Monate der Fall sein.</translation>
 <translation id="1133622335785078255">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und zu verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="1133814529606590009">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
 
@@ -4884,6 +4889,12 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Ist sie deaktiviert, ist die WPAD-Optimierung deaktiviert, sodass <ph name="PRODUCT_NAME" /> länger auf DNS-basierte WPAD-Server warten muss.
 
       Unabhängig davon, ob die Richtlinie konfiguriert ist, kann die WPAD-Optimierung nicht von Nutzern geändert werden.</translation>
+<translation id="6365249741643189510">Diese Richtlinie berechtigt Projector dazu, für Unternehmensnutzer Bildschirmaufzeichnungen zu erstellen, zu transkribieren und in Drive hochzuladen.
+      Sie wirkt sich nicht auf Family Link-Nutzer aus.
+      Darüber hinaus hat sie keine Auswirkungen auf die Richtlinie <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> für Family Link-Nutzer.
+
+      Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, ist Projector aktiviert.
+      Ist sie deaktiviert, ist Projector deaktiviert.</translation>
 <translation id="6366574325767783825">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden von <ph name="PRODUCT_NAME" /> Webinhalte akzeptiert, die als Signed HTTP Exchanges implementiert sind.
 
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
@@ -5009,6 +5020,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
 <translation id="6520802717075138474">Suchmaschinen bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="6521971538031711337">Verwaltetem Nutzer nicht erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
+<translation id="652593254122955308">Zeitlimit bis zur Schließung des inaktiven Profils</translation>
 <translation id="6532026122543921610">Wenn die automatische Zeitzonenerkennung nicht durch die Richtlinie "<ph name="SYSTEM_TIMEZONE_POLICY_NAME" />" deaktiviert ist, wird durch das Konfigurieren der Richtlinie die Methode zur Zeitzonenerkennung festgelegt. Diese kann von Nutzern nicht geändert werden.
 
       Die Richtlinie kann folgendermaßen konfiguriert werden:
@@ -7200,6 +7212,13 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für die Netzwerk-Sandbox zum Einsatz. Diese kann abhängig vom <ph name="PRODUCT_NAME" />-Release, aktuell laufenden Feldtests und der Plattform variieren.
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Netzwerk-Sandbox zu deaktivieren, falls sie Drittanbieter-Software einsetzen, die einen Konflikt mit der Netzwerkdienst-Sandbox verursacht.</translation>
 <translation id="8842208363354615697">Aktivieren des Nur-HTTPS-Modus erlauben</translation>
+<translation id="8850156309475162935">Löst eine Aktion aus, wenn der Computer inaktiv ist.
+
+        Wenn diese Richtlinie auf einen positiven Wert festgelegt ist, wird dadurch das Zeitlimit in Minuten definiert. Wenn innerhalb dieses Zeitraums keine Nutzereingabe erfolgt, schließt <ph name="PRODUCT_NAME" /> alle Browserfenster und zeigt den Profil-Picker an.
+
+        Wenn der festgelegte Wert kleiner als „5“ ist oder die Richtlinie nicht konfiguriert ist, geschieht nichts, wenn der Computer inaktiv ist.
+
+        Die Nutzereingabe wird von den Betriebssystem-APIs definiert. Hierzu zählen beispielsweise das Bewegen der Maus oder die Eingabe über die Tastatur.</translation>
 <translation id="885147810817138322">Nutzern Empfehlungen zu Medien anzeigen</translation>
 <translation id="8852579753940989645">Renderer-Codeintegrität aktivieren</translation>
 <translation id="8854571659927427063">Wenn die Richtlinie aktiviert ist, werden Lesezeichen bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Lesezeichen importiert.
@@ -7314,6 +7333,13 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8983537551095611459">Die Liste der Erweiterungs-IDs konfigurieren, die von der Bereinigung eingeschränkter verwalteter Gastsitzungen ausgenommen sind</translation>
 <translation id="8983539044126123594">Anmeldung mit zusätzlichen Google-Konten aktivieren</translation>
 <translation id="8992176907758534924">Anzeige von Bildern für alle Websites blockieren</translation>
+<translation id="8994954504552592260">Migration der von <ph name="MS_AD_NAME" /> verwalteten Geräten zur Cloud-Verwaltung aktivieren. Durch diese Richtlinie lässt sich die berührungslose Migration von mehreren Geräten innerhalb eines Unternehmens aus der Ferne starten. Die Migration ist für Endnutzer dabei so transparent wie möglich.
+
+      Wenn die Richtlinie aktiviert und die Registrierungs-ID bereits auf den DMServer hochgeladen ist, wird ein Remote-Powerwash auf dem Gerät durchgeführt.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Remote-Powerwash auf dem Gerät durchgeführt, unabhängig vom Status der Registrierungs-ID.
+
+      Diese Überprüfung wird durchgeführt, wenn der Anmeldebildschirm geladen wird. Wenn der Anmeldebildschirm geöffnet bleibt, wird sie stündlich wiederholt. Dies verhindert, dass die Migration während einer Nutzersitzung startet und zu Problemen für Endnutzer führt.</translation>
 <translation id="9007632512838819703">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie "<ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />".
 
       Damit wird die Deaktivierung von Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in dieser Liste, die nicht erkannt werden, werden ignoriert.

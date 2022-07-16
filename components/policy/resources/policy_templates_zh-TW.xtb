@@ -453,6 +453,14 @@
 
       注意：這項政策也適用於元件擴充功能，例如 Hangout Services 擴充功能。</translation>
 <translation id="148194404518916594">允許使用「輕觸搜尋」功能</translation>
+<translation id="1482155585027825793">控管是否能安裝外部擴充功能。
+
+      如果將這項政策設為啟用，使用者就無法安裝外部擴充功能。
+
+      如果將這項政策設為停用或不設定，使用者將可安裝外部擴充功能。
+
+      外部擴充功能及其安裝方式請參閱 https://developer.chrome.com/apps/external_extensions。
+      </translation>
 <translation id="1486021504508098388">回報背光資訊</translation>
 <translation id="1487916040416013623">你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
 
@@ -1048,6 +1056,9 @@
 <translation id="2076158466157390917">控制是否可在登入期間執行自動清理作業</translation>
 <translation id="2077129598763517140">在可用時使用硬體加速</translation>
 <translation id="2077273864382355561">在電池供電環境下執行時的螢幕關閉延遲時間</translation>
+<translation id="2081969239334697268">
+        如果將這項政策設為停用，系統會停用工作階段中的 Kiosk Chrome 應用程式更新作業 (該作業會使用擴充功能資訊清單中的更新網址)，且只會保留 CRX 預先擷取做為更新機制。如果將這項政策設為啟用或不設定，使用者將可執行工作階段中的 Kiosk Chrome 應用程式更新作業。
+        </translation>
 <translation id="2082205219176343977">設定裝置的最低 Chrome 版本限制。</translation>
 <translation id="208566302163036794">封鎖已停用的功能</translation>
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>

@@ -441,6 +441,7 @@
 <translation id="4751645464639803239">ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="4775879719735953715">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="4778644898150334464">სხვა პაროლის გამოყენება</translation>
+<translation id="478808905805139173">გსურთ ინკოგნიტო ფანჯარაში გახსნა?</translation>
 <translation id="4802417911091824046">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს.
 
 ამ პარამეტრის შესაცვლელად საჭიროა <ph name="BEGIN_LINK" />სინქრონიზაციის გადაყენება<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9055772144595778347">შესვლა შეუძლებელია</translation>
 <translation id="9057972802061533987">თვალის მიდევნება ვერ მოხერხდა. რაღაც შეცდომა მოხდა.</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
+<translation id="9068336935206019333">Chrome ინკოგნიტოში გახსნა</translation>
 <translation id="9079935439869366234">ყველას წაუკითხავად მონიშვნა</translation>
 <translation id="9081058212938299310">გსურთ <ph name="USERNAME" />-ის პაროლის განახლება?</translation>
 <translation id="9083392325882095631">1 ელემენტი</translation>

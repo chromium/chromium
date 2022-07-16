@@ -363,6 +363,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1347256498747320987">Instaliranje ažuriranja i aplikacija. Ako nastavite, pristajete da ovaj uređaj također može s vremena na vrijeme automatski preuzimati i instalirati ažuriranja i aplikacije s Googlea, od vašeg mobilnog operatera i proizvođača vašeg uređaja, uz mogući prijenos podataka na mobilnoj mreži. Neke od tih aplikacija mogu također nuditi kupovinu unutar aplikacija. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linuxova pohrana</translation>
 <translation id="1347975661240122359">Ažuriranje će početi kada baterija dosegne <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1348966090521113558">Postavke pristupačnosti miša</translation>
 <translation id="1353275871123211385">Da koristite kontrole roditeljskog nadzora, kao što su odobrenja za aplikacije i ograničenja vremena korištenja uređaja, dijete mora imati Google račun kojim upravlja roditelj. Školski račun se može dodati kasnije za korištenje s alatima kao što je Google Učionica.</translation>
 <translation id="135389172849514421">Funkcionira offline</translation>
 <translation id="1353980523955420967">Nije moguće pronaći PPD. Provjerite je li Chromebook na mreži i pokušajte ponovo.</translation>
@@ -1796,6 +1797,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="265390580714150011">Vrijednost polja</translation>
 <translation id="2654553774144920065">Zahtjev za štampanje</translation>
+<translation id="2657612187216250073">Postavke pristupačnosti pokazivača</translation>
 <translation id="2658941648214598230">Prikazati originalni sadržaj?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkcije se razlikuju ovisno u uređaju</translation>
 <translation id="2659971421398561408">Promjena veličine diska na Crostiniju</translation>
@@ -1959,6 +1961,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2801954693771979815">Veličina ekrana</translation>
 <translation id="2802557211515765772">Nema upravljanih štampača.</translation>
 <translation id="2803313416453193357">Otvori folder</translation>
+<translation id="2803719750464280163">Potvrdite da je <ph name="PASSKEY" /> pristupni ključ prikazan na Bluetooth uređaju <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Otvaranje alternativnog preglednika nije uspjelo</translation>
 <translation id="2804667941345577550">Odjavit ćete se s ove web lokacije, uključujući otvorene kartice</translation>
 <translation id="2804680522274557040">Kamera je isključena</translation>
@@ -2874,6 +2877,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="370649949373421643">Omogući Wi-Fi</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3707163604290651814">Trenutno ste prijavljeni kao <ph name="NAME" /></translation>
+<translation id="3708295717182051206">Titlovi</translation>
 <translation id="3708684582558000260">Nemoj dozvoliti zatvorenim web lokacijama završavanje slanja ili primanje podataka</translation>
 <translation id="3709244229496787112">Preglednik je isključen prije nego što je preuzimanje završeno.</translation>
 <translation id="371174301504454251">Da zaštitimo vašu privatnosti, automatski brišemo s liste web lokacije koje su starije od 4 sedmice. Web lokacija koju ponovo posjetite može se ponovo prikazati na listi. Ili možete ukloniti web lokaciju ako ne želite da više nikada ne definira vaša interesovanja.</translation>
@@ -3956,6 +3960,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="475088594373173692">Prvi korisnik</translation>
 <translation id="4756378406049221019">Zaustavi/učitaj ponovo</translation>
 <translation id="4756388243121344051">&amp;Historija</translation>
+<translation id="4756671452988984333">Tekst za audio</translation>
 <translation id="4759202969060787081">Nemoj otvoriti</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4761104368405085019">Korištenje vašeg mikrofona</translation>
@@ -6887,6 +6892,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7668423670802040666">U Googleovom Upravitelju lozinki za <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Pogrešan PIN. Preostao vam je još jedan pokušaj.}one{Pogrešan PIN. Preostao vam je još # pokušaj.}few{Pogrešan PIN. Preostala su vam još # pokušaja.}other{Pogrešan PIN. Preostalo vam je još # pokušaja.}}</translation>
 <translation id="7670434942695515800">Za najbolje performanse nadogradite na najnoviju verziju. Izrada sigurnosne kopije fajlova se preporučuje u slučaju neuspješnog završetka nadogradnje. Kada nadogradnja počne, Linux će se isključiti. Sačuvajte otvorene fajlove prije nego nastavite. <ph name="LINK_START" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">Titlovi</translation>
 <translation id="7671130400130574146">Koristi traku s naslovom i okvire sistema</translation>
 <translation id="767127784612208024">Dodirnite da potvrdite vraćanje na zadano</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, na stranici <ph name="PAGE_TITLE" />.</translation>
@@ -7973,6 +7979,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8724859055372736596">&amp;Prikaži u folderu</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8725178340343806893">Omiljeno/oznake</translation>
+<translation id="87254326763805752">Potvrdite pristupni ključ</translation>
 <translation id="8726206820263995930">Greška prilikom preuzimanja postavki pravila sa servera. <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Vaša odabrana odobrenja će se poništiti</translation>
 <translation id="8729133765463465108">Kamerom skenirajte QR kôd</translation>

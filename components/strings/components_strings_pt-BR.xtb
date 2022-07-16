@@ -1059,6 +1059,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
+<translation id="3823402221513322552">Seu navegador é gerenciado pelo domínio <ph name="BROWSER_DOMAIN" />, e seu perfil pelo <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Se você usa um servidor proxy...</translation>
 <translation id="3826050100957962900">Login de terceiros</translation>
 <translation id="3827112369919217609">Absoluto</translation>
@@ -1556,6 +1557,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5179510805599951267">Não está em <ph name="ORIGINAL_LANGUAGE" />? Informe este erro</translation>
 <translation id="518639307526414276">Produtos para alimentação e bem-estar de animais de estimação</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>
+<translation id="5191315092027169558">Seu perfil é gerenciado pelo domínio <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">Solicitação do download de vários arquivos feita por <ph name="ORIGIN" /></translation>
 <translation id="519422657042045905">Anotação indisponível</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
@@ -2760,6 +2762,7 @@ Mais detalhes:
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
 <translation id="8624354461147303341">Ver descontos</translation>
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
+<translation id="8637577059508742477">Seu perfil e navegador são gerenciados pelo domínio <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="8666678546361132282">Inglês</translation>

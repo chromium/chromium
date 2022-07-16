@@ -2554,6 +2554,19 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3660562134618097814">Transferir cookies do IDP de SAML durante o login</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
+<translation id="3675303748198647471">A função setTimeout(…, 0) normalmente é usada para dividir tarefas longas de JavaScript.
+          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não vão ser limitadas de forma tão agressiva.
+          Isso vai melhorar a performance no curto prazo, mas os sites que abusam da API ainda terão as setTimeouts limitadas.
+
+          Quando a política é desativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms são limitadas.
+
+          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
+          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
+
+          Para usuários em que essa política não está definida, o <ph name="PRODUCT_NAME" /> vai lançar a mudança gradualmente no Canal Stable.
+
+          Essa é uma política temporária e tem remoção planejada para a versão 107 do <ph name="PRODUCT_NAME" />. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
+          </translation>
 <translation id="3685979383016152590">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> estão disponíveis para os usuários.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) usa <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir o acesso às impressoras especificadas.
@@ -5668,6 +5681,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7101550508196914704">Não mostrar o atalho de apps na barra de favoritos</translation>
 <translation id="7109384070286741861">Desativar CECPQ2</translation>
 <translation id="7114169791477667553">Desativar o provedor de pesquisa padrão</translation>
+<translation id="7121046543122812054">Esta política foi descontinuada. Use a <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
+
+      Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
+
+      Se a política for ativada, o usuário vai poder fazer login no <ph name="PRODUCT_NAME" />.
+      Se ela for desativada, não vai ser possível fazer login. Essa política também impede o funcionamento de apps e extensões que usam a API chrome.identity. Para evitar isso, use a <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Se a política for definida como verdadeira, o compartilhamento de textos/arquivos de apps Android para apps da Web compatíveis usando o sistema de compartilhamento integrado do Android será ativado.
       Quando ativado, esse processo envia ao Google metadados de apps da Web instalados para gerar e instalar um app Android paliativo.
       Se a política for definida como falsa, essa função será desativada.</translation>

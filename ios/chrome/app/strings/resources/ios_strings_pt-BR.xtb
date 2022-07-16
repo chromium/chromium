@@ -441,6 +441,7 @@ Seus dados são criptografados com sua senha longa de sincronização. Informe-a
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4778644898150334464">Usar outra senha</translation>
+<translation id="478808905805139173">Abrir na navegação anônima?</translation>
 <translation id="4802417911091824046">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
 
 Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9055772144595778347">Não é possível fazer login</translation>
 <translation id="9057972802061533987">Não foi possível seguir. Algo deu errado.</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9068336935206019333">Abrir na navegação anônima do Chrome</translation>
 <translation id="9079935439869366234">Marcar todas as entradas como não lidas</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>

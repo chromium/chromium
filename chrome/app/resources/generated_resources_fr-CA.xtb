@@ -3212,6 +3212,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="402211067068791756">Cette action effacera <ph name="TOTAL_USAGE" /> de données stockées par les sites affichés</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
 <translation id="4025039777635956441">Désactiver le son pour le site sélectionné</translation>
+<translation id="4027958407426528157">Ouvrez des sites Web dans les applications installées sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Ajouter des méthodes d'entrée</translation>
 <translation id="4029556917477724407">Retour à partir de la page <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
@@ -6563,6 +6564,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7377481913241237033">Connecter avec un code</translation>
 <translation id="7378611153938412599">Les mots de passe faibles sont faciles à deviner. Assurez-vous de créer des mots de passe forts. <ph name="BEGIN_LINK" />Consultez plus d'astuces de sécurité.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ouvrir la boutique en ligne Chrome Web Store</translation>
+<translation id="737938816678769289">Connectez et configurez facilement des appareils avec la fonctionnalité Association rapide à proximité</translation>
 <translation id="7380459290951585794">Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil contient des caractères incorrects</translation>
 <translation id="7380768571499464492">L'imprimante <ph name="PRINTER_NAME" /> a été mise à jour</translation>

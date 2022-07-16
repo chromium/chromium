@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2163152940313951844">ልክ ያልሆነ ቁምፊ፦ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ፒሲ ቁልፍ ሰሌዳ</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> ጥቅም ላይ ውሏል</translation>
 <translation id="2198315389084035571">ቀላል ቻይንኛ</translation>
 <translation id="22085916256174561">ኮሪያኛ</translation>
 <translation id="2208919847696382164">በLinux ይጫኑ</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">ቱርክኛ በF-ቁልፍ ሰሌዳ</translation>
 <translation id="2732839045120506979">ቪዬትናምኛ VNI</translation>
 <translation id="2735623501230989521">Parallels ዴስክቶፕ በ<ph name="FOLDER_NAME" /> አቃፊው ውስጥ ያሉ ፋይሎችን እንዲደርስ ፈቃድ ይስጡት</translation>
+<translation id="2764206540577097904">ሁሉንም የእርስዎን የግለሰብ የGoogle Workspace ማከማቻ ተጠቅመዋል።</translation>
 <translation id="2771816809568414714">ቺዝ</translation>
 <translation id="2781645665747935084">የቤልጂየም</translation>
 <translation id="2782104745158847185">የLinux መተግበሪያን መጫን ላይ ስህተት</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">ያጠረ ስም ይጠቀሙ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ላይ ቅርጸት በመስራት ላይ...</translation>
 <translation id="2951236788251446349">ዝልግልግ አሳ</translation>
+<translation id="2958458230122209142">ማከማቻ ዝቅተኛ ነው ከእርስዎ <ph name="TOTAL_SPACE" /> የግለሰብ ማከማቻ ውስጥ <ph name="REMAINING_PERCENTAGE" />% ቀርቷል።</translation>
 <translation id="2977940621473452797">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተሰራው። ይሄ ChromeOSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን መተኪያ መተግበሪያ ለማግኘት እባክዎ Chrome የድር መደብሩን ይፈልጉ።</translation>
 <translation id="2984337792991268709">ዛሬ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> ንጥሎችን ወደነበሩበት በመመለስ ላይ...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">በዚህ አቃፊ ውስጥ የተቀመጡ ፋይሎች ሁሉ በራስ-ሰር መስመር ላይ ምትኬ ይቀመጥላቸዋል።</translation>
 <translation id="6825883775269213504">ራሽኛ</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ከምርጫ ተወግዷል።</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ሁሉንም የGoogle Workspace ማከማቻውን ተጠቅሟል።</translation>
 <translation id="6856459657722366306">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="6861394552169064235">ፋርስኛ</translation>
 <translation id="6862635236584086457">በዚህ አቃፊ ውስጥ የተቀመጡ ፋይሎች ሁሉ በራስ-ሰር መስመር ላይ መጠባበቂያ ይቀመጥላቸዋል</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">ስዊድንኛ</translation>
 <translation id="6990081529015358884">ቦታ አልቆዎብዎታል</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> አቃፊዎች ተመርጠዋል</translation>
+<translation id="7008426324576352165">የእርስዎ ድርጅት ሰቀላውን ለማጠናቀቅ ተጨማሪ ማከማቻ ያስፈልገዋል።</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">መጫን አልተሳካም።</translation>
 <translation id="7031639531908619281">ቱርክኛ</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">ዴኒሽ</translation>
 <translation id="8965697826696209160">በቂ ቦታ የለም።</translation>
 <translation id="8997962250644902079">የቻይንኛ (ተለምዷዊ) ፒንዪን</translation>
+<translation id="8998871447376656508">ሰቀላውን ለማጠናቀቅ በእርስዎ Google Drive ውስጥ በቂ ቦታ የለም።</translation>
 <translation id="9003940392834790328">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="9017798300203431059">የራሽያኛ ፎነቲክ</translation>
 <translation id="9034924485347205037">የLinux ፋይሎች</translation>
 <translation id="9035012421917565900">ንጥሎቹ ተመልሰው ወደ «<ph name="DESTINATION_NAME" />» ሊወሰዱ አይችሉም፤ ስለዚህ ይህን ድርጊት መቀልበስ አይችሉም።</translation>
 <translation id="9035689366572880647">የአሁኑን ፒን ያስገቡ</translation>
+<translation id="9037777873893411148">*የድርጅት ማከማቻ ሞልቷል</translation>
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» የሚባለው ፋይል አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="9046895021617826162">ማገናኘት አልተሳካም</translation>
 <translation id="9065512565307033593">ማረጋገጥ ካልቻሉ የእርስዎ የአውታረ መረብ መዳረሻ ይሰናከላል።</translation>

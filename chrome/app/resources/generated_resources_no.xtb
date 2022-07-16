@@ -3217,6 +3217,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="402211067068791756">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av nettstedene som vises</translation>
 <translation id="4022426551683927403">&amp;Legg til i ordliste</translation>
 <translation id="4025039777635956441">Kutt lyden for det valgte nettstedet</translation>
+<translation id="4027958407426528157">Åpne nettsteder i apper som er installert på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Legg til inndatametoder</translation>
 <translation id="4029556917477724407">Tilbake fra siden <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
@@ -6565,6 +6566,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7377481913241237033">Tilknytt med en kode</translation>
 <translation id="7378611153938412599">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
+<translation id="737938816678769289">Koble til og konfigurer enheter i nærheten enkelt med rask sammenkobling</translation>
 <translation id="7380459290951585794">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> er oppdatert</translation>

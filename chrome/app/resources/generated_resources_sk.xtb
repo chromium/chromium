@@ -354,6 +354,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1340527397989195812">Zálohovať médiá zo zariadenia pomocou aplikácie Súbory</translation>
 <translation id="1343865611738742294">Udeľte systému Linux povolenia aplikácie na prístup k zariadeniam USB. Linux si nezapamätá odstránené zariadenia USB.</translation>
 <translation id="1343920184519992513">Pokračovať, kde ste prestali, a otvoriť konkrétnu skupinu stránok</translation>
+<translation id="1344377983938103876">Otvára sa <ph name="URL" />...</translation>
 <translation id="134589511016534552">Karty médií sú zobrazené aj v sekcii Otvorené karty</translation>
 <translation id="1346630054604077329">Potvrdiť a reštartovať</translation>
 <translation id="1346748346194534595">Doprava</translation>
@@ -6963,6 +6964,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7753735457098489144">Nepodarilo sa nainštalovať pre nedostatok priestoru. Uvoľníte ho odstránením súborov z úložiska zariadenia.</translation>
 <translation id="7754347746598978109">Nemôže používať JavaScript</translation>
 <translation id="7754704193130578113">Pred každým sťahovaním sa spýtať, kam uložiť súbor</translation>
+<translation id="7755134875397410803">Google bude dostávať webové adresy a obsah webov, kde používate Asistenta, ako aj informácie, ktoré prostredníctvom neho odošlete, aby vám mohol pomáhať s dokončovaním úloh. Tieto údaje môžu byť uložené vo vašom účte Google. Asistenta môžete vypnúť v nastaveniach Chromu. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Váš rodič ho môže pre vás odblokovať</translation>
 <translation id="7757592200364144203">Zmeniť názov zariadenia</translation>
 <translation id="7757739382819740102">Kontakty v okolí s vami môžu zdieľať obsah. Bude sa vyžadovať schválenie.</translation>

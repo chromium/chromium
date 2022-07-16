@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1315551408014407711">Luo uusi Chromium-profiili</translation>
+<translation id="1385859895174722837">Google Assistant Chromiumissa</translation>
 <translation id="1396446129537741364">Chromium yrittää näyttää salasanat.</translation>
 <translation id="1414495520565016063">Olet kirjautunut Chromiumiin!</translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
@@ -101,6 +102,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3474745554856756813">Tämä poistaa <ph name="ITEMS_COUNT" /> kohdetta pysyvästi laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Valitsemalla <ph name="SHORTCUT" /> voit vaihdella eri Chromium-profiilien välillä</translation>
 <translation id="3509308970982693815">Sulje kaikki Chromium-ikkunat ja yritä uudelleen.</translation>
+<translation id="3518180795744733843">Chromiumin Google Assistant voi tehdä asioita puolestasi eri sivustoilla</translation>
 <translation id="3533435340678213462">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromiumin ottavan huomioon.</translation>
 <translation id="3567254597502212821">Selaushistoriaasi eli tietoa sivuista, jotka olet avannut Chromiumissa tällä laitteella</translation>
 <translation id="3575459661164320785">Tietokoneellasi on haitallinen ohjelmisto. Chromium voi poistaa sen, palauttaa asetuksesi ja poistaa laajennukset käytöstä, jotta selaimesi toimii taas normaalisti.</translation>

@@ -353,6 +353,7 @@
 <translation id="1340527397989195812">የፋይሎች መተግበሪያውን በመጠቀም በመሣሪያው ውስጥ ያለ የማህደረመረጃ ምትኬ ያስቀምጡ።</translation>
 <translation id="1343865611738742294">የዩኤስቢ መተግበሪያዎች እንዲደርስባቸው ለ Linux ፈቃድ ይስጡት። ከተወገደ በኋላ Linux የዩኤስቢ መሣሪያውን አያስታውሰውም።</translation>
 <translation id="1343920184519992513">ካቆሙበት ይቀጥሉ እና አንድ የተወሰነ የገጾች ስብስብን ክፈት</translation>
+<translation id="1344377983938103876"><ph name="URL" />ን በመክፈት ላይ…</translation>
 <translation id="134589511016534552">የሚዲያ ትሮች እንዲሁ በክፍት ትሮች ክፍል ውስጥ ይታያሉ</translation>
 <translation id="1346630054604077329">ያረጋግጡ እና ዳግም ያስነሱ</translation>
 <translation id="1346748346194534595">ቀኝ</translation>
@@ -3218,6 +3219,7 @@
 <translation id="402211067068791756">ይህ በማሳያ ጣቢያዎች የተከማቸውን <ph name="TOTAL_USAGE" /> ውሂብ ያጠፋል</translation>
 <translation id="4022426551683927403">&amp;ወደ መዝገበ ቃላት አክል</translation>
 <translation id="4025039777635956441">የተመረጠውን ጣቢያ ድምጸ-ከል አድርግበት</translation>
+<translation id="4027958407426528157">ድር ጣቢያዎችን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ በተጫኑ መተግበሪያዎች ውስጥ ይክፈቱ</translation>
 <translation id="4028467762035011525">የግቤት ዘዴዎችን ያክሉ</translation>
 <translation id="4029556917477724407">ከ <ph name="PAGE_TITLE" /> ገጽ ይመለሱ</translation>
 <translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
@@ -6567,6 +6569,7 @@
 <translation id="7377481913241237033">ከኮድ ጋር ተገናኝ</translation>
 <translation id="7378611153938412599">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። ጠንካራ የይለፍ ቃላትን እየፈጠሩ መሆንዎን ያረጋግጡ። <ph name="BEGIN_LINK" />ተጨማሪ ጠቃሚ የደህንነት ምክሮችን ይመልከቱ።<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome የድር መደብርን ይክፈቱ</translation>
+<translation id="737938816678769289">በአቅራቢያ ያሉ ባለፈጣን ጥምረት መሣሪያዎችን በቀላሉ ያገናኙ እና ያዋቅሩ</translation>
 <translation id="7380459290951585794">ስልክዎ በአቅራቢያ እንዳለ፣ የተከፈተ መሆኑን እና ብሉቱዝ እና Wi-Fi እንደበራ ያረጋግጡ</translation>
 <translation id="7380622428988553498">የመሣሪያ ስም ልክ ያልሆኑ ቁምፊዎችን ይዟል</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> ተዘምኗል</translation>
@@ -6964,6 +6967,7 @@
 <translation id="7753735457098489144">በማከማቻ ቦታ ጥበት ምክንያት መጫን አልተሳካም። ባዶ ቦታ ለማስለቀቅ ከመሣሪያ ማከማቻ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7754347746598978109">ጃቫስክሪፕትን ለመጠቀም አልተፈቀደም</translation>
 <translation id="7754704193130578113">እያንዳንዱ ፋይል ከመውረዱ በፊት የት እንደሚቀመጥ ጠይቅ</translation>
+<translation id="7755134875397410803">ተግባራትን እንዲያጠናቅቁ ለማገዝ Google ረዳትን የሚጠቀሙባቸው የጣቢያዎች ዩአርኤሎች እና ይዘቶች እንዲሁም በረዳት በኩል የሚያስገቡት መረጃን ይቀበላል። ይህ መረጃ በGoogle መለያዎ ላይ ሊከማች ይችላል። ረዳትን በChrome ቅንብሮች ላይ ማጥፋት ይችላሉ። <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">የእርስዎ ወላጅ እገዳውን ሊያነሱልዎ ይችላሉ</translation>
 <translation id="7757592200364144203">የመሣሪያ ስም ይቀይሩ</translation>
 <translation id="7757739382819740102">በአቅራቢያ ያሉ እውቂያዎች ለእርስዎ ማጋራት ይችላሉ። ማጽደቅ ያስፈልጋል።</translation>

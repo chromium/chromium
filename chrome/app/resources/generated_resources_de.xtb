@@ -352,6 +352,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1340527397989195812">Sichere Medien von diesem Gerät mit der App "Dateien".</translation>
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
+<translation id="1344377983938103876"><ph name="URL" /> wird geöffnet...</translation>
 <translation id="134589511016534552">Medien-Tabs werden auch im Bereich „Geöffnete Tabs“ angezeigt</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1346748346194534595">Rechts</translation>
@@ -6949,6 +6950,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7753735457098489144">Die Installation ist fehlgeschlagen, weil nicht genügend Speicherplatz vorhanden ist. Lösche Dateien aus dem Gerätespeicher, um Speicherplatz freizugeben.</translation>
 <translation id="7754347746598978109">Dürfen kein JavaScript verwenden</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
+<translation id="7755134875397410803">Wenn du in Chrome mit Assistant Aufgaben erledigst, werden die URLs und Inhalte der Websites, auf denen du Assistant verwendest, sowie die Daten, die du über Assistant weitergibst, an Google gesendet. Diese Informationen werden unter Umständen in deinem Google-Konto gespeichert. Du kannst Assistant in den Einstellungen von Chrome deaktivieren. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7757592200364144203">Gerätenamen ändern</translation>
 <translation id="7757739382819740102">Kontakte in deiner Nähe können etwas mit dir teilen. Hierfür ist eine Genehmigung erforderlich.</translation>

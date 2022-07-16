@@ -3221,6 +3221,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="402211067068791756">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka näkyvät sivustot ovat tallentaneet.</translation>
 <translation id="4022426551683927403">Lisää s&amp;anakirjaan</translation>
 <translation id="4025039777635956441">Mykistä valittu sivusto</translation>
+<translation id="4027958407426528157">Avaa verkkosivustoja laitteelle (<ph name="DEVICE_TYPE" />) asennetuissa sovelluksissa</translation>
 <translation id="4028467762035011525">Lisää syöttötapoja</translation>
 <translation id="4029556917477724407">Edellinen sivu: <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
@@ -6571,6 +6572,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
 <translation id="7378611153938412599">Heikko salasana on helppo arvata. Muista käyttää vahvoja salasanoja. <ph name="BEGIN_LINK" />Katso muita tietoturvavinkkejä.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Avaa Chrome Web Store</translation>
+<translation id="737938816678769289">Yhdistä ja ota lähellä olevia Pikapari-laitteita käyttöön helposti</translation>
 <translation id="7380459290951585794">Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä</translation>
 <translation id="7380622428988553498">Laitteen nimi sisältää virheellisiä merkkejä</translation>
 <translation id="7380768571499464492">Päivitetty <ph name="PRINTER_NAME" /></translation>

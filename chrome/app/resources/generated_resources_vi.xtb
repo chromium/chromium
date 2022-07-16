@@ -354,6 +354,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1340527397989195812">Sao lưu phương tiện từ thiết bị bằng ứng dụng Tệp.</translation>
 <translation id="1343865611738742294">Cấp cho các ứng dụng Linux quyền truy cập vào thiết bị USB. Linux sẽ không nhớ thiết bị USB sau khi bạn rút thiết bị ra.</translation>
 <translation id="1343920184519992513">Tiếp tục từ nơi bạn đang xem dở và mở một nhóm trang cụ thể</translation>
+<translation id="1344377983938103876">Đang mở <ph name="URL" />...</translation>
 <translation id="134589511016534552">Thẻ Nội dung phương tiện cũng xuất hiện trong mục Thẻ đang mở</translation>
 <translation id="1346630054604077329">Xác nhận và khởi động lại</translation>
 <translation id="1346748346194534595">Phải</translation>
@@ -3224,6 +3225,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="402211067068791756">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do các trang web hiển thị lưu trữ.</translation>
 <translation id="4022426551683927403">&amp;Thêm vào Từ điển</translation>
 <translation id="4025039777635956441">Tắt tiếng trang web đã chọn</translation>
+<translation id="4027958407426528157">Mở trang web trong các ứng dụng đã cài đặt trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
 <translation id="4029556917477724407">Quay về trang trước trang <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Cho phép micrô</translation>
@@ -6574,6 +6576,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7377481913241237033">Kết nối bằng mã</translation>
 <translation id="7378611153938412599">Mật khẩu yếu thường dễ đoán. Hãy nhớ tạo mật khẩu mạnh. <ph name="BEGIN_LINK" />Xem các mẹo bảo mật khác.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Mở cửa hàng Chrome trực tuyến</translation>
+<translation id="737938816678769289">Dễ dàng kết nối và thiết lập các thiết bị Ghép nối nhanh ở gần</translation>
 <translation id="7380459290951585794">Hãy đảm bảo điện thoại của bạn đang ở gần, đã mở khoá, đồng thời đã bật Bluetooth và Wi-Fi</translation>
 <translation id="7380622428988553498">Tên thiết bị chứa các ký tự không hợp lệ</translation>
 <translation id="7380768571499464492">Đã cập nhật <ph name="PRINTER_NAME" /></translation>
@@ -6971,6 +6974,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7753735457098489144">Cài đặt không thành công do thiếu dung lượng bộ nhớ. Để giải phóng dung lượng, hãy xóa bớt tệp khỏi bộ nhớ của thiết bị.</translation>
 <translation id="7754347746598978109">Không được phép sử dụng JavaScript</translation>
 <translation id="7754704193130578113">Hỏi vị trí lưu từng tệp trước khi tải xuống</translation>
+<translation id="7755134875397410803">Để giúp bạn hoàn thành những việc cần làm, Google sẽ nhận URL và nội dung của các trang web mà bạn sử dụng Trợ lý, cũng như thông tin bạn gửi qua Trợ lý. Thông tin này có thể được lưu trữ trong Tài khoản Google của bạn. Bạn có thể tắt Trợ lý trong phần cài đặt của Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Cha mẹ của bạn có thể bỏ chặn trang web cho bạn</translation>
 <translation id="7757592200364144203">Thay đổi tên thiết bị</translation>
 <translation id="7757739382819740102">Người liên hệ ở gần có thể chia sẻ với bạn. Thao tác này sẽ phải được phê duyệt.</translation>

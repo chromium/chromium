@@ -3225,6 +3225,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="402211067068791756">Ушуну менен көрсөтүлгөн сайттар ээлеп турган <ph name="TOTAL_USAGE" /> орун бошотулат</translation>
 <translation id="4022426551683927403">Сөздүккө &amp;кошуу</translation>
 <translation id="4025039777635956441">Тандалган сайттын үнүн басуу</translation>
+<translation id="4027958407426528157">Вебсайттарды <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотулган колдонмолордо ачуу</translation>
 <translation id="4028467762035011525">Киргизүү ыкмаларын кошуу</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> барагынан кайтуу</translation>
 <translation id="4031179711345676612">Микрофонду колдонууга уруксат берилди</translation>
@@ -6575,6 +6576,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7377481913241237033">Код менен туташуу</translation>
 <translation id="7378611153938412599">Начар сырсөздөрдү билип алуу оңой. Татаал сырсөздөрдү түзүңүз. <ph name="BEGIN_LINK" />Дагы башка коопсуздук кеңештерин алуу.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Интернет дүкөнүн ачуу</translation>
+<translation id="737938816678769289">Жакын жердеги Ыкчам туташуу түзмөктөрүн оңой туташтырып, тууралайсыз</translation>
 <translation id="7380459290951585794">Телефонуңуз жакын жерде турганын жана анын кулпусу ачык болуп, Bluetooth менен Wi-Fi күйгүзүлгөнүн текшериңиз</translation>
 <translation id="7380622428988553498">Түзмөктүн аталышында жараксыз символдор бар</translation>
 <translation id="7380768571499464492">Качан жаңырды: <ph name="PRINTER_NAME" /></translation>

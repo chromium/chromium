@@ -3225,6 +3225,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="402211067068791756">Lokhu kuzosula u-<ph name="TOTAL_USAGE" /> wedatha egcinwe amasayithi abonisiwe</translation>
 <translation id="4022426551683927403">&amp;Engeza kusichazamazwi</translation>
 <translation id="4025039777635956441">Thulisa isayithi elikhethiwe</translation>
+<translation id="4027958407426528157">Vula amawebhusayithi kuma-app afakiwe kudivayisi yakho ye-<ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Engeza izindlela zokufaka</translation>
 <translation id="4029556917477724407">Emuva kusuka ekhasini <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
@@ -6580,6 +6581,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7377481913241237033">Xhuma ngekhodi</translation>
 <translation id="7378611153938412599">Amaphasiwedi angaqinile aqageleka kalula. Qiniseka ukuthi udala iphasiwedi eqinile. <ph name="BEGIN_LINK" />Bona amathiphu amaningi okuvikeleka.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Vula isitolo sewebhu se-Chrome</translation>
+<translation id="737938816678769289">Xhuma kalula futhi usethe Ukuhlanganisa okusheshayo kwamadivayisi aseduze</translation>
 <translation id="7380459290951585794">Qinisekisa ukuthi ifoni yakho iseduze, ivuliwe, futhi ine-Bluetooth ne-Wi-Fi evuliwe.</translation>
 <translation id="7380622428988553498">Igama ledivayisi liqukethe izinhlamvu ezingavumelekile</translation>
 <translation id="7380768571499464492">Kubuyekezwe i-<ph name="PRINTER_NAME" /></translation>

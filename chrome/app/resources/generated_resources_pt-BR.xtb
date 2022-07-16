@@ -1020,6 +1020,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contêiner <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Tente restaurar esse contêiner em um dispositivo diferente ou acesse os arquivos que estão dentro desta imagem do contêiner abrindo-os no app Arquivos.</translation>
+<translation id="1938240902511979591">Configurações de exibição, lupa e modo de alto contraste</translation>
 <translation id="1938320257168860255">Algo deu errado. Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
@@ -1442,6 +1443,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Não há suporte para estas teclas: Tab, Shift, Control, Escape, Caps lock e Volume</translation>
 <translation id="2309620859903500144">Este site foi impedido de acessar os sensores de luz ou movimento.</translation>
+<translation id="2310923358723722542">Tela e ampliação</translation>
 <translation id="2312219318583366810">URL da página</translation>
 <translation id="2314165183524574721">A configuração de visibilidade atual é: oculto</translation>
 <translation id="2314774579020744484">Idioma usado ao traduzir páginas</translation>
@@ -4179,6 +4181,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="496446150016900060">Sincronizar redes Wi-Fi com seu smartphone</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="4966972803217407697">Você está no modo de navegação anônima</translation>
+<translation id="4967227914555989138">Adicionar uma observação</translation>
 <translation id="496742804571665842">Desativar perfis de eSIM</translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
@@ -4426,6 +4429,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5233231016133573565">ID de processo</translation>
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5233736638227740678">&amp;Colar</translation>
+<translation id="5233794855520048159">Áudio mono, sons na inicialização e legendas</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5235050375939235066">Desinstalar app?</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
@@ -4530,6 +4534,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5333896723098573627">Para remover apps, acesse "Configurações" &gt; "Apps" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Apps" ou "Gerenciador de aplicativos". Depois, toque no app que você quer desinstalar (talvez seja necessário deslizar para a direita ou esquerda a fim de encontrar o app). Em seguida, toque em "Desinstalar" ou "Desativar".</translation>
 <translation id="5334142896108694079">Cache de script</translation>
 <translation id="5336688142483283574">Esta página também será removida do seu histórico e da atividade do <ph name="SEARCH_ENGINE" />.</translation>
+<translation id="5336689872433667741">Cursor e touchpad</translation>
 <translation id="5337771866151525739">Instalada por terceiro.</translation>
 <translation id="5337926771328966926">O nome do dispositivo atual é <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Você pode navegar com privacidade usando uma janela anônima</translation>
@@ -4540,6 +4545,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5342091991439452114">O PIN deve ter no mínimo <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344036115151554031">Restaurando o Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
+<translation id="534449933710420173">Pasta sem nome</translation>
 <translation id="5345916423802287046">Iniciar app ao fazer login</translation>
 <translation id="5350293332385664455">Desativar o Google Assistente</translation>
 <translation id="535123479159372765">Texto copiado de outro dispositivo</translation>
@@ -5164,6 +5170,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
 <translation id="595959584676692139">Recarregue a página para usar esta extensão</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pico de <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Teclas de aderência, teclado na tela, Ditado, acesso com interruptor e destaque aprimorado</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir tudo em &amp;uma nova janela}=1{Abrir em &amp;uma nova janela}one{Abrir tudo ({COUNT}) em &amp;uma nova janela}other{Abrir tudo ({COUNT}) em &amp;uma nova janela}}</translation>
 <translation id="5965661248935608907">Controla também qual página deve ser exibida quando você clica no botão "Página inicial" ou quando faz uma pesquisa na Omnibox.</translation>
 <translation id="5968022600320704045">Nenhum resultado da pesquisa</translation>
@@ -5976,6 +5983,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6770602306803890733">Melhora a segurança para você e para todos na Web</translation>
 <translation id="6771503742377376720">É uma Autoridade de certificação</translation>
 <translation id="6775163072363532304">Os dispositivos disponíveis serão exibidos aqui.</translation>
+<translation id="677646486571529447">Adicionar uma observação</translation>
 <translation id="6776729248872343918">Ativar "Pareamento rápido"</translation>
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6778737459546443941">Seu responsável ainda não o aprovou</translation>
@@ -6124,6 +6132,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6900654715912436255">Tem certeza de que você quer excluir esse mecanismo de pesquisa?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voz para visualização</translation>
+<translation id="6902219595840841518">Clique automático, tamanho do cursor, cor do cursor e destaque do cursor</translation>
 <translation id="6902336033320348843">Seção indisponível: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Vincular dispositivo ao domínio</translation>
 <translation id="6903022061658753260">Seus dados serão sincronizados entre todos os navegadores Chrome em que você ativou a sincronização para esta conta. Acesse as <ph name="LINK_BEGIN" />Configurações do ChromeOS<ph name="LINK_END" /> para ver as opções de sincronização.</translation>
@@ -6901,6 +6910,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7681095912841365527">O site pode usar o Bluetooth</translation>
 <translation id="7681597159868843240">Os sites geralmente usam os sensores de movimento do dispositivo para recursos como realidade virtual ou monitoramento de atividade física</translation>
 <translation id="7683373461016844951">Para continuar, clique em OK e depois em Adicionar pessoa para criar um novo perfil para seu endereço de e-mail do <ph name="DOMAIN" />.</translation>
+<translation id="7683834360226457448">Ferramentas de exibição para pessoas com baixa visão</translation>
 <translation id="7684212569183643648">Instalada pelo administrador</translation>
 <translation id="7684559058815332124">Visitar a página de login do portal cativo</translation>
 <translation id="7684718995427157417">Para criar e testar seus apps, ative o Android Debug Bridge (ADB). Essa ação permite a instalação de apps Android que não foram verificados pelo Google. Para desativá-lo, será necessária uma redefinição para a configuração original.</translation>

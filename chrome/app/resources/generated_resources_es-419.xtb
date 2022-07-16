@@ -352,6 +352,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1340527397989195812">Realizar una copia de seguridad del contenido multimedia desde el dispositivo mediante la aplicación Archivos</translation>
 <translation id="1343865611738742294">Concédeles a las apps de Linux acceso a dispositivos USB. Linux no recuerda los dispositivos USB después de quitarlos.</translation>
 <translation id="1343920184519992513">Continuar la sesión desde donde la dejaste y abrir un conjunto específico de páginas</translation>
+<translation id="1344377983938103876">Abriendo <ph name="URL" />…</translation>
 <translation id="134589511016534552">Las pestañas con contenido multimedia también aparecen en la sección Pestañas abiertas</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
 <translation id="1346748346194534595">Derecha</translation>
@@ -6952,6 +6953,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7753735457098489144">No se pudo instalar porque el espacio de almacenamiento es insuficiente. Para liberar espacio, borra archivos del almacenamiento del dispositivo.</translation>
 <translation id="7754347746598978109">No puede usar JavaScript</translation>
 <translation id="7754704193130578113">Preguntar ubicación antes de descargar</translation>
+<translation id="7755134875397410803">Para ayudarte a completar tareas, Google recibirá las URL y el contenido de los sitios en los que uses Asistente, así como la información que envías a través de este servicio. Esta información se almacenará en tu Cuenta de Google. En la configuración de Chrome, puedes desactivar Asistente. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Uno de tus padres puede desbloquearlo por ti</translation>
 <translation id="7757592200364144203">Cambiar el nombre del dispositivo</translation>
 <translation id="7757739382819740102">Los contactos cercanos pueden compartir contenido contigo. Se requerirá aprobación.</translation>

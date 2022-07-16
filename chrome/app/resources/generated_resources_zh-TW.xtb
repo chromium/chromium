@@ -3209,6 +3209,7 @@
 <translation id="402211067068791756">這會清除目前顯示的網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4025039777635956441">關閉所選網站的音訊</translation>
+<translation id="4027958407426528157">使用 <ph name="DEVICE_TYPE" /> 上安裝的應用程式開啟網站</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
@@ -6555,6 +6556,7 @@
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378611153938412599">低強度密碼很容易讓有心人士猜中，請務必建立高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示。<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
+<translation id="737938816678769289">輕鬆連線並設定附近的快速配對裝置</translation>
 <translation id="7380459290951585794">請確認你的手機在附近且處於解鎖狀態，並已開啟藍牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
 <translation id="7380768571499464492">已更新「<ph name="PRINTER_NAME" />」</translation>

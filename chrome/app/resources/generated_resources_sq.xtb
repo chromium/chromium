@@ -352,6 +352,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
+<translation id="1344377983938103876">Po hap <ph name="URL" />...</translation>
 <translation id="134589511016534552">Skedat e medias shfaqen gjithashtu në seksionin "Skedat e hapura"</translation>
 <translation id="1346630054604077329">Konfirmo dhe rinis</translation>
 <translation id="1346748346194534595">Djathtas</translation>
@@ -6952,6 +6953,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7753735457098489144">Instalimi dështoi për shkak të mungesës së hapësirës ruajtëse. Për të liruar hapësirë, fshi skedarë nga hapësira ruajtëse e pajisjes.</translation>
 <translation id="7754347746598978109">Nuk lejohen të përdorin JavaScript</translation>
 <translation id="7754704193130578113">Pyet se ku do ta ruash çdo skedar para shkarkimit</translation>
+<translation id="7755134875397410803">Për të të ndihmuar të përfundosh detyrat, Google do të marrë URL-të dhe përmbajtjet e sajteve ku ti përdor "Asistentin", si dhe informacionet që dërgon nëpërmjet "Asistentit". Këto informacione mund të ruhen në "Llogarinë tënde të Google". "Asistentin" mund ta çaktivizosh te cilësimet e Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Prindi yt mund ta zhbllokojë atë për ty</translation>
 <translation id="7757592200364144203">Ndrysho emrin e pajisjes</translation>
 <translation id="7757739382819740102">Kontaktet në afërsi mund të ndajnë me ty. Do të kërkohet miratim.</translation>

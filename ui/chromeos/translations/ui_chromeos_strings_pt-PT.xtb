@@ -185,8 +185,10 @@
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="255937426064304553">EUA internacional</translation>
 <translation id="2563185590376525700">Sapo</translation>
+<translation id="2570012981255377263">Os seus ficheiros recentes são apresentados aqui</translation>
 <translation id="2578394532502990878">Fonética de tâmil</translation>
 <translation id="2579959351793446050">Oriá</translation>
+<translation id="2593644851255584939">O administrador requer que desative o bloqueio do SIM.</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
@@ -547,6 +549,7 @@
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se mover este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ouvir</translation>
+<translation id="5665074015635552640">Os seus vídeos recentes são apresentados aqui</translation>
 <translation id="5669691691057771421">Introduzir o novo PIN</translation>
 <translation id="5678784840044122290">A aplicação para Linux estará disponível no terminal. Também pode existir um ícone no Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Não é possível desassociar de um arquivo ou disco virtual<ph name="END_BOLD" />
@@ -691,6 +694,7 @@
     <ph name="FILE_COUNT" /> encontrada(s)</translation>
 <translation id="6935521024859866267">Ao Contrário</translation>
 <translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
+<translation id="6945604978460872381">Os seus documentos recentes são apresentados aqui</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
 <translation id="6954309393500027528">O seu administrador bloqueou a ação de colar este ficheiro</translation>
 <translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
@@ -738,6 +742,7 @@
 <translation id="7295662345261934369">Partilhar com outros</translation>
 <translation id="7297443947353982503">Nome de utilizador ou palavra-passe incorreto ou falha na autenticação EAP</translation>
 <translation id="7309413087278791451">Alemão (Bélgica)</translation>
+<translation id="7313374447885864533">Os seus ficheiros de áudio recentes são apresentados aqui</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7343393116438664539">Telex vietnamita</translation>
 <translation id="7357762654218998920">Este tipo de ficheiro não é suportado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
@@ -871,6 +876,7 @@
 <translation id="8342318071240498787">Já existe um ficheiro ou diretório com o mesmo nome.</translation>
 <translation id="8372369524088641025">Chave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
+<translation id="8384716930968677505">As suas imagens recentes são apresentadas aqui</translation>
 <translation id="8386903983509584791">Análise concluída</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extraído.</translation>
 <translation id="8395901698320285466">Dimensões</translation>

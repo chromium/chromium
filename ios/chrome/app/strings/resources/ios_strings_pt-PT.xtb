@@ -441,6 +441,7 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="4751645464639803239">Novo separador anónimo</translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4778644898150334464">Utilize outra palavra-passe</translation>
+<translation id="478808905805139173">Abrir na Navegação anónima?</translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
@@ -961,6 +962,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9055772144595778347">Impossível Iniciar Sessão</translation>
 <translation id="9057972802061533987">Não é possível seguir. Algo correu mal.</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9068336935206019333">Abrir na Navegação anónima do Chrome</translation>
 <translation id="9079935439869366234">Marcar tudo como não lido</translation>
 <translation id="9081058212938299310">Pretende atualizar a palavra-passe de <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>

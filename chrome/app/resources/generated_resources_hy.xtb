@@ -3210,6 +3210,7 @@
 <translation id="402211067068791756"><ph name="TOTAL_USAGE" /> ծավալով տվյալները, որոնք պահվել են ցուցադրված կայքերի կողմից, կջնջվեն։</translation>
 <translation id="4022426551683927403">&amp;Ավելացնել բառացանկին</translation>
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
+<translation id="4027958407426528157">Բացեք կայքերը ձեր <ph name="DEVICE_TYPE" /> սարքում տեղադրված հավելվածներում</translation>
 <translation id="4028467762035011525">Ավելացնել ներածման մեթոդներ</translation>
 <translation id="4029556917477724407">Վերադառնալ «<ph name="PAGE_TITLE" />» էջից</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
@@ -6560,6 +6561,7 @@
 <translation id="7377481913241237033">Միացում կոդով</translation>
 <translation id="7378611153938412599">Թույլ գաղտնաբառերը հեշտ է գուշակել։ Համոզվեք, որ հուսալի գաղտնաբառեր եք ստեղծում։ <ph name="BEGIN_LINK" />Դիտել հաշվի պաշտպանության այլ խորհուրդներ<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Բացել Chrome Web Store-ը</translation>
+<translation id="737938816678769289">Հեշտությամբ միացեք մոտակայքում գտնվող Արագ զուգակցման սարքերին և կարգավորեք դրանք</translation>
 <translation id="7380459290951585794">Համոզվեք, որ այն մոտակայքում է, ապակողպված, և որ Bluetooth-ն ու Wi-Fi-ը միացված են</translation>
 <translation id="7380622428988553498">Սարքի անունն անվավեր նիշեր է պարունակում</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> տպիչը թարմացվեց</translation>

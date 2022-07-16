@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2163152940313951844">Ongeldige karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugees met internasionale VSA- (rekenaar-) sleutelbord</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> gebruik</translation>
 <translation id="2198315389084035571">Vereenvoudigde Chinees</translation>
 <translation id="22085916256174561">Koreaans</translation>
 <translation id="2208919847696382164">Installeer met Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turks met F-sleutelbord</translation>
 <translation id="2732839045120506979">Viëtnamees-VNI</translation>
 <translation id="2735623501230989521">Gee Parallels Desktop toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
+<translation id="2764206540577097904">Jy het al jou individuele Google Workspace-berging gebruik.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgiese</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Gebruik 'n korter naam</translation>
 <translation id="2949781154072577687">Formateer tans <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Jellievis</translation>
+<translation id="2958458230122209142">Berging is min: <ph name="REMAINING_PERCENTAGE" />% van jou <ph name="TOTAL_SPACE" /> individuele berging is oor.</translation>
 <translation id="2977940621473452797">Hierdie lêer is ontwerp vir ’n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel gebruik nie. Deursoek asseblief die Chrome Webwinkel vir ’n geskikte plaasvervangerprogram.</translation>
 <translation id="2984337792991268709">Vandag <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Stel tans <ph name="COUNT" /> items terug …</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Al die lêers wat in hierdie vouer gestoor is, word outomaties aanlyn gerugsteun.</translation>
 <translation id="6825883775269213504">Russies</translation>
 <translation id="6847101934483209767">Het <ph name="ENTRY_NAME" /> uit keuse verwyder.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> het al hul Google Workspace-berging gebruik.</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="6861394552169064235">Persies</translation>
 <translation id="6862635236584086457">Al die lêers wat in hierdie vouer gestoor is, word outomaties aanlyn gerugsteun</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Sweeds</translation>
 <translation id="6990081529015358884">Jy het nie meer spasie nie</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> vouers gekies</translation>
+<translation id="7008426324576352165">Jou organisasie benodig meer bergingspasie om die oplaai te voltooi.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Kon nie installeer nie.</translation>
 <translation id="7031639531908619281">Turks</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
 <translation id="8997962250644902079">Chinees- (tradisioneel) Pinjin</translation>
+<translation id="8998871447376656508">Daar is nie genoeg spasie in jou Google Drive beskikbaar om die oplaai te voltooi nie.</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="9017798300203431059">Russiese fonetiek</translation>
 <translation id="9034924485347205037">Linux-lêers</translation>
 <translation id="9035012421917565900">Die items kan nie na "<ph name="DESTINATION_NAME" />" toe teruggeskuif word nie en daarom sal jy nie hierdie handeling kan ontdoen nie.</translation>
 <translation id="9035689366572880647">Voer huidige PIN in</translation>
+<translation id="9037777873893411148">*Organisasie se berging is vol</translation>
 <translation id="9038620279323455325">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
 <translation id="9046895021617826162">Kon nie koppel nie</translation>
 <translation id="9065512565307033593">Jou netwerktoegang sal gedeaktiveer word as jy nie verifieer nie.</translation>

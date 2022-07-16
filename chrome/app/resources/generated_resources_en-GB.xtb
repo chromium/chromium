@@ -361,6 +361,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1347256498747320987">Install updates &amp; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux storage</translation>
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1348966090521113558">Mouse accessibility settings</translation>
 <translation id="1353275871123211385">To use parental controls like app approval and screen time limits, a child must have a Google Account managed by a parent. A school account can be added later for tools like Google Classroom.</translation>
 <translation id="135389172849514421">Works offline</translation>
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
@@ -1799,6 +1800,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2653659639078652383">Submit</translation>
 <translation id="265390580714150011">Field Value</translation>
 <translation id="2654553774144920065">Print request</translation>
+<translation id="2657612187216250073">Pointer accessibility settings</translation>
 <translation id="2658941648214598230">Show original content?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Features vary by device</translation>
 <translation id="2659971421398561408">Crostini disk resize</translation>
@@ -1963,6 +1965,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2801954693771979815">Screen size</translation>
 <translation id="2802557211515765772">There are no managed printers.</translation>
 <translation id="2803313416453193357">Open folder</translation>
+<translation id="2803719750464280163">Please confirm that <ph name="PASSKEY" /> is the passkey displayed on Bluetooth device <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">The alternative browser could not be opened</translation>
 <translation id="2804667941345577550">You’ll be signed out of this site, including in open tabs</translation>
 <translation id="2804680522274557040">Camera turned off</translation>
@@ -2878,6 +2881,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="370649949373421643">Enable Wi-Fi</translation>
 <translation id="370665806235115550">Loading...</translation>
 <translation id="3707163604290651814">Currently signed in as <ph name="NAME" /></translation>
+<translation id="3708295717182051206">Closed captions</translation>
 <translation id="3708684582558000260">Don't allow closed sites to finish sending or receiving data</translation>
 <translation id="3709244229496787112">The browser was shut down before the download completed.</translation>
 <translation id="371174301504454251">To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
@@ -3959,6 +3963,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="475088594373173692">First user</translation>
 <translation id="4756378406049221019">Stop/Reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
+<translation id="4756671452988984333">Text for audio</translation>
 <translation id="4759202969060787081">Don’t open</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
@@ -6892,6 +6897,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7668423670802040666">In Google Password Manager for <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Incorrect PIN. You have one attempt remaining.}other{Incorrect PIN. You have # attempts remaining.}}</translation>
 <translation id="7670434942695515800">For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START" />Learn more<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">Subtitles</translation>
 <translation id="7671130400130574146">Use system title bar and borders</translation>
 <translation id="767127784612208024">Touch to confirm reset</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
@@ -7979,6 +7985,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8724859055372736596">&amp;Show in Folder</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8725178340343806893">Favourites/bookmarks</translation>
+<translation id="87254326763805752">Confirm passkey</translation>
 <translation id="8726206820263995930">Error when fetching policy settings from the server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Your chosen permissions will be reset</translation>
 <translation id="8729133765463465108">Use camera to scan QR code</translation>
