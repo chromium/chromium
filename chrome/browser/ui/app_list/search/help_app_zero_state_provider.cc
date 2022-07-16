@@ -115,7 +115,7 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     params.launch_source = apps::LaunchSource::kFromAppListRecommendation;
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
     StopShowingDiscoverTabSuggestionChip(profile_);
   } else if (id() == kHelpAppUpdatesResult) {
@@ -128,7 +128,7 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     params.launch_source = apps::LaunchSource::kFromAppListRecommendation;
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
     ash::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
   }

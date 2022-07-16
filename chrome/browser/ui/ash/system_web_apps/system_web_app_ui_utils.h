@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -78,7 +76,7 @@ void LaunchSystemWebAppAsync(
     Profile* profile,
     SystemWebAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
-    apps::mojom::WindowInfoPtr window_info = nullptr);
+    apps::WindowInfoPtr window_info = nullptr);
 
 // When this method returns, it makes sure all previous LaunchSystemWebAppAsync
 // calls on |profile| are processed (i.e. LaunchSystemWebAppImpl finishes

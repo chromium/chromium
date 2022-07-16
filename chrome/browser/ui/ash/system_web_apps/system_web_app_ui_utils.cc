@@ -126,7 +126,7 @@ SystemAppLaunchParams::~SystemAppLaunchParams() = default;
 void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemWebAppType type,
                              const SystemAppLaunchParams& params,
-                             apps::mojom::WindowInfoPtr window_info) {
+                             apps::WindowInfoPtr window_info) {
   DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemWebAppType::TERMINAL);
@@ -178,14 +178,14 @@ void LaunchSystemWebAppAsync(Profile* profile,
     app_service->LaunchAppWithUrl(
         *app_id, event_flags, *params.url,
         apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-        std::move(window_info));
+        apps::ConvertWindowInfoToMojomWindowInfo(window_info));
     return;
   }
 
   app_service->Launch(
       *app_id, event_flags,
       apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-      std::move(window_info));
+      apps::ConvertWindowInfoToMojomWindowInfo(window_info));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

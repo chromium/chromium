@@ -30,7 +30,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -97,7 +96,7 @@ void HelpAppResult::Open(int event_flags) {
   params.launch_source = apps::LaunchSource::kFromAppListQuery;
   ash::LaunchSystemWebAppAsync(
       profile_, ash::SystemWebAppType::HELP, params,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+      std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
   // This is a google-internal histogram. If changing this, also change the
   // corresponding histograms file.
   base::UmaHistogramSparse("Discover.LauncherSearch.ContentLaunched",
