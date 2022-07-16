@@ -67,8 +67,11 @@ class FollowTabHelper : public web::WebStateObserver,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Helper functions.
+  // Updates follow menu item. `web_page_urls` is the page url object used to
+  // check follow status.
   void UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls);
+  // Presents the Follow in-product help (IPH).
+  void PresentFollowIPH();
 
   web::WebState* web_state_ = nullptr;
 

@@ -43,6 +43,7 @@ const int kVisitHostoryExclusiveDurationInHours = 1;
 const int kVisitHostoryDurationInDays = 14;
 const int kDefaultDailyVisitMin = 3;
 const int kDefaultNumVisitMin = 3;
+const int kShowFollowIPHAfterLoadedInSeconds = 3;
 
 }  // namespace.
 
@@ -102,6 +103,12 @@ void FollowTabHelper::PageLoaded(
   // (FollowIPHCoordinator), so this class won't need to access browser_state
   // anymore, which brings convinience to testing.
 
+  // Set the eligible time to show IPH immidiately when page has loaded. The
+  // calculation to show the IPH takes longer, so eligibleTimeToShowIPH will be
+  // used later.
+  base::Time eligibleTimeToShowIPH =
+      base::Time::Now() + base::Seconds(kShowFollowIPHAfterLoadedInSeconds);
+
   // Do not update follow menu option and do not show IPH when browsing in
   // incognito.
   if (web_state->GetBrowserState()->IsOffTheRecord()) {
@@ -159,8 +166,15 @@ void FollowTabHelper::PageLoaded(
                 base::BindOnce(^(history::DailyVisitsResult result) {
                   if (result.total_visits >= kDefaultNumVisitMin &&
                       result.days_with_visits >= kDefaultDailyVisitMin) {
-                    DCHECK(follow_iph_presenter_);
-                    [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
+                    if (base::Time::Now() >= eligibleTimeToShowIPH) {
+                      PresentFollowIPH();
+                    } else {
+                      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+                          FROM_HERE,
+                          base::BindOnce(&FollowTabHelper::PresentFollowIPH,
+                                         weak_ptr_factory_.GetWeakPtr()),
+                          eligibleTimeToShowIPH - base::Time::Now());
+                    }
                   }
                 }),
                 &tracker);
@@ -203,6 +217,11 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
   }
 
   should_update_follow_item_ = false;
+}
+
+void FollowTabHelper::PresentFollowIPH() {
+  DCHECK(follow_iph_presenter_);
+  [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)
