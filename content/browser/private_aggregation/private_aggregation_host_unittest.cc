@@ -271,12 +271,25 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
                                      remote.BindNewPipeAndPassReceiver()));
 
   // Negative values are invalid
-  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
-  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
-      /*bucket=*/123, /*value=*/-1));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      negative_contributions;
+  negative_contributions.push_back(
+      mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/-1));
+
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      too_many_contributions;
+  for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
+       ++i) {
+    too_many_contributions.push_back(
+        mojom::AggregatableReportHistogramContribution::New(
+            /*bucket=*/123, /*value=*/1));
+  }
 
   EXPECT_CALL(mock_callback_, Run(_, _)).Times(0);
-  remote->SendHistogramReport(std::move(contributions),
+  remote->SendHistogramReport(std::move(negative_contributions),
+                              mojom::AggregationServiceMode::kDefault);
+  remote->SendHistogramReport(std::move(too_many_contributions),
                               mojom::AggregationServiceMode::kDefault);
   remote.FlushForTesting();
 }

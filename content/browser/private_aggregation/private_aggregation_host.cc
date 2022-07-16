@@ -88,6 +88,13 @@ void PrivateAggregationHost::SendHistogramReport(
       [](const mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return contribution_ptr.is_null(); }));
 
+  if (contribution_ptrs.size() > kMaxNumberOfContributions) {
+    // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
+    // possibly broken out by failure reason.
+    mojo::ReportBadMessage("Too many contributions");
+    return;
+  }
+
   std::vector<mojom::AggregatableReportHistogramContribution> contributions;
   contributions.reserve(contribution_ptrs.size());
   base::ranges::transform(
