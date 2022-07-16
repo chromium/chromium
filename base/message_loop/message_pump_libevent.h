@@ -6,11 +6,14 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_LIBEVENT_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
+#include "base/message_loop/message_pump_buildflags.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
 
@@ -20,11 +23,70 @@ struct event;
 
 namespace base {
 
+class MessagePumpEpoll;
+
 // Class to monitor sockets and issue callbacks when sockets are ready for I/O
 // TODO(dkegel): add support for background file IO somehow
 class BASE_EXPORT MessagePumpLibevent : public MessagePump,
                                         public WatchableIOMessagePumpPosix {
  public:
+  class FdWatchController;
+
+  // Parameters used to construct and describe an EpollInterest.
+  struct EpollInterestParams {
+    // The file descriptor of interest.
+    int fd;
+
+    // Indicates an interest in being able to read() from `fd`.
+    bool read;
+
+    // Indicates an interest in being able to write() to `fd`.
+    bool write;
+
+    // Indicates whether this interest is a one-shot interest, meaning that it
+    // must be automatically deactivated every time it triggers an epoll event.
+    bool one_shot;
+
+    bool IsEqual(const EpollInterestParams& rhs) const {
+      return std::tie(fd, read, write, one_shot) ==
+             std::tie(rhs.fd, rhs.read, rhs.write, rhs.one_shot);
+    }
+  };
+
+  // Represents a single controller's interest in a file descriptor via epoll,
+  // and tracks whether that interest is currently active. Though an interest
+  // persists as long as its controller is alive and hasn't changed interests,
+  // it only participates in epoll waits while active. These objects are only
+  // used when MessagePumpLibevent is configured to use the epoll API instead of
+  // libevent.
+  class EpollInterest : public RefCounted<EpollInterest> {
+   public:
+    EpollInterest(FdWatchController* controller,
+                  const EpollInterestParams& params);
+    EpollInterest(const EpollInterest&) = delete;
+    EpollInterest& operator=(const EpollInterest&) = delete;
+
+    FdWatchController* controller() { return controller_; }
+    const EpollInterestParams& params() const { return params_; }
+
+    bool active() const { return active_; }
+    void set_active(bool active) { active_ = active; }
+
+   private:
+    friend class RefCounted<EpollInterest>;
+    ~EpollInterest();
+
+    FdWatchController* const controller_;
+    const EpollInterestParams params_;
+    bool active_ = true;
+  };
+
+  // Note that this class is used as the FdWatchController for both
+  // MessagePumpLibevent *and* MessagePumpEpoll in order to avoid unnecessary
+  // code churn during experimentation and eventual transition. Consumers
+  // construct their own FdWatchController instances, so switching this type
+  // at runtime would require potentially complex logic changes to all
+  // consumers.
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
@@ -39,37 +101,74 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     bool StopWatchingFileDescriptor() override;
 
    private:
+    friend class MessagePumpEpoll;
     friend class MessagePumpLibevent;
     friend class MessagePumpLibeventTest;
 
-    // Called by MessagePumpLibevent.
-    void Init(std::unique_ptr<event> e);
-
-    // Used by MessagePumpLibevent to take ownership of |event_|.
-    std::unique_ptr<event> ReleaseEvent();
-
-    void set_pump(MessagePumpLibevent* pump) { pump_ = pump; }
-    MessagePumpLibevent* pump() const { return pump_; }
-
+    // Common methods called by both pump implementations.
     void set_watcher(FdWatcher* watcher) { watcher_ = watcher; }
+
+    // Methods called only by MessagePumpLibevent
+    void set_libevent_pump(MessagePumpLibevent* pump) { libevent_pump_ = pump; }
+    MessagePumpLibevent* libevent_pump() const { return libevent_pump_; }
+
+    void Init(std::unique_ptr<event> e);
+    std::unique_ptr<event> ReleaseEvent();
 
     void OnFileCanReadWithoutBlocking(int fd, MessagePumpLibevent* pump);
     void OnFileCanWriteWithoutBlocking(int fd, MessagePumpLibevent* pump);
 
-    std::unique_ptr<event> event_;
-    raw_ptr<MessagePumpLibevent> pump_ = nullptr;
+    // Methods called only by MessagePumpEpoll
+    void set_epoll_pump(WeakPtr<MessagePumpEpoll> pump) {
+      epoll_pump_ = std::move(pump);
+    }
+    const scoped_refptr<EpollInterest>& epoll_interest() const {
+      return epoll_interest_;
+    }
+
+    // Creates a new Interest described by `params` and adopts it as this
+    // controller's exclusive interest. Any prior interest is dropped by the
+    // controller and should be unregistered on the MessagePumpEpoll.
+    const scoped_refptr<EpollInterest>& AssignEpollInterest(
+        const EpollInterestParams& params);
+
+    void OnFdReadable();
+    void OnFdWritable();
+
+    // Common state
     raw_ptr<FdWatcher> watcher_ = nullptr;
-    // If this pointer is non-NULL, the pointee is set to true in the
-    // destructor.
+
+    // If this pointer is non-null when the FdWatchController is destroyed, the
+    // pointee is set to true.
     raw_ptr<bool> was_destroyed_ = nullptr;
+
+    // State used only with libevent
+    std::unique_ptr<event> event_;
+    raw_ptr<MessagePumpLibevent> libevent_pump_ = nullptr;
+
+    // State used only with epoll
+    WeakPtr<MessagePumpEpoll> epoll_pump_;
+    scoped_refptr<EpollInterest> epoll_interest_;
   };
 
   MessagePumpLibevent();
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  // Constructs a MessagePumpLibevent which is forced to use epoll directly
+  // instead of libevent.
+  enum { kUseEpoll };
+  explicit MessagePumpLibevent(decltype(kUseEpoll));
+#endif
 
   MessagePumpLibevent(const MessagePumpLibevent&) = delete;
   MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
 
   ~MessagePumpLibevent() override;
+
+  // Must be called early in process startup, but after FeatureList
+  // initialization. This allows MessagePumpLibevent to query and cache the
+  // enabled state of any relevant features.
+  static void InitializeFeatures();
 
   bool WatchFileDescriptor(int fd,
                            bool persistent,
@@ -107,6 +206,13 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;
   };
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  // If direct use of epoll is enabled, this is the MessagePumpEpoll instance
+  // used. In that case, all libevent state below is ignored and unused.
+  // Otherwise this is null.
+  std::unique_ptr<MessagePumpEpoll> epoll_pump_;
+#endif
 
   // State for the current invocation of Run(). null if not running.
   RunState* run_state_ = nullptr;
