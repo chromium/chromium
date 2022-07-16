@@ -380,6 +380,8 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kDriveVideoIconResourceName;
   } else if (icon.name == omnibox::kExtensionAppIcon.name) {
     return kExtensionAppIconResourceName;
+  } else if (icon.name == omnibox::kJourneysIcon.name) {
+    return kJourneysIconResourceName;
   } else if (icon.name == omnibox::kPageIcon.name) {
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kPedalIcon.name) {
@@ -776,7 +778,8 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
     // Request favicons for navigational matches.
     // TODO(crbug.com/1075848): Investigate using chrome://favicon2.
     if (!AutocompleteMatch::IsSearchType(match.type) &&
-        match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
+        match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+        match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
       gfx::Image favicon = favicon_cache_.GetLargestFaviconForPageUrl(
           match.destination_url,
           base::BindOnce(&RealboxHandler::OnRealboxFaviconFetched,

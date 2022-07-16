@@ -416,7 +416,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
     case Type::OPEN_TAB:
-    case Type::HISTORY_CLUSTER:
       return omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
@@ -475,6 +474,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         default:
           return omnibox::kPageIcon;
       }
+
+    case Type::HISTORY_CLUSTER:
+      return omnibox::kJourneysIcon;
 
     case Type::NUM_TYPES:
       // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.

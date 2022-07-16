@@ -39,6 +39,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -516,10 +517,23 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
 // OmniboxResultView, private:
 
 gfx::Image OmniboxResultView::GetIcon() const {
+  // Usually, use kColorOmniboxResultsIcon[Selected] for icon color. Except for
+  // history cluster suggestions which want to stand out. They reuse the
+  // kColorOmniboxResultsUrl[Selected] color which is intended for the URL text
+  // in suggestion texts.
+  ui::ColorId vector_icon_color_id;
+  if (match_.type == AutocompleteMatchType::HISTORY_CLUSTER) {
+    // TODO(crbug.com/1327076): If we launch history cluster icons with blue or
+    //  another non-default color, use an appropriately named constant, e.g.
+    //  `kColorOmniboxResultSpecialIcon[Selected]`.
+    vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsUrlSelected
+                                              : kColorOmniboxResultsUrl;
+  } else {
+    vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsIconSelected
+                                              : kColorOmniboxResultsIcon;
+  }
   return popup_contents_view_->GetMatchIcon(
-      match_, GetColorProvider()->GetColor(
-                  GetMatchSelected() ? kColorOmniboxResultsIconSelected
-                                     : kColorOmniboxResultsIcon));
+      match_, GetColorProvider()->GetColor(vector_icon_color_id));
 }
 
 void OmniboxResultView::UpdateHoverState() {

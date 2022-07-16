@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/browser/suggestion_group.h"
 
 HistoryClusterProvider::HistoryClusterProvider(
     AutocompleteProviderClient* client,
@@ -103,12 +104,12 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
       FindTermMatches(input_.text(), text), text.length(),
       ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
-  // TODO(manukh): Ideally, this would read e.g. "Journey from Yesterday", but
-  //  we don't currently track which keyword is connected to which history
-  //  cluster.
-  match.contents = u"Journey";
+  match.contents = match.fill_into_edit;
   match.contents_class.push_back(
-      ACMatchClassification(0, ACMatchClassification::DIM));
+      ACMatchClassification(0, ACMatchClassification::URL));
+
+  match.suggestion_group_id = 1;
+  suggestion_groups_map_[1].MergeFrom({});
 
   return match;
 }

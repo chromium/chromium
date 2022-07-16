@@ -144,7 +144,8 @@ TEST_F(HistoryClustersProviderTest, SyncSearchMatches) {
   ASSERT_EQ(provider_->matches().size(), 1u);
   EXPECT_EQ(provider_->matches()[0].relevance, 900);
   EXPECT_EQ(provider_->matches()[0].description, u"keyword");
-  EXPECT_EQ(provider_->matches()[0].contents, u"Journey");
+  EXPECT_EQ(provider_->matches()[0].contents,
+            u"chrome://history/journeys?q=keyword");
   EXPECT_EQ(provider_->matches()[0].fill_into_edit,
             u"chrome://history/journeys?q=keyword");
   EXPECT_EQ(provider_->matches()[0].destination_url,
