@@ -40,6 +40,9 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
    private:
     // Must be 'on the hour' in UTC.
     base::Time start_time_;
+
+    // When adding new members, the corresponding `operator==()` definition in
+    // `private_aggregation_test_utils.h` should also be updated.
   };
 
   // Copyable and movable.
@@ -71,6 +74,9 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
   url::Origin origin_;
   TimeWindow time_window_;
   Api api_;
+
+  // When adding new members, the corresponding `operator==()` definition in
+  // `private_aggregation_test_utils.h` should also be updated.
 };
 
 }  // namespace content

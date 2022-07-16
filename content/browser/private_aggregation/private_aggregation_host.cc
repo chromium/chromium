@@ -47,7 +47,7 @@ struct PrivateAggregationHost::ReceiverContext {
 
 PrivateAggregationHost::PrivateAggregationHost(
     base::RepeatingCallback<void(AggregatableReportRequest,
-                                 PrivateAggregationBudgetKey::Api)>
+                                 PrivateAggregationBudgetKey)>
         on_report_request_received)
     : on_report_request_received_(std::move(on_report_request_received)) {}
 
@@ -99,9 +99,11 @@ void PrivateAggregationHost::SendHistogramReport(
       AggregationServicePayloadContents::Operation::kHistogram,
       std::move(contributions), aggregation_mode);
 
+  base::Time now = base::Time::Now();
+
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/GetScheduledReportTime(
-          /*report_issued_time=*/base::Time::Now()),
+          /*report_issued_time=*/now),
       /*report_id=*/base::GUID::GenerateRandomV4(), reporting_origin,
       AggregatableReportSharedInfo::DebugMode::kDisabled,
       /*additional_fields=*/base::Value::Dict(),
@@ -129,9 +131,16 @@ void PrivateAggregationHost::SendHistogramReport(
     return;
   }
 
-  on_report_request_received_.Run(
-      std::move(report_request.value()),
-      receiver_set_.current_context().api_for_budgeting);
+  absl::optional<PrivateAggregationBudgetKey> budget_key =
+      PrivateAggregationBudgetKey::Create(
+          /*origin=*/reporting_origin, /*api_invocation_time=*/now,
+          /*api=*/receiver_set_.current_context().api_for_budgeting);
+
+  // The origin should be potentially trustworthy.
+  DCHECK(budget_key.has_value());
+
+  on_report_request_received_.Run(std::move(report_request.value()),
+                                  std::move(budget_key.value()));
 }
 
 }  // namespace content

@@ -53,12 +53,15 @@ PrivateAggregationBudgeter::PrivateAggregationBudgeter(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     bool exclusively_run_in_memory,
     const base::FilePath& path_to_db_dir) {
+  DCHECK(db_task_runner);
   PrivateAggregationBudgetStorage::CreateAsync(
       std::move(db_task_runner), exclusively_run_in_memory, path_to_db_dir,
       /*on_done_initializing=*/
       base::BindOnce(&PrivateAggregationBudgeter::OnStorageDoneInitializing,
                      weak_factory_.GetWeakPtr()));
 }
+
+PrivateAggregationBudgeter::PrivateAggregationBudgeter() = default;
 
 PrivateAggregationBudgeter::~PrivateAggregationBudgeter() = default;
 

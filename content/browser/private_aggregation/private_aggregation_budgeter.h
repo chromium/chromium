@@ -56,6 +56,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
                     PrivateAggregationBudgetKey::TimeWindow::kDuration ==
                 base::TimeDelta());
 
+  // `db_task_runner` should not be nullptr.
   PrivateAggregationBudgeter(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       bool exclusively_run_in_memory,
@@ -80,14 +81,19 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // complete. Otherwise, the budget use is recorded and the attempt is
   // successful. May clean up stale budget storage. Note that this call assumes
   // that budget time windows are non-decreasing. In very rare cases, a network
-  // time update could allow budget to be used slightly early.
-  void ConsumeBudget(int budget,
-                     const PrivateAggregationBudgetKey& budget_key,
-                     base::OnceCallback<void(bool)> on_done);
+  // time update could allow budget to be used slightly early. Virtual for
+  // testing.
+  virtual void ConsumeBudget(int budget,
+                             const PrivateAggregationBudgetKey& budget_key,
+                             base::OnceCallback<void(bool)> on_done);
 
   // TODO(crbug.com/1328439): Clear stale data periodically and on startup.
 
  protected:
+  // Should only be used for testing/mocking to avoid creating the underlying
+  // storage.
+  PrivateAggregationBudgeter();
+
   // Virtual for testing.
   virtual void OnStorageDoneInitializing(
       std::unique_ptr<PrivateAggregationBudgetStorage> storage);

@@ -28,10 +28,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content {
+
+namespace {
+
 using testing::_;
 using testing::Invoke;
-
-namespace content {
+using testing::Property;
 
 class PrivateAggregationHostTest : public testing::Test {
  public:
@@ -46,12 +49,16 @@ class PrivateAggregationHostTest : public testing::Test {
 
  protected:
   base::MockRepeatingCallback<void(AggregatableReportRequest,
-                                   PrivateAggregationBudgetKey::Api)>
+                                   PrivateAggregationBudgetKey)>
       mock_callback_;
+  std::unique_ptr<PrivateAggregationHost> host_;
+
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<PrivateAggregationHost> host_;
 };
+
+}  // namespace
 
 TEST_F(PrivateAggregationHostTest,
        SendHistogramReport_ReportRequestHasCorrectMembers) {
@@ -64,7 +71,9 @@ TEST_F(PrivateAggregationHostTest,
                                      remote.BindNewPipeAndPassReceiver()));
 
   absl::optional<AggregatableReportRequest> validated_request;
-  EXPECT_CALL(mock_callback_, Run(_, PrivateAggregationBudgetKey::Api::kFledge))
+  EXPECT_CALL(mock_callback_,
+              Run(_, Property(&PrivateAggregationBudgetKey::api,
+                              PrivateAggregationBudgetKey::Api::kFledge)))
       .WillOnce(MoveArg<0>(&validated_request));
 
   std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
@@ -125,7 +134,8 @@ TEST_F(PrivateAggregationHostTest, ReportingPath) {
   for (int i = 0; i < 2; i++) {
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, apis[i], remotes[i].BindNewPipeAndPassReceiver()));
-    EXPECT_CALL(mock_callback_, Run(_, apis[i]))
+    EXPECT_CALL(mock_callback_,
+                Run(_, Property(&PrivateAggregationBudgetKey::api, apis[i])))
         .WillOnce(MoveArg<0>(&validated_requests[i]));
 
     std::vector<mojom::AggregatableReportHistogramContributionPtr>
@@ -170,21 +180,30 @@ TEST_F(PrivateAggregationHostTest,
       remotes[3].BindNewPipeAndPassReceiver()));
 
   // Use the bucket as a sentinel to ensure that calls were routed correctly.
-  EXPECT_CALL(mock_callback_, Run(_, PrivateAggregationBudgetKey::Api::kFledge))
-      .WillOnce(Invoke([&kExampleOriginB](AggregatableReportRequest request,
-                                          PrivateAggregationBudgetKey::Api) {
-        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
-        EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginB);
-      }));
   EXPECT_CALL(mock_callback_,
-              Run(_, PrivateAggregationBudgetKey::Api::kSharedStorage))
-      .WillOnce(Invoke([&kExampleOriginA](AggregatableReportRequest request,
-                                          PrivateAggregationBudgetKey::Api) {
-        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 2);
-        EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginA);
-      }));
+              Run(_, Property(&PrivateAggregationBudgetKey::api,
+                              PrivateAggregationBudgetKey::Api::kFledge)))
+      .WillOnce(
+          Invoke([&kExampleOriginB](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+            EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginB);
+            EXPECT_EQ(budget_key.origin(), kExampleOriginB);
+          }));
+
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, Property(&PrivateAggregationBudgetKey::api,
+                      PrivateAggregationBudgetKey::Api::kSharedStorage)))
+      .WillOnce(
+          Invoke([&kExampleOriginA](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 2);
+            EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginA);
+            EXPECT_EQ(budget_key.origin(), kExampleOriginA);
+          }));
 
   {
     std::vector<mojom::AggregatableReportHistogramContributionPtr>

@@ -37,7 +37,7 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   explicit PrivateAggregationHost(
       base::RepeatingCallback<void(AggregatableReportRequest,
-                                   PrivateAggregationBudgetKey::Api)>
+                                   PrivateAggregationBudgetKey)>
           on_report_request_received);
   PrivateAggregationHost(const PrivateAggregationHost&) = delete;
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
@@ -62,7 +62,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   struct ReceiverContext;
 
   base::RepeatingCallback<void(AggregatableReportRequest,
-                               PrivateAggregationBudgetKey::Api)>
+                               PrivateAggregationBudgetKey)>
       on_report_request_received_;
 
   mojo::ReceiverSet<mojom::PrivateAggregationHost, ReceiverContext>
