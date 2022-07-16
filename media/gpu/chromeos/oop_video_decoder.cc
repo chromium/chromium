@@ -170,16 +170,6 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // TODO(b/171813538): implement the re-initialization logic. The client can
-  // call Initialize() multiple times. This implies properly asserting the
-  // invariant imposed by media::VideoDecoder::Initialize(): "No VideoDecoder
-  // calls should be made before |init_cb| is executed."
-  if (output_cb_) {
-    // TODO(b/171813538): create specific error code for this decoder.
-    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
-    return;
-  }
-
   init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
@@ -202,8 +192,11 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
 
   CHECK(!has_error_);
 
-  if (!status.is_ok() || (decoder_type != VideoDecoderType::kVaapi &&
-                          decoder_type != VideoDecoderType::kV4L2)) {
+  if (!status.is_ok() ||
+      (decoder_type != VideoDecoderType::kVaapi &&
+       decoder_type != VideoDecoderType::kV4L2) ||
+      (decoder_type_ != VideoDecoderType::kUnknown &&
+       decoder_type_ != decoder_type)) {
     Stop();
     return;
   }
@@ -408,6 +401,12 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
+
+  if (init_cb_) {
+    VLOGF(2) << "Received a decoded frame while waiting for initialization";
+    Stop();
+    return;
+  }
 
   // The destruction observer will be called after the client releases the
   // video frame. BindToCurrentLoop() is used to make sure that the WeakPtr
