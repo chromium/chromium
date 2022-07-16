@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
-html_to_js("web_components") {
-  js_files = [
-    "info_view.js",
-    "info_view_table.js",
-    "info_view_table_row.js",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "info_view.html",
+    "info_view_table.html",
+    "info_view_table_row.html",
   ]
+  template = "native"
+  use_js = true
 }

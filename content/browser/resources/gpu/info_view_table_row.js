@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+
+import {getTemplate} from './info_view_table_row.html.js';
 
 export class InfoViewTableRowElement extends CustomElement {
   static get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   constructor() {

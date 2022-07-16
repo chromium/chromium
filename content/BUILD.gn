@@ -122,7 +122,7 @@ grit("dev_ui_content_resources") {
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//content/browser/preloading/prerender:mojo_bindings_webui_js",
     "//content/browser/resources/attribution_reporting:build_ts",
-    "//content/browser/resources/gpu:web_components",
+    "//content/browser/resources/gpu:html_wrapper_files",
     "//content/browser/resources/process:build_ts",
     "//storage/browser/quota:mojo_bindings_webui_js",
   ]
