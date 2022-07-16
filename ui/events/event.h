@@ -226,7 +226,7 @@ class EVENTS_EXPORT Event {
 
   bool IsLocatedEvent() const {
     return IsMouseEvent() || IsScrollEvent() || IsTouchEvent() ||
-           IsGestureEvent();
+           IsGestureEvent() || type_ == ET_DROP_TARGET_EVENT;
   }
 
   // Convenience methods to cast |this| to a CancelModeEvent.
