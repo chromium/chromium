@@ -11,13 +11,13 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/popup-utils.js"></script>
 
-<button id=b1t togglepopup='p1'>Popup 1</button>
-<button id=b1s showpopup='p1'>Popup 1</button>
+<button id=b1t popuptoggletarget='p1'>Popup 1</button>
+<button id=b1s popupshowtarget='p1'>Popup 1</button>
 <button id=p1anchor>Popup1 anchor (no action)</button>
 <span id=outside>Outside all popups</span>
 <div popup id=p1 anchor=p1anchor>
   <span id=inside1>Inside popup 1</span>
-  <button id=b2 togglepopup='p2'>Popup 2</button>
+  <button id=b2 popuptoggletarget='p2'>Popup 2</button>
   <span id=inside1after>Inside popup 1 after button</span>
 </div>
 <div popup id=p2 anchor=b2>
@@ -145,9 +145,9 @@
     await waitForRender();
     p1HideCount = popup1HideCount;
     await clickOn(button1toggle);
-    assert_false(popup1.matches(':top-layer'),'popup1 should be hidden by togglepopup');
-    assert_equals(popup1HideCount,p1HideCount+1,'popup1 should get hidden only once by togglepopup');
-  },'Clicking on togglepopup element, even if it wasn\'t used for activation, should hide it exactly once');
+    assert_false(popup1.matches(':top-layer'),'popup1 should be hidden by popuptoggletarget');
+    assert_equals(popup1HideCount,p1HideCount+1,'popup1 should get hidden only once by popuptoggletarget');
+  },'Clicking on popuptoggletarget element, even if it wasn\'t used for activation, should hide it exactly once');
 
   promise_test(async () => {
     popup1.showPopUp();
@@ -180,11 +180,11 @@
   },'Dragging from an open popup outside an open popup should leave the popup open');
 </script>
 
-<button id=b3 togglepopup=p3>Popup 3 - button 3
+<button id=b3 popuptoggletarget=p3>Popup 3 - button 3
   <div popup id=p4>Inside popup 4</div>
 </button>
 <div popup id=p3>Inside popup 3</div>
-<button id=b4 togglepopup=p3>Popup 3 - button 4
+<button id=b4 popuptoggletarget=p3>Popup 3 - button 4
   <div popup id=p5>Inside popup 5</div>
 </button>
 <style>
@@ -228,7 +228,7 @@
   <div style="height:2000px;background:lightgreen"></div>
   Bottom of popup6
 </div>
-<button togglepopup=p6>Popup 6</button>
+<button popuptoggletarget=p6>Popup 6</button>
 <style>
   #p6 {
     width: 300px;
@@ -308,7 +308,7 @@
   <button>Button</button>
   <span id=inside9after>Inside popup 9 after button</span>
 </div>
-<button id=b9after togglepopup='p9'>Popup 9</button>
+<button id=b9after popuptoggletarget='p9'>Popup 9</button>
 <script>
   promise_test(async () => {
     const popup9 = document.querySelector('#p9');
@@ -342,15 +342,15 @@
 <!-- Convoluted ancestor relationship -->
 <div popup id=convoluted_p1>Popup 1
   <div id=convoluted_anchor>Anchor
-    <button togglepopup=convoluted_p2>Open Popup 2</button>
+    <button popuptoggletarget=convoluted_p2>Open Popup 2</button>
     <div popup id=convoluted_p4><p>Popup 4</p></div>
   </div>
 </div>
 <div popup id=convoluted_p2>Popup 2
-  <button togglepopup=convoluted_p3>Open Popup 3</button>
+  <button popuptoggletarget=convoluted_p3>Open Popup 3</button>
 </div>
 <div popup id=convoluted_p3 anchor=convoluted_anchor>Popup 3
-  <button togglepopup=convoluted_p4>Open Popup 4</button>
+  <button popuptoggletarget=convoluted_p4>Open Popup 4</button>
 </div>
 <button onclick="convoluted_p1.showPopUp()">Open convoluted popup</button>
 <style>

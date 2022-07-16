@@ -2906,7 +2906,7 @@ const Element* NearestOpenAncestralPopupRecursive(
     // to catch invoking elements that should not light dismiss a pop-up, even
     // if they weren't used to show it.
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      recurse_and_update(form_control->togglePopupElement().element);
+      recurse_and_update(form_control->popupTargetElement().element);
     }
     // Include the anchor elements for all showing pop-ups.
     if (anchors_to_popups.Contains(element)) {
@@ -2926,17 +2926,17 @@ const Element* NearestOpenAncestralPopupRecursive(
 // DOM flat tree parents, or through either anchor or invoker relationships.
 // Anchor relationships are formed by the anchor attribute on a pop-up, pointing
 // to another node in the tree. Invoker relationships are formed by invoking
-// elements, which are HTMLFormControlElements having togglepopup, showpopup, or
-// hidepopup attributes pointing to a pop-up element. There can be multiple
-// pop-ups that point to a single anchor element, and there can be multiple
-// invoking elements for a single pop-up. Additionally, an anchor for one pop-up
-// can be an invoker for a different pop-up. For these reasons, this function
-// needs to do a recursive tree walk up from the provided node, plus all
-// associated anchors and invokers, returning the highest (on the stack) pop-up
-// that is found. If the inclusive parameter is true, the highest pop-up found
-// during the tree-walk is included in the search. If it is false, the |node|
-// parameter must be a pop-up, and the highest pop-up *below* that starting pop-
-// up will be returned.
+// elements, which are HTMLFormControlElements having popuptoggletarget,
+// popupshowtarget, or popuphidetarget attributes pointing to a pop-up element.
+// There can be multiple pop-ups that point to a single anchor element, and
+// there can be multiple invoking elements for a single pop-up. Additionally, an
+// anchor for one pop-up can be an invoker for a different pop-up. For these
+// reasons, this function needs to do a recursive tree walk up from the provided
+// node, plus all associated anchors and invokers, returning the highest (on the
+// stack) pop-up that is found. If the inclusive parameter is true, the highest
+// pop-up found during the tree-walk is included in the search. If it is false,
+// the |node| parameter must be a pop-up, and the highest pop-up *below* that
+// starting pop- up will be returned.
 const Element* Element::NearestOpenAncestralPopup(const Node* node,
                                                   bool inclusive) {
   DCHECK(node);

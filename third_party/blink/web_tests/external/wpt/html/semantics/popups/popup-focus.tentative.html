@@ -123,7 +123,7 @@
       button.remove();
     });
     popUp.id = popUpId;
-    button.setAttribute('togglepopup', popUpId);
+    button.setAttribute('popuptoggletarget', popUpId);
     return button;
   }
   function addPriorFocus(t) {
@@ -218,7 +218,7 @@
       const priorFocus = addPriorFocus(t);
       assert_false(popUp.matches(':top-layer'), 'pop-up should start out hidden');
       let button = addInvoker(t, popUp);
-      assert_equals(button.getAttribute('togglepopup'), popUp.id, 'This test assumes the button uses `togglepopup`.');
+      assert_equals(button.getAttribute('popuptoggletarget'), popUp.id, 'This test assumes the button uses `popuptoggletarget`.');
       assert_not_equals(button, priorFocus, 'Stranger things have happened');
       assert_false(popUp.contains(button), 'Start with a non-contained button');
       priorFocus.focus();
@@ -231,8 +231,8 @@
       await finishAnimationsAndVerifyHide(popUp);
 
       // Same thing, but the button is contained within the pop-up
-      button.removeAttribute('togglepopup');
-      button.setAttribute('hidepopup', popUp.id);
+      button.removeAttribute('popuptoggletarget');
+      button.setAttribute('popuphidetarget', popUp.id);
       popUp.appendChild(button);
       priorFocus.focus();
       popUp.showPopUp();
@@ -245,7 +245,7 @@
       assert_equals(document.activeElement, priorFocus, 'Contained button should return focus to the previously focused element');
       await finishAnimationsAndVerifyHide(popUp);
 
-      // Same thing, but the button is unrelated (no togglepopup)
+      // Same thing, but the button is unrelated (no popuptoggletarget)
       button = document.createElement('button');
       document.body.appendChild(button);
       priorFocus.focus();

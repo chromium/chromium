@@ -1263,7 +1263,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kPopupElement:
         // The following types of markup are mapped to "tooltip":
         // * The title attribute.
-        // * A related popup=hint related via togglepopup/showpopup/hidepopup.
+        // * A related popup=hint related via popuptoggletarget /
+        // popupshowtarget / popuphidetarget.
         // * A tooltip related via aria-describedby (see kRelatedElement above).
         from = "tooltip";
         break;

@@ -123,9 +123,9 @@ const invokers = [
             assert_equals(popUp2.popUp,type);
             assert_not_equals(popUp1.id,popUp2.id);
             const invoker = testcase.makeElement(test);
-            if (t) invoker.setAttribute('togglepopup',t===1 ? popUp1.id : popUp2.id);
-            if (s) invoker.setAttribute('showpopup',s===1 ? popUp1.id : popUp2.id);
-            if (h) invoker.setAttribute('hidepopup',h===1 ? popUp1.id : popUp2.id);
+            if (t) invoker.setAttribute('popuptoggletarget',t===1 ? popUp1.id : popUp2.id);
+            if (s) invoker.setAttribute('popupshowtarget',s===1 ? popUp1.id : popUp2.id);
+            if (h) invoker.setAttribute('popuphidetarget',h===1 ? popUp1.id : popUp2.id);
             assert_true(!document.getElementById(popUp1.id));
             assert_true(!document.getElementById(popUp2.id));
             document.body.appendChild(popUp1);
@@ -184,7 +184,7 @@ const invokers = [
 
 
 
-<button togglepopup=p1>Toggle Popup 1</button>
+<button popuptoggletarget=p1>Toggle Popup 1</button>
 <div popup id=p1 style="border: 5px solid red;top: 100px;left: 100px;">This is pop-up #1</div>
 
 <script>
@@ -221,7 +221,7 @@ promise_test(async () => {
   await assertState(true,2,1);
   popUp.hidePopUp();
   await assertState(false,2,2);
-}, "Clicking a togglepopup button opens a closed pop-up (also check event counts)");
+}, "Clicking a popuptoggletarget button opens a closed pop-up (also check event counts)");
 
 promise_test(async () => {
   showCount = hideCount = 0;
@@ -230,4 +230,4 @@ promise_test(async () => {
   await assertState(true,1,0);
   await clickOn(button);
   await assertState(false,1,1);
-}, "Clicking a togglepopup button closes an open pop-up (also check event counts)");
+}, "Clicking a popuptoggletarget button closes an open pop-up (also check event counts)");
