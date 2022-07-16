@@ -575,7 +575,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
       reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
           internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment));
 #else
-  uintptr_t address_tagged = internal::SlotStartAddr2Ptr(slot_start);
+  uintptr_t address_tagged =
+      reinterpret_cast<uintptr_t>(internal::SlotStartAddr2Ptr(slot_start));
 #endif
 
   // The pointer is always 16 bytes aligned, so its start address is always == 0
