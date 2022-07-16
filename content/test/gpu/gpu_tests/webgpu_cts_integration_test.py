@@ -178,6 +178,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # since it could technically be hit on any platform.
         '--disable-backgrounding-occluded-windows',
     ]
+    if cls._use_webgpu_adapter:
+      browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
     if cls._enable_dawn_backend_validation:
       if sys.platform == 'win32':
         browser_args.append('--enable-dawn-backend-validation=partial')
